@@ -103,6 +103,20 @@ public sealed class ShellViewModel : Observable
         // Posted rather than checked first, a post from the UI thread already being right.
         var backend = new ControlBackend();
         var dispatch = (Action<Action>)(action => Dispatcher.UIThread.Post(action));
+
+        // A timer per delay, stopped at its one tick: what asks for a delay wants a moment over,
+        // and a timer left running would give it a second one.
+        var after = (Action<TimeSpan, Action>)((delay, action) =>
+        {
+            var timer = new DispatcherTimer { Interval = delay };
+            timer.Tick += (_, _) =>
+            {
+                timer.Stop();
+                action();
+            };
+            timer.Start();
+        });
+
         _backend = backend;
         _dispatch = dispatch;
 
@@ -120,7 +134,7 @@ public sealed class ShellViewModel : Observable
         // After the session, which is where what the backend said about the published release lives.
         // The band draws it and the dialog behind the band's line reads the same view model,
         // so the two cannot disagree (Features/Shell/Update/ViewModel/UpdateViewModel.cs).
-        Update = new UpdateViewModel(backend, _session, dispatch);
+        Update = new UpdateViewModel(backend, _session, dispatch, after);
         StatusBar = new StatusBarViewModel(Update);
 
         // Over the window rather than in a destination: none of what it holds is about a stream

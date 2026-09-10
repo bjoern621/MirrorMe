@@ -23,6 +23,30 @@ public sealed class UpdateBandTests
         return updates;
     }
 
+    /// <summary>
+    /// Holds what a moment's end was handed to, so a test ends the moment rather than waiting it out.
+    /// </summary>
+    private sealed class Moments
+    {
+        private readonly List<Action> _due = [];
+
+        /// <summary>How many moments are still standing.</summary>
+        public int Standing => _due.Count;
+
+        public Action<TimeSpan, Action> After => (_, action) => _due.Add(action);
+
+        /// <summary>Ends every moment standing.</summary>
+        public void Pass()
+        {
+            var due = _due.ToArray();
+            _due.Clear();
+            foreach (var end in due)
+            {
+                end();
+            }
+        }
+    }
+
     /// <summary>Polls, the command completing off the press.</summary>
     private static async Task Eventually(Func<bool> landed)
     {
@@ -67,6 +91,76 @@ public sealed class UpdateBandTests
         Assert.False(band.OpensDialog);
         Assert.False(band.ShowsPlainLine);
         Assert.False(band.CanInstall);
+    }
+
+    /// <summary>
+    /// "Up to date" answers the press that asked and then gives the slot back,
+    /// the band's one release line standing over the running build.
+    /// </summary>
+    [Fact]
+    public void ABuildAtThePublishedReleaseSaysSoForAMoment()
+    {
+        var moments = new Moments();
+        var backend = new SeededBackend("linux")
+        {
+            Update = new UpdateState { Stage = UpdateStage.Current, Running = "0.5.0", Latest = "v0.5.0" },
+        };
+
+        var band = Flows.Updates(backend, moments.After);
+        band.Apply();
+
+        Assert.Equal(Updates.Current, band.Line);
+        Assert.Equal(1, moments.Standing);
+
+        moments.Pass();
+
+        Assert.Equal("", band.Line);
+        Assert.False(band.ShowsLine);
+        Assert.True(band.Press.CanExecute(null));
+    }
+
+    /// <summary>
+    /// A render pass reading the stage it read last leaves that moment where it is:
+    /// a band re-drawn for a figure beside the line would otherwise never stop saying it.
+    /// </summary>
+    [Fact]
+    public void ARerenderDoesNotStartTheMomentAgain()
+    {
+        var moments = new Moments();
+        var backend = new SeededBackend("linux")
+        {
+            Update = new UpdateState { Stage = UpdateStage.Current, Running = "0.5.0", Latest = "v0.5.0" },
+        };
+
+        var band = Flows.Updates(backend, moments.After);
+        band.Apply();
+        band.Apply();
+        band.Apply();
+
+        Assert.Equal(1, moments.Standing);
+    }
+
+    /// <summary>
+    /// A found release is the reader's to act on, so its line stands until the state moves off it.
+    /// </summary>
+    [Fact]
+    public void AFoundReleaseStandsPastEveryMoment()
+    {
+        var moments = new Moments();
+        var backend = new SeededBackend("linux")
+        {
+            Update = new UpdateState { Stage = UpdateStage.Available, Running = "0.4.0", Latest = "v0.5.0" },
+        };
+
+        var band = Flows.Updates(backend, moments.After);
+        band.Apply();
+
+        Assert.Equal(0, moments.Standing);
+
+        moments.Pass();
+
+        Assert.Equal(Updates.Available, band.Line);
+        Assert.True(band.OpensDialog);
     }
 
     /// <summary>

@@ -25,7 +25,7 @@ public sealed class DiscordFixAnchorTests
     {
         var session = new Session(backend, Inline);
         var form = new FormSession(backend, session, Inline);
-        var updates = new UpdateViewModel(backend, session, Inline);
+        var updates = new UpdateViewModel(backend, session, Inline, Flows.Held);
         var settings = new AppSettingsViewModel(backend, form, session, updates, Inline);
         var flow = new SetupViewModel(
             backend, form, session, Flows.Picker(backend, form, session), settings.OpenAtDiscordCommand, Inline);

@@ -20,22 +20,36 @@ namespace ScreenShare.App.Features.Shell.Update.ViewModel;
 /// </summary>
 public sealed class UpdateViewModel : Observable
 {
+    /// <summary>
+    /// How long a check that found nothing states itself, before the running build takes the slot back.
+    /// </summary>
+    private static readonly TimeSpan Settled = TimeSpan.FromSeconds(5);
+
     private readonly IBackend _backend;
     private readonly Session _session;
     private readonly Action<Action> _dispatch;
 
+    // "Up to date" answers a press and then gives the slot back to the build.
+    // The stage carrying it holds for as long as nothing else is published,
+    // so the moment is what ends the line rather than the state behind it.
+    private readonly Moment _settled;
+
     /// <param name="backend">Where the check and the install are asked for.</param>
     /// <param name="session">The one owner of what the backend last said about the release.</param>
     /// <param name="dispatch">Hands a completion back to the UI loop.</param>
-    public UpdateViewModel(IBackend backend, Session session, Action<Action> dispatch)
+    /// <param name="after">Runs something on the UI loop once a delay has passed.</param>
+    public UpdateViewModel(
+        IBackend backend, Session session, Action<Action> dispatch, Action<TimeSpan, Action> after)
     {
         Assert.NotNull(backend, "an update view asks the backend to check");
         Assert.NotNull(session, "an update view reads what the backend last said");
         Assert.NotNull(dispatch, "an update view marshals completions back to the UI loop");
+        Assert.NotNull(after, "an update view states a finished check for a moment");
 
         _backend = backend;
         _session = session;
         _dispatch = dispatch;
+        _settled = new Moment(Settled, after, Apply);
 
         // Both refuse themselves off the state rather than off a flag of their own,
         // so a control a reader sees enabled is one the backend would accept.
@@ -249,7 +263,14 @@ public sealed class UpdateViewModel : Observable
         var state = _session.Update;
         var stage = state?.Stage ?? UpdateStage.Unspecified;
 
-        Line = _refused.Length > 0 ? _refused : Updates.Line(state);
+        // A found release and a failure are the reader's to act on and stand until the state moves off them.
+        // A build at the published release is neither, so it is stated and then dropped.
+        var current = stage == UpdateStage.Current;
+        _settled.Show(current);
+
+        Line = _refused.Length > 0 ? _refused
+            : current && !_settled.Standing ? ""
+            : Updates.Line(state);
         ShowsLine = Line.Length > 0;
         IsFailure = _refused.Length > 0 || stage == UpdateStage.Failed;
         OpensDialog = !IsFailure

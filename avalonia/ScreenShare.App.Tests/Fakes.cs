@@ -610,6 +610,9 @@ internal static class Flows
     /// <summary>Inline, so a render pass is over when the call is.</summary>
     private static readonly Action<Action> Inline = action => action();
 
+    /// <summary>A moment nothing ends, so a line a test reads stands for the whole test.</summary>
+    public static readonly Action<TimeSpan, Action> Held = (_, _) => { };
+
     /// <summary>
     /// What the stream shares, drawn inside the dialog at the start press.
     /// Its region overlay answers empty, no test drawing a rectangle on a real desktop:
@@ -648,14 +651,19 @@ internal static class Flows
     /// The read is what fills the state in: a session that never started answers nothing,
     /// which is the band with no version behind it rather than the one under test.
     /// </summary>
-    public static UpdateViewModel Updates(IBackend backend)
+    public static UpdateViewModel Updates(IBackend backend) => Updates(backend, Held);
+
+    /// <param name="after">
+    /// Ends the moment a finished check stands for, which a test runs where the end is what it asserts.
+    /// </param>
+    public static UpdateViewModel Updates(IBackend backend, Action<TimeSpan, Action> after)
     {
         var session = new Session(backend, Inline);
         session.Start();
         session.Stop();
-        return new UpdateViewModel(backend, session, Inline);
+        return new UpdateViewModel(backend, session, Inline, after);
     }
 
     public static UpdateViewModel Updates(IBackend backend, Session session)
-        => new(backend, session, Inline);
+        => new(backend, session, Inline, Held);
 }

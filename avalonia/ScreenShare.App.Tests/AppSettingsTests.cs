@@ -42,7 +42,7 @@ public sealed class AppSettingsTests
         var backend = seed ?? new SeededBackend("linux");
         var session = new Session(backend, Inline);
         var form = new FormSession(backend, session, Inline);
-        var updates = new UpdateViewModel(backend, session, Inline);
+        var updates = new UpdateViewModel(backend, session, Inline, Flows.Held);
         var settings = new AppSettingsViewModel(backend, form, session, updates, Inline);
 
         // Stands in for the shell's own render pass (Features/Shell/ViewModel/ShellViewModel.cs).
