@@ -120,6 +120,14 @@ pathDefaults:
 # and a firewall is the wrong place for that decision to live.
 rtsp: yes
 rtspEncryption: strict
+# Interleaving is what carries the RTP inside the TLS connection,
+# so TCP is the one lower transport an encrypted session offers
+# and the app refuses the other on both legs
+# (backend/internal/transport, EncryptedRtspProtocol).
+# Naming udp here would also announce SRTP key management in the SDP,
+# which rtspsrc answers with a MIKEY key type gortsplib refuses,
+# ending every read at `Error (400): Bad Request`.
+rtspTransports: [tcp]
 rtspsAddress: :8322
 rtspServerCert: /var/lib/screenshare-tls/cert.pem
 rtspServerKey: /var/lib/screenshare-tls/key.pem
