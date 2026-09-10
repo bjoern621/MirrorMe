@@ -80,7 +80,13 @@
                   Command="{Binding ConfirmCommand}"
                   IsEnabled="{Binding CanConfirm}">
             <StackPanel Orientation="Horizontal" Spacing="8">
-              <ti:TablerIcon Classes="button" Icon="IconScreenShare" />
+              <!--
+                Brush read off the button rather than left at the icon default,
+                which is a light grey the near-white fill swallows and the greyed one keeps swallowing.
+              -->
+              <ti:TablerIcon Classes="button"
+                             Icon="IconScreenShare"
+                             Brush="{Binding $parent[Button].Foreground}" />
               <TextBlock Text="{x:Static model:SharePickerCopy.Confirm}" VerticalAlignment="Center" />
             </StackPanel>
           </Button>
