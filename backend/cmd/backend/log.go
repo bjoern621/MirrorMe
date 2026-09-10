@@ -13,9 +13,13 @@ import (
 
 // ownLogTag names this process's run log, beside the ones its children write:
 // backend-<stamp>.log under ffmpeg.LogDir.
-const ownLogTag = "backend"
+// applyLogTag names the update applier's, a run of this binary the backend starts on its way out.
+const (
+	ownLogTag   = "backend"
+	applyLogTag = "update-apply"
+)
 
-// openLog routes this process's log into a run log of its own.
+// openLog routes this process's log into a run log named after tag.
 //
 // The shell starts the backend with no console (BackendProcess.cs),
 // so on an install stderr alone reaches nobody.
@@ -29,8 +33,8 @@ const ownLogTag = "backend"
 //
 // Nothing here stops the backend.
 // A directory that cannot be made leaves the log on stderr, with a line saying so.
-func openLog() {
-	file, path, err := ffmpeg.OpenOwnLog(ownLogTag)
+func openLog(tag string) {
+	file, path, err := ffmpeg.OpenOwnLog(tag)
 	if err != nil {
 		logger.Warnf("logging to stderr alone: %v", err)
 		return

@@ -17,6 +17,7 @@
 package update
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -24,6 +25,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 
@@ -142,10 +144,19 @@ func New(version string, stamped Channel, exe string, announce func(State)) *Man
 	}
 
 	// A release staged by an earlier run is still staged, and a restart is still what installs it.
-	if pending, staged := ReadPending(dir); staged {
+	// One no newer than the running build is the one this run is,
+	// left by the applier that installed it,
+	// and it goes with whatever else the directory holds:
+	// a partial download, the binary that applier ran as.
+	pending, staged := ReadPending(dir)
+	if staged && release.Compare(version, pending.Tag) == release.StateBehind {
 		m.pending = pending
 		m.latest = pending.Tag
 		m.stage = StageReady
+		return m
+	}
+	if err := ClearStage(dir); err != nil {
+		logger.Warnf("cannot clear %s: %v", dir, err)
 	}
 	return m
 }
@@ -322,6 +333,11 @@ func (m *Manager) fetch(ctx context.Context, latest release.Latest) {
 // it waits for this process to exit, puts the files in place and starts the app again.
 // A copy of this binary runs it, so the tree it replaces holds nothing it is reading from.
 //
+// The shell ends this process by killing its whole process tree, applier included
+// while its parent is in that tree.
+// So the applier is started by a launcher run (Launch), and this call waits that run out:
+// once it answers, the applier's parent is gone and the kill stops short of it.
+//
 // Refused below StageReady: nothing is installed that has not been fetched and verified.
 func (m *Manager) Install() error {
 	m.mu.Lock()
@@ -338,21 +354,21 @@ func (m *Manager) Install() error {
 		return err
 	}
 
+	var said bytes.Buffer
 	command := exec.Command(applier,
-		Subcommand,
+		LaunchSubcommand,
 		StageFlag+filepath.Dir(pending.File),
 		WaitFlag+fmt.Sprint(os.Getpid()))
+	command.Stderr = &said
 	detach(command)
 
-	if err := command.Start(); err != nil {
-		m.fail(screensharev1.TextCode_TEXT_CODE_UPDATE_INSTALL_FAILED, err.Error())
-		return err
-	}
-
-	// Released rather than waited on: it goes on running after this process is gone,
-	// which is the whole reason it is a process of its own.
-	if err := command.Process.Release(); err != nil {
-		logger.Warnf("releasing the update applier: %v", err)
+	if err := command.Run(); err != nil {
+		detail := err.Error()
+		if reason := strings.TrimSpace(said.String()); reason != "" {
+			detail = reason
+		}
+		m.fail(screensharev1.TextCode_TEXT_CODE_UPDATE_INSTALL_FAILED, detail)
+		return fmt.Errorf("starting the update applier: %s", detail)
 	}
 
 	logger.Infof("release %s installs once this run exits", pending.Tag)

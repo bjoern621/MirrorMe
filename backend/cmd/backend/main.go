@@ -61,15 +61,23 @@ func main() {
 		os.Exit(runCheck())
 	}
 
+	// Starts the applier out of a run that is gone before the install call answers,
+	// which keeps the applier out of the process tree the shell kills (internal/update, Launch).
+	if len(os.Args) > 1 && os.Args[1] == update.LaunchSubcommand {
+		os.Exit(update.Launch(os.Args[2:]))
+	}
+
 	// Replaces this install with the release staged beside it, out of a copy of this binary.
 	// The run that started it is exiting, and this one waits for that before it touches a file
 	// (internal/update, the applier).
+	// A run log of its own: the one that started it is closing, and neither has a console.
 	if len(os.Args) > 1 && os.Args[1] == update.Subcommand {
+		openLog(applyLogTag)
 		os.Exit(update.Main(os.Args[2:]))
 	}
 
 	// Before anything logs: a shell starts this process with no console (log.go).
-	openLog()
+	openLog(ownLogTag)
 
 	a := app.New(version, channel)
 	a.Start()

@@ -27,7 +27,8 @@ func alive(pid int) bool {
 const detachedProcess = 0x00000008
 
 // detach frees the child from this process's console and process group,
-// so the applier survives the app it is replacing.
+// so a console closing over the app, or a break sent to its group, leaves the applier up.
+// The tree kill the shell ends the backend with is the launcher's to escape (Launch).
 func detach(cmd *exec.Cmd) {
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		HideWindow:    true,

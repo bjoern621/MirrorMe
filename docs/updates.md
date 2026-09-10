@@ -69,12 +69,19 @@ A release publishing no hash is refused: what arrived cannot be told from what w
 The applier is a copy of the backend binary, in the staging directory, so the tree it replaces holds nothing it is reading from.
 Windows refuses to replace a running executable, and a swap that deleted the running applier would be the same bug on Linux.
 
+The shell ends the backend by killing its whole process tree, and the kill reaches every process whose parent is still in that tree.
+The applier is started by a launcher run, gone before `InstallUpdate` answers, so the kill stops short of it.
+
 It waits for the backend to exit, then installs, then starts the app again.
 The setup channel runs the downloaded installer silently.
 The two archive channels extract beside the install and swap through renames, so a copy that stopped half way is not a possible outcome.
 
 The shell closes itself once the call is accepted, which is what lets the wait finish.
 A wait that runs out leaves the running install untouched and the release still staged.
+
+What the applier did is in `update-apply-<stamp>.log`, beside the backend's own run log.
+Its binary stays in the staging directory, Windows keeping a running one.
+The next start sweeps it, along with any staged release no newer than the one running.
 
 ## Where the pieces are
 

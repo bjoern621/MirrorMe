@@ -101,11 +101,16 @@ func WritePending(dir string, pending Pending) error {
 	return os.WriteFile(filepath.Join(dir, pendingFileName), raw, 0o600)
 }
 
-// ClearStage empties the staging directory, keeping the directory itself.
+// ClearStage empties the staging directory, keeping the directory itself
+// and the binary this process runs as.
 //
-// Run before a download and after an install:
+// Run before a download, after an install, and on a start that finds nothing worth keeping:
 // the first stops two releases sharing the directory,
-// and the second stops the next run installing the one it is already running.
+// the second stops the next run installing the one it is already running,
+// and the third reclaims what either left.
+// The running binary is the applier clearing what it worked from,
+// which Windows keeps until it exits and the next start sweeps.
+// An entry that will not go is reported once the rest have gone, so one leftover holds no other.
 func ClearStage(dir string) error {
 	assert.Assert(dir != "", "a staging directory is cleared by path")
 
@@ -113,10 +118,23 @@ func ClearStage(dir string) error {
 	if err != nil {
 		return err
 	}
+
+	var self os.FileInfo
+	if exe, err := os.Executable(); err == nil {
+		self, _ = os.Stat(exe)
+	}
+
+	var failed error
 	for _, e := range entries {
-		if err := os.RemoveAll(filepath.Join(dir, e.Name())); err != nil {
-			return err
+		path := filepath.Join(dir, e.Name())
+		if self != nil {
+			if info, err := os.Stat(path); err == nil && os.SameFile(info, self) {
+				continue
+			}
+		}
+		if err := os.RemoveAll(path); err != nil && failed == nil {
+			failed = err
 		}
 	}
-	return nil
+	return failed
 }
