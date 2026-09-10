@@ -80,6 +80,11 @@ public sealed class ShareQuestionViewModel : Observable
             session, _previews, drawRegion, dispatch,
             region => _form.Write(ShareLayout.RegionKey, new FieldValue { Text = region }));
 
+        // Which screens the backend is reading is session state, and it moves with no draft behind it:
+        // the ask goes out on the pass that puts the question up, and the answer lands a round trip later.
+        // A question rendered on the draft alone sits on "Opening." until a keystroke moves one.
+        _session.Changed += Apply;
+
         Windows.Changed += Apply;
         _form.Changed += Apply;
 

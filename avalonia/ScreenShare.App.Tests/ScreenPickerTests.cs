@@ -227,6 +227,32 @@ public sealed class ScreenPickerTests
         Assert.Equal(before, picker.Question.Screens.Screens.Select(screen => screen.Tile));
     }
 
+    /// <summary>
+    /// A read that lands after the dialog is up.
+    /// The ask goes out on the pass that opens the dialog, and the backend reporting the screen read
+    /// is news no form resolve carries, so the grid draws its pictures only if the session's own change
+    /// reaches the question.
+    /// </summary>
+    [Fact]
+    public void AScreenTheBackendStartsReadingWhileTheDialogStandsGetsItsTile()
+    {
+        var backend = new SeededBackend("linux") { AsksWhatToShare = true };
+        var session = new Session(backend, action => action());
+        Load(session);
+
+        var picker = Flows.Picker(backend, session);
+        picker.AskAsync();
+        picker.Question.SetShowing(true);
+
+        // Asked for on the opening pass, and nothing has reported them read yet.
+        Assert.Equal([0, 1], backend.Previewed);
+        Assert.All(picker.Question.Screens.Screens, screen => Assert.Null(screen.Tile));
+
+        Load(session);
+
+        Assert.All(picker.Question.Screens.Screens, screen => Assert.NotNull(screen.Tile));
+    }
+
     /// <summary>The one dark state a picture is still coming in, which is what the wait beside the sentence says.</summary>
     [Fact]
     public void AScreenWaitingOnItsFirstPictureCarriesTheWait()
