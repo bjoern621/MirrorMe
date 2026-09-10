@@ -155,8 +155,9 @@ const EncryptedRtspProtocol = "tcp"
 // a value outside it fails inside the publish process, where the reason reaches the user as another
 // program's error text.
 //
-// UDP is refused on every relay, each of them serving RTSPS alone (deploy/mediamtx-groups.yml), and
-// refused rather than corrected: silently interleaving a session the user asked to carry over UDP
+// UDP is refused on every relay, each of them serving RTSPS and offering the interleaved transport
+// alone (deploy/mediamtx-groups.yml, rtspTransports).
+// Refused rather than corrected: silently interleaving a session the user asked to carry over UDP
 // answers a question they did not ask, and the control that says "udp" would go on saying it while
 // the stream did something else.
 func (RTSP) ValidatePublishSettings(s settings.Settings) error {
@@ -165,8 +166,8 @@ func (RTSP) ValidatePublishSettings(s settings.Settings) error {
 			s.Publish.RtspPublishProtocol, strings.Join(RtspProtocols, ", "))
 	}
 	if s.Publish.RtspPublishProtocol != EncryptedRtspProtocol {
-		return fmt.Errorf("an encrypted relay carries RTP inside the RTSP connection, so the lower transport is %s and not %q",
-			EncryptedRtspProtocol, s.Publish.RtspPublishProtocol)
+		return fmt.Errorf("cannot publish over %q: an encrypted relay carries RTP inside the RTSP connection, so the publish leg runs over %s",
+			s.Publish.RtspPublishProtocol, EncryptedRtspProtocol)
 	}
 	return nil
 }
@@ -181,10 +182,8 @@ var rtspWatchKnobs = []watchKnob{
 		minWatchLatencyMs,
 		func(s *settings.Settings) *int { return &s.Viewer.RtspWatchLatencyMs }),
 	choiceKnob(rtspWatchProtocolKey, "RTSP transport",
-		"How RTP reaches the viewer inside the RTSP session. UDP takes a port pair per track and trades retransmission for delay, "+
-			"but the media travels toward the viewer on it, so nothing arrives until the viewer's own probe packets have opened "+
-			"the mapping through its NAT and the relay answers where they came from. "+
-			"TCP interleaves both tracks on the RTSP connection, which needs no second port and is what a filtering network is likeliest to pass.",
+		"How RTP reaches the viewer inside the RTSP session. An encrypted session interleaves both tracks "+
+			"on the RTSP connection, which needs no second port and passes a filtering network.",
 		RtspProtocols,
 		func(s *settings.Settings) *string { return &s.Viewer.RtspWatchProtocol }),
 }
@@ -199,8 +198,8 @@ func (t RTSP) SetWatchOption(s *settings.Settings, key, value string) error {
 	// interleaving a session the reader asked to carry over UDP answers a question nobody asked, and
 	// the control would go on reading "udp" while the stream did something else.
 	if key == rtspWatchProtocolKey && value != EncryptedRtspProtocol {
-		return fmt.Errorf("%s: an encrypted relay carries RTP inside the RTSP connection, so the watch transport is %s and not %q",
-			rtspWatchProtocolKey, EncryptedRtspProtocol, value)
+		return fmt.Errorf("cannot set %s to %q: an encrypted relay carries RTP inside the RTSP connection, so the watch leg runs over %s",
+			rtspWatchProtocolKey, value, EncryptedRtspProtocol)
 	}
 	return knobSet(t.Name(), rtspWatchKnobs, s, key, value)
 }
