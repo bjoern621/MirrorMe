@@ -28,6 +28,10 @@ namespace ScreenShare.App.Features.Setup.ScreenPicker.Model;
 /// so a tile built ahead of the preview stays dark for as long as the step is open.
 /// </param>
 /// <param name="Placeholder">Why there is no picture. Empty while there is one.</param>
+/// <param name="IsOpening">
+/// Whether that picture is still on its way, which is the one dark state a wait stands in.
+/// False on a refusal, where the sentence beside it is the whole news.
+/// </param>
 /// <param name="Select">Picks this screen.</param>
 public sealed record ScreenChoice(
     int Monitor,
@@ -37,6 +41,7 @@ public sealed record ScreenChoice(
     string Reason,
     TileViewModel? Tile,
     string Placeholder,
+    bool IsOpening,
     DelegateCommand Select)
 {
     public bool HasReason => Reason.Length > 0;

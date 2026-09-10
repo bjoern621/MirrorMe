@@ -1,5 +1,6 @@
 using ScreenShare.Api.V1;
 using ScreenShare.App.Backend;
+using ScreenShare.App.Copy;
 using ScreenShare.App.Features.Setup.Model;
 using ScreenShare.App.Features.Setup.SharePicker.ViewModel;
 using ScreenShare.App.Features.Setup.ViewModel;
@@ -224,6 +225,42 @@ public sealed class ScreenPickerTests
         picker.Question.Apply();
 
         Assert.Equal(before, picker.Question.Screens.Screens.Select(screen => screen.Tile));
+    }
+
+    /// <summary>The one dark state a picture is still coming in, which is what the wait beside the sentence says.</summary>
+    [Fact]
+    public void AScreenWaitingOnItsFirstPictureCarriesTheWait()
+    {
+        var picker = Asked(new SeededBackend("linux") { AsksWhatToShare = true });
+
+        Assert.All(
+            picker.Question.Screens.Screens,
+            screen =>
+            {
+                Assert.Equal(Cards.ScreenOpening, screen.Placeholder);
+                Assert.True(screen.IsOpening);
+            });
+    }
+
+    /// <summary>A refused screen is on its way nowhere, so the reason stands with no wait beside it.</summary>
+    [Fact]
+    public void ARefusedScreenCarriesTheReasonAndNoWait()
+    {
+        var backend = new SeededBackend("linux")
+        {
+            AsksWhatToShare = true,
+            MonitorPreviewRefusal = "no portal answered",
+        };
+
+        var picker = Asked(backend);
+
+        Assert.All(
+            picker.Question.Screens.Screens,
+            screen =>
+            {
+                Assert.Equal("no portal answered", screen.Placeholder);
+                Assert.False(screen.IsOpening);
+            });
     }
 
     /// <summary>Fixture already reading these screens, which is what puts a tile on a row.</summary>

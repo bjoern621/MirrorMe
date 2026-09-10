@@ -855,6 +855,9 @@ internal sealed class SeededBackend : IBackend
     /// </summary>
     public List<int> PreviewStarts { get; } = [];
 
+    /// <summary>Why every screen read is refused. Empty where the fixture lets them through.</summary>
+    public string MonitorPreviewRefusal { get; set; } = "";
+
     /// <summary>
     /// Opens one screen's preview.
     /// A screen already being read succeeds without opening a second, the idempotence the contract states
@@ -863,6 +866,11 @@ internal sealed class SeededBackend : IBackend
     public Task StartMonitorPreviewAsync(int monitor, CancellationToken cancellation = default)
     {
         PreviewStarts.Add(monitor);
+        if (MonitorPreviewRefusal.Length > 0)
+        {
+            throw new BackendUnavailableException(MonitorPreviewRefusal);
+        }
+
         if (!Previewed.Contains(monitor))
         {
             Previewed.Add(monitor);

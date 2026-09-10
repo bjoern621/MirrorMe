@@ -43,21 +43,43 @@
                       Once there is one, the tile's own three take over:
                       read with no picture yet, the reading ended, or this window could not draw what it was handed.
                     -->
-                    <SelectableTextBlock Classes="hint"
-                                         Text="{Binding Placeholder}"
-                                         IsVisible="{Binding HasPlaceholder}"
-                                         TextAlignment="Center"
-                                         HorizontalAlignment="Center"
-                                         VerticalAlignment="Center"
-                                         Margin="12" />
+                    <StackPanel IsVisible="{Binding HasPlaceholder}"
+                                Spacing="{StaticResource GapTight}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Margin="12">
 
-                    <SelectableTextBlock Classes="hint"
-                                         Text="{Binding Tile.Notice}"
-                                         IsVisible="{Binding Tile.HasNotice, FallbackValue=False}"
-                                         TextAlignment="Center"
-                                         HorizontalAlignment="Center"
-                                         VerticalAlignment="Center"
-                                         Margin="12" />
+                      <!--
+                        Drawn on the opening state alone, a refusal being a picture on its way nowhere.
+                        In the sentence's own grey: a hue over a picture stands against an unknown background
+                        (docs/design-language.md, "Video surfaces").
+                      -->
+                      <controls:Waiting Foreground="{StaticResource MutedBrush}"
+                                        HorizontalAlignment="Center"
+                                        IsVisible="{Binding IsOpening}" />
+
+                      <SelectableTextBlock Classes="hint"
+                                           Text="{Binding Placeholder}"
+                                           TextAlignment="Center"
+                                           HorizontalAlignment="Center" />
+                    </StackPanel>
+
+                    <StackPanel IsVisible="{Binding Tile.HasNotice, FallbackValue=False}"
+                                Spacing="{StaticResource GapTight}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Margin="12">
+
+                      <!-- Carries the wait on from the opening sentence, the two being one span to a reader. -->
+                      <controls:Waiting Foreground="{StaticResource MutedBrush}"
+                                        HorizontalAlignment="Center"
+                                        IsVisible="{Binding Tile.IsConnecting, FallbackValue=False}" />
+
+                      <SelectableTextBlock Classes="hint"
+                                           Text="{Binding Tile.Notice}"
+                                           TextAlignment="Center"
+                                           HorizontalAlignment="Center" />
+                    </StackPanel>
                   </Panel>
                 </Border>
 

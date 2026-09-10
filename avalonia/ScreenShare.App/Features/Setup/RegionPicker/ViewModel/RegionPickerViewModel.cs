@@ -3,6 +3,7 @@ using ScreenShare.App.Backend;
 using ScreenShare.App.Contracts;
 using ScreenShare.App.Features.Fields.ViewModel;
 using ScreenShare.App.Features.Setup.RegionPicker.Model;
+using ScreenShare.App.Features.Setup.ShareQuestion.Model;
 using ScreenShare.App.Features.Setup.ShareQuestion.ViewModel;
 using ScreenShare.App.Features.Viewer.Tile.Model;
 using ScreenShare.App.Features.Viewer.Tile.ViewModel;
@@ -78,6 +79,7 @@ public sealed class RegionPickerViewModel : Observable
     private bool _hasPreview;
     private TileViewModel? _tile;
     private string _placeholder = "";
+    private bool _isOpening;
     private string _notice = "";
     private int _sourceWidth;
     private int _sourceHeight;
@@ -125,6 +127,12 @@ public sealed class RegionPickerViewModel : Observable
     public string Placeholder { get => _placeholder; private set => Set(ref _placeholder, value); }
 
     public bool HasPlaceholder => Placeholder.Length > 0;
+
+    /// <summary>
+    /// Whether that picture is still on its way, which is the one dark state a wait stands in.
+    /// False on a refusal, where the sentence beside it is the whole news.
+    /// </summary>
+    public bool IsOpening { get => _isOpening; private set => Set(ref _isOpening, value); }
 
     /// <summary>The previewed screen's size, which the picture in the box covers exactly.</summary>
     public int SourceWidth { get => _sourceWidth; private set => Set(ref _sourceWidth, value); }
@@ -183,7 +191,7 @@ public sealed class RegionPickerViewModel : Observable
             Wanted = [];
             HasPreview = false;
             Tile = null;
-            Placeholder = "";
+            Show(PreviewPlaceholder.None);
             Notice = HasRegion && screen is null ? RegionCopy.NoScreen : "";
             return;
         }
@@ -204,7 +212,14 @@ public sealed class RegionPickerViewModel : Observable
         tile?.Apply(TilePipeline.Of(_previews.Previewed(screen.Index)), sample: null);
 
         Tile = tile;
-        Placeholder = tile is null ? _previews.PlaceholderFor(screen.Index) : "";
+        Show(tile is null ? _previews.PlaceholderFor(screen.Index) : PreviewPlaceholder.None);
+    }
+
+    /// <summary>Writes both halves of an empty box's news, so neither can be left over from the last pass.</summary>
+    private void Show(PreviewPlaceholder placeholder)
+    {
+        Placeholder = placeholder.Text;
+        IsOpening = placeholder.Opening;
     }
 
     /// <summary>

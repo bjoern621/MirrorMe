@@ -2,6 +2,7 @@ using ScreenShare.Api.V1;
 using ScreenShare.App.Backend;
 using ScreenShare.App.Contracts;
 using ScreenShare.App.Copy;
+using ScreenShare.App.Features.Setup.ShareQuestion.Model;
 using ScreenShare.App.Features.Viewer.Tile.Model;
 using ScreenShare.App.Features.Viewer.Tile.ViewModel;
 
@@ -145,8 +146,10 @@ public sealed class MonitorPreviews
     /// or wanted and not up yet.
     /// Asked by the chooser drawing that screen, so a screen nothing wants reaches neither branch.
     /// </summary>
-    public string PlaceholderFor(int monitor)
-        => _refused.TryGetValue(monitor, out var refusal) ? refusal : Cards.ScreenOpening;
+    public PreviewPlaceholder PlaceholderFor(int monitor)
+        => _refused.TryGetValue(monitor, out var refusal)
+            ? new PreviewPlaceholder(refusal, Opening: false)
+            : new PreviewPlaceholder(Cards.ScreenOpening, Opening: true);
 
     /// <summary>What the backend reports about one screen's preview. Null while that screen is not being read.</summary>
     public PreviewedMonitor? Previewed(int monitor)

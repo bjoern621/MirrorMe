@@ -4,6 +4,7 @@ using ScreenShare.App.Backend;
 using ScreenShare.App.Contracts;
 using ScreenShare.App.Copy;
 using ScreenShare.App.Features.Setup.ScreenPicker.Model;
+using ScreenShare.App.Features.Setup.ShareQuestion.Model;
 using ScreenShare.App.Features.Setup.ShareQuestion.ViewModel;
 using ScreenShare.App.Features.Viewer.Tile.Model;
 using ScreenShare.App.Mvvm;
@@ -138,6 +139,8 @@ public sealed class ScreenPickerViewModel : Observable
             // (Features/Viewer/Tile/Model/TileStats.cs).
             tile?.Apply(TilePipeline.Of(_previews.Previewed(monitor.Index)), sample: null);
 
+            var placeholder = tile is null ? _previews.PlaceholderFor(monitor.Index) : PreviewPlaceholder.None;
+
             var option = OptionOf(monitor.Index);
             rows.Add(new ScreenChoice(
                 monitor.Index,
@@ -150,7 +153,8 @@ public sealed class ScreenPickerViewModel : Observable
                 IsEnabled: option?.Enabled ?? false,
                 Reason: Statements.Of(option?.Reason),
                 tile,
-                Placeholder: tile is null ? _previews.PlaceholderFor(monitor.Index) : "",
+                placeholder.Text,
+                placeholder.Opening,
                 SelectCommandOf(monitor.Index)));
         }
 
