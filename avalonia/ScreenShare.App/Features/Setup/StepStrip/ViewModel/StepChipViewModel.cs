@@ -5,17 +5,12 @@ using ScreenShare.App.Mvvm;
 
 namespace ScreenShare.App.Features.Setup.StepStrip.ViewModel;
 
-/// <summary>
-/// How far the flow has got past one chip.
-/// A walked flag would collapse the terminal step into an upcoming one, and the strip draws that step open-ended
-/// so it does not read as another form.
-/// </summary>
+/// <summary>How far the flow has got past one chip.</summary>
 public enum StepChipState
 {
     Done,
     Current,
     Upcoming,
-    Terminal,
 }
 
 /// <summary>
@@ -26,7 +21,7 @@ public enum StepChipState
 /// </summary>
 public sealed record StepChipViewModel
 {
-    /// <summary>Which form group the step draws, or the terminal step's key, that one drawing none.</summary>
+    /// <summary>Which form group the step draws.</summary>
     public required string Key { get; init; }
 
     public required StepChipState State { get; init; }
@@ -55,7 +50,7 @@ public sealed record StepChipViewModel
     public required DelegateCommand Select { get; init; }
 
     /// <summary>
-    /// Whether a blocking line names this step, the terminal chip carrying every one of them.
+    /// Whether a blocking line names this step.
     /// The strip is on every step, so a fault a reader is standing away from is still visible.
     /// </summary>
     public required bool IsBlocked { get; init; }
@@ -63,8 +58,6 @@ public sealed record StepChipViewModel
     public bool IsDone => State == StepChipState.Done;
 
     public bool IsCurrent => State == StepChipState.Current;
-
-    public bool IsTerminal => State == StepChipState.Terminal;
 
     /// <summary>Blocked wins the badge: the number and the tick both say the flow got past this step.</summary>
     public bool ShowsNumber => !IsDone && !IsBlocked;
@@ -105,16 +98,14 @@ public static class StepChips
             chips.Add(new StepChipViewModel
             {
                 Key = row.Key,
-                State = StateOf(row, i, currentIndex),
+                State = StateOf(i, currentIndex),
                 Badge = row.Number.ToString(CultureInfo.InvariantCulture),
                 Label = row.Label,
                 Value = valueOf(row),
                 HasConnector = i > 0,
                 IsConnectorLit = i <= currentIndex + 1,
                 Select = commandOf(row.Key),
-                // The commit stands on the terminal step, so every blocking line is against it,
-                // the ones about the settings as a whole included.
-                IsBlocked = row.IsTerminal ? blocked.Count > 0 : blocked.Contains(row.Key),
+                IsBlocked = blocked.Contains(row.Key),
             });
         }
 
@@ -125,11 +116,7 @@ public static class StepChips
         return chips;
     }
 
-    /// <summary>
-    /// Current wins over terminal: the last step reads open-ended only until the reader stands on it,
-    /// a lit chip that also looked unreachable reading as a dead end.
-    /// </summary>
-    private static StepChipState StateOf(SetupStepRow row, int index, int currentIndex)
+    private static StepChipState StateOf(int index, int currentIndex)
     {
         if (index == currentIndex)
         {
@@ -141,6 +128,6 @@ public static class StepChips
             return StepChipState.Done;
         }
 
-        return row.IsTerminal ? StepChipState.Terminal : StepChipState.Upcoming;
+        return StepChipState.Upcoming;
     }
 }

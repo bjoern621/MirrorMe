@@ -1,12 +1,12 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="using:ScreenShare.App.Controls"
-             xmlns:vm="using:ScreenShare.App.Features.Setup.ReviewStep.ViewModel"
-             x:Class="ScreenShare.App.Features.Setup.ReviewStep.View.CommitCardView"
-             x:DataType="vm:ReviewStepViewModel">
+             xmlns:vm="using:ScreenShare.App.Features.Setup.Commit.ViewModel"
+             x:Class="ScreenShare.App.Features.Setup.Commit.View.CommitCardView"
+             x:DataType="vm:CommitViewModel">
 
   <!--
-    The commit, at the foot of the rail on the terminal step, where every other step's Back and Continue sit
+    The commit, at the foot of the rail on the last step, where every other step's Continue sits
     (Setup/View/SetupView.axaml).
   -->
 

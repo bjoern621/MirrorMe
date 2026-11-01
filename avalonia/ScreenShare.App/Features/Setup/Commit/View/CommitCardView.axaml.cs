@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace ScreenShare.App.Features.Setup.ReviewStep.View;
+namespace ScreenShare.App.Features.Setup.Commit.View;
 
 /// <summary>
 /// Markup only.

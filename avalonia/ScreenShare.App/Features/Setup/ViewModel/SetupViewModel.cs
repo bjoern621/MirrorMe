@@ -11,7 +11,7 @@ using ScreenShare.App.Features.Setup.Model;
 using ScreenShare.App.Features.Setup.SharePicker.ViewModel;
 using ScreenShare.App.Features.Setup.Presets.ViewModel;
 using ScreenShare.App.Features.Setup.QualityStep.ViewModel;
-using ScreenShare.App.Features.Setup.ReviewStep.ViewModel;
+using ScreenShare.App.Features.Setup.Commit.ViewModel;
 using ScreenShare.App.Features.Setup.RelayCheck.ViewModel;
 using ScreenShare.App.Features.Setup.StepStrip.ViewModel;
 using ScreenShare.App.Features.Shell.Model;
@@ -71,9 +71,6 @@ public sealed class SetupViewModel : Observable
         /// so copy naming a control is written once rather than once per entry.
         /// </summary>
         Audio,
-
-        /// <summary>Terminal step: what blocks the publish, rather than a setting to edit.</summary>
-        Review,
     }
 
     private readonly IBackend _backend;
@@ -152,7 +149,7 @@ public sealed class SetupViewModel : Observable
     /// or a second restart of one, while the backend is still deciding about the first.
     /// The spinner draws from the same field, so the lock and the wait cannot disagree.
     /// </summary>
-    private bool Starting => Review.StartSharingCommand.IsRunning;
+    private bool Starting => Commit.StartSharingCommand.IsRunning;
 
     /// <summary>
     /// Why the backend refused the last commit, empty otherwise.
@@ -284,13 +281,13 @@ public sealed class SetupViewModel : Observable
             "Show the cost and the checks",
             "Hide the cost and the checks");
 
-        Review = new ReviewStepViewModel(SelectCommandOf, Back, StartSharingAsync, dispatch);
+        Commit = new CommitViewModel(Back, StartSharingAsync, dispatch);
 
         // Both edges of an effect this flow renders: a start locks the commit
         // and a measurement greys the button that asked for it,
         // and neither is a state anything else here would notice moving.
         // The commands own the fact and say when it moved, and what it looks like is still one pass.
-        Review.StartSharingCommand.Changed += Apply;
+        Commit.StartSharingCommand.Changed += Apply;
         _measure.Changed += Apply;
 
         // Rendered before anything is asked for, so the window has a complete view model to paint whether
@@ -336,7 +333,7 @@ public sealed class SetupViewModel : Observable
     private bool _showsFields;
     private bool _showsQuality;
     private bool _showsAudio;
-    private bool _showsReview;
+    private bool _showsCommit;
     private bool _canGoBack;
     private bool _canContinue;
     private bool _isPublishable;
@@ -375,7 +372,7 @@ public sealed class SetupViewModel : Observable
     /// </summary>
     public SideColumnViewModel RailColumn { get; }
 
-    public ReviewStepViewModel Review { get; }
+    public CommitViewModel Commit { get; }
 
     public ObservableCollection<StepChipViewModel> Steps { get; }
 
@@ -410,11 +407,8 @@ public sealed class SetupViewModel : Observable
 
     public bool ShowsAudio { get => _showsAudio; private set => Set(ref _showsAudio, value); }
 
-    /// <summary>
-    /// Terminal step, drawing its read-back in the step column and its commit at the foot of the rail,
-    /// where the other steps' Back and Continue sit.
-    /// </summary>
-    public bool ShowsReview { get => _showsReview; private set => Set(ref _showsReview, value); }
+    /// <summary>Last step, whose foot carries the commit where every other step's Continue sits.</summary>
+    public bool ShowsCommit { get => _showsCommit; private set => Set(ref _showsCommit, value); }
 
     public bool CanGoBack { get => _canGoBack; private set => Set(ref _canGoBack, value); }
 
@@ -508,8 +502,6 @@ public sealed class SetupViewModel : Observable
         _steps = SetupSteps.For(drawn);
         var current = Standing(_steps);
 
-        // The rail before the strip: the terminal chip repeats the rail's summary,
-        // so that summary has to be of the list the rail is about to draw rather than the one it drew last pass.
         var checks = PreflightChecks.Of(diagnostics, AnchorIn(_steps, form));
         Rail.Apply(
             form?.Summary?.Estimate,
@@ -532,7 +524,7 @@ public sealed class SetupViewModel : Observable
         var gate = PublishGate.Of(
             IsPublishable, form?.InForce ?? false, _form.Unavailable, _session.Publish, _session.Relay, Starting,
             _picker.Asks);
-        Review.Apply(gate, _form.Draft?.StreamName ?? "", _refusal, Summaries(drawn, form));
+        Commit.Apply(gate, _form.Draft?.StreamName ?? "", _refusal);
 
         // Rendered rather than fed: the card draws from the draft and the store, neither of which this flow holds,
         // and both have moved by the time this pass runs.
@@ -545,7 +537,6 @@ public sealed class SetupViewModel : Observable
         ShowsFields = content == StepContent.Fields;
         ShowsQuality = content == StepContent.Quality;
         ShowsAudio = content == StepContent.Audio;
-        ShowsReview = content == StepContent.Review;
         CurrentGroup = ShowsFields && current.Length > 0 ? Group(current) : null;
 
         // The relay check, on the step holding the relay's own settings.
@@ -571,6 +562,7 @@ public sealed class SetupViewModel : Observable
 
         var next = SetupSteps.After(_steps, current);
         CanContinue = next is not null;
+        ShowsCommit = next is null && _steps.Count > 0;
         ContinueLabel = next is null ? "" : $"Continue to {next.Label}";
         CanGoBack = SetupSteps.Before(_steps, current) is not null;
         BackCommand.Refresh();
@@ -579,14 +571,13 @@ public sealed class SetupViewModel : Observable
         _measure.Refresh();
         _createGroup.Refresh();
 
-        var forms = (ShowsFields ? 1 : 0) + (ShowsQuality ? 1 : 0)
-            + (ShowsAudio ? 1 : 0) + (ShowsReview ? 1 : 0);
+        var forms = (ShowsFields ? 1 : 0) + (ShowsQuality ? 1 : 0) + (ShowsAudio ? 1 : 0);
 
         Assert.That(Steps.Count == _steps.Count, "a chip per step", Steps.Count, _steps.Count);
         Assert.That(
             forms == 1,
             "the main column draws exactly one step form",
-            ShowsFields, ShowsQuality, ShowsAudio, ShowsReview);
+            ShowsFields, ShowsQuality, ShowsAudio);
         Assert.That(
             !ShowsFields || CurrentGroup is not null || _steps.Count == 0,
             "a fields step on a resolved form has a group to draw", current);
@@ -596,12 +587,12 @@ public sealed class SetupViewModel : Observable
             form is not null || _groups.Values.All(group => !group.IsResolved),
             "a flow with no form draws no group", _groups.Count);
         Assert.That(
-            _steps.All(step => step.IsTerminal || GroupPlacement.InSetup(step.Key)),
+            _steps.All(step => GroupPlacement.InSetup(step.Key)),
             "every step draws a group this screen places", _steps.Count);
         Assert.That(
-            !Review.CanStartSharing || IsPublishable || _picker.Asks,
+            !Commit.CanStartSharing || IsPublishable || _picker.Asks,
             "the commit is offered on settings that publish, or on a press that asks first", IsPublishable);
-        Assert.That(!Review.CanStartSharing || !Starting, "one start is asked for at a time", Starting);
+        Assert.That(!Commit.CanStartSharing || !Starting, "one start is asked for at a time", Starting);
     }
 
     /// <summary>
@@ -879,22 +870,6 @@ public sealed class SetupViewModel : Observable
     }
 
     /// <summary>
-    /// Each group's key, heading and shorthand, what the review reads back.
-    /// Empty before the first form, so the review draws no tiles rather than invented ones,
-    /// and it lists the groups this screen draws so the review and the strip name the same steps.
-    /// </summary>
-    private IReadOnlyList<(string Key, string Title, string Summary)> Summaries(
-        IReadOnlyList<FieldGroup> groups, Form? form)
-        => form is null
-            ? []
-            : groups
-                .Select(group => (
-                    group.Key,
-                    Title: Copy.Fields.Group(group.Key).Title,
-                    Summary: _session.Words.Shorthand(group, form.Settings)))
-                .ToList();
-
-    /// <summary>
     /// Anchors one diagnostic on the screen fixing it.
     /// The one thing this flow uses the field-to-group arrangement for,
     /// and it is placement: the contract says which control a diagnostic is about,
@@ -941,17 +916,13 @@ public sealed class SetupViewModel : Observable
         _ => null,
     };
 
-    /// <summary>
-    /// What a chip says its step settled on.
-    /// A form-driven step repeats its group's own summary, the terminal step the rail's count of what is still owed.
-    /// </summary>
-    private string ValueOf(SetupStepRow row) => row.IsTerminal ? Rail.ChecksSummary : Group(row.Key).Summary;
+    /// <summary>What a chip says its step settled on: its group's own summary.</summary>
+    private string ValueOf(SetupStepRow row) => Group(row.Key).Summary;
 
     private static StepContent ContentOf(string key) => key switch
     {
         QualityLayout.GroupKey => StepContent.Quality,
         AudioLayout.GroupKey => StepContent.Audio,
-        SetupSteps.SummaryKey => StepContent.Review,
         _ => StepContent.Fields,
     };
 

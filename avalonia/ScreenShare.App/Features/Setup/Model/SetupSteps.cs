@@ -6,19 +6,13 @@ namespace ScreenShare.App.Features.Setup.Model;
 /// <summary>One step: the form group it draws, its place in the strip, and what the chip calls it.</summary>
 public sealed record SetupStepRow
 {
-    /// <summary>
-    /// Resolved form's group this step draws, or <see cref="SetupSteps.SummaryKey"/> on the terminal step,
-    /// which draws none.
-    /// </summary>
+    /// <summary>Resolved form's group this step draws.</summary>
     public required string Key { get; init; }
 
     /// <summary>Place in the strip, 1-based. Also the glyph an unwalked chip's badge wears.</summary>
     public required int Number { get; init; }
 
     public required string Label { get; init; }
-
-    /// <summary>The terminal step owns no setting and only asks whether anything blocks the publish.</summary>
-    public bool IsTerminal => Key == SetupSteps.SummaryKey;
 }
 
 /// <summary>
@@ -31,38 +25,22 @@ public sealed record SetupStepRow
 ///
 /// What the shell owns is placement: the order is the form's, one group is drawn by a layout of its own
 /// (<see cref="QualityLayout"/>), one by another destination entirely (<see cref="Fields.Model.GroupPlacement"/>,
-/// applied by the caller), and the terminal step is appended, committing not being a group of settings.
+/// applied by the caller).
+/// The last step carries the commit at its foot (<c>Setup/View/SetupView.axaml</c>), so no step of its own holds it.
 /// </summary>
 public static class SetupSteps
 {
     /// <summary>
-    /// Terminal step's key, not a group key and never colliding with one.
-    /// <see cref="For"/> asserts it:
-    /// a backend growing a group under this name would otherwise produce two steps claiming one identity.
-    /// </summary>
-    public const string SummaryKey = "summary";
-
-    public const string SummaryLabel = "Summary";
-
-    /// <summary>
-    /// Steps for one resolved form: a step per group in the form's order, then the terminal one.
+    /// Steps for one resolved form: a step per group in the form's order.
     /// Empty for a form that has not arrived.
-    /// A strip naming steps nothing has described would be the shell asserting a shape it was not told,
-    /// and the sentence saying why there is no form is already above the column.
     /// </summary>
     public static IReadOnlyList<SetupStepRow> For(IReadOnlyList<FieldGroup> groups)
     {
         Assert.NotNull(groups, "building the strip needs the groups the form carried");
 
-        if (groups.Count == 0)
-        {
-            return [];
-        }
-
-        var rows = new List<SetupStepRow>(groups.Count + 1);
+        var rows = new List<SetupStepRow>(groups.Count);
         foreach (var group in groups)
         {
-            Assert.That(group.Key != SummaryKey, "no form group claims the terminal step's key", SummaryKey);
             rows.Add(new SetupStepRow
             {
                 Key = group.Key,
@@ -73,9 +51,7 @@ public static class SetupSteps
             });
         }
 
-        rows.Add(new SetupStepRow { Key = SummaryKey, Number = rows.Count + 1, Label = SummaryLabel });
-
-        Assert.That(rows.Count == groups.Count + 1, "a step per group, and one to commit", rows.Count, groups.Count);
+        Assert.That(rows.Count == groups.Count, "a step per group", rows.Count, groups.Count);
         return rows;
     }
 
@@ -113,7 +89,7 @@ public static class SetupSteps
         return -1;
     }
 
-    /// <summary>Step after this one, null on the terminal step and on a key the form dropped.</summary>
+    /// <summary>Step after this one, null on the last step and on a key the form dropped.</summary>
     public static SetupStepRow? After(IReadOnlyList<SetupStepRow> steps, string key)
     {
         var index = IndexOf(steps, key);

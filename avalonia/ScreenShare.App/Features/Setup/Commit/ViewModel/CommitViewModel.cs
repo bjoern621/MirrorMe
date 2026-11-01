@@ -1,23 +1,18 @@
-using System.Collections.ObjectModel;
 using ScreenShare.App.Contracts;
 using ScreenShare.App.Features.Setup.Model;
 using ScreenShare.App.Mvvm;
 using TablerIcons;
 
-namespace ScreenShare.App.Features.Setup.ReviewStep.ViewModel;
+namespace ScreenShare.App.Features.Setup.Commit.ViewModel;
 
 /// <summary>
-/// Last step: everything resolved, read back in one place, and the one control that changes the world.
-///
-/// The tiles draw in the step column and the commit at the foot of the rail, where every other step's Back
-/// and Continue sit (<c>Setup/View/SetupView.axaml</c>).
-/// The saved ways of publishing draw under the tiles, in that same column
-/// (<c>Setup/Presets/ViewModel/PresetsViewModel.cs</c>).
+/// The one control that changes the world, drawn at the foot of the rail on the last step,
+/// where every other step's Continue sits (<c>Setup/View/SetupView.axaml</c>).
 /// What the settings owe is the rail's, on every step alike
 /// (<c>Setup/CostRail/ViewModel/CostRailViewModel.cs</c>).
 ///
 /// Outputs are written by <see cref="Apply"/> alone, each coming off a state some other side stated:
-/// the tiles are the groups' own shorthands, the name is the draft's,
+/// the name is the draft's,
 /// and whether the button lights is the <see cref="PublishGate"/>, reading <c>Form.publishable</c>, what is publishing
 /// and what the relay said.
 ///
@@ -25,31 +20,24 @@ namespace ScreenShare.App.Features.Setup.ReviewStep.ViewModel;
 /// a stream already on the air deciding which effect the press is rather than blocking it.
 /// A ternary at the binding site and a second one beside the call would be one fact written down twice.
 /// </summary>
-public sealed class ReviewStepViewModel : Observable
+public sealed class CommitViewModel : Observable
 {
-    private readonly Func<string, DelegateCommand> _edit;
-
-    /// <param name="edit">Hands back a command that moves the flow to one step. The review edits nothing.</param>
     /// <param name="back">Moves to the step before this one, the flow's answer rather than a key held here.</param>
     /// <param name="goLive">
     /// What committing means, answering when the backend has answered.
     /// Owned above this view model: no publisher here,
-    /// and starting one is an effect on the control plane this step has no route to.
+    /// and starting one needs the control plane, which this view model has no route to.
     /// </param>
     /// <param name="dispatch">UI loop the commit's answer is marshalled back to.</param>
-    public ReviewStepViewModel(
-        Func<string, DelegateCommand> edit,
+    public CommitViewModel(
         Action back,
         Func<Task> goLive,
         Action<Action> dispatch)
     {
-        Assert.NotNull(edit, "the review hands editing back to the step that owns it");
-        Assert.NotNull(back, "the review needs the flow's own way back");
-        Assert.NotNull(goLive, "the review hands the commit to whoever owns publishing");
-        Assert.NotNull(dispatch, "the review needs a UI loop to marshal the commit's answer back to");
+        Assert.NotNull(back, "the commit needs the flow's own way back");
+        Assert.NotNull(goLive, "the commit is handed to whoever owns publishing");
+        Assert.NotNull(dispatch, "the commit needs a UI loop to marshal its answer back to");
 
-        _edit = edit;
-        Tiles = [];
 
         // A start crosses to the backend, which persists the settings and launches an encoder on them,
         // so the button waits rather than going inert: the round trip is long enough for a second press,
@@ -57,7 +45,7 @@ public sealed class ReviewStepViewModel : Observable
         StartSharingCommand = new PendingCommand(goLive, dispatch, () => CanStartSharing);
         BackCommand = new DelegateCommand(back);
 
-        Apply(PublishGate.Unread, streamName: "", refusal: "", []);
+        Apply(PublishGate.Unread, streamName: "", refusal: "");
     }
 
     // --- Outputs ------------------------------------------------------------------
@@ -76,8 +64,6 @@ public sealed class ReviewStepViewModel : Observable
     private bool _isInForce;
     private string _inForce = "";
     private bool _showsPromise;
-
-    public ObservableCollection<ReviewTile> Tiles { get; }
 
     /// <summary>
     /// The commit.
@@ -153,8 +139,7 @@ public sealed class ReviewStepViewModel : Observable
 
     /// <summary>
     /// The one render function.
-    /// Idempotent: the rows are rebuilt from the arguments and reconciled,
-    /// so two passes over one form produce rows that compare equal.
+    /// Idempotent: every output is written from the arguments on every pass.
     /// </summary>
     /// <param name="gate">Whether the commit is available, which effect it is, and why it is not.</param>
     /// <param name="streamName">Draft's stream name. Empty before a draft has arrived.</param>
@@ -162,13 +147,9 @@ public sealed class ReviewStepViewModel : Observable
     public void Apply(
         PublishGate gate,
         string streamName,
-        string refusal,
-        IReadOnlyList<(string Key, string Title, string Summary)> groups)
+        string refusal)
     {
-        Assert.NotNull(gate, "the review draws the gate the flow composed");
-        Assert.NotNull(groups, "the review draws the groups the form carried");
-
-        Reconcile.Onto(Tiles, ReviewTiles.Of(groups, _edit));
+        Assert.NotNull(gate, "the commit draws the gate the flow composed");
 
         // Read out of the one table on every pass, the branch that puts the label back to a start included:
         // a stream that ended takes the word "restart" off the button with it,
@@ -197,7 +178,6 @@ public sealed class ReviewStepViewModel : Observable
 
         StartSharingCommand.Refresh();
 
-        Assert.That(Tiles.Count == groups.Count, "a tile per group of the form", Tiles.Count, groups.Count);
         Assert.That(CommitLabel.Length > 0, "the commit says what pressing it will do", gate.Commit);
         Assert.That(
             PromiseLead.Length > 0 && PromiseTail.Length > 0,

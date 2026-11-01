@@ -9,7 +9,7 @@
              xmlns:advanced="using:ScreenShare.App.Features.Setup.AdvancedGroup.View"
              xmlns:rail="using:ScreenShare.App.Features.Setup.CostRail.View"
              xmlns:presets="using:ScreenShare.App.Features.Setup.Presets.View"
-             xmlns:review="using:ScreenShare.App.Features.Setup.ReviewStep.View"
+             xmlns:commit="using:ScreenShare.App.Features.Setup.Commit.View"
              xmlns:relaycheck="using:ScreenShare.App.Features.Setup.RelayCheck.View"
              xmlns:fields="using:ScreenShare.App.Features.Fields.View"
              xmlns:ti="using:TablerIcons"
@@ -21,7 +21,7 @@
 
     <!--
       The strip, and the control opening the rail on a window that draws it over the form.
-      In the strip's row rather than the footer: it stands on every step, the terminal one included,
+      In the strip's row rather than the footer: it stands on every step, the last one included,
       whose footer is the commit card (docs/design-language.md, "Narrow windows").
     -->
     <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="12,12,12,0">
@@ -116,6 +116,8 @@
           </StackPanel>
 
           <controls:CardColumn Spacing="{StaticResource GapPanel}" IsVisible="{Binding ShowsQuality}">
+            <!-- A preset sets every field below it at once, so its card leads the step. -->
+            <presets:PresetsView DataContext="{Binding Presets}" />
             <quality:QualityStepView DataContext="{Binding Quality}" />
             <!-- Behind the step's fold with everything else quality; the wrapper keeps the binding on this flow. -->
             <Panel IsVisible="{Binding Quality.Fold.Shown}">
@@ -132,17 +134,6 @@
           <Panel IsVisible="{Binding ShowsAudio}">
             <audio:AudioStepView DataContext="{Binding Audio}" />
           </Panel>
-
-          <!--
-            Terminal step's read-back, in the same column every other step's form draws in,
-            so the rail beside it is one column rather than a second one per step.
-            Under it the saved ways of publishing: a preset is the whole way of publishing,
-            which no earlier step owns a fraction of, and this is the step reading the whole draft back.
-          -->
-          <controls:CardColumn Spacing="{StaticResource GapPanel}" IsVisible="{Binding ShowsReview}">
-            <review:ReviewStepView DataContext="{Binding Review}" />
-            <presets:PresetsView DataContext="{Binding Presets}" />
-          </controls:CardColumn>
 
           <!--
             One renderer instanced per group, and the group decides everything on it.
@@ -197,13 +188,13 @@
       </Border>
 
       <!--
-        Foot of the rail: moving between steps, and on the terminal one the commit instead.
+        Foot of the rail: moving between steps, and on the last one the commit in place of Continue.
         One row for both, so the button that ends the flow stands where the button that walks it does.
         The panel never covers it, an opened rail otherwise taking away the way on
         (Controls/SideColumn/SideColumnPanel.cs).
       -->
       <Panel Margin="0,12,0,0">
-        <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding !ShowsReview}">
+        <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding !ShowsCommit}">
           <Button Grid.Column="0"
                   Theme="{StaticResource FooterButton}"
                   Content="Back"
@@ -219,8 +210,8 @@
                   IsVisible="{Binding CanContinue}" />
         </Grid>
 
-        <Panel IsVisible="{Binding ShowsReview}">
-          <review:CommitCardView DataContext="{Binding Review}" />
+        <Panel IsVisible="{Binding ShowsCommit}">
+          <commit:CommitCardView DataContext="{Binding Commit}" />
         </Panel>
       </Panel>
     </controls:SideColumnPanel>

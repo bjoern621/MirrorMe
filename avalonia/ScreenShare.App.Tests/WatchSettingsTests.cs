@@ -93,7 +93,7 @@ public sealed class WatchSettingsTests
         chain.Options.Single(option => option.Value == "sys").Choose.Execute(null);
         await form.Settled;
 
-        setup.Review.StartSharingCommand.Execute(null);
+        setup.Commit.StartSharingCommand.Execute(null);
 
         var started = Assert.Single(backend.Started);
         Assert.Equal("sys", started.Viewer.RenderChain);

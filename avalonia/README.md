@@ -82,7 +82,7 @@ Four layers, dependency running one way: a feature reads the design system and t
 | `Features/Tray/` | the tray icon: its menu model, the view model pressing the destinations' own commands, and the host drawing the platform icon |
 | `Backend/` | the control-plane boundary: `IBackend`, the gRPC client answering it over the local socket, and the settings write going through the message descriptor |
 | `Features/Fields/` | the generic renderer for one group of the resolved form, and the placement table saying which destination draws which group. Not under a feature because two of them draw form groups |
-| `Features/Setup/` | the publish wizard, one step per sending-related group plus a terminal one: step strip, the share question with a chooser per kind, Quality form, audio source list, raw-property card, the summary and the presets under it, and the rail every step draws beside them carrying cost and checks. The share question is drawn again in a dialog at the press that starts a stream, one model behind both |
+| `Features/Setup/` | the publish wizard, one step per sending-related group with the commit at the last one's foot: step strip, the share question with a chooser per kind, the presets card and the Quality form under it, audio source list, raw-property card, and the rail every step draws beside them carrying cost and checks. The share question is drawn again in a dialog at the press that starts a stream, one model behind both |
 | `Features/Insights/` | the live overview: promoted figures, live-safe actions, read-only configuration, the outgoing preview, the per-viewer table, the sparklines |
 | `Features/Viewer/` | the tile grid and its rail: one entry per stream the relay carries, the arrangement of the ones being watched, and the panel holding how this machine receives |
 
@@ -140,7 +140,7 @@ A capture view and an encode view written separately would be this module writin
 
 **Which steps there are is the form's answer too.**
 `SetupSteps.For` derives the strip from `Form.groups`, so a group added to the contract is a step that appears with nothing here to edit, and one renamed cannot leave a hole.
-Placement stays this module's: the terminal step, the groups drawn by a layout of their own (`Model/QualityLayout.cs`, `Model/AudioLayout.cs`), and which destination draws which group (`Features/Fields/Model/GroupPlacement.cs`).
+Placement stays this module's: the commit on the last step, the groups drawn by a layout of their own (`Model/QualityLayout.cs`, `Model/AudioLayout.cs`), and which destination draws which group (`Features/Fields/Model/GroupPlacement.cs`).
 
 **The watch group is drawn by the viewer, the same placement rule doing real work.**
 The wizard configures what this machine *sends*.
@@ -232,7 +232,7 @@ The side the contract names as owner has to do the owning, and the honest openin
 Where the window goes afterwards is the window's.
 The flow raises `WentLive` and the shell moves to the insights screen at once.
 That screen is reachable whether or not anything is publishing, so the move claims no state the backend has not reported: it draws its idle reading and fills in as the live state lands.
-Every start earns the move, so the destination a commit leads to is not a setting the review asks about.
+Every start earns the move, so the destination a commit leads to is not a setting the wizard asks about.
 
 ## What each screen draws
 
@@ -280,12 +280,12 @@ The placeholder stays for the states where there is no picture, each saying whic
 The card's own sentence is the selected segment's, the two routes making opposite claims and one sentence for both being false under one of them.
 A reader who took a perfect local preview for a healthy stream would be reading it exactly wrong, which is why the sentence is on the card and not in a comment (`Copy/Cards.cs`).
 
-**The summary step carries the preset card, and it draws two different things under one heading.**
+**The quality step opens on the preset card, and it draws two different things under one heading.**
 Above are the built-in presets, promises about the picture.
 What "gaming" is on this machine is a search the backend ran over its own capability tables, so a row can be unreachable and what applying it writes differs per machine (`docs/presets.md`).
 Below are the saved ones, and a saved preset is a name: kept, replaced and deleted by the name it is under.
 So the card is a row per promise, a row per saved preset, and a name box (`Features/Setup/Presets/`).
-It sits under the summary because a preset is the whole way of publishing, which no earlier step owns a fraction of, and the summary is where the whole draft is read back.
+It opens the quality step because the picture is what a reader picks a preset by.
 
 A preset is a `PublishSettings` and nothing else, so applying one replaces that group of the draft and leaves the relay and watch settings where they are (`docs/presets.md`).
 Nothing is committed by it: publish settings are staged until a commit carries them, so trying a preset out costs nothing and puts nothing on the air.
@@ -379,8 +379,8 @@ a second shell draws a second grid and a second menu over the backend the first 
 `task avalonia` sets it, a checkout run and an installed app sharing this endpoint the way they share the backend's.
 
 The menu decides nothing.
-Its commit row presses the review's commit and the insights screen's stop, so gate, wait and refusal surface stay one each, and a refusal lands where the window already shows it.
-The preset rows are the summary card's, applied through the card's own commands, and a pick while a stream is live is the review's apply, a restart.
+Its commit row presses the setup flow's commit and the insights screen's stop, so gate, wait and refusal surface stay one each, and a refusal lands where the window already shows it.
+The preset rows are the presets card's, applied through the card's own commands, and a pick while a stream is live is the commit's apply, a restart.
 The icon says whether this machine is sharing, as a second baked asset (`task icons`).
 
 The lifetime is the host's (`App.axaml.cs`), and shutdown is explicit.

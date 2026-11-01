@@ -57,7 +57,7 @@ public class SharePickerTests
 
         Assert.False(picker.Asks);
 
-        flow.Review.StartSharingCommand.Execute(null);
+        flow.Commit.StartSharingCommand.Execute(null);
 
         Assert.False(picker.IsOpen);
         Assert.Single(backend.Started);
@@ -72,7 +72,7 @@ public class SharePickerTests
 
         Assert.True(picker.Asks);
 
-        flow.Review.StartSharingCommand.Execute(null);
+        flow.Commit.StartSharingCommand.Execute(null);
 
         Assert.True(picker.IsOpen);
         Assert.Empty(backend.Started);
@@ -85,7 +85,7 @@ public class SharePickerTests
         var backend = new PublishingBackend(asksWhatToShare: true);
         var flow = Flow(backend, out var picker);
 
-        flow.Review.StartSharingCommand.Execute(null);
+        flow.Commit.StartSharingCommand.Execute(null);
         picker.CancelCommand.Execute(null);
 
         Assert.False(picker.IsOpen);
@@ -99,7 +99,7 @@ public class SharePickerTests
         var backend = new PublishingBackend(asksWhatToShare: true);
         var flow = Flow(backend, out var picker);
 
-        flow.Review.StartSharingCommand.Execute(null);
+        flow.Commit.StartSharingCommand.Execute(null);
         Pick(picker, "publish.share_kind", "window");
         picker.Question.Windows.Windows.Single(row => row.Handle == "5150").Select.Execute(null);
         picker.ConfirmCommand.Execute(null);
@@ -125,9 +125,9 @@ public class SharePickerTests
         Pick(picker, "publish.share_kind", "window");
 
         Assert.False(flow.IsPublishable);
-        Assert.True(flow.Review.CanStartSharing);
+        Assert.True(flow.Commit.CanStartSharing);
 
-        flow.Review.StartSharingCommand.Execute(null);
+        flow.Commit.StartSharingCommand.Execute(null);
 
         Assert.True(picker.IsOpen);
         Assert.False(picker.CanConfirm);
@@ -145,7 +145,7 @@ public class SharePickerTests
         var backend = new PublishingBackend(asksWhatToShare: true);
         var flow = Flow(backend, out var picker, region: "100,200,1280x720");
 
-        flow.Review.StartSharingCommand.Execute(null);
+        flow.Commit.StartSharingCommand.Execute(null);
         Pick(picker, "publish.share_kind", "region");
 
         Assert.True(picker.Question.Region.IsVisible);
@@ -167,7 +167,7 @@ public class SharePickerTests
         var backend = new PublishingBackend(asksWhatToShare: true);
         var flow = Flow(backend, out var picker);
 
-        flow.Review.StartSharingCommand.Execute(null);
+        flow.Commit.StartSharingCommand.Execute(null);
         Pick(picker, "publish.share_kind", "region");
         Control(picker, "publish.share_region").Text = "0,0,640x480";
 

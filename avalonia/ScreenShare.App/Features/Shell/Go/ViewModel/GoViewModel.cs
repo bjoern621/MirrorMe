@@ -12,24 +12,24 @@ namespace ScreenShare.App.Features.Shell.Go.ViewModel;
 /// <summary>
 /// Strip commit: the one control that starts sharing from any destination, and the menu beside it.
 ///
-/// The button presses the review's own commit, so the label, the guard, the wait and the refusal surface
+/// The button presses the setup flow's own commit, so the label, the guard, the wait and the refusal surface
 /// stay one each (<c>Features/Tray/ViewModel/TrayViewModel.cs</c> states the argument).
 /// A preset row writes the draft through the presets card's own command and presses that same commit,
 /// so one pick is on the air on the preset, live or not.
-/// The summary line repeats the publish groups' shorthands, the derivation the review's tiles read.
+/// The summary line repeats the publish groups' shorthands, the derivation the step chips read.
 ///
 /// <b>A stream running the draft hands the press to the stop instead</b> (<see cref="ShowsStop"/>).
 /// Applying restarts the pipeline, so a draft the stream was built from has nothing to press for,
-/// and the greyed apply the review draws in its place is a dead control on the one strip every destination carries.
+/// and the greyed apply the commit card draws in its place would leave a dead control on the one strip every destination carries.
 /// Stopping is what a reader wants from there while sharing, and the press stays live for it.
 /// The commit keeps its own row in the menu, greyed and beside the words for why.
 ///
 /// Nothing here decides anything: which effect the commit is comes off <see cref="Model.PublishGate.CommitFor"/>
-/// through the review, its word and its mark come off that commit's own row,
+/// through the commit, its word and its mark come off that commit's own row,
 /// and whether the stream runs the draft is that same gate's reading of <c>Form.in_force</c>.
 ///
 /// <see cref="Apply"/> is the one render function.
-/// The shell's pass drives it for the session's state; the review and the draft announce their own moves,
+/// The shell's pass drives it for the session's state; the commit and the draft announce their own moves,
 /// so the strip follows a form resolved while another destination was showing.
 /// </summary>
 public sealed class GoViewModel : Observable
@@ -62,10 +62,10 @@ public sealed class GoViewModel : Observable
         _setup = setup;
         _insights = insights;
 
-        // The review re-renders on every form move and announces it, so the label and the gate follow
-        // a draft edited on the wizard; the form's own signal covers a summary change the review's
+        // The commit re-renders on every form move and announces it, so the label and the gate follow
+        // a draft edited on the wizard; the form's own signal covers a summary change the commit's
         // outputs do not repeat.
-        setup.Review.PropertyChanged += (_, _) => Apply();
+        setup.Commit.PropertyChanged += (_, _) => Apply();
         form.Changed += Apply;
 
         // The render pass writes it; a field the pass can compare against has to hold something first.
@@ -75,10 +75,10 @@ public sealed class GoViewModel : Observable
     }
 
     /// <summary>
-    /// The commit, the review's own instance.
+    /// The commit, the setup flow's own instance.
     /// The button draws its wait and its guard from the command, so the strip and the wizard cannot disagree.
     /// </summary>
-    public PendingCommand CommitCommand => _setup.Review.StartSharingCommand;
+    public PendingCommand CommitCommand => _setup.Commit.StartSharingCommand;
 
     /// <summary>
     /// The insights screen's own stop: the menu's row while a stream is live,
@@ -103,7 +103,7 @@ public sealed class GoViewModel : Observable
     private bool _showsStop;
 
     /// <summary>
-    /// What the commit will do, the review's own answer: start, or restart the stream on the air.
+    /// What the commit will do, its own answer: start, or restart the stream on the air.
     /// The menu's commit row, and the button's word while the button presses it.
     /// </summary>
     public string CommitLabel { get => _commitLabel; private set => Set(ref _commitLabel, value); }
@@ -189,14 +189,14 @@ public sealed class GoViewModel : Observable
     /// </summary>
     public void Apply()
     {
-        CommitLabel = _setup.Review.CommitLabel;
-        CommitGlyph = _setup.Review.CommitGlyph;
-        Blocked = _setup.Review.Blocked;
+        CommitLabel = _setup.Commit.CommitLabel;
+        CommitGlyph = _setup.Commit.CommitGlyph;
+        Blocked = _setup.Commit.Blocked;
         IsLive = _session.Publish?.Live is not null;
 
         // Both readings, so a verdict left over from a stream that has ended offers the start rather than a stop
         // on nothing (Features/Setup/Model/PublishGate.cs states the same crossing).
-        ShowsStop = IsLive && _setup.Review.IsInForce;
+        ShowsStop = IsLive && _setup.Commit.IsInForce;
 
         Press = ShowsStop ? StopCommand : CommitCommand;
         PressLabel = ShowsStop ? InsightsViewModel.StopLabel : CommitLabel;

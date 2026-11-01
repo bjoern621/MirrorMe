@@ -122,7 +122,7 @@ The bar is a thin line with no step buttons at its ends, and a pointer over it t
 The window's chrome is the app's where the platform has one caption to stand in for: a custom title bar on Windows and macOS.
 Beneath it a nav strip holds the same two regions on every screen: three destinations left, and on the right the settings gear and the strip commit.
 The gear sits in the strip because what it opens belongs to no destination.
-The strip commit is the terminal step's own start-sharing press, glued to a chevron whose menu holds the commit with the settings it applies, the presets, a stop row while live, and a row into the wizard.
+The strip commit is the wizard's own start-sharing press, glued to a chevron whose menu holds the commit with the settings it applies, the presets, a stop row while live, and a row into the wizard.
 A stream running the settings the draft builds hands that press to `Stop sharing`, both halves taking the way-out hue, and a value moved hands it back to the commit: restarting a pipeline into itself costs every viewer the picture for nothing, and stopping is what the strip is reached for from any destination.
 The commit's dot gives way to the stop glyph, which the menu's stop row carries in red as its only mark, so the way out is found without reading the rows.
 A preset picked there is applied and committed in one press, so going live is one click from any destination.
@@ -163,7 +163,7 @@ Each states its own width and the body it needs beside it, and the threshold is 
 A column that draws unasked carries its control only while it is a panel, a press that changes nothing reading as broken.
 One that opens on request carries its control at every width.
 
-The foot is the row a panel never covers: the wizard's Back and Continue, and the commit on its terminal step.
+The foot is the row a panel never covers: the wizard's Back and Continue, and the commit in Continue's place on its last step.
 
 A rail carrying names drops the names rather than the window dropping the rail.
 
@@ -307,7 +307,6 @@ The machine the app runs on is `this computer` wherever a surface names it.
 
 `Sharing` is the state's name on every surface that has one: the pill on the insights header, the badge over the preview.
 The controls that enter and leave it are `Start sharing` and `Stop sharing`, so button and state say one word rather than one saying `Go live` and the other answering `On air`.
-The wizard's terminal step is `Summary`, after the settings it lists.
 `Insights` names the destination reporting a stream: the preview, the figures, the log and the live-safe actions.
 
 A tooltip is prose: opens with a capital, closes with a full stop, and explains the control or figure instead of naming it again.

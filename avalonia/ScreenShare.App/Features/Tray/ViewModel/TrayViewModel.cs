@@ -12,14 +12,14 @@ namespace ScreenShare.App.Features.Tray.ViewModel;
 /// <summary>
 /// The tray's state: one menu, derived from the window's own controls rather than from a second gate.
 ///
-/// The commit row presses the review's commit and the insights screen's stop, so the wait, the guard and
+/// The commit row presses the setup flow's commit and the insights screen's stop, so the wait, the guard and
 /// the refusal surface stay one each, and a refusal lands where the window already shows it.
 /// The preset rows are the presets card's, applied through the card's own commands.
 /// Nothing here decides anything: which effect a press is comes off the running state at the press,
 /// the way every commit reads it (<see cref="PublishGate.CommitFor"/>).
 ///
 /// <see cref="Apply"/> is the one render function.
-/// The shell's pass drives it for the session's state; the review, the stop command and the card's rows
+/// The shell's pass drives it for the session's state; the commit, the stop command and the card's rows
 /// announce their own moves, so the menu follows a form or a store the window read while hidden.
 /// <see cref="TrayMenu"/> compares by content, so an unchanged pass notifies nothing.
 /// </summary>
@@ -72,11 +72,11 @@ public sealed class TrayViewModel : Observable
         QuitCommand = new PendingCommand(QuitAsync, dispatch);
 
         // Everything the menu draws beside the session's own state, whose pass the shell drives:
-        // the draft behind the icon, the review's gate and label, the stop's liveness,
+        // the draft behind the icon, the commit's gate and label, the stop's liveness,
         // and the card's preset rows.
         // Each announces its own moves, so the menu follows them while the window is hidden.
         _form.Changed += Apply;
-        setup.Review.PropertyChanged += (_, _) => Apply();
+        setup.Commit.PropertyChanged += (_, _) => Apply();
         insights.StopCommand.Changed += Apply;
         setup.Presets.Rows.CollectionChanged += (_, _) => Apply();
         setup.Presets.Builtin.CollectionChanged += (_, _) => Apply();
@@ -114,7 +114,7 @@ public sealed class TrayViewModel : Observable
             return;
         }
 
-        _setup.Review.StartSharingCommand.Execute(null);
+        _setup.Commit.StartSharingCommand.Execute(null);
     }
 
     /// <summary>
@@ -138,7 +138,7 @@ public sealed class TrayViewModel : Observable
 
         if (applied)
         {
-            _setup.Review.StartSharingCommand.Execute(null);
+            _setup.Commit.StartSharingCommand.Execute(null);
         }
     }
 
@@ -160,7 +160,7 @@ public sealed class TrayViewModel : Observable
             // The command asked rather than a gate composed here, so the row and the press cannot disagree.
             CanCommit = live
                 ? _insights.StopCommand.CanExecute(null)
-                : _setup.Review.StartSharingCommand.CanExecute(null),
+                : _setup.Commit.StartSharingCommand.CanExecute(null),
 
             Presets = EntriesOf(card),
         };

@@ -28,7 +28,7 @@ public enum PublishCommit
 /// A live stream built from the draft greys the apply (<see cref="InForce"/>),
 /// that being the one restart which would change nothing.
 /// Record, so a render pass over unchanged state compares equal
-/// and <see cref="ReviewStep.ViewModel.ReviewStepViewModel.Apply"/> stays idempotent.
+/// and <see cref="Commit.ViewModel.CommitViewModel.Apply"/> stays idempotent.
 /// </summary>
 public sealed record PublishGate
 {
@@ -111,7 +111,7 @@ public sealed record PublishGate
             InForce = running,
         };
 
-        // Asserted where produced, not where relied on: review draws the label off this gate,
+        // Asserted where produced, not where relied on: the commit card draws the label off this gate,
         // flow sends the effect it names.
         Assert.That(
             (gate.Commit == PublishCommit.Apply) == (publish?.Live is not null),

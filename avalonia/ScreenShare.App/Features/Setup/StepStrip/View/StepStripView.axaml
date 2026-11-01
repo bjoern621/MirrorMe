@@ -32,10 +32,6 @@
         <Setter Property="BorderBrush" Value="{StaticResource SelectedBrush}" />
       </Style>
 
-      <Style Selector="^.terminal /template/ Border#Root">
-        <Setter Property="BorderBrush" Value="{StaticResource ChipBorderBrush}" />
-      </Style>
-
       <Style Selector="^:pointerover /template/ Border#Root">
         <Setter Property="Background" Value="{StaticResource ControlHoverBrush}" />
       </Style>
@@ -153,7 +149,6 @@
                   Command="{Binding Select}"
                   Classes.done="{Binding IsDone}"
                   Classes.current="{Binding IsCurrent}"
-                  Classes.terminal="{Binding IsTerminal}"
                   Classes.blocked="{Binding IsBlocked}">
             <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
               <Border Grid.Row="0" Grid.Column="0" Classes="chipbadge">

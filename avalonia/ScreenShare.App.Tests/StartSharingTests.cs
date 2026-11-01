@@ -63,9 +63,9 @@ public sealed class StartSharingTests
         var flow = Flow(new PublishingBackend(), out _);
 
         Assert.True(flow.IsPublishable);
-        Assert.True(flow.Review.CanStartSharing);
-        Assert.False(flow.Review.IsBlocked);
-        Assert.Equal("", flow.Review.Blocked);
+        Assert.True(flow.Commit.CanStartSharing);
+        Assert.False(flow.Commit.IsBlocked);
+        Assert.Equal("", flow.Commit.Blocked);
     }
 
     /// <summary>Nothing says these settings publish until a form has landed.</summary>
@@ -76,7 +76,7 @@ public sealed class StartSharingTests
         var session = new Session(backend, action => action());
         var flow = Flows.Setup(backend, session);
 
-        Assert.False(flow.Review.CanStartSharing);
+        Assert.False(flow.Commit.CanStartSharing);
     }
 
     /// <summary>First of the three, because nothing else can be established while the backend is silent.</summary>
@@ -89,10 +89,10 @@ public sealed class StartSharingTests
 
         backend.Fail(0, "The backend is not running: nothing is listening on the control socket.");
 
-        Assert.False(flow.Review.CanStartSharing);
+        Assert.False(flow.Commit.CanStartSharing);
         Assert.Equal(
             "The backend is not running: nothing is listening on the control socket.",
-            flow.Review.Blocked);
+            flow.Commit.Blocked);
     }
 
     /// <summary>Reason is the relay's own: a sentence composed here describes a failure this side did not see.</summary>
@@ -106,8 +106,8 @@ public sealed class StartSharingTests
 
         var flow = Flow(backend, out _);
 
-        Assert.False(flow.Review.CanStartSharing);
-        Assert.Equal("dial tcp 127.0.0.1:9997: connection refused", flow.Review.Blocked);
+        Assert.False(flow.Commit.CanStartSharing);
+        Assert.Equal("dial tcp 127.0.0.1:9997: connection refused", flow.Commit.Blocked);
     }
 
     /// <summary>
@@ -121,8 +121,8 @@ public sealed class StartSharingTests
 
         var flow = Flow(backend, out _);
 
-        Assert.False(flow.Review.CanStartSharing);
-        Assert.NotEqual("", flow.Review.Blocked);
+        Assert.False(flow.Commit.CanStartSharing);
+        Assert.NotEqual("", flow.Commit.Blocked);
     }
 
     /// <summary>
@@ -134,14 +134,14 @@ public sealed class StartSharingTests
         var backend = new PublishingBackend();
         var flow = Flow(backend, out var session);
 
-        Assert.True(flow.Review.CanStartSharing);
+        Assert.True(flow.Commit.CanStartSharing);
 
         backend.Publish = Live("lab04");
         Reload(session, flow);
 
-        Assert.True(flow.Review.CanStartSharing);
-        Assert.False(flow.Review.IsBlocked);
-        Assert.Equal("", flow.Review.Blocked);
+        Assert.True(flow.Commit.CanStartSharing);
+        Assert.False(flow.Commit.IsBlocked);
+        Assert.Equal("", flow.Commit.Blocked);
     }
 
     /// <summary>
@@ -155,17 +155,17 @@ public sealed class StartSharingTests
         var flow = Flow(backend, out var session);
 
         var start = CommitCopy.Of(PublishCommit.Start);
-        Assert.Equal(start.Label, flow.Review.CommitLabel);
-        Assert.Equal(start.Lead, flow.Review.PromiseLead);
-        Assert.Equal(start.Tail, flow.Review.PromiseTail);
+        Assert.Equal(start.Label, flow.Commit.CommitLabel);
+        Assert.Equal(start.Lead, flow.Commit.PromiseLead);
+        Assert.Equal(start.Tail, flow.Commit.PromiseTail);
 
         backend.Publish = Live("lab04");
         Reload(session, flow);
 
         var apply = CommitCopy.Of(PublishCommit.Apply);
-        Assert.Equal(apply.Label, flow.Review.CommitLabel);
-        Assert.Equal(apply.Lead, flow.Review.PromiseLead);
-        Assert.Equal(apply.Tail, flow.Review.PromiseTail);
+        Assert.Equal(apply.Label, flow.Commit.CommitLabel);
+        Assert.Equal(apply.Lead, flow.Commit.PromiseLead);
+        Assert.Equal(apply.Tail, flow.Commit.PromiseTail);
         Assert.NotEqual(start.Label, apply.Label);
     }
 
@@ -192,12 +192,12 @@ public sealed class StartSharingTests
         backend.Publish = Live("lab04");
         Reload(session, flow);
 
-        flow.Review.StartSharingCommand.Execute(null);
+        flow.Commit.StartSharingCommand.Execute(null);
 
         var applied = Assert.Single(backend.Applied);
-        Assert.Equal(flow.Review.StreamName, applied.StreamName);
+        Assert.Equal(flow.Commit.StreamName, applied.StreamName);
         Assert.Empty(backend.Started);
-        Assert.Equal("", flow.Review.Refusal);
+        Assert.Equal("", flow.Commit.Refusal);
     }
 
     /// <summary>Every output is written on every pass, the branch that turns one back included.</summary>
@@ -207,14 +207,14 @@ public sealed class StartSharingTests
         var backend = new PublishingBackend { Publish = Live("lab04") };
         var flow = Flow(backend, out var session);
 
-        Assert.Equal(CommitCopy.Of(PublishCommit.Apply).Label, flow.Review.CommitLabel);
+        Assert.Equal(CommitCopy.Of(PublishCommit.Apply).Label, flow.Commit.CommitLabel);
 
         backend.Publish = new PublishState();
         Reload(session, flow);
 
-        Assert.Equal(CommitCopy.Of(PublishCommit.Start).Label, flow.Review.CommitLabel);
+        Assert.Equal(CommitCopy.Of(PublishCommit.Start).Label, flow.Commit.CommitLabel);
 
-        flow.Review.StartSharingCommand.Execute(null);
+        flow.Commit.StartSharingCommand.Execute(null);
 
         Assert.Single(backend.Started);
         Assert.Empty(backend.Applied);
@@ -231,13 +231,13 @@ public sealed class StartSharingTests
         backend.Publish = backend.Running();
         var flow = Flow(backend, out _);
 
-        Assert.False(flow.Review.CanStartSharing);
-        Assert.False(flow.Review.StartSharingCommand.CanExecute(null));
-        Assert.True(flow.Review.IsInForce);
-        Assert.Equal(CommitCopy.Of(PublishCommit.Apply).InForce, flow.Review.InForce);
-        Assert.False(flow.Review.ShowsPromise);
-        Assert.False(flow.Review.IsBlocked);
-        Assert.Equal(CommitCopy.Of(PublishCommit.Apply).Label, flow.Review.CommitLabel);
+        Assert.False(flow.Commit.CanStartSharing);
+        Assert.False(flow.Commit.StartSharingCommand.CanExecute(null));
+        Assert.True(flow.Commit.IsInForce);
+        Assert.Equal(CommitCopy.Of(PublishCommit.Apply).InForce, flow.Commit.InForce);
+        Assert.False(flow.Commit.ShowsPromise);
+        Assert.False(flow.Commit.IsBlocked);
+        Assert.Equal(CommitCopy.Of(PublishCommit.Apply).Label, flow.Commit.CommitLabel);
     }
 
     /// <summary>
@@ -252,20 +252,20 @@ public sealed class StartSharingTests
         var flow = Flow(backend, out _, out var form);
         var fps = form.Draft!.Publish.Fps;
 
-        Assert.False(flow.Review.CanStartSharing);
+        Assert.False(flow.Commit.CanStartSharing);
 
         // A frame rate the seed offers, its select refusing a value off its ladder.
         form.Write("publish.fps", new FieldValue { Number = 120 });
 
-        Assert.True(flow.Review.CanStartSharing);
-        Assert.False(flow.Review.IsInForce);
-        Assert.True(flow.Review.ShowsPromise);
+        Assert.True(flow.Commit.CanStartSharing);
+        Assert.False(flow.Commit.IsInForce);
+        Assert.True(flow.Commit.ShowsPromise);
 
         form.Write("publish.fps", new FieldValue { Number = fps });
 
-        Assert.False(flow.Review.CanStartSharing);
-        Assert.True(flow.Review.IsInForce);
-        Assert.False(flow.Review.ShowsPromise);
+        Assert.False(flow.Commit.CanStartSharing);
+        Assert.True(flow.Commit.IsInForce);
+        Assert.False(flow.Commit.ShowsPromise);
     }
 
     /// <summary>
@@ -279,20 +279,20 @@ public sealed class StartSharingTests
         var backend = new PublishingBackend();
         var flow = Flow(backend, out var session);
 
-        Assert.True(flow.Review.CanStartSharing);
+        Assert.True(flow.Commit.CanStartSharing);
 
         backend.Publish = backend.Running();
         Reload(session, flow);
 
-        Assert.False(flow.Review.CanStartSharing);
-        Assert.True(flow.Review.IsInForce);
+        Assert.False(flow.Commit.CanStartSharing);
+        Assert.True(flow.Commit.IsInForce);
 
         backend.Publish = new PublishState();
         Reload(session, flow);
 
-        Assert.True(flow.Review.CanStartSharing);
-        Assert.False(flow.Review.IsInForce);
-        Assert.True(flow.Review.ShowsPromise);
+        Assert.True(flow.Commit.CanStartSharing);
+        Assert.False(flow.Commit.IsInForce);
+        Assert.True(flow.Commit.ShowsPromise);
     }
 
     /// <summary>
@@ -333,7 +333,7 @@ public sealed class StartSharingTests
         var flow = Flow(backend, out _);
 
         var moved = new List<string?>();
-        flow.Review.PropertyChanged += (_, e) => moved.Add(e.PropertyName);
+        flow.Commit.PropertyChanged += (_, e) => moved.Add(e.PropertyName);
 
         flow.Apply();
         flow.Apply();
@@ -347,13 +347,13 @@ public sealed class StartSharingTests
         var backend = new PublishingBackend { Relay = new RelayStatus { Reachable = false, Error = "no relay" } };
         var flow = Flow(backend, out var session);
 
-        Assert.False(flow.Review.CanStartSharing);
+        Assert.False(flow.Commit.CanStartSharing);
 
         backend.Relay = new RelayStatus { Reachable = true };
         Reload(session, flow);
 
-        Assert.True(flow.Review.CanStartSharing);
-        Assert.Equal("", flow.Review.Blocked);
+        Assert.True(flow.Commit.CanStartSharing);
+        Assert.Equal("", flow.Commit.Blocked);
     }
 
     /// <summary>
@@ -369,14 +369,14 @@ public sealed class StartSharingTests
         var announced = 0;
         flow.WentLive += () => announced++;
 
-        flow.Review.StartSharingCommand.Execute(null);
+        flow.Commit.StartSharingCommand.Execute(null);
 
         var started = Assert.Single(backend.Started);
-        Assert.Equal(flow.Review.StreamName, started.StreamName);
+        Assert.Equal(flow.Commit.StreamName, started.StreamName);
         Assert.Empty(backend.Applied);
         Assert.Equal(1, announced);
-        Assert.Equal("", flow.Review.Refusal);
-        Assert.True(flow.Review.CanStartSharing);
+        Assert.Equal("", flow.Commit.Refusal);
+        Assert.True(flow.Commit.CanStartSharing);
     }
 
     /// <summary>
@@ -388,7 +388,7 @@ public sealed class StartSharingTests
         var backend = new PublishingBackend { Relay = new RelayStatus { Reachable = false, Error = "no relay" } };
         var flow = Flow(backend, out _);
 
-        Assert.False(flow.Review.StartSharingCommand.CanExecute(null));
+        Assert.False(flow.Commit.StartSharingCommand.CanExecute(null));
         Assert.Empty(backend.Started);
         Assert.Empty(backend.Applied);
     }
@@ -406,12 +406,12 @@ public sealed class StartSharingTests
         var announced = 0;
         flow.WentLive += () => announced++;
 
-        flow.Review.StartSharingCommand.Execute(null);
+        flow.Commit.StartSharingCommand.Execute(null);
 
-        Assert.Equal("cannot start publishing: ffmpeg is not on PATH", flow.Review.Refusal);
-        Assert.True(flow.Review.HasRefusal);
+        Assert.Equal("cannot start publishing: ffmpeg is not on PATH", flow.Commit.Refusal);
+        Assert.True(flow.Commit.HasRefusal);
         Assert.Equal(0, announced);
-        Assert.True(flow.Review.CanStartSharing);
+        Assert.True(flow.Commit.CanStartSharing);
         Assert.Empty(backend.Started);
     }
 
@@ -421,14 +421,14 @@ public sealed class StartSharingTests
         var backend = new PublishingBackend { Refusal = "cannot start publishing: ffmpeg is not on PATH" };
         var flow = Flow(backend, out _);
 
-        flow.Review.StartSharingCommand.Execute(null);
-        Assert.True(flow.Review.HasRefusal);
+        flow.Commit.StartSharingCommand.Execute(null);
+        Assert.True(flow.Commit.HasRefusal);
 
         backend.Refusal = "";
-        flow.Review.StartSharingCommand.Execute(null);
+        flow.Commit.StartSharingCommand.Execute(null);
 
-        Assert.Equal("", flow.Review.Refusal);
-        Assert.False(flow.Review.HasRefusal);
+        Assert.Equal("", flow.Commit.Refusal);
+        Assert.False(flow.Commit.HasRefusal);
         Assert.Single(backend.Started);
     }
 
@@ -444,19 +444,19 @@ public sealed class StartSharingTests
 
         var flow = Flow(backend, out _);
 
-        flow.Review.StartSharingCommand.Execute(null);
+        flow.Commit.StartSharingCommand.Execute(null);
 
-        Assert.True(flow.Review.StartSharingCommand.IsRunning);
-        Assert.False(flow.Review.StartSharingCommand.CanExecute(null));
-        Assert.False(flow.Review.CanStartSharing);
+        Assert.True(flow.Commit.StartSharingCommand.IsRunning);
+        Assert.False(flow.Commit.StartSharingCommand.CanExecute(null));
+        Assert.False(flow.Commit.CanStartSharing);
 
-        flow.Review.StartSharingCommand.Execute(null);
+        flow.Commit.StartSharingCommand.Execute(null);
         Assert.Single(backend.Started);
 
         backend.AnswerStarts();
 
-        Assert.False(flow.Review.StartSharingCommand.IsRunning);
-        Assert.True(flow.Review.CanStartSharing);
+        Assert.False(flow.Commit.StartSharingCommand.IsRunning);
+        Assert.True(flow.Commit.CanStartSharing);
     }
 
     /// <summary>The promised name is the path a viewer asks for, computed rather than typed.</summary>
@@ -466,7 +466,7 @@ public sealed class StartSharingTests
         var backend = new PublishingBackend();
         var flow = Flow(backend, out _);
 
-        Assert.True(flow.Review.HasStreamName);
-        Assert.NotEqual("", flow.Review.StreamName);
+        Assert.True(flow.Commit.HasStreamName);
+        Assert.NotEqual("", flow.Commit.StreamName);
     }
 }

@@ -53,15 +53,14 @@ public sealed class DiscordFixAnchorTests
         Assert.Equal(SettingsSection.Discord, settings.OpenedAt);
     }
 
-    /// <summary>The strip has no chip for a screen outside the flow, so the commit's own chip carries it.</summary>
+    /// <summary>No chip names a screen outside the flow, so the line greys the commit itself.</summary>
     [Fact]
     public async Task TheLineStillBlocksTheCommit()
     {
         var (flow, _) = await WindowAsync(Unlinked());
 
-        flow.CurrentStep = SetupSteps.SummaryKey;
-
-        Assert.True(flow.Steps.Single(chip => chip.Key == SetupSteps.SummaryKey).IsBlocked);
+        Assert.False(flow.Commit.CanStartSharing);
+        Assert.DoesNotContain(flow.Steps, chip => chip.IsBlocked);
     }
 
     /// <summary>A press on the strip's own settings button opens the dialog at its top.</summary>

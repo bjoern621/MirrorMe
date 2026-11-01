@@ -24,7 +24,7 @@ public sealed class PreflightAnchorTests
         flow.CurrentGroup!.Fields.Single(field => field.Key == RailLayout.UplinkKey).Number = 4;
         await flow.Settled;
 
-        flow.CurrentStep = SetupSteps.SummaryKey;
+        flow.CurrentStep = flow.Steps[0].Key;
         var warned = flow.Rail.Checks.Single(check => check.State == CheckState.Warned);
 
         Assert.Equal("network", warned.Anchor.StepKey);
@@ -53,7 +53,7 @@ public sealed class PreflightAnchorTests
         Assert.Contains(group.Folded, field => field.Key == RailLayout.UplinkKey);
         Assert.False(group.Fold.Shown);
 
-        flow.CurrentStep = SetupSteps.SummaryKey;
+        flow.CurrentStep = flow.Steps[0].Key;
         flow.Rail.Checks.Single(check => check.State == CheckState.Warned).Anchor.Fix!.Execute(null);
 
         Assert.Equal("network", flow.CurrentStep);
@@ -86,14 +86,6 @@ public sealed class PreflightAnchorTests
         Assert.False(Chip(chips, "video").IsBlocked);
     }
 
-    /// <summary>Where the commit stands, so anything blocking marks it, the lines naming no field included.</summary>
-    [Fact]
-    public void ABlockingLineMarksTheTerminalChipWhereverItIsFixed()
-    {
-        Assert.True(Chip(Chips([Line(CheckState.Blocking, "network")]), SetupSteps.SummaryKey).IsBlocked);
-        Assert.True(Chip(Chips([Line(CheckState.Blocking, "")]), SetupSteps.SummaryKey).IsBlocked);
-    }
-
     [Fact]
     public void AWarnedLineMarksNothing()
     {
@@ -109,7 +101,6 @@ public sealed class PreflightAnchorTests
     [
         new() { Key = "video", Number = 1, Label = "Video" },
         new() { Key = "network", Number = 2, Label = "Network" },
-        new() { Key = SetupSteps.SummaryKey, Number = 3, Label = SetupSteps.SummaryLabel },
     ];
 
     private static IReadOnlyList<StepChipViewModel> Chips(IReadOnlyList<PreflightCheckRow> checks)

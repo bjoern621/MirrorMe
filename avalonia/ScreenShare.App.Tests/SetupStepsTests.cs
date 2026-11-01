@@ -26,7 +26,7 @@ public sealed class SetupStepsTests
     }
 
     [Fact]
-    public async Task TheStripIsTheFormsGroupsAndOneMore()
+    public async Task TheStripIsTheFormsGroups()
     {
         var backend = new SeededBackend("linux");
         var form = await backend.ResolveFormAsync(await backend.SettingsAsync());
@@ -35,15 +35,12 @@ public sealed class SetupStepsTests
         // Form names the groups and this shell places them.
         var sent = form.Groups.Where(group => GroupPlacement.InSetup(group.Key)).ToList();
 
-        Assert.Equal(sent.Count + 1, flow.Steps.Count);
-        Assert.Equal(
-            sent.Select(group => group.Key).Append(SetupSteps.SummaryKey),
-            flow.Steps.Select(step => step.Key));
+        Assert.Equal(sent.Select(group => group.Key), flow.Steps.Select(step => step.Key));
         // Chip titles are this shell's, keyed by the form's group key.
         // What fits on a chip is this strip's decision, the contract not seeing how wide one is.
         Assert.Equal(
             sent.Select(group => Fields.Group(group.Key).Title),
-            flow.Steps.Take(sent.Count).Select(step => step.Label));
+            flow.Steps.Select(step => step.Label));
     }
 
     /// <summary>
@@ -61,9 +58,6 @@ public sealed class SetupStepsTests
         Assert.Contains(form.Groups, group => GroupPlacement.InViewer(group.Key));
 
         Assert.DoesNotContain(flow.Steps, step => GroupPlacement.InViewer(step.Key));
-        Assert.DoesNotContain(
-            flow.Review.Tiles,
-            tile => tile.Heading == Fields.Group(GroupPlacement.WatchGroup).Title);
 
         flow.CurrentStep = GroupPlacement.WatchGroup;
         Assert.Equal(flow.Steps[0].Key, flow.Steps.Single(step => step.IsCurrent).Key);
@@ -71,7 +65,7 @@ public sealed class SetupStepsTests
 
     /// <summary>
     /// What the stream shares is decided at the press that starts one,
-    /// so the wizard carries no step for it and reads none back.
+    /// so the wizard carries no step for it.
     /// </summary>
     [Fact]
     public async Task TheShareGroupIsNoStepOfTheWizard()
@@ -84,9 +78,6 @@ public sealed class SetupStepsTests
         Assert.Contains(form.Groups, group => GroupPlacement.InPicker(group.Key));
 
         Assert.DoesNotContain(flow.Steps, step => GroupPlacement.InPicker(step.Key));
-        Assert.DoesNotContain(
-            flow.Review.Tiles,
-            tile => tile.Heading == Fields.Group(ShareLayout.GroupKey).Title);
     }
 
     [Fact]
@@ -97,12 +88,6 @@ public sealed class SetupStepsTests
         foreach (var step in flow.Steps.ToList())
         {
             flow.CurrentStep = step.Key;
-
-            if (step.Key == SetupSteps.SummaryKey)
-            {
-                Assert.True(flow.ShowsReview);
-                continue;
-            }
 
             if (step.Key == QualityLayout.GroupKey)
             {
@@ -118,8 +103,9 @@ public sealed class SetupStepsTests
         }
     }
 
+    /// <summary>The last step's foot carries the commit in place of Continue, and no earlier step's does.</summary>
     [Fact]
-    public async Task TheFlowOpensOnTheFirstGroupAndWalksToTheEnd()
+    public async Task TheFlowOpensOnTheFirstGroupAndWalksToTheCommit()
     {
         var flow = await FlowAsync();
 
@@ -128,11 +114,12 @@ public sealed class SetupStepsTests
 
         while (flow.CanContinue)
         {
+            Assert.False(flow.ShowsCommit);
             flow.ContinueCommand.Execute(null);
         }
 
-        Assert.Equal(SetupSteps.SummaryKey, flow.Steps.Single(step => step.IsCurrent).Key);
-        Assert.True(flow.ShowsReview);
+        Assert.Equal(flow.Steps[^1].Key, flow.Steps.Single(step => step.IsCurrent).Key);
+        Assert.True(flow.ShowsCommit);
     }
 
     /// <summary>Fallback is read through rather than written back, so a group that returns puts the reader back on it.</summary>
@@ -147,17 +134,6 @@ public sealed class SetupStepsTests
         Assert.True(flow.ShowsFields);
     }
 
-    /// <summary>One shorthand per group feeds both, so strip and review cannot name two configurations.</summary>
-    [Fact]
-    public async Task TheReviewReadsBackWhatTheStripSays()
-    {
-        var flow = await FlowAsync();
-
-        Assert.Equal(flow.Steps.Count - 1, flow.Review.Tiles.Count);
-        Assert.Equal(
-            flow.Steps.Take(flow.Review.Tiles.Count).Select(step => step.Value),
-            flow.Review.Tiles.Select(tile => tile.Lines));
-    }
 }
 
 /// <summary>Every figure on the rail is the form's own estimate, never a number composed here.</summary>
@@ -237,7 +213,6 @@ public sealed class CostRailTests
         Assert.Contains("upload", warned.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains(owner.Label, warned.Anchor.Label);
         Assert.True(flow.Rail.IsOverUplink);
-        Assert.Equal(flow.Rail.ChecksSummary, flow.Steps.Single(step => step.IsTerminal).Value);
     }
 
     [Fact]
@@ -251,8 +226,7 @@ public sealed class CostRailTests
 
     /// <summary>
     /// One column, drawn the same on every step.
-    /// Checks and presets held as the terminal step's own column leave the rail on that step alone,
-    /// and put a preset behind a walk to the end of the flow.
+    /// Checks held as one step's own column would leave the rail on that step alone.
     /// </summary>
     [Fact]
     public async Task TheRailIsTheSameColumnOnEveryStep()
