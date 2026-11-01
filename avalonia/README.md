@@ -375,6 +375,8 @@ a second shell draws a second grid and a second menu over the backend the first 
 `task avalonia` sets it, a checkout run and an installed app sharing this endpoint the way they share the backend's.
 
 The menu decides nothing.
+While sharing it opens on a line naming how many watch, read off the relay snapshot the insights screen reads.
+It carries no running time, a figure moving every second rebuilding the desktop's menu under the pointer.
 Its commit row presses the setup flow's commit and the insights screen's stop, so gate, wait and refusal surface stay one each, and a refusal lands where the window already shows it.
 The preset rows are the presets card's, applied through the card's own commands, and a pick while a stream is live is the commit's apply, a restart.
 The icon says whether this machine is sharing, as a second baked asset (`task icons`).

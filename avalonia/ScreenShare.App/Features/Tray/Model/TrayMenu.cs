@@ -51,6 +51,9 @@ public sealed record TrayMenu
     /// <summary>Whether a stream is on the air, which also picks the tray icon.</summary>
     public required bool IsLive { get; init; }
 
+    /// <summary>The live state the menu opens on, empty while nothing is shared.</summary>
+    public required string State { get; init; }
+
     /// <summary>Start sharing or stop sharing, following what committing would do.</summary>
     public required string CommitLabel { get; init; }
 
@@ -63,6 +66,7 @@ public sealed record TrayMenu
     {
         IsIconWanted = false,
         IsLive = false,
+        State = "",
         CommitLabel = CommitCopy.Of(PublishCommit.Start).Label,
         CanCommit = false,
         Presets = [],
@@ -72,6 +76,7 @@ public sealed record TrayMenu
         => other is not null
            && IsIconWanted == other.IsIconWanted
            && IsLive == other.IsLive
+           && State == other.State
            && CommitLabel == other.CommitLabel
            && CanCommit == other.CanCommit
            && Presets.SequenceEqual(other.Presets);

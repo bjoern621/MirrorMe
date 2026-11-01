@@ -175,13 +175,23 @@ public sealed class TrayIconHost : IDisposable
     {
         var built = new NativeMenu();
 
+        // A line to read, inert: the desktop draws a disabled row as text.
+        if (menu.State.Length > 0)
+        {
+            built.Items.Add(new NativeMenuItem(menu.State) { IsEnabled = false });
+            built.Items.Add(new NativeMenuItemSeparator());
+        }
+
         var commit = new NativeMenuItem(menu.CommitLabel) { IsEnabled = menu.CanCommit };
         commit.Click += (_, _) => _tray.Commit();
         built.Items.Add(commit);
 
         if (menu.Presets.Count > 0)
         {
-            built.Items.Add(new NativeMenuItem(TrayCopy.Presets) { Menu = PresetsOf(menu.Presets) });
+            built.Items.Add(new NativeMenuItem(menu.IsLive ? TrayCopy.SwitchPreset : TrayCopy.Presets)
+            {
+                Menu = PresetsOf(menu.Presets),
+            });
         }
 
         built.Items.Add(new NativeMenuItemSeparator());

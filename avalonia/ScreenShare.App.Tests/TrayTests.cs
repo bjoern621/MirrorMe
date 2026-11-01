@@ -98,6 +98,26 @@ public sealed class TrayTests
         Assert.True(opened.Tray.Menu.CanCommit);
     }
 
+    /// <summary>The menu opens on the state, read live: sharing, and how many watch.</summary>
+    [Fact]
+    public void ALiveStreamSaysWhoIsWatching()
+    {
+        var relay = new RelayStatus { Reachable = true };
+        relay.Paths.Add(new RelayPath { Name = "lab04", Ready = true, Readers = 3 });
+
+        var opened = Open(new PublishingBackend { Publish = Live("lab04"), Relay = relay });
+
+        Assert.Equal("Sharing · 3 watching", opened.Tray.Menu.State);
+    }
+
+    [Fact]
+    public void NothingOnTheAirStatesNothing()
+    {
+        var opened = Open(new PublishingBackend());
+
+        Assert.Equal("", opened.Tray.Menu.State);
+    }
+
     /// <summary>The tray reads the same gate the review's button does, so the two cannot disagree.</summary>
     [Fact]
     public void AnUnreachableRelayLocksTheStart()

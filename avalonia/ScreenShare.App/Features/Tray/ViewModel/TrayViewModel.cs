@@ -1,5 +1,6 @@
 using ScreenShare.App.Backend;
 using ScreenShare.App.Contracts;
+using ScreenShare.App.Features.Insights.Model;
 using ScreenShare.App.Features.Insights.ViewModel;
 using ScreenShare.App.Features.Setup.Model;
 using ScreenShare.App.Features.Setup.Presets.ViewModel;
@@ -155,6 +156,7 @@ public sealed class TrayViewModel : Observable
         {
             IsIconWanted = _form.Draft?.App?.TrayIcon ?? false,
             IsLive = live,
+            State = live ? StateOf() : "",
             CommitLabel = live ? InsightsViewModel.StopLabel : CommitCopy.Of(PublishCommit.Start).Label,
 
             // The command asked rather than a gate composed here, so the row and the press cannot disagree.
@@ -169,6 +171,9 @@ public sealed class TrayViewModel : Observable
             Menu.Presets.Count == card.Builtin.Count + card.Rows.Count,
             "a tray row per preset the card lists", Menu.Presets.Count);
     }
+
+    /// <summary>Audience, read off the same snapshot the insights screen composes.</summary>
+    private string StateOf() => TrayCopy.State(InsightsSnapshot.Of(_session.Publish, _session.Stats, _session.Relay).Viewers);
 
     /// <summary>Built-in rows first, saved rows after them, both in the card's own order.</summary>
     private static IReadOnlyList<TrayPresetEntry> EntriesOf(PresetsViewModel card)

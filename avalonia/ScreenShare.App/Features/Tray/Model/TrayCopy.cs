@@ -15,6 +15,15 @@ public static class TrayCopy
     /// <summary>Heading of the submenu, the word the rail's card uses for the same list.</summary>
     public const string Presets = "Presets";
 
+    /// <summary>The submenu's heading while sharing, a pick there restarting the stream on the preset.</summary>
+    public const string SwitchPreset = "Switch preset";
+
+    /// <summary>
+    /// The line the menu opens on while sharing: <c>Sharing · 3 watching</c>.
+    /// No running time: a figure moving every second would rebuild the desktop's menu under the pointer.
+    /// </summary>
+    public static string State(int? viewers) => viewers is > 0 ? $"Sharing · {viewers} watching" : "Sharing";
+
     public const string Open = "Open MirrorMe";
 
     /// <summary>The one full-shutdown path: window, tray and the backend this shell started.</summary>
