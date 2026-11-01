@@ -105,6 +105,8 @@ public static class Statements
             TextCode.ScaledFromSource =>
                 $"from {Plain(a.Width)} × {Plain(a.Height)}",
 
+            TextCode.DetailStep => Words.DetailStep(a.DetailStep),
+
             // Publish engines and the encoder probe.
 
             TextCode.EngineToolingMissing =>
@@ -812,6 +814,8 @@ public static class Statements
         public string Window => Id(TextArgName.Window);
 
         public string Region => Id(TextArgName.Region);
+
+        public string DetailStep => Id(TextArgName.DetailStep);
 
         public string Os => Id(TextArgName.Os);
 

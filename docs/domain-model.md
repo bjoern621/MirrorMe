@@ -122,6 +122,13 @@ A row states where each mode starts on its ladder, and which modes pin the step 
 A pin is a fact about the encoder: one vendor fixes its preset under constant bitrate because a low-latency preset is what lets it hold a constant rate.
 The form greys a pinned control and names the step in force, and both builders spend the declared step, so the sentence cannot name one the encode is not running.
 
+## The detail steps
+
+The quantizer offers three steps beside its range: lighter, clean and sharper.
+Each is stated once on the 51-point scale and placed on the selected codec's scale by proportion, the conversion a preset's target takes.
+Each entry names its step, the number alone saying nothing once the scale differs.
+A held quantizer off the steps stays offered.
+
 ## How each engine spells a step
 
 Both builders read the row through one resolver, keeping a stream's look off the capture backend that produced it: one library through two bindings encodes alike.

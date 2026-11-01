@@ -183,6 +183,8 @@ enum TextArgName {
   TEXT_ARG_NAME_CHANNEL = 66;
   // A release, spelled as the tag spells it: "v0.5.1".
   TEXT_ARG_NAME_VERSION = 67;
+  // A step of the quantizer's detail ladder, least detail first: "lighter", "clean", "sharper".
+  TEXT_ARG_NAME_DETAIL_STEP = 71;
 
   // Reserved for a rename rather than a removal:
   // TEXT_ARG_NAME_EFFORT carries the number,
@@ -258,6 +260,10 @@ enum TextCode {
   // Scaled output resolution, and the source it was derived from.
   // TEXT_ARG_NAME_WIDTH and TEXT_ARG_NAME_HEIGHT are the source's.
   TEXT_CODE_SCALED_FROM_SOURCE = 6;
+  // Quantizer entry standing for one step of the detail ladder on this codec's scale,
+  // the number alone not saying which step it is once the scale differs from 0..51.
+  // TEXT_ARG_NAME_DETAIL_STEP.
+  TEXT_CODE_DETAIL_STEP = 199;
   // This session has no capture element that reads one output apart from another,
   // so there is no picture of a single monitor to show.
   // TEXT_ARG_NAME_OS and, on Linux, TEXT_ARG_NAME_DISPLAY:

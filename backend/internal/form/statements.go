@@ -44,6 +44,7 @@ const (
 	noRegionPicked          = screensharev1.TextCode_TEXT_CODE_NO_REGION_PICKED
 	regionOffScreen         = screensharev1.TextCode_TEXT_CODE_REGION_OFF_SCREEN
 	scaledFromSource        = screensharev1.TextCode_TEXT_CODE_SCALED_FROM_SOURCE
+	detailStep              = screensharev1.TextCode_TEXT_CODE_DETAIL_STEP
 	engineToolingMissing    = screensharev1.TextCode_TEXT_CODE_ENGINE_TOOLING_MISSING
 	engineHasNoPublishSink  = screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_PUBLISH_SINK
 	// The app builds this leg and the machine cannot run what it builds,
@@ -241,6 +242,10 @@ func argRegion(v string) *screensharev1.TextArg {
 
 func argMonitor(v int) *screensharev1.TextArg {
 	return text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_MONITOR, int64(v))
+}
+
+func argDetailStep(v string) *screensharev1.TextArg {
+	return text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_DETAIL_STEP, v)
 }
 
 func argWidth(v int) *screensharev1.TextArg {

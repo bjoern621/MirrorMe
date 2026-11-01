@@ -261,8 +261,9 @@ var fieldTable = []field{
 	{
 		key:     KeyCq,
 		group:   GroupQuality,
-		control: screensharev1.ControlKind_CONTROL_KIND_SLIDER,
+		control: screensharev1.ControlKind_CONTROL_KIND_NUMBER_SELECT,
 		value:   func(s settings.Settings) *screensharev1.FieldValue { return number(s.Publish.Cq) },
+		options: optionCqSteps,
 		bounds:  fieldCqBounds,
 	},
 	{

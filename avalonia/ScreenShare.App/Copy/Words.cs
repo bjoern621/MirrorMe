@@ -230,6 +230,13 @@ public static class Words
         ["tv"] = "Limited range (16-235)",
     };
 
+    private static readonly Dictionary<string, string> DetailSteps = new()
+    {
+        ["lighter"] = "Lighter",
+        ["clean"] = "Clean",
+        ["sharper"] = "Sharper",
+    };
+
     /// <summary>
     /// Effort ladders, every encoder's steps in one table.
     /// A step is the encoder's own identifier, and the backend offers whichever ladder the selected codec declares,
@@ -464,6 +471,8 @@ public static class Words
     public static string ColorRange(string id) => Look(ColorRanges, id);
 
     public static string Effort(string id) => Look(Efforts, id);
+
+    public static string DetailStep(string id) => Look(DetailSteps, id);
 
     public static string Tune(string id) => Look(Tunes, id);
 

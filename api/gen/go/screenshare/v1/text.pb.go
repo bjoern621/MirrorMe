@@ -176,6 +176,8 @@ const (
 	TextArgName_TEXT_ARG_NAME_CHANNEL TextArgName = 66
 	// A release, spelled as the tag spells it: "v0.5.1".
 	TextArgName_TEXT_ARG_NAME_VERSION TextArgName = 67
+	// A step of the quantizer's detail ladder, least detail first: "lighter", "clean", "sharper".
+	TextArgName_TEXT_ARG_NAME_DETAIL_STEP TextArgName = 71
 )
 
 // Enum value maps for TextArgName.
@@ -247,6 +249,7 @@ var (
 		65: "TEXT_ARG_NAME_NEXT_TRANSPORT",
 		66: "TEXT_ARG_NAME_CHANNEL",
 		67: "TEXT_ARG_NAME_VERSION",
+		71: "TEXT_ARG_NAME_DETAIL_STEP",
 	}
 	TextArgName_value = map[string]int32{
 		"TEXT_ARG_NAME_UNSPECIFIED":        0,
@@ -315,6 +318,7 @@ var (
 		"TEXT_ARG_NAME_NEXT_TRANSPORT":     65,
 		"TEXT_ARG_NAME_CHANNEL":            66,
 		"TEXT_ARG_NAME_VERSION":            67,
+		"TEXT_ARG_NAME_DETAIL_STEP":        71,
 	}
 )
 
@@ -378,6 +382,10 @@ const (
 	// Scaled output resolution, and the source it was derived from.
 	// TEXT_ARG_NAME_WIDTH and TEXT_ARG_NAME_HEIGHT are the source's.
 	TextCode_TEXT_CODE_SCALED_FROM_SOURCE TextCode = 6
+	// Quantizer entry standing for one step of the detail ladder on this codec's scale,
+	// the number alone not saying which step it is once the scale differs from 0..51.
+	// TEXT_ARG_NAME_DETAIL_STEP.
+	TextCode_TEXT_CODE_DETAIL_STEP TextCode = 199
 	// This session has no capture element that reads one output apart from another,
 	// so there is no picture of a single monitor to show.
 	// TEXT_ARG_NAME_OS and, on Linux, TEXT_ARG_NAME_DISPLAY:
@@ -870,6 +878,7 @@ var (
 		4:   "TEXT_CODE_CAPTURE_TAKES_NO_MONITOR",
 		5:   "TEXT_CODE_MONITOR_NOT_ENUMERATED",
 		6:   "TEXT_CODE_SCALED_FROM_SOURCE",
+		199: "TEXT_CODE_DETAIL_STEP",
 		7:   "TEXT_CODE_NO_MONITOR_PREVIEW",
 		191: "TEXT_CODE_CAPTURE_TAKES_NO_SHARE_KIND",
 		192: "TEXT_CODE_CAPTURE_ASKS_WHAT_TO_SHARE",
@@ -1025,6 +1034,7 @@ var (
 		"TEXT_CODE_CAPTURE_TAKES_NO_MONITOR":                  4,
 		"TEXT_CODE_MONITOR_NOT_ENUMERATED":                    5,
 		"TEXT_CODE_SCALED_FROM_SOURCE":                        6,
+		"TEXT_CODE_DETAIL_STEP":                               199,
 		"TEXT_CODE_NO_MONITOR_PREVIEW":                        7,
 		"TEXT_CODE_CAPTURE_TAKES_NO_SHARE_KIND":               191,
 		"TEXT_CODE_CAPTURE_ASKS_WHAT_TO_SHARE":                192,
@@ -1462,7 +1472,7 @@ const file_screenshare_v1_text_proto_rawDesc = "" +
 	"\x05value\"a\n" +
 	"\x04Text\x12,\n" +
 	"\x04code\x18\x01 \x01(\x0e2\x18.screenshare.v1.TextCodeR\x04code\x12+\n" +
-	"\x04args\x18\x02 \x03(\v2\x17.screenshare.v1.TextArgR\x04args*\x89\x0f\n" +
+	"\x04args\x18\x02 \x03(\v2\x17.screenshare.v1.TextArgR\x04args*\xa8\x0f\n" +
 	"\vTextArgName\x12\x1d\n" +
 	"\x19TEXT_ARG_NAME_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15TEXT_ARG_NAME_CAPTURE\x10\x01\x12\x18\n" +
@@ -1530,7 +1540,8 @@ const file_screenshare_v1_text_proto_rawDesc = "" +
 	"\x1eTEXT_ARG_NAME_GOP_LIMIT_FRAMES\x10@\x12 \n" +
 	"\x1cTEXT_ARG_NAME_NEXT_TRANSPORT\x10A\x12\x19\n" +
 	"\x15TEXT_ARG_NAME_CHANNEL\x10B\x12\x19\n" +
-	"\x15TEXT_ARG_NAME_VERSION\x10C\"\x04\b3\x103*\x18TEXT_ARG_NAME_ENC_PRESET*\x16TEXT_ARG_NAME_RAW_MBPS*\xb62\n" +
+	"\x15TEXT_ARG_NAME_VERSION\x10C\x12\x1d\n" +
+	"\x19TEXT_ARG_NAME_DETAIL_STEP\x10G\"\x04\b3\x103*\x18TEXT_ARG_NAME_ENC_PRESET*\x16TEXT_ARG_NAME_RAW_MBPS*\xd22\n" +
 	"\bTextCode\x12\x19\n" +
 	"\x15TEXT_CODE_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aTEXT_CODE_CAPTURE_WRONG_OS\x10\x01\x12#\n" +
@@ -1538,7 +1549,8 @@ const file_screenshare_v1_text_proto_rawDesc = "" +
 	"\x1dTEXT_CODE_CAPTURE_NEEDS_GRANT\x10\x03\x12&\n" +
 	"\"TEXT_CODE_CAPTURE_TAKES_NO_MONITOR\x10\x04\x12$\n" +
 	" TEXT_CODE_MONITOR_NOT_ENUMERATED\x10\x05\x12 \n" +
-	"\x1cTEXT_CODE_SCALED_FROM_SOURCE\x10\x06\x12 \n" +
+	"\x1cTEXT_CODE_SCALED_FROM_SOURCE\x10\x06\x12\x1a\n" +
+	"\x15TEXT_CODE_DETAIL_STEP\x10\xc7\x01\x12 \n" +
 	"\x1cTEXT_CODE_NO_MONITOR_PREVIEW\x10\a\x12*\n" +
 	"%TEXT_CODE_CAPTURE_TAKES_NO_SHARE_KIND\x10\xbf\x01\x12)\n" +
 	"$TEXT_CODE_CAPTURE_ASKS_WHAT_TO_SHARE\x10\xc0\x01\x12\x1f\n" +
