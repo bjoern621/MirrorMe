@@ -30,7 +30,7 @@ public sealed class StatusBarVersionTests
         }
 
         var band = new StatusBarViewModel(Flows.Updates(backend));
-        band.Show(destination, [], "", version);
+        band.Show(destination, "", version);
         return band;
     }
 
@@ -77,13 +77,13 @@ public sealed class StatusBarVersionTests
     /// nothing else in (<c>docs/development-principles.md</c>, "One render function").
     /// </summary>
     [Fact]
-    public void TheBuildSurvivesAPassThatStatesNoFigures()
+    public void TheBuildSurvivesAPassThatStatesNoHint()
     {
         var band = Band(Destination.Viewer);
-        band.Show(Destination.Viewer, ["12 Mbit/s"], "hint", Build);
-        band.Show(Destination.Setup, [], "", Build);
+        band.Show(Destination.Viewer, "hint", Build);
+        band.Show(Destination.Setup, "", Build);
 
-        Assert.False(band.ShowsMetrics);
+        Assert.False(band.ShowsHint);
         Assert.True(band.ShowsRelease);
         Assert.Equal("v" + Build, band.Release);
     }

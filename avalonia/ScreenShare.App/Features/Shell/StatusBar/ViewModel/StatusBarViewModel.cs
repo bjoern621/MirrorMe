@@ -1,6 +1,4 @@
-using System.Collections.ObjectModel;
 using ScreenShare.App.Contracts;
-using ScreenShare.App.Features.Insights.Model;
 using ScreenShare.App.Features.Shell.Model;
 using ScreenShare.App.Features.Shell.Update.ViewModel;
 using ScreenShare.App.Mvvm;
@@ -9,12 +7,8 @@ using UpdateCopy = ScreenShare.App.Copy.Updates;
 namespace ScreenShare.App.Features.Shell.StatusBar.ViewModel;
 
 /// <summary>
-/// Bottom band: what this computer's connection is carrying and the sentence saying what the view in front of it
+/// Bottom band: the build or the release found beside it, and the sentence saying what the view in front of it
 /// affords.
-///
-/// The figures are the app's own fact and hold in every destination, a stream being published from one screen and
-/// watched from another (<c>Features/Shell/StatusBar/Model/NetworkLoad.cs</c>).
-/// The sentence beside them speaks for the view it belongs to.
 /// The band holds its height in every destination and says nothing where there is nothing to state.
 /// </summary>
 public sealed class StatusBarViewModel : Observable
@@ -45,31 +39,21 @@ public sealed class StatusBarViewModel : Observable
     // --- What the shell says -------------------------------------------------------
 
     private Destination _current = Destination.Setup;
-    private IReadOnlyList<string> _figuresLoad = [];
     private string _figuresHint = "";
     private string _build = "";
 
     /// <summary>
     /// Band's whole input.
-    /// The figures arrive rather than being held here: the shell derives them off the running state, and
-    /// a band holding its own copy would go on printing the throughput of a torn-down decoder.
-    ///
-    /// They arrive as a list rather than as named slots, so a direction with nothing to state is absent
-    /// instead of reading zero.
-    /// A field per figure is a band edited whenever one of them splits in two.
-    ///
     /// <paramref name="build"/> is the backend's own, off the handshake, and is empty until it settles.
-    /// It arrives with the figures rather than being set once, so the band keeps one render pass.
+    /// It arrives with the hint rather than being set once, so the band keeps one render pass.
     /// Idempotent.
     /// </summary>
-    public void Show(Destination current, IReadOnlyList<string> load, string hint, string build)
+    public void Show(Destination current, string hint, string build)
     {
-        Assert.NotNull(load, "a status band is told what this computer's connection is carrying");
         Assert.NotNull(hint, "a status band is told what the view in front of it affords");
         Assert.NotNull(build, "a status band is told which build is running");
 
         _current = current;
-        _figuresLoad = load;
         _figuresHint = hint;
         _build = build;
         Apply();
@@ -77,18 +61,11 @@ public sealed class StatusBarViewModel : Observable
 
     // --- Outputs -------------------------------------------------------------------
 
-    private bool _showsMetrics;
     private string _hint = "";
     private bool _showsHint;
     private string _release = "";
     private bool _showsRelease;
     private string _releaseHint = "";
-
-    /// <summary>Whether this destination has figures worth stating.</summary>
-    public bool ShowsMetrics { get => _showsMetrics; private set => Set(ref _showsMetrics, value); }
-
-    /// <summary>Measurements, in the order the destination handed them over.</summary>
-    public ObservableCollection<string> Load { get; } = [];
 
     /// <summary>Trailing sentence. Contextual rather than measured: it moves with the view.</summary>
     public string Hint { get => _hint; private set => Set(ref _hint, value); }
@@ -97,7 +74,7 @@ public sealed class StatusBarViewModel : Observable
 
     /// <summary>
     /// The band's one line about the release: what a check found, or the running build where it found nothing.
-    /// The build is marked as a version so it reads as one beside figures that are measurements.
+    /// The build is marked as a version.
     /// </summary>
     public string Release { get => _release; private set => Set(ref _release, value); }
 
@@ -130,12 +107,6 @@ public sealed class StatusBarViewModel : Observable
     /// </summary>
     private void Render()
     {
-        ShowsMetrics = _figuresLoad.Count > 0;
-
-        // Emptied where nothing is carried, rather than left standing
-        // (docs/development-principles.md, "One render function").
-        Reconcile.Onto(Load, _figuresLoad);
-
         Hint = HintedIn(_current) ? _figuresHint : "";
         ShowsHint = Hint.Length > 0;
 
@@ -149,7 +120,6 @@ public sealed class StatusBarViewModel : Observable
         ShowsRelease = !Updates.IsFailure && Release.Length > 0;
         ReleaseHint = line.Length > 0 ? UpdateCopy.Tip(build, Updates.PressHint) : Updates.PressHint;
 
-        Assert.That(ShowsMetrics == (Load.Count > 0), "the figures and the flag drawing them agree", ShowsMetrics, Load.Count);
         Assert.That(ShowsHint == (Hint.Length > 0), "the trailing hint and its text agree", ShowsHint, Hint);
         Assert.That(
             ShowsRelease == (Release.Length > 0 && !Updates.IsFailure),

@@ -57,24 +57,6 @@
                              TextWrapping="Wrap"
                              MaxWidth="420"
                              VerticalAlignment="Center" />
-
-        <!-- Tighter spacing inside than the panel's own: the figures read as one group. -->
-        <ItemsControl ItemsSource="{Binding Load}">
-          <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-              <StackPanel Orientation="Horizontal"
-                          Spacing="{StaticResource GapPanel}" />
-            </ItemsPanelTemplate>
-          </ItemsControl.ItemsPanel>
-
-          <ItemsControl.ItemTemplate>
-            <DataTemplate x:DataType="sys:String">
-              <TextBlock Classes="figure"
-                         Text="{Binding}"
-                         VerticalAlignment="Center" />
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
       </StackPanel>
 
       <!--

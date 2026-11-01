@@ -14,7 +14,6 @@ using ScreenShare.App.Features.Shell.Model;
 using ScreenShare.App.Features.Shell.NavStrip.ViewModel;
 using ScreenShare.App.Features.Shell.Settings.Model;
 using ScreenShare.App.Features.Shell.Settings.ViewModel;
-using ScreenShare.App.Features.Shell.StatusBar.Model;
 using ScreenShare.App.Features.Shell.StatusBar.ViewModel;
 using ScreenShare.App.Features.Shell.TitleBar.ViewModel;
 using ScreenShare.App.Features.Shell.Update.ViewModel;
@@ -512,24 +511,8 @@ public sealed class ShellViewModel : Observable
         }
     }
 
-    /// <summary>
-    /// Hands the band what this computer's connection carries and the destination it stands in.
-    /// The figures are the app's own fact rather than one screen's, so they are derived here and hold wherever
-    /// the reader is standing: a stream is published from the live screen and watched from the viewer.
-    /// Read through on every call and cached nowhere here, so the band and the tiles cannot disagree about what
-    /// is on screen.
-    /// Idempotent.
-    /// </summary>
-    private void RenderStatusBar()
-        => StatusBar.Show(
-            _current,
-            NetworkLoad.Of(
-                _session.Relay,
-                _session.Publish?.Live?.StreamName ?? "",
-                _session.TestStreams?.Slots ?? [],
-                _session.ReceiveStats),
-            Viewer.Hint,
-            _session.Version);
+    /// <summary>Hands the band the destination it stands in, its hint and the build. Idempotent.</summary>
+    private void RenderStatusBar() => StatusBar.Show(_current, Viewer.Hint, _session.Version);
 
     /// <summary>
     /// Whether the window's bands are drawn, derived from the destination and what that destination shows.

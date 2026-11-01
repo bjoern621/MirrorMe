@@ -137,9 +137,7 @@ That screen reports the stream that has ended as well as the one running, which 
 An expert tool teaches its own shape, and a tab that comes and goes reads as a bug.
 
 The status band along the foot states the running build, leading the row and drawn in every destination.
-The figures beside it are what this computer's connection carries, sent and received, and hold wherever the reader is standing:
-a stream is published from the live screen and watched from the viewer.
-A direction carrying nothing is absent rather than reading zero.
+Rates stand on the insights screen and on each tile, so the band carries none.
 It goes here rather than in the title bar because the foot is the one band every platform draws.
 
 ## The wizard's floor
