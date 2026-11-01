@@ -306,7 +306,7 @@ public sealed class AppSettingsViewModel : Observable
         _form.Sync();
 
         var form = _form.Form;
-        Group.Apply(GroupOf(form), _session.Words, form?.Settings, _form.IsAnswered);
+        Group.Apply(GroupOf(form), _session.Words, form?.Settings, _form.IsAnswered, form?.Diagnostics);
         CrashReports = Group.Visible(CrashReportsKey);
         CheckUpdatesOnStart = Group.Visible(CheckUpdatesOnStartKey);
         TrayIcon = Group.Visible(TrayIconKey);

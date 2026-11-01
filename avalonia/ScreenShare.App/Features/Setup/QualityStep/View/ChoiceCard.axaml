@@ -1,5 +1,7 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:ScreenShare.App.Controls"
+                    xmlns:ti="using:TablerIcons"
                     xmlns:fields="using:ScreenShare.App.Features.Fields.ViewModel">
 
   <!--
@@ -17,7 +19,7 @@
             Command="{Binding Choose}">
       <StackPanel Spacing="3">
         <!-- A grid: a horizontal stack measures against infinite width, and the name would run past the edge. -->
-        <Grid ColumnDefinitions="Auto,*">
+        <Grid ColumnDefinitions="Auto,*,Auto">
           <Ellipse Grid.Column="0" Classes="radiodot" />
           <TextBlock Grid.Column="1"
                      Classes="cardtitle"
@@ -26,6 +28,16 @@
                      TextWrapping="Wrap"
                      TextTrimming="None"
                      VerticalAlignment="Center" />
+          <!-- What picking this entry would raise, named on hover. The picked entry's stand under the question. -->
+          <ti:TablerIcon Grid.Column="2"
+                         Classes="impact"
+                         Classes.warns="{Binding ImpactWarns}"
+                         Classes.blocks="{Binding ImpactBlocks}"
+                         Margin="6,0,0,0"
+                         VerticalAlignment="Center"
+                         IsVisible="{Binding ShowsImpactMark}"
+                         Icon="{Binding ImpactState, Converter={x:Static controls:CheckGlyphConverter.Instance}}"
+                         ToolTip.Tip="{Binding ImpactTip}" />
         </Grid>
         <TextBlock Classes="hint"
                    Margin="20,0,0,0"

@@ -487,7 +487,8 @@ public sealed class SetupViewModel : Observable
 
         foreach (var key in _groups.Keys.ToList())
         {
-            _groups[key].Apply(GroupOf(drawn, key), _session.Words, form?.Settings, _form.IsAnswered);
+            _groups[key].Apply(GroupOf(drawn, key), _session.Words, form?.Settings, _form.IsAnswered,
+                form?.Diagnostics);
         }
 
         // After its group, the step reading the fields that pass rendered.

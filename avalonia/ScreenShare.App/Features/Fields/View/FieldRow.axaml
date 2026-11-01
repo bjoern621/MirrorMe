@@ -2,6 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:vm="using:ScreenShare.App.Features.Fields.ViewModel"
                     xmlns:controls="using:ScreenShare.App.Controls"
+                    xmlns:model="using:ScreenShare.App.Features.Fields.Model"
                     xmlns:ti="using:TablerIcons">
 
   <!--
@@ -245,6 +246,15 @@
                  TextTrimming="None"
                  IsVisible="{Binding HasNote}"
                  Text="{Binding Note}" />
+
+      <!-- What the form says about the settings at this control, under it where the reader fixes it. -->
+      <ItemsControl ItemsSource="{Binding Diagnostics}" IsVisible="{Binding HasDiagnostics}" Margin="0,4,0,0">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="model:Impact">
+            <controls:CheckItem Margin="0,0,0,7" Text="{Binding Text}" State="{Binding State}" />
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
     </StackPanel>
   </DataTemplate>
 

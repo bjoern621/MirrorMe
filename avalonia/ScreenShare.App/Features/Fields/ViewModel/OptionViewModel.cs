@@ -1,3 +1,4 @@
+using ScreenShare.App.Controls;
 using ScreenShare.App.Features.Fields.Model;
 using ScreenShare.App.Mvvm;
 
@@ -79,4 +80,19 @@ public sealed record OptionViewModel
     public bool HasPrice => Price.Length > 0;
 
     public bool HasImpacts => Impacts.Count > 0;
+
+    /// <summary>
+    /// Whether the entry carries a mark for what picking it raises.
+    /// The picked entry's statements already stand under its control, so it carries none.
+    /// </summary>
+    public bool ShowsImpactMark => HasImpacts && !IsSelected;
+
+    /// <summary>Rank of the gravest statement, the form ranking them gravest first.</summary>
+    public CheckState ImpactState => HasImpacts ? Impacts[0].State : CheckState.Passed;
+
+    public bool ImpactBlocks => ImpactState == CheckState.Blocking;
+
+    public bool ImpactWarns => ImpactState == CheckState.Warned;
+
+    public string ImpactTip => string.Join("\n", Impacts.Select(impact => impact.Text));
 }

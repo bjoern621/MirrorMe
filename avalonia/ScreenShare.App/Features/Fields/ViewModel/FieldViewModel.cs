@@ -260,6 +260,7 @@ public sealed class FieldViewModel : Observable
     private string _pickedNote = "";
     private bool _hasPickedNote;
     private OptionViewModel? _picked;
+    private ValueList<Impact> _diagnostics = ValueList<Impact>.Empty;
     private bool _hasNothingLeft;
     private bool _isVisible;
     private bool _isEnabled;
@@ -402,6 +403,21 @@ public sealed class FieldViewModel : Observable
     /// null where the value is none of the entries offered, or where every entry is greyed.
     /// </summary>
     public OptionViewModel? Picked { get => _picked; private set => Set(ref _picked, value); }
+
+    /// <summary>What the form says about the settings at this control, drawn under it where the reader fixes it.</summary>
+    public ValueList<Impact> Diagnostics
+    {
+        get => _diagnostics;
+        private set
+        {
+            if (Set(ref _diagnostics, value))
+            {
+                OnPropertyChanged(nameof(HasDiagnostics));
+            }
+        }
+    }
+
+    public bool HasDiagnostics => _diagnostics.Count > 0;
 
     /// <summary>
     /// Whether this combination leaves the control nothing to pick: every entry greyed, the held value with them.
@@ -573,7 +589,10 @@ public sealed class FieldViewModel : Observable
     /// Whether this form answers for the draft as it now stands (<see cref="FormSession.IsAnswered"/>).
     /// False leaves the control holding what the reader put there and draws everything else.
     /// </param>
-    public void Apply(Field field, Vocabulary words, FieldAction? action = null, bool answered = true)
+    /// <param name="diagnostics">The form's diagnostics anchored on this field, ranked.</param>
+    public void Apply(
+        Field field, Vocabulary words, FieldAction? action = null, bool answered = true,
+        IEnumerable<Diagnostic>? diagnostics = null)
     {
         Assert.NotNull(field, "rendering a field needs the field the form described");
         Assert.NotNull(words, "naming a field's entries needs the vocabulary that names them");
@@ -665,6 +684,7 @@ public sealed class FieldViewModel : Observable
         // so a field whose entry went away cannot go on showing the last one it had.
         var picked = Options.FirstOrDefault(option => option.IsSelected);
         Picked = HasNothingLeft ? null : picked;
+        Diagnostics = Impacts.Of(diagnostics ?? []);
         PickedLabel = HasNothingLeft ? Copy.Fields.NothingLeft : picked?.Label ?? Readback;
         PickedNote = HasNothingLeft ? "" : picked?.Note ?? "";
         HasPickedNote = PickedNote.Length > 0;

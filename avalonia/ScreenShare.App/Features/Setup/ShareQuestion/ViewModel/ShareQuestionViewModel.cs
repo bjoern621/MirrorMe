@@ -210,7 +210,7 @@ public sealed class ShareQuestionViewModel : Observable
         // The windows the last read found name the handles the form offers,
         // so the words carry them wherever an entry of that control is drawn.
         var words = _session.Words.With(Windows.Listed);
-        Group.Apply(group, words, form?.Settings, _form.IsAnswered);
+        Group.Apply(group, words, form?.Settings, _form.IsAnswered, form?.Diagnostics);
 
         // The choosers first, the rows below being what none of them drew.
         Screens.Apply(FieldOf(group, ShareLayout.MonitorKey), _inDialog);

@@ -156,7 +156,10 @@ public sealed class FieldGroupViewModel : Observable
     /// Whether this form answers for the draft as it now stands (<see cref="FormSession.IsAnswered"/>),
     /// which decides whether a control takes its value off it (<see cref="FieldViewModel.Apply"/>).
     /// </param>
-    public void Apply(FieldGroup? group, Vocabulary words, Settings? settings, bool answered = true)
+    /// <param name="diagnostics">The form's diagnostics. Each field draws the ones anchored on it.</param>
+    public void Apply(
+        FieldGroup? group, Vocabulary words, Settings? settings, bool answered = true,
+        IReadOnlyList<Diagnostic>? diagnostics = null)
     {
         Assert.NotNull(words, "rendering a group needs the vocabulary that names its entries");
 
@@ -172,7 +175,7 @@ public sealed class FieldGroupViewModel : Observable
         Action = group is null ? null : _groupActionOf(group);
         HasAction = Action is not null;
 
-        var rendered = Rendered(group, words, answered);
+        var rendered = Rendered(group, words, answered, diagnostics ?? []);
         Reconcile.Onto(Fields, rendered);
 
         // Split second, off the one rendered list, so the two halves and the whole cannot disagree.
@@ -195,7 +198,8 @@ public sealed class FieldGroupViewModel : Observable
     /// Every field is rendered, the invisible ones then left out of the list rather than drawn disabled:
     /// a hidden knob's help would teach a reader on another selection nothing (<c>docs/field-availability.md</c>, "The rule").
     /// </summary>
-    private IReadOnlyList<FieldViewModel> Rendered(FieldGroup? group, Vocabulary words, bool answered)
+    private IReadOnlyList<FieldViewModel> Rendered(
+        FieldGroup? group, Vocabulary words, bool answered, IReadOnlyList<Diagnostic> diagnostics)
     {
         if (group is null)
         {
@@ -206,7 +210,8 @@ public sealed class FieldGroupViewModel : Observable
         foreach (var field in group.Fields)
         {
             var model = Of(field.Key);
-            model.Apply(field, words, _actionOf(field.Key), answered);
+            model.Apply(field, words, _actionOf(field.Key), answered,
+                diagnostics.Where(diagnostic => diagnostic.FieldKey == field.Key));
 
             if (model.IsVisible)
             {

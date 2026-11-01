@@ -173,7 +173,7 @@ public sealed class WatchSettingsViewModel : Observable
 
         var form = _form.Form;
         var group = GroupOf(form);
-        Group.Apply(group, _session.Words, form?.Settings, _form.IsAnswered);
+        Group.Apply(group, _session.Words, form?.Settings, _form.IsAnswered, form?.Diagnostics);
 
         // Read through rather than held: this panel and the wizard write one settings message down one queue,
         // so what could not be stored is a single sentence and never one per screen (FormSession.Unsaved).

@@ -29,6 +29,17 @@
       <Setter Property="StrokeThickness" Value="4" />
     </Style>
 
+    <!-- Grey for a note, amber for a warning, red for what stops the stream (docs/design-language.md, "Palette"). -->
+    <Style Selector="ti|TablerIcon.impact">
+      <Setter Property="Brush" Value="{StaticResource MutedBrush}" />
+    </Style>
+    <Style Selector="ti|TablerIcon.impact.warns">
+      <Setter Property="Brush" Value="{StaticResource CautionBrush}" />
+    </Style>
+    <Style Selector="ti|TablerIcon.impact.blocks">
+      <Setter Property="Brush" Value="{StaticResource AttentionBrush}" />
+    </Style>
+
     <!-- An open expert row already names its control in the row heading it, so the field row drops its own label. -->
     <Style Selector="ContentControl.expert TextBlock.fieldlabel">
       <Setter Property="IsVisible" Value="False" />
@@ -101,14 +112,14 @@
                 </ItemsControl.ItemsPanel>
               </ItemsControl>
 
-              <!-- What the picked entry is for, and what picking it raises, once under the question. -->
+              <!-- What the picked entry is for, and what the form says at this control, once under the question. -->
               <TextBlock Classes="secondary"
                          TextWrapping="Wrap"
                          TextTrimming="None"
                          IsVisible="{Binding Field.Picked.HasDetail, FallbackValue=False}"
                          Text="{Binding Field.Picked.Detail, FallbackValue=''}" />
 
-              <ItemsControl ItemsSource="{Binding Field.Picked.Impacts, FallbackValue={x:Null}}">
+              <ItemsControl ItemsSource="{Binding Field.Diagnostics}">
                 <ItemsControl.ItemTemplate>
                   <DataTemplate x:DataType="fields:Impact">
                     <controls:CheckItem Margin="0,0,0,7" Text="{Binding Text}" State="{Binding State}" />
