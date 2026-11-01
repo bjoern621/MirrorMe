@@ -13,6 +13,29 @@
     <Setter Property="CornerRadius" Value="{DynamicResource RadiusPanel}" />
   </Style>
 
+  <!--
+    A question on the step column: on the surface itself, no fill and no edge,
+    so the picked choice is the brightest thing on screen.
+  -->
+  <Style Selector="Border.question">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="0" />
+  </Style>
+
+  <!-- A word pinned to a card, such as Recommended: a capsule that inverts with the card it sits on. -->
+  <Style Selector="Border.tag">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{DynamicResource ChipBorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="{DynamicResource RadiusChip}" />
+    <Setter Property="Padding" Value="8,1" />
+  </Style>
+  <Style Selector="Button.picked Border.tag">
+    <Setter Property="Background" Value="{DynamicResource OnSelectedBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource OnSelectedBrush}" />
+  </Style>
+
   <Style Selector="Border.panel">
     <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
     <Setter Property="BorderBrush" Value="{DynamicResource HairlineBrush}" />

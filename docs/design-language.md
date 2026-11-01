@@ -160,11 +160,16 @@ The fold is view state: opening one is the reader's press, and no run remembers 
 A closed fold carries the mark of what its controls raise, the lines under them being out of view.
 
 Setup draws one column, capped on a wide window.
-Above it the cost bar prices the draft against the uplink on every step.
+Over it the step strip draws a numbered circle per step, the current one inverted with its name beside the number, and a step a blocking line names ringed red.
+Hovering a step names it and what it settled on.
+Above the column the cost bar prices the draft against the uplink on every step, in one row.
+Questions stand on the surface without a card around them, so the picked choice is the brightest thing in the column.
 A diagnostic stands under the control it names.
 The checks card at the column's foot lists the rest: lines about another step or screen, each with the press reaching it, lines about the settings as a whole, and why no pipeline builds.
 A card with nothing left to say is not drawn.
-The action bar floats over the foot on every step: Back and Continue, and the commit in Continue's place on the last step.
+The action bar floats over the foot on every step: Back on the left, Continue on the right with its arrow, and the commit in Continue's place on the last step.
+What the commit promises, stream name included, sits in its hover.
+A window narrower than 520 px keeps Back's arrow alone.
 
 ## Narrow windows
 

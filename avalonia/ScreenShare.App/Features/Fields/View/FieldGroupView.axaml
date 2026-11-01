@@ -13,7 +13,7 @@
     What one control looks like is the shared row (FieldRow.axaml).
   -->
 
-  <Border Classes="card" Padding="16,14" IsVisible="{Binding IsResolved}">
+  <Border Classes="question" IsVisible="{Binding IsResolved}">
     <StackPanel>
       <!--
         Both top-aligned. The action is taller than the title,

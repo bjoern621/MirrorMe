@@ -12,9 +12,16 @@
              xmlns:commit="using:ScreenShare.App.Features.Setup.Commit.View"
              xmlns:relaycheck="using:ScreenShare.App.Features.Setup.RelayCheck.View"
              xmlns:fields="using:ScreenShare.App.Features.Fields.View"
+             xmlns:ti="using:TablerIcons"
              x:Class="ScreenShare.App.Features.Setup.View.SetupView"
              x:DataType="vm:SetupViewModel"
              Background="{StaticResource SurfaceBrush}">
+
+  <UserControl.Styles>
+    <Style Selector=":is(UserControl).narrow TextBlock.backword">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+  </UserControl.Styles>
 
   <DockPanel>
 
@@ -81,20 +88,29 @@
               Padding="{StaticResource InsetPanel}"
               MaxWidth="{StaticResource StepColumnWidth}">
         <Panel>
-          <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding !ShowsCommit}">
+          <Grid ColumnDefinitions="Auto,*,Auto" IsVisible="{Binding !ShowsCommit}">
             <Button Grid.Column="0"
-                    Theme="{StaticResource FooterButton}"
-                    Content="Back"
+                    Theme="{StaticResource LinkButton}"
+                    Height="{StaticResource FooterButtonHeight}"
                     Command="{Binding BackCommand}"
-                    IsVisible="{Binding CanGoBack}" />
+                    IsVisible="{Binding CanGoBack}">
+              <StackPanel Orientation="Horizontal" Spacing="{StaticResource GapTight}">
+                <ti:TablerIcon Classes="button" Icon="IconArrowLeft" Brush="{Binding $parent[Button].Foreground}" VerticalAlignment="Center" />
+                <TextBlock Classes="backword" Text="Back" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
 
-            <Button Grid.Column="1"
+            <Button Grid.Column="2"
                     Theme="{StaticResource PrimaryButton}"
                     Height="{StaticResource FooterButtonHeight}"
-                    Margin="8,0,0,0"
-                    Content="{Binding ContinueLabel}"
+                    Padding="20,0"
                     Command="{Binding ContinueCommand}"
-                    IsVisible="{Binding CanContinue}" />
+                    IsVisible="{Binding CanContinue}">
+              <StackPanel Orientation="Horizontal" Spacing="{StaticResource GapTight}">
+                <TextBlock Text="{Binding ContinueLabel}" VerticalAlignment="Center" />
+                <ti:TablerIcon Classes="button" Icon="IconArrowRight" Brush="{Binding $parent[Button].Foreground}" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
           </Grid>
 
           <Panel IsVisible="{Binding ShowsCommit}">

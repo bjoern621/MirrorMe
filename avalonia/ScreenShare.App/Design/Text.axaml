@@ -201,6 +201,15 @@
     and a ControlTheme carrying one throws when the theme is built.
     The option title takes tabular figures, since an option is sometimes named by its identifier.
   -->
+  <Style Selector=":is(TextBlock).tag">
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeMinor}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{DynamicResource SecondaryBrush}" />
+  </Style>
+  <Style Selector="Button.picked :is(TextBlock).tag">
+    <Setter Property="Foreground" Value="{DynamicResource SelectedBrush}" />
+  </Style>
+
   <Style Selector=":is(TextBlock).optiontitle">
     <Setter Property="FontSize" Value="{DynamicResource FontSizeBody}" />
     <Setter Property="FontWeight" Value="SemiBold" />

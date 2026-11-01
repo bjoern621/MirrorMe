@@ -169,8 +169,8 @@ public static class Descriptions
     /// <summary>What each source asks for, and who ends up able to watch.</summary>
     private static readonly Dictionary<string, string> GroupSources = new()
     {
-        ["key"] = "Everyone holding the key can watch. Paste a key you were sent, or make one and pass it on like a meeting link.",
-        ["discord"] = "Recommended for a group that meets on Discord. Everyone in the voice channel your Discord account is in can watch, and leaving it cuts them off within seconds. No key changes hands. Needs a linked Discord account.",
+        ["key"] = "For a group outside Discord. Everyone holding the key can watch.",
+        ["discord"] = "Everyone in your voice channel can watch, with nothing to send around. Needs a linked Discord account.",
     };
 
     private static readonly Dictionary<string, string> Transports = new()

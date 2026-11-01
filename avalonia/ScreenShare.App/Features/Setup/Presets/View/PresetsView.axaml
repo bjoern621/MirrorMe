@@ -12,7 +12,7 @@
     Each promise is a choice card like the entries of the questions below, priced at what it resolves to here,
     and an unreachable one states its reason in the price's place (docs/tooltips.md, "An availability note is a line").
   -->
-  <Border Classes="card" Padding="16,14">
+  <Border Classes="question">
     <StackPanel Spacing="{StaticResource GapControl}">
 
       <Grid ColumnDefinitions="*,Auto">

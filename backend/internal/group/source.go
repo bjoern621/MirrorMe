@@ -12,10 +12,9 @@ const (
 	SourceDiscord = "discord"
 )
 
-// Sources lists every source, in the order a form offers them.
-//
-// The key leads because it is what a fresh installation carries,
-// and a draft naming no source it recognises is repaired onto the first entry (internal/form).
+// Sources lists every source.
+// The key leads because it is what a fresh installation carries.
+// The form orders its own choice (internal/form).
 var Sources = []string{SourceKey, SourceDiscord}
 
 // KnownSource reports whether source is one of Sources.

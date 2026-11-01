@@ -78,9 +78,7 @@ public static class Fields
 
         ["relay.group_source"] = new(
             "Where the group comes from",
-            "The group is who can watch what this computer shares. "
-            + "It comes from a key you pass around, or from the Discord voice channel you are in. "
-            + "The channel sets the group and the name itself, so both boxes below gray out under it."),
+            "A voice channel sets the group and your name, so both boxes below gray out under it."),
 
         ["relay.group_key"] = new(
             "Group key",
@@ -293,7 +291,7 @@ public static class Fields
 
         ["source"] = new(
             "Capture",
-            "Which screen is shared and how the frames reach the encoder. The capture method fixes which encoder software runs, so the rest of the form follows from it.",
+            "Which screen goes out, and how its frames reach the encoder.",
             "How should the screen be captured?"),
 
         ["quality"] = new(
@@ -302,7 +300,7 @@ public static class Fields
 
         ["audio"] = new(
             "Audio",
-            "The sound track: where it comes from and what compresses it. Every source listed is mixed into the one track viewers hear. Which sources exist depends on the operating system. Which formats reach the relay depends on the sending protocol.",
+            "Every source below is mixed into the one track viewers hear.",
             "What should viewers hear?"),
 
         ["transport"] = new(
@@ -316,7 +314,7 @@ public static class Fields
 
         ["relay"] = new(
             "Relay",
-            "Everyone in the same Discord voice channel, or holding the same group key, can watch. The relay carries the stream, and its ports default to the relay's own.",
+            "Pick how this computer finds its group.",
             "Who can watch?"),
 
         ["app"] = new(

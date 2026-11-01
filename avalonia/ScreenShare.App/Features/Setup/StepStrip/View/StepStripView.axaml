@@ -2,41 +2,36 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:setup="using:ScreenShare.App.Features.Setup.ViewModel"
              xmlns:strip="using:ScreenShare.App.Features.Setup.StepStrip.ViewModel"
-             xmlns:view="using:ScreenShare.App.Features.Setup.StepStrip.View"
-             xmlns:ti="using:TablerIcons"
              x:Class="ScreenShare.App.Features.Setup.StepStrip.View.StepStripView"
              x:DataType="setup:SetupViewModel">
 
   <!--
     Every chip is pressable in every state and nothing gates reachability, so the flow is non-linear.
-    Each chip carries the value its step settled on, which makes the strip the summary as well.
+    A chip names its step only where the reader stands; the rest carry their number, and hovering one names
+    the step and what it settled on.
   -->
 
   <UserControl.Resources>
-    <!--
-      Inherits CardButton and states only what a step adds.
-      A chip carrying its own copy of the template would stop tracking the button every other surface draws.
-    -->
-    <ControlTheme x:Key="StepChipTheme" TargetType="Button" BasedOn="{StaticResource CardButton}">
-      <Setter Property="Background" Value="{StaticResource CardBrush}" />
-      <Setter Property="Padding" Value="12,7" />
-      <Setter Property="VerticalContentAlignment" Value="Center" />
+    <ControlTheme x:Key="StepChipTheme" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="{StaticResource ChipBorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="{StaticResource RadiusChip}" />
+      <Setter Property="Height" Value="NaN" />
+      <Setter Property="Padding" Value="4" />
 
-      <Style Selector="^.done /template/ Border#Root">
-        <Setter Property="Background" Value="{StaticResource ControlBrush}" />
-        <Setter Property="BorderBrush" Value="{StaticResource ControlBorderBrush}" />
+      <Style Selector="^.current">
+        <Setter Property="Padding" Value="4,4,11,4" />
       </Style>
-
       <Style Selector="^.current /template/ Border#Root">
         <Setter Property="Background" Value="{StaticResource SelectedBrush}" />
         <Setter Property="BorderBrush" Value="{StaticResource SelectedBrush}" />
       </Style>
-
-      <Style Selector="^:pointerover /template/ Border#Root">
-        <Setter Property="Background" Value="{StaticResource ControlHoverBrush}" />
-      </Style>
       <Style Selector="^.current:pointerover /template/ Border#Root">
         <Setter Property="Background" Value="{StaticResource SelectedBrush}" />
+      </Style>
+      <Style Selector="^.blocked /template/ Border#Root">
+        <Setter Property="BorderBrush" Value="{StaticResource AttentionBrush}" />
       </Style>
     </ControlTheme>
   </UserControl.Resources>
@@ -44,140 +39,88 @@
   <UserControl.Styles>
     <!-- Base is the upcoming state: it wears no class of its own, and the state classes override it. -->
     <Style Selector="Border.chipbadge">
-      <Setter Property="Width" Value="16" />
-      <Setter Property="Height" Value="16" />
-      <Setter Property="CornerRadius" Value="{StaticResource RadiusSegment}" />
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="BorderBrush" Value="{StaticResource ChipBorderBrush}" />
+      <Setter Property="Width" Value="18" />
+      <Setter Property="Height" Value="18" />
+      <Setter Property="CornerRadius" Value="9" />
+      <Setter Property="Background" Value="{StaticResource DividerBrush}" />
     </Style>
     <Style Selector="Button.done Border.chipbadge">
-      <Setter Property="Background" Value="{StaticResource ChipBorderBrush}" />
-      <Setter Property="BorderBrush" Value="Transparent" />
+      <Setter Property="Background" Value="{StaticResource HintBrush}" />
     </Style>
     <Style Selector="Button.current Border.chipbadge">
       <Setter Property="Background" Value="{StaticResource OnSelectedBrush}" />
-      <Setter Property="BorderBrush" Value="Transparent" />
     </Style>
     <!--
-      A step a blocking line names, red wherever the reader is standing
-      (docs/design-language.md, "Palette").
+      A step a blocking line names, red wherever the reader is standing (docs/design-language.md, "Palette").
       Stated after walked and current, so it outranks both: what the flow got past matters less than
       what stops the publish.
-      The badge says it in a glyph too, carrying the exclamation instead of the number.
     -->
     <Style Selector="Button.blocked Border.chipbadge">
       <Setter Property="Background" Value="{StaticResource AttentionBrush}" />
-      <Setter Property="BorderBrush" Value="Transparent" />
     </Style>
 
     <Style Selector="TextBlock.chipglyph">
       <Setter Property="FontSize" Value="{StaticResource FontSizeMinor}" />
       <Setter Property="FontFeatures" Value="{StaticResource FigureFeatures}" />
       <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+      <Setter Property="Foreground" Value="{StaticResource SecondaryBrush}" />
       <Setter Property="TextTrimming" Value="None" />
       <Setter Property="HorizontalAlignment" Value="Center" />
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
     <Style Selector="Button.done TextBlock.chipglyph">
-      <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+      <Setter Property="Foreground" Value="{StaticResource OnSelectedBrush}" />
     </Style>
     <Style Selector="Button.current TextBlock.chipglyph">
+      <Setter Property="Foreground" Value="{StaticResource SelectedBrush}" />
+    </Style>
+    <Style Selector="Button.blocked TextBlock.chipglyph">
       <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
-    </Style>
-
-    <Style Selector="ti|TablerIcon.chipglyph">
-      <Setter Property="Brush" Value="{StaticResource ForegroundBrush}" />
-    </Style>
-    <Style Selector="Button.blocked ti|TablerIcon.chipglyph">
-      <Setter Property="Brush" Value="{StaticResource OnHueBrush}" />
     </Style>
 
     <Style Selector="TextBlock.chiplabel">
-      <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+      <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
       <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="Foreground" Value="{StaticResource SecondaryBrush}" />
-    </Style>
-    <Style Selector="Button.done TextBlock.chiplabel">
-      <Setter Property="Foreground" Value="{StaticResource ControlForegroundBrush}" />
-    </Style>
-    <Style Selector="Button.current TextBlock.chiplabel">
       <Setter Property="Foreground" Value="{StaticResource OnSelectedBrush}" />
     </Style>
 
-    <!-- Machine value, so tabular figures: the numbers line up down the row of chips. -->
-    <Style Selector="TextBlock.chipvalue">
-      <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
-      <Setter Property="FontFeatures" Value="{StaticResource FigureFeatures}" />
-      <Setter Property="Foreground" Value="{StaticResource HintBrush}" />
-    </Style>
-    <Style Selector="Button.done TextBlock.chipvalue">
-      <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
-    </Style>
-    <Style Selector="Button.current TextBlock.chipvalue">
-      <Setter Property="Foreground" Value="{StaticResource ChipBorderBrush}" />
-    </Style>
-
     <Style Selector="Border.connector">
-      <Setter Property="Width" Value="{StaticResource GapSection}" />
+      <Setter Property="Width" Value="12" />
       <Setter Property="Height" Value="1" />
+      <Setter Property="Margin" Value="7,0" />
       <Setter Property="VerticalAlignment" Value="Center" />
-      <Setter Property="Background" Value="{StaticResource DividerBrush}" />
-    </Style>
-    <Style Selector="Border.connector.lit">
-      <Setter Property="Background" Value="{StaticResource ControlBorderBrush}" />
+      <Setter Property="Background" Value="{StaticResource ChipBorderBrush}" />
     </Style>
   </UserControl.Styles>
 
-  <ItemsControl ItemsSource="{Binding Steps}">
+  <ItemsControl ItemsSource="{Binding Steps}" HorizontalAlignment="Center">
     <ItemsControl.ItemsPanel>
       <ItemsPanelTemplate>
-        <view:ChipRow />
+        <StackPanel Orientation="Horizontal" />
       </ItemsPanelTemplate>
     </ItemsControl.ItemsPanel>
     <ItemsControl.ItemTemplate>
       <DataTemplate x:DataType="strip:StepChipViewModel">
-        <Grid ColumnDefinitions="Auto,*">
-          <Border Grid.Column="0"
-                  Classes="connector"
-                  Classes.lit="{Binding IsConnectorLit}"
-                  IsVisible="{Binding HasConnector}" />
+        <StackPanel Orientation="Horizontal">
+          <Border Classes="connector" IsVisible="{Binding HasConnector}" />
 
-          <Button Grid.Column="1"
-                  Theme="{StaticResource StepChipTheme}"
+          <Button Theme="{StaticResource StepChipTheme}"
                   Command="{Binding Select}"
                   Classes.done="{Binding IsDone}"
                   Classes.current="{Binding IsCurrent}"
-                  Classes.blocked="{Binding IsBlocked}">
-            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
-              <Border Grid.Row="0" Grid.Column="0" Classes="chipbadge">
-                <Panel>
-                  <TextBlock Classes="chipglyph"
-                             Text="{Binding Badge}"
-                             IsVisible="{Binding ShowsNumber}" />
-                  <ti:TablerIcon Classes="badge chipglyph"
-                                 Icon="IconCheck"
-                                 IsVisible="{Binding ShowsWalked}"
-                                 HorizontalAlignment="Center" />
-                  <ti:TablerIcon Classes="badge chipglyph"
-                                 Icon="IconExclamationMark"
-                                 IsVisible="{Binding IsBlocked}"
-                                 HorizontalAlignment="Center" />
-                </Panel>
+                  Classes.blocked="{Binding IsBlocked}"
+                  ToolTip.Tip="{Binding Tip}">
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource GapTight}">
+              <Border Classes="chipbadge">
+                <TextBlock Classes="chipglyph" Text="{Binding Badge}" />
               </Border>
-              <TextBlock Grid.Row="0" Grid.Column="1"
-                         Classes="chiplabel"
-                         Margin="7,0,0,0"
+              <TextBlock Classes="chiplabel"
                          VerticalAlignment="Center"
+                         IsVisible="{Binding IsCurrent}"
                          Text="{Binding Label}" />
-              <TextBlock Grid.Row="1" Grid.Column="1"
-                         Classes="chipvalue"
-                         Margin="7,3,0,0"
-                         Text="{Binding Value}" />
-            </Grid>
+            </StackPanel>
           </Button>
-        </Grid>
+        </StackPanel>
       </DataTemplate>
     </ItemsControl.ItemTemplate>
   </ItemsControl>

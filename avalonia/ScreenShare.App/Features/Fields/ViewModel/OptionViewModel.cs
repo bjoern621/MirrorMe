@@ -48,6 +48,11 @@ public sealed record OptionViewModel
     /// <summary>Whether the backend marked the entry worth emphasising for this combination.</summary>
     public required bool IsRecommended { get; init; }
 
+    /// <summary>Mark drawn before the title, null where the entry draws none (<c>Copy/Glyphs.cs</c>).</summary>
+    public TablerIcons.Icons? Glyph { get; init; }
+
+    public bool HasGlyph => Glyph is not null;
+
     /// <summary>What the settings cost with this entry picked: "8.7 Mb/s". Empty where the form sent no price.</summary>
     public string Price { get; init; } = "";
 

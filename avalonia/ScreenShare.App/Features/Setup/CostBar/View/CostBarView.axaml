@@ -17,27 +17,32 @@
     </Style>
   </UserControl.Styles>
 
-  <Border Classes="card" Padding="16,10" IsVisible="{Binding IsResolved}">
-    <Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto,Auto">
-      <TextBlock Grid.Column="0" Classes="heading" FontFeatures="{StaticResource FigureFeatures}" Text="{Binding Bitrate}" />
-      <TextBlock Grid.Column="1"
-                 Classes="secondary"
-                 Margin="8,0,0,0"
-                 VerticalAlignment="Bottom"
+  <!-- One row: the figure, the bar and the uplink it is measured against, the caption dropping where the row runs out. -->
+  <Border Classes="card" Padding="12,9" IsVisible="{Binding IsResolved}">
+    <DockPanel>
+      <TextBlock DockPanel.Dock="Left"
+                 Classes="label"
+                 FontWeight="SemiBold"
+                 VerticalAlignment="Center"
                  FontFeatures="{StaticResource FigureFeatures}"
-                 Text="{Binding UplinkCaption}" />
-
-      <view:MeterBar Grid.Row="1"
-                     Grid.ColumnSpan="3"
+                 Text="{Binding Bitrate}" />
+      <view:MeterBar DockPanel.Dock="Left"
+                     Width="130"
                      Height="11"
-                     Margin="0,8,0,0"
+                     Margin="12,0"
+                     VerticalAlignment="Center"
                      Classes.over="{Binding IsOverUplink}"
                      Fill="{Binding FillShare}"
                      Limit="{Binding UplinkShare}"
                      TrackHeight="5"
                      TrackBrush="{StaticResource DividerBrush}"
                      LimitBrush="{StaticResource CautionBrush}" />
-    </Grid>
+      <TextBlock Classes="hint"
+                 VerticalAlignment="Center"
+                 TextTrimming="CharacterEllipsis"
+                 FontFeatures="{StaticResource FigureFeatures}"
+                 Text="{Binding UplinkCaption}" />
+    </DockPanel>
   </Border>
 
 </UserControl>

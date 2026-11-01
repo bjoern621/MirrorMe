@@ -37,7 +37,7 @@
     </Style>
   </UserControl.Styles>
 
-  <Border Classes="card" Padding="16,14" IsVisible="{Binding IsResolved}">
+  <Border Classes="question" IsVisible="{Binding IsResolved}">
     <StackPanel>
       <TextBlock Classes="heading" Text="{Binding Title}" />
       <TextBlock Classes="secondary"

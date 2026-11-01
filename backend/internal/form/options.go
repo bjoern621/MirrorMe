@@ -574,8 +574,17 @@ func optionMaxratePresets(d Deps, s settings.Settings) []*screensharev1.FieldOpt
 // Neither is ever greyed: the key is reachable with nothing linked,
 // and Discord is what a machine with no link picks before linking,
 // its own refusals being diagnostics on the field rather than a greyed entry (diagnostics.go).
+//
+// The voice channel leads and carries the mark: a group already sitting in one needs nothing handed around.
 func optionGroupSources(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
-	return optionPlainList(groupdomain.Sources, KeyGroupSource)
+	out := []*screensharev1.FieldOption{optionEntry(groupdomain.SourceDiscord, nil, true)}
+	for _, source := range groupdomain.Sources {
+		if source != groupdomain.SourceDiscord {
+			out = append(out, optionEntry(source, nil, false))
+		}
+	}
+	assert.Assert(len(out) == len(groupdomain.Sources), "the choice offers every source once")
+	return out
 }
 
 // optionShareKinds offers every kind share.Kinds declares.

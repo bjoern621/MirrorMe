@@ -26,26 +26,16 @@ public sealed record StepChipViewModel
 
     public required StepChipState State { get; init; }
 
-    /// <summary>
-    /// Step number.
-    /// Replaced by a tick once the step is walked, and an icon is not a character, so the two cannot be one string.
-    /// <see cref="IsDone"/> says which of them the badge shows.
-    /// </summary>
+    /// <summary>Step number, drawn in the chip's circle in every state.</summary>
     public required string Badge { get; init; }
 
     public required string Label { get; init; }
 
-    /// <summary>What this step settled on, which makes the strip the summary as well.</summary>
+    /// <summary>What this step settled on, named on hover.</summary>
     public required string Value { get; init; }
 
     /// <summary>False on the leading chip, which joins nothing to its left.</summary>
     public required bool HasConnector { get; init; }
-
-    /// <summary>
-    /// Whether the connector left of this chip is the bright one.
-    /// Bright through the connector leaving the current step, so the line reads as ground already covered.
-    /// </summary>
-    public required bool IsConnectorLit { get; init; }
 
     public required DelegateCommand Select { get; init; }
 
@@ -59,10 +49,8 @@ public sealed record StepChipViewModel
 
     public bool IsCurrent => State == StepChipState.Current;
 
-    /// <summary>Blocked wins the badge: the number and the tick both say the flow got past this step.</summary>
-    public bool ShowsNumber => !IsDone && !IsBlocked;
-
-    public bool ShowsWalked => IsDone && !IsBlocked;
+    /// <summary>Hover line: the step's name, and what it settled on where it has settled.</summary>
+    public string Tip => Value.Length > 0 ? $"{Label}: {Value}" : Label;
 }
 
 /// <summary>
@@ -103,7 +91,6 @@ public static class StepChips
                 Label = row.Label,
                 Value = valueOf(row),
                 HasConnector = i > 0,
-                IsConnectorLit = i <= currentIndex + 1,
                 Select = commandOf(row.Key),
                 IsBlocked = blocked.Contains(row.Key),
             });

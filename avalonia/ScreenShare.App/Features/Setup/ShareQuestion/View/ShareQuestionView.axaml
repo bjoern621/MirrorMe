@@ -20,7 +20,7 @@
     (Features/Setup/Model/ShareLayout.cs).
   -->
 
-  <Border Classes="card" Padding="16,14" IsVisible="{Binding Group.IsResolved}">
+  <Border Classes="question" IsVisible="{Binding Group.IsResolved}">
     <controls:CardColumn Spacing="{StaticResource GapPanel}">
 
       <!--

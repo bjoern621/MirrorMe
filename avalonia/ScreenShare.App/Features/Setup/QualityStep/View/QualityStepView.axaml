@@ -32,12 +32,12 @@
     <ItemsControl ItemsSource="{Binding Questions}">
       <ItemsControl.ItemsPanel>
         <ItemsPanelTemplate>
-          <StackPanel Spacing="{StaticResource GapPanel}" />
+          <StackPanel Spacing="{StaticResource GapSection}" />
         </ItemsPanelTemplate>
       </ItemsControl.ItemsPanel>
       <ItemsControl.ItemTemplate>
         <DataTemplate x:DataType="vm:QuestionRow">
-          <Border Classes="card" Padding="16,14">
+          <Border Classes="question">
             <StackPanel Spacing="{StaticResource GapControl}">
 
               <!-- A number with a ladder takes a typed value as well, beside the question asking it. -->
@@ -118,7 +118,7 @@
     </ItemsControl>
 
     <!-- Every encode control the questions leave, one closed row each, behind one disclosure. -->
-    <Border Classes="card" Padding="16,14" IsVisible="{Binding Expert.Fold.HasAny}">
+    <Border Classes="question" IsVisible="{Binding Expert.Fold.HasAny}">
       <StackPanel>
         <ContentControl Content="{Binding Expert.Fold}" ContentTemplate="{StaticResource FoldDisclosure}" />
 

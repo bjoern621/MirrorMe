@@ -188,7 +188,7 @@ public static class Words
     private static readonly Dictionary<string, string> GroupSources = new()
     {
         ["key"] = "A group key",
-        ["discord"] = "A Discord voice channel",
+        ["discord"] = "My Discord voice channel",
     };
 
     private static readonly Dictionary<string, string> Cursors = new()

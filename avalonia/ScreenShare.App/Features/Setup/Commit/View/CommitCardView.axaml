@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="using:ScreenShare.App.Controls"
              xmlns:vm="using:ScreenShare.App.Features.Setup.Commit.ViewModel"
+             xmlns:ti="using:TablerIcons"
              x:Class="ScreenShare.App.Features.Setup.Commit.View.CommitCardView"
              x:DataType="vm:CommitViewModel">
 
@@ -11,24 +12,6 @@
   -->
 
   <StackPanel>
-    <!--
-      Three runs, the stream name sitting inside the sentence at full strength
-      and the sentence itself moving with what the press will do (Model/CommitCopy.cs):
-      a literal here would be one of the two wordings, written where the other cannot reach it.
-    -->
-    <TextBlock Classes="hint"
-               TextWrapping="Wrap"
-               TextTrimming="None"
-               LineHeight="{StaticResource LineHeightSmall}"
-               Margin="0,0,0,11"
-               IsVisible="{Binding ShowsPromise}">
-      <Run Text="{Binding PromiseLead}" />
-      <Run Text="{Binding StreamName}"
-           FontWeight="SemiBold"
-           Foreground="{StaticResource ForegroundBrush}" />
-      <Run Text="{Binding PromiseTail}" />
-    </TextBlock>
-
     <!--
       In the promise's place while the stream runs the draft as it stands, which greys the button.
       A state the reader is in and no fault, so the plain hint colour (Model/CommitCopy.cs).
@@ -62,17 +45,27 @@
                          IsVisible="{Binding HasRefusal}"
                          Text="{Binding Refusal}" />
 
-    <Grid ColumnDefinitions="Auto,*">
-      <Button Grid.Column="0" Theme="{StaticResource FooterButton}" Content="Back" Command="{Binding BackCommand}" />
+    <Grid ColumnDefinitions="Auto,*,Auto">
+      <Button Grid.Column="0"
+              Theme="{StaticResource LinkButton}"
+              Height="{StaticResource FooterButtonHeight}"
+              Command="{Binding BackCommand}">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource GapTight}">
+          <ti:TablerIcon Classes="button" Icon="IconArrowLeft" Brush="{Binding $parent[Button].Foreground}" VerticalAlignment="Center" />
+          <TextBlock Classes="backword" Text="Back" VerticalAlignment="Center" />
+        </StackPanel>
+      </Button>
 
       <!--
         The dot takes the button's own Foreground, which the disabled treatment moves:
         content naming a brush of its own would stay bright on a locked button.
       -->
-      <Button Grid.Column="1"
+      <!-- What the press promises, stream name included, on hover. -->
+      <Button Grid.Column="2"
               Theme="{StaticResource GoButton}"
               Height="{StaticResource FooterButtonHeight}"
-              Margin="8,0,0,0"
+              Padding="20,0"
+              ToolTip.Tip="{Binding PromiseTip}"
               Command="{Binding StartSharingCommand}"
               controls:Pending.IsActive="{Binding StartSharingCommand.IsRunning}">
         <StackPanel Orientation="Horizontal" Spacing="{StaticResource GapTight}" VerticalAlignment="Center">
@@ -80,9 +73,7 @@
                    Height="{StaticResource DotSize}"
                    Fill="{Binding $parent[Button].Foreground}"
                    VerticalAlignment="Center" />
-          <TextBlock Text="{Binding CommitLabel}"
-                     FontSize="{StaticResource FontSizeHeading}"
-                     FontWeight="SemiBold" />
+          <TextBlock Text="{Binding CommitLabel}" FontWeight="SemiBold" />
         </StackPanel>
       </Button>
     </Grid>

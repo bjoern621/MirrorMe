@@ -28,17 +28,32 @@ func TestTheGroupSourceIsARelayRadioOverBothSources(t *testing.T) {
 		t.Fatalf("the choice offers %d entries, and the table declares %d sources",
 			len(offered), len(groupdomain.Sources))
 	}
-	for i, o := range offered {
-		if o.GetValue() != groupdomain.Sources[i] {
-			t.Errorf("entry %d is %q, want the table's %q", i, o.GetValue(), groupdomain.Sources[i])
+	for _, source := range groupdomain.Sources {
+		if !offersValue(offered, source) {
+			t.Errorf("the choice leaves out the table's %q", source)
 		}
 	}
-
 	s := settings.Defaults()
 	s.Relay.GroupSource = groupdomain.SourceDiscord
 	if got := f.value(s).GetText(); got != groupdomain.SourceDiscord {
 		t.Errorf("the choice reads %q, want the stored source", got)
 	}
+}
+
+// Discord leads the choice and carries the mark: a group that already meets in a voice channel
+// needs nothing handed around.
+func TestTheVoiceChannelLeadsTheGroupSourceAsTheRecommendedOne(t *testing.T) {
+	offered := fieldRowFor(t, KeyGroupSource).options(fieldTestDeps(), settings.Defaults())
+
+	if offered[0].GetValue() != groupdomain.SourceDiscord {
+		t.Fatalf("the choice leads with %q, want %q", offered[0].GetValue(), groupdomain.SourceDiscord)
+	}
+	for _, o := range offered {
+		if o.GetRecommended() != (o.GetValue() == groupdomain.SourceDiscord) {
+			t.Errorf("entry %q carries recommended=%v", o.GetValue(), o.GetRecommended())
+		}
+	}
+
 }
 
 // What this machine states about itself is no property of the relay it publishes to,
@@ -176,4 +191,14 @@ func TestAResolvedBrokeredDraftPublishes(t *testing.T) {
 	if !form.GetPublishable() {
 		t.Errorf("a brokered group is membership, and the resolve refused it: %v", form.GetDiagnostics())
 	}
+}
+
+// offersValue reports whether one of the entries carries value.
+func offersValue(offered []*screensharev1.FieldOption, value string) bool {
+	for _, o := range offered {
+		if o.GetValue() == value {
+			return true
+		}
+	}
+	return false
 }

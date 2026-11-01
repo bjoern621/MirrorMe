@@ -137,10 +137,15 @@ public sealed class CommitViewModel : Observable
     public string InForce { get => _inForce; private set => Set(ref _inForce, value); }
 
     /// <summary>
-    /// Whether the promise under the button draws: a named stream, and a press the card offers.
+    /// Whether the promise draws: a named stream, and a press the card offers.
     /// The promise describes a press, so it gives way to <see cref="InForce"/> where none is offered.
     /// </summary>
     public bool ShowsPromise { get => _showsPromise; private set => Set(ref _showsPromise, value); }
+
+    /// <summary>The promise whole, for the button's hover. Null where none draws, an empty tip drawing an empty bubble.</summary>
+    public string? PromiseTip { get => _promiseTip; private set => Set(ref _promiseTip, value); }
+
+    private string? _promiseTip;
 
     /// <summary>
     /// The one render function.
@@ -181,6 +186,7 @@ public sealed class CommitViewModel : Observable
         IsInForce = gate.InForce;
         InForce = gate.InForce ? words.InForce : "";
         ShowsPromise = HasStreamName && !IsInForce;
+        PromiseTip = ShowsPromise ? $"{PromiseLead}{StreamName}{PromiseTail}" : null;
 
         StartSharingCommand.Refresh();
 
