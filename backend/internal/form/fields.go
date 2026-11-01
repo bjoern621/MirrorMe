@@ -106,7 +106,7 @@ const (
 )
 
 var fieldTable = []field{
-	// The capture: what is grabbed, how much of it, and how the frames reach the encoder.
+	// The capture: what is grabbed and how the frames reach the encoder.
 	{
 		key:     KeyCapture,
 		group:   GroupSource,
@@ -146,28 +146,6 @@ var fieldTable = []field{
 		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.ShareRegion) },
 	},
 	{
-		// What refuses a scaled value is the frame path rather than this field:
-		// an encoder reading captured surfaces with no filter between has nothing on it that resizes,
-		// and availability greys the scaled entries there (availability.go).
-		key:     KeyOutputResolution,
-		group:   GroupSource,
-		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.OutputResolution) },
-		options: optionOutputResolutions,
-	},
-	{
-		// Both controls at once: the rate takes any number in the range,
-		// and the answers worth remembering (a film's, a game's, a panel's) sit beside it as a ladder,
-		// so the row carries options and bounds together.
-		key:     KeyFps,
-		group:   GroupSource,
-		control: screensharev1.ControlKind_CONTROL_KIND_NUMBER_SELECT,
-		unit:    screensharev1.Unit_UNIT_FRAMES_PER_SECOND,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return number(s.Publish.Fps) },
-		options: optionFpsPresets,
-		bounds:  fieldFpsBounds,
-	},
-	{
 		key:     KeyCaptureMemory,
 		group:   GroupSource,
 		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
@@ -196,9 +174,32 @@ var fieldTable = []field{
 		options: optionDrmMaps,
 	},
 
-	// The encode: which bitstream, what produces it, and how the bits are spent over time.
-	//
-	// The format leads, being the half a viewer meets: it is what every watcher has to decode
+	// The encode: what a viewer notices of it, then which bitstream, what produces it,
+	// and how the bits are spent over time.
+	// The rate and the size lead, the size ladder reading the monitor that the share group settles.
+	{
+		// Both controls at once: the rate takes any number in the range,
+		// and the answers worth remembering (a film's, a game's, a panel's) sit beside it as a ladder,
+		// so the row carries options and bounds together.
+		key:     KeyFps,
+		group:   GroupQuality,
+		control: screensharev1.ControlKind_CONTROL_KIND_NUMBER_SELECT,
+		unit:    screensharev1.Unit_UNIT_FRAMES_PER_SECOND,
+		value:   func(s settings.Settings) *screensharev1.FieldValue { return number(s.Publish.Fps) },
+		options: optionFpsPresets,
+		bounds:  fieldFpsBounds,
+	},
+	{
+		// What refuses a scaled value is the frame path rather than this field:
+		// an encoder reading captured surfaces with no filter between has nothing on it that resizes,
+		// and availability greys the scaled entries there (availability.go).
+		key:     KeyOutputResolution,
+		group:   GroupQuality,
+		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
+		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.OutputResolution) },
+		options: optionOutputResolutions,
+	},
+	// Of the coding, the format leads, being the half a viewer meets: it is what every watcher has to decode
 	// and what a transport carries, where the encoder is this machine's own answer to producing it.
 	// Two controls are also what keeps a bitstream from moving under a missing encoder,
 	// one list having one walk whose first entry that runs

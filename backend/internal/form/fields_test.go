@@ -1377,3 +1377,20 @@ func TestAFreshInstallationWatchesOnTheRecommendedLeg(t *testing.T) {
 		}
 	}
 }
+
+// What a viewer notices of the encode, its smoothness, its size and its detail, is answered on one step.
+// The size ladder reads the shared monitor, so the group asking it follows the share group.
+func TestTheEncodeGroupHoldsWhatAViewerNotices(t *testing.T) {
+	form := Resolve(fieldTestDeps(), settings.Defaults())
+
+	for _, g := range form.GetGroups() {
+		for _, f := range g.GetFields() {
+			switch f.GetKey() {
+			case KeyFps, KeyOutputResolution, KeyCq:
+				if g.GetKey() != GroupQuality {
+					t.Errorf("%s sits under %s, away from the encode it is weighed against", f.GetKey(), g.GetKey())
+				}
+			}
+		}
+	}
+}

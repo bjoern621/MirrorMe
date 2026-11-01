@@ -296,7 +296,7 @@ public static class Fields
 
         ["quality"] = new(
             "Encode",
-            "What compresses the picture and how it spends bandwidth. Everything here follows the capture method chosen above. An entry grayed with an encoder's name asks for a different capture, not a different encoder."),
+            "How smooth, how large and how detailed the stream looks, and what compresses it. Everything here follows the capture method chosen above. An entry grayed with an encoder's name asks for a different capture, not a different encoder."),
 
         ["audio"] = new(
             "Audio",
