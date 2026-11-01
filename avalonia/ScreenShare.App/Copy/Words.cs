@@ -226,8 +226,8 @@ public static class Words
     /// </summary>
     private static readonly Dictionary<string, string> ColorRanges = new()
     {
-        ["pc"] = "Full range (0-255)",
-        ["tv"] = "Limited range (16-235)",
+        ["pc"] = "Full (0-255)",
+        ["tv"] = "Limited (16-235)",
     };
 
     /// <summary>
