@@ -1,4 +1,6 @@
 using ScreenShare.App.Contracts;
+using ScreenShare.App.Controls;
+using ScreenShare.App.Features.Fields.Model;
 using ScreenShare.App.Mvvm;
 using TablerIcons;
 
@@ -17,11 +19,18 @@ public sealed class FoldViewModel : Observable
     private bool _shown;
     private bool _hasAny;
     private string _count = "";
+    private ValueList<Impact> _impacts = ValueList<Impact>.Empty;
 
-    public FoldViewModel()
+    /// <param name="title">Disclosure's words, beside the chevron.</param>
+    public FoldViewModel(string title)
     {
+        Assert.That(title.Length > 0, "a disclosure names what it opens onto");
+
+        Title = title;
         ToggleCommand = new DelegateCommand(() => Shown = !Shown);
     }
+
+    public string Title { get; }
 
     /// <summary>Flips the fold. Two presses are two states, the one deliberate departure from idempotency.</summary>
     public DelegateCommand ToggleCommand { get; }
@@ -45,16 +54,49 @@ public sealed class FoldViewModel : Observable
     /// <summary>Controls behind the fold, beside the disclosure: the figure says whether opening it is worth the trip.</summary>
     public string Count { get => _count; private set => Set(ref _count, value); }
 
+    /// <summary>
+    /// What the controls behind the fold raise, ranked across them.
+    /// A closed fold hides the lines under each control, so the disclosure carries their mark.
+    /// </summary>
+    public ValueList<Impact> Impacts
+    {
+        get => _impacts;
+        private set
+        {
+            if (Set(ref _impacts, value))
+            {
+                OnPropertyChanged(nameof(HasImpacts));
+                OnPropertyChanged(nameof(ImpactState));
+                OnPropertyChanged(nameof(ImpactBlocks));
+                OnPropertyChanged(nameof(ImpactWarns));
+                OnPropertyChanged(nameof(ImpactTip));
+            }
+        }
+    }
+
+    public bool HasImpacts => Impacts.Count > 0;
+
+    public CheckState ImpactState => HasImpacts ? Impacts[0].State : CheckState.Passed;
+
+    public bool ImpactBlocks => ImpactState == CheckState.Blocking;
+
+    public bool ImpactWarns => ImpactState == CheckState.Warned;
+
+    public string ImpactTip => string.Join("\n", Impacts.Select(impact => impact.Text));
+
     public Icons Glyph => Shown ? Icons.IconChevronDown : Icons.IconChevronRight;
 
     /// <summary>Render-pass input. Idempotent, and it never writes <see cref="Shown"/>.</summary>
-    public void Apply(int folded)
+    /// <param name="folded">Controls behind the fold.</param>
+    public void Apply(IReadOnlyCollection<FieldViewModel> folded)
     {
-        Assert.That(folded >= 0, "a fold counts the controls behind it", folded);
+        Assert.NotNull(folded, "a fold counts the controls behind it");
 
-        HasAny = folded > 0;
-        Count = folded > 0 ? Copy.Fields.OptionCount(folded) : "";
+        HasAny = folded.Count > 0;
+        Count = folded.Count > 0 ? Copy.Fields.OptionCount(folded.Count) : "";
+        Impacts = Model.Impacts.Ranked(folded.SelectMany(field => field.Diagnostics));
 
         Assert.That(HasAny == (Count.Length > 0), "the disclosure and its figure agree", HasAny, Count);
+        Assert.That(HasAny || !HasImpacts, "an empty fold raises nothing", Impacts.Count);
     }
 }

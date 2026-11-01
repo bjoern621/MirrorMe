@@ -9,7 +9,7 @@ namespace ScreenShare.App.Tests;
 /// The gap falls between the children that drew something.
 /// The setup column's picker draws only on the step holding the screen setting,
 /// and sits above the form on every step.
-/// A stack charging a gap per visible child puts every other step's first card a gap below the rail beside it.
+/// A stack charging a gap per child would put a step's first card a gap lower wherever the picker draws nothing.
 /// </summary>
 public sealed class CardColumnTests
 {
@@ -83,7 +83,7 @@ public sealed class CardColumnTests
         Assert.Equal(30, column.DesiredSize.Height);
     }
 
-    /// <summary>The one child a step draws starts at the top, the line the rail's first card is on.</summary>
+    /// <summary>The one child a step draws starts at the top of the column.</summary>
     [Fact]
     public void TheOnlyDrawnChildStartsAtTheTop()
     {

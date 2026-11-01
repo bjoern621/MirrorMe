@@ -1,0 +1,43 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:view="using:ScreenShare.App.Features.Setup.CostBar.View"
+             xmlns:vm="using:ScreenShare.App.Features.Setup.CostBar.ViewModel"
+             x:Class="ScreenShare.App.Features.Setup.CostBar.View.CostBarView"
+             x:DataType="vm:CostBarViewModel">
+
+  <UserControl.Styles>
+    <!-- Ordinary fill hue set here and not on the element: an inline value is a LocalValue outranking every
+         style setter, so the overrun below would never paint. -->
+    <Style Selector="view|MeterBar">
+      <Setter Property="FillBrush" Value="{StaticResource ForegroundBrush}" />
+    </Style>
+    <!-- Amber over the limit: a setting asking for more than the line measured still publishes. -->
+    <Style Selector="view|MeterBar.over">
+      <Setter Property="FillBrush" Value="{StaticResource CautionBrush}" />
+    </Style>
+  </UserControl.Styles>
+
+  <Border Classes="card" Padding="16,10" IsVisible="{Binding IsResolved}">
+    <Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto,Auto">
+      <TextBlock Grid.Column="0" Classes="heading" FontFeatures="{StaticResource FigureFeatures}" Text="{Binding Bitrate}" />
+      <TextBlock Grid.Column="1"
+                 Classes="secondary"
+                 Margin="8,0,0,0"
+                 VerticalAlignment="Bottom"
+                 FontFeatures="{StaticResource FigureFeatures}"
+                 Text="{Binding UplinkCaption}" />
+
+      <view:MeterBar Grid.Row="1"
+                     Grid.ColumnSpan="3"
+                     Height="11"
+                     Margin="0,8,0,0"
+                     Classes.over="{Binding IsOverUplink}"
+                     Fill="{Binding FillShare}"
+                     Limit="{Binding UplinkShare}"
+                     TrackHeight="5"
+                     TrackBrush="{StaticResource DividerBrush}"
+                     LimitBrush="{StaticResource CautionBrush}" />
+    </Grid>
+  </Border>
+
+</UserControl>

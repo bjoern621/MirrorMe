@@ -30,6 +30,17 @@
     <Setter Property="Height" Value="{DynamicResource IconSizeButton}" />
   </Style>
 
+  <!-- Mark of what a choice or a fold raises: grey for a note, amber for a warning, red for what stops the stream. -->
+  <Style Selector="ti|TablerIcon.impact">
+    <Setter Property="Brush" Value="{DynamicResource MutedBrush}" />
+  </Style>
+  <Style Selector="ti|TablerIcon.impact.warns">
+    <Setter Property="Brush" Value="{DynamicResource CautionBrush}" />
+  </Style>
+  <Style Selector="ti|TablerIcon.impact.blocks">
+    <Setter Property="Brush" Value="{DynamicResource AttentionBrush}" />
+  </Style>
+
   <!--
     Paths and not text: Windows draws these from Segoe Fluent Icons' private use area,
     so a missing face paints a tofu box where the close button was.

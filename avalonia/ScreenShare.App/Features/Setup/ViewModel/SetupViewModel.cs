@@ -5,7 +5,8 @@ using ScreenShare.App.Contracts;
 using ScreenShare.App.Features.Fields.Model;
 using ScreenShare.App.Features.Fields.ViewModel;
 using ScreenShare.App.Features.Setup.AudioStep.ViewModel;
-using ScreenShare.App.Features.Setup.CostRail.ViewModel;
+using ScreenShare.App.Features.Setup.CostBar.ViewModel;
+using ScreenShare.App.Features.Setup.Checks.ViewModel;
 using ScreenShare.App.Features.Setup.Model;
 using ScreenShare.App.Features.Setup.SharePicker.ViewModel;
 using ScreenShare.App.Features.Setup.Presets.ViewModel;
@@ -260,21 +261,12 @@ public sealed class SetupViewModel : Observable
         // and the reader may have typed another address since the pass that drew the button (Setup/RelayCheck).
         RelayCheck = new RelayCheckViewModel(backend, () => _form.Draft, dispatch);
 
-        Rail = new CostRailViewModel();
-
         // The saved ways of publishing, handed the boundaries this flow reads and nothing of this flow's own:
         // the store is the backend's and the draft is the window's,
         // so a card routed through here would be one more hop between a press and the state it changes.
         // Held by the flow rather than by the step that draws it,
         // the tray and the strip's menu offering the same rows (Presets/ViewModel/PresetsViewModel.cs).
         Presets = new PresetsViewModel(backend, form, session, dispatch);
-
-        // Beside the form where the window carries both, over it where it does not
-        // (Shell/Model/SideColumns.cs).
-        RailColumn = new SideColumnViewModel(
-            SideColumns.SetupRail,
-            "Show the cost and the checks",
-            "Hide the cost and the checks");
 
         Commit = new CommitViewModel(Back, StartSharingAsync, dispatch);
 
@@ -349,7 +341,11 @@ public sealed class SetupViewModel : Observable
     /// <summary>What answers on the relay, under the connection step's controls and nowhere else.</summary>
     public RelayCheckViewModel RelayCheck { get; }
 
-    public CostRailViewModel Rail { get; }
+    /// <summary>What the draft costs against the uplink, above the step column on every step.</summary>
+    public CostBarViewModel Cost { get; } = new();
+
+    /// <summary>What the form says that no control on the step on screen already says, under the step column.</summary>
+    public ChecksCardViewModel Checks { get; } = new();
 
     /// <summary>
     /// Built-in and saved ways of publishing, drawn under the summary on the terminal step
@@ -357,13 +353,6 @@ public sealed class SetupViewModel : Observable
     /// The tray menu and the strip's start menu draw the same rows through the same commands.
     /// </summary>
     public PresetsViewModel Presets { get; }
-
-    /// <summary>
-    /// Where the rail stands: beside the step's form, or over it on a window with the width for one column
-    /// (<c>docs/design-language.md</c>, "Narrow windows").
-    /// The footer walking the steps travels with it, both belonging to the column beside the form.
-    /// </summary>
-    public SideColumnViewModel RailColumn { get; }
 
     public CommitViewModel Commit { get; }
 
@@ -454,12 +443,6 @@ public sealed class SetupViewModel : Observable
     public string ContinueLabel { get => _continueLabel; private set => Set(ref _continueLabel, value); }
 
     /// <summary>
-    /// States the width the window has, which decides where the rail stands.
-    /// Idempotent: the same width twice moves nothing.
-    /// </summary>
-    public void SetWindowWidth(double width) => RailColumn.SetWindowWidth(width);
-
-    /// <summary>
     /// The one render function.
     /// Synchronous, drawing the last form the backend answered with rather than waiting for a newer one:
     /// asking is the form session's <see cref="FormSession.Sync"/>, whose answer arrives on a later pass.
@@ -500,12 +483,8 @@ public sealed class SetupViewModel : Observable
         var current = Standing(_steps);
 
         var checks = PreflightChecks.Of(diagnostics, AnchorIn(_steps, form));
-        Rail.Apply(
-            form?.Summary?.Estimate,
-            Uplink(),
-            SetupSteps.Of(_steps, GroupOwning(drawn, RailLayout.UplinkKey)),
-            checks,
-            form?.Summary?.CommandError ?? "");
+        Cost.Apply(form?.Summary?.Estimate);
+        Checks.Apply(checks, key => DrawnOn(current, key), form?.Summary?.CommandError ?? "");
 
         IsPublishable = form?.Publishable ?? false;
 
@@ -750,7 +729,7 @@ public sealed class SetupViewModel : Observable
             return;
         }
 
-        Write(RailLayout.UplinkKey, new FieldValue { Number = (long)Math.Round(mbps) });
+        Write(UplinkLayout.UplinkKey, new FieldValue { Number = (long)Math.Round(mbps) });
     }
 
     private void MeasureFailed(string reason)
@@ -829,42 +808,11 @@ public sealed class SetupViewModel : Observable
     }
 
     /// <summary>
-    /// Group carrying one field, empty where none of the drawn ones does.
-    /// Lets the rail name the step a figure is edited on without a second idea of where the backend put it.
+    /// Whether the step on screen draws the control with this key, which then carries its own lines under it.
+    /// Read off the group view model that step renders, so a hidden field draws nothing and counts as undrawn.
     /// </summary>
-    private static string GroupOwning(IReadOnlyList<FieldGroup> groups, string fieldKey)
-    {
-        foreach (var group in groups)
-        {
-            foreach (var field in group.Fields)
-            {
-                if (field.Key == fieldKey)
-                {
-                    return group.Key;
-                }
-            }
-        }
-
-        return "";
-    }
-
-    /// <summary>
-    /// Uplink control wherever the form put it, null where the form offers none.
-    /// Looked up rather than held: which group carries it is the backend's arrangement,
-    /// and the rail reads the same field view model that group's own step draws (Model/RailLayout.cs).
-    /// </summary>
-    private FieldViewModel? Uplink()
-    {
-        foreach (var group in _groups.Values)
-        {
-            if (group.Visible(RailLayout.UplinkKey) is { } field)
-            {
-                return field;
-            }
-        }
-
-        return null;
-    }
+    private bool DrawnOn(string step, string fieldKey)
+        => _groups.TryGetValue(step, out var group) && group.Visible(fieldKey) is not null;
 
     /// <summary>
     /// Anchors one diagnostic on the screen fixing it.
@@ -988,7 +936,7 @@ public sealed class SetupViewModel : Observable
     /// </summary>
     private FieldAction? ActionFor(string key) => key switch
     {
-        RailLayout.UplinkKey => new FieldAction(
+        UplinkLayout.UplinkKey => new FieldAction(
             "Measure",
             "Uploads a short payload to measure this machine's real upload throughput, and puts the result in the box. Refused while a stream is live.",
             MeasureNotice(),

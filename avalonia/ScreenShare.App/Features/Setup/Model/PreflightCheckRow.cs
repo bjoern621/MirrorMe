@@ -6,7 +6,7 @@ using ScreenShare.App.Features.Fields.Model;
 namespace ScreenShare.App.Features.Setup.Model;
 
 /// <summary>
-/// One line of the pre-publish list, as the rail and the review draw it.
+/// One line of the pre-publish list, as the strip and the checks card read it.
 /// A record, so a pass over an unchanged list compares equal and leaves the bound collection alone.
 /// </summary>
 public sealed record PreflightCheckRow
@@ -15,10 +15,11 @@ public sealed record PreflightCheckRow
 
     public required CheckState State { get; init; }
 
+    /// <summary>Settings field the line is about, empty for a line about the settings as a whole.</summary>
+    public required string FieldKey { get; init; }
+
     /// <summary>Step owning the control at fault, and the press reaching it.</summary>
     public required CheckAnchor Anchor { get; init; }
-
-    public bool IsResolved => State == CheckState.Passed;
 }
 
 /// <summary>
@@ -42,31 +43,16 @@ public static class PreflightChecks
         Assert.NotNull(diagnostics, "building the list needs the diagnostics the form carried");
         Assert.NotNull(anchorOf, "a line needs somewhere to look up the screen that fixes it");
 
-        if (diagnostics.Count == 0)
-        {
-            return [Clear];
-        }
-
         return diagnostics
             .Select(diagnostic => new PreflightCheckRow
             {
                 Text = Copy.Statements.Of(diagnostic.Text),
                 State = Impacts.StateOf(diagnostic.Severity),
+                FieldKey = diagnostic.FieldKey,
                 Anchor = anchorOf(diagnostic),
             })
             .ToList();
     }
-
-    /// <summary>
-    /// What the list says when the form found nothing to say,
-    /// in the sentence <see cref="Copy.Cards.PreflightClear"/> holds.
-    /// </summary>
-    public static readonly PreflightCheckRow Clear = new()
-    {
-        Text = Copy.Cards.PreflightClear,
-        State = CheckState.Passed,
-        Anchor = CheckAnchor.Nowhere,
-    };
 
     /// <summary>
     /// Steps a blocking line names, one entry per line, empty for a line naming no field.
@@ -80,28 +66,5 @@ public static class PreflightChecks
             .Where(check => check.State == CheckState.Blocking)
             .Select(check => check.Anchor.StepKey)
             .ToList();
-    }
-
-    /// <summary>
-    /// One line about the whole list: "2 blocking", "1 to know about", "nothing to fix".
-    /// Derived rather than stored, so the strip cannot claim something is owed while the list shows none.
-    /// </summary>
-    public static string SummaryOf(IReadOnlyList<PreflightCheckRow> checks)
-    {
-        Assert.NotNull(checks, "summarising the list needs the list");
-
-        var blocking = checks.Count(check => check.State == CheckState.Blocking);
-        if (blocking > 0)
-        {
-            return blocking == 1 ? "1 blocking" : $"{blocking} blocking";
-        }
-
-        var owed = checks.Count(check => !check.IsResolved);
-        return owed switch
-        {
-            0 => "nothing to fix",
-            1 => "1 to know about",
-            _ => $"{owed} to know about",
-        };
     }
 }

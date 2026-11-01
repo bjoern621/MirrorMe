@@ -33,6 +33,18 @@
     <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
   </Style>
 
+  <!--
+    The wizard's action bar, floating over the foot of the step column on every step.
+    The one shadow a floating surface casts, so it reads above the cards scrolling under it.
+  -->
+  <Style Selector="Border.floatbar">
+    <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource HairlineBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="{DynamicResource RadiusPanel}" />
+    <Setter Property="BoxShadow" Value="{DynamicResource MenuShadow}" />
+  </Style>
+
   <Style Selector="Border.navstrip">
     <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
     <Setter Property="BorderBrush" Value="{DynamicResource HairlineBrush}" />

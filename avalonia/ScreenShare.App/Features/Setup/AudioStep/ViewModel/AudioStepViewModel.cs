@@ -73,7 +73,7 @@ public sealed class AudioStepViewModel : Observable
     /// The disclosure over <see cref="UnderList"/>.
     /// The source rows are the step's floor; the format under them has a default behind it and folds.
     /// </summary>
-    public FoldViewModel Fold { get; } = new();
+    public FoldViewModel Fold { get; } = new(Copy.Fields.AdvancedTitle);
 
     public string Title { get => _title; private set => Set(ref _title, value); }
 
@@ -188,7 +188,7 @@ public sealed class AudioStepViewModel : Observable
 
         Reconcile.Onto(Rows, rows);
         Reconcile.Onto(UnderList, under);
-        Fold.Apply(UnderList.Count);
+        Fold.Apply(UnderList);
 
         HasRows = Rows.Count > 0;
         LiveLine = LiveLineOf(Rows.Count > 0 ? Rows[0] : null);

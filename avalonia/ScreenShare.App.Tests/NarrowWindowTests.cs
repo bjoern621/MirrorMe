@@ -27,29 +27,6 @@ public sealed class NarrowWindowTests
     }
 
     [Fact]
-    public void ANarrowWindowTakesTheSetupRailOffTheForm()
-    {
-        var setup = Flows.Setup(new SeededBackend("linux"));
-
-        setup.SetWindowWidth(Quarter);
-
-        Assert.False(setup.RailColumn.IsBeside);
-        Assert.False(setup.RailColumn.IsShowing);
-        Assert.True(setup.RailColumn.ShowsToggle);
-    }
-
-    [Fact]
-    public void AWideWindowKeepsTheSetupRailBesideTheForm()
-    {
-        var setup = Flows.Setup(new SeededBackend("linux"));
-
-        setup.SetWindowWidth(WindowSize.Opening);
-
-        Assert.True(setup.RailColumn.IsBeside);
-        Assert.True(setup.RailColumn.IsShowing);
-    }
-
-    [Fact]
     public void ANarrowWindowTakesTheInsightsCardsOffTheFigures()
     {
         var insights = Insights(new SeededBackend("linux"));
@@ -128,12 +105,12 @@ public sealed class NarrowWindowTests
     [Fact]
     public void TheSameWidthTwiceIsOnePass()
     {
-        var setup = Flows.Setup(new SeededBackend("linux"));
+        var insights = Insights(new SeededBackend("linux"));
 
-        setup.SetWindowWidth(Quarter);
-        setup.RailColumn.Toggle.Execute(null);
-        setup.SetWindowWidth(Quarter);
+        insights.SetWindowWidth(Quarter);
+        insights.CardsColumn.Toggle.Execute(null);
+        insights.SetWindowWidth(Quarter);
 
-        Assert.True(setup.RailColumn.IsShowing);
+        Assert.True(insights.CardsColumn.IsShowing);
     }
 }

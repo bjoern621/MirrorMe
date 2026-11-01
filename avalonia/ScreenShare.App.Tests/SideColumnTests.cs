@@ -20,8 +20,8 @@ public sealed class SideColumnTests
     /// <summary>Quarter of a laptop screen, where every row's threshold is above the window.</summary>
     private const double Quarter = 500;
 
-    private static SideColumnViewModel Rail()
-        => new(SideColumns.SetupRail, "Show what these settings cost.", "Hide what these settings cost.");
+    private static SideColumnViewModel Cards()
+        => new(SideColumns.InsightsCards, "Show the preview.", "Hide the preview.");
 
     private static SideColumnViewModel Watch()
         => new(SideColumns.ViewerWatch, "Change how streams come back.", "Close the watch settings.");
@@ -30,78 +30,78 @@ public sealed class SideColumnTests
     [Fact]
     public void AnUnmeasuredWindowDrawsEveryColumnBesideTheBody()
     {
-        Assert.True(Rail().IsBeside);
-        Assert.True(Rail().IsShowing);
+        Assert.True(Cards().IsBeside);
+        Assert.True(Cards().IsShowing);
     }
 
     [Fact]
     public void AWideWindowDrawsTheColumnBesideTheBody()
     {
-        var rail = Rail();
-        rail.SetWindowWidth(Wide);
+        var cards = Cards();
+        cards.SetWindowWidth(Wide);
 
-        Assert.True(rail.IsBeside);
-        Assert.True(rail.IsShowing);
+        Assert.True(cards.IsBeside);
+        Assert.True(cards.IsShowing);
     }
 
     /// <summary>Nothing to press where the column already stands beside the body.</summary>
     [Fact]
     public void AColumnDrawnBesideTheBodyOffersNoToggle()
     {
-        var rail = Rail();
-        rail.SetWindowWidth(Wide);
+        var cards = Cards();
+        cards.SetWindowWidth(Wide);
 
-        Assert.False(rail.ShowsToggle);
+        Assert.False(cards.ShowsToggle);
     }
 
     [Fact]
     public void ANarrowWindowTakesTheColumnOffTheBody()
     {
-        var rail = Rail();
-        rail.SetWindowWidth(Quarter);
+        var cards = Cards();
+        cards.SetWindowWidth(Quarter);
 
-        Assert.False(rail.IsBeside);
-        Assert.False(rail.IsShowing);
-        Assert.True(rail.ShowsToggle);
+        Assert.False(cards.IsBeside);
+        Assert.False(cards.IsShowing);
+        Assert.True(cards.ShowsToggle);
     }
 
     [Fact]
     public void TheToggleOpensThePanelOverTheBody()
     {
-        var rail = Rail();
-        rail.SetWindowWidth(Quarter);
+        var cards = Cards();
+        cards.SetWindowWidth(Quarter);
 
-        rail.Toggle.Execute(null);
+        cards.Toggle.Execute(null);
 
-        Assert.True(rail.IsShowing);
-        Assert.False(rail.IsBeside);
+        Assert.True(cards.IsShowing);
+        Assert.False(cards.IsBeside);
     }
 
     [Fact]
     public void TheToggleClosesThePanelAgain()
     {
-        var rail = Rail();
-        rail.SetWindowWidth(Quarter);
+        var cards = Cards();
+        cards.SetWindowWidth(Quarter);
 
-        rail.Toggle.Execute(null);
-        rail.Toggle.Execute(null);
+        cards.Toggle.Execute(null);
+        cards.Toggle.Execute(null);
 
-        Assert.False(rail.IsShowing);
+        Assert.False(cards.IsShowing);
     }
 
     /// <summary>A window widened while the panel is open draws it as the column it is on a wide window.</summary>
     [Fact]
     public void AWidenedWindowPutsThePanelBackBesideTheBody()
     {
-        var rail = Rail();
-        rail.SetWindowWidth(Quarter);
-        rail.Toggle.Execute(null);
+        var cards = Cards();
+        cards.SetWindowWidth(Quarter);
+        cards.Toggle.Execute(null);
 
-        rail.SetWindowWidth(Wide);
+        cards.SetWindowWidth(Wide);
 
-        Assert.True(rail.IsBeside);
-        Assert.True(rail.IsShowing);
-        Assert.False(rail.ShowsToggle);
+        Assert.True(cards.IsBeside);
+        Assert.True(cards.IsShowing);
+        Assert.False(cards.ShowsToggle);
     }
 
     /// <summary>A column the reader asks for stays closed on a window with the room for it.</summary>
@@ -152,7 +152,7 @@ public sealed class SideColumnTests
     [Fact]
     public void TheThresholdIsTheColumnPlusTheBodyItNeeds()
     {
-        var row = SideColumns.SetupRail;
+        var row = SideColumns.InsightsCards;
 
         Assert.Equal(row.Width + row.Body, row.Beside);
         Assert.True(row.FitsBeside(row.Beside));
@@ -166,14 +166,14 @@ public sealed class SideColumnTests
     [Fact]
     public void TheWatchPanelNeedsTheRailsWidthOnTopOfTheGrids()
     {
-        Assert.True(SideColumns.ViewerWatch.Beside > SideColumns.SetupRail.Beside);
+        Assert.True(SideColumns.ViewerWatch.Beside > SideColumns.ViewerRail.Beside);
     }
 
     /// <summary>Every row draws beside the body on the window the app opens at.</summary>
     [Fact]
     public void TheOpeningWindowCarriesEveryColumnBesideItsBody()
     {
-        Assert.True(SideColumns.SetupRail.FitsBeside(WindowSize.Opening));
+        Assert.True(SideColumns.InsightsActions.FitsBeside(WindowSize.Opening));
         Assert.True(SideColumns.InsightsCards.FitsBeside(WindowSize.Opening));
         Assert.True(SideColumns.ViewerWatch.FitsBeside(WindowSize.Opening));
         Assert.True(SideColumns.ViewerRail.FitsBeside(WindowSize.Opening));
@@ -183,7 +183,7 @@ public sealed class SideColumnTests
     [Fact]
     public void TheFloorIsNarrowerThanEveryRowsThreshold()
     {
-        Assert.False(SideColumns.SetupRail.FitsBeside(WindowSize.Floor));
+        Assert.False(SideColumns.InsightsActions.FitsBeside(WindowSize.Floor));
         Assert.False(SideColumns.InsightsCards.FitsBeside(WindowSize.Floor));
         Assert.False(SideColumns.ViewerWatch.FitsBeside(WindowSize.Floor));
     }

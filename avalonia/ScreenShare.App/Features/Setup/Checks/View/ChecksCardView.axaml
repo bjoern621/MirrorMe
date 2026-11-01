@@ -1,0 +1,35 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:ScreenShare.App.Controls"
+             xmlns:copy="using:ScreenShare.App.Copy"
+             xmlns:model="using:ScreenShare.App.Features.Setup.Model"
+             xmlns:vm="using:ScreenShare.App.Features.Setup.Checks.ViewModel"
+             x:Class="ScreenShare.App.Features.Setup.Checks.View.ChecksCardView"
+             x:DataType="vm:ChecksCardViewModel">
+
+  <Border Classes="card" Padding="{StaticResource InsetPanel}" IsVisible="{Binding IsShown}">
+    <StackPanel>
+      <TextBlock Classes="caption" Text="{x:Static copy:Cards.ChecksTitle}" Margin="0,0,0,10" />
+      <ItemsControl ItemsSource="{Binding Lines}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="model:PreflightCheckRow">
+            <controls:CheckItem Margin="0,0,0,9"
+                                Text="{Binding Text}"
+                                State="{Binding State}"
+                                FixedInStep="{Binding Anchor.Label}"
+                                Fix="{Binding Anchor.Fix}" />
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+
+      <SelectableTextBlock Classes="hint danger"
+                           TextWrapping="Wrap"
+                           TextTrimming="None"
+                           LineHeight="{StaticResource LineHeightSmall}"
+                           Margin="0,3,0,0"
+                           IsVisible="{Binding HasRefusal}"
+                           Text="{Binding Refusal}" />
+    </StackPanel>
+  </Border>
+
+</UserControl>

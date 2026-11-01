@@ -29,17 +29,6 @@
       <Setter Property="StrokeThickness" Value="4" />
     </Style>
 
-    <!-- Grey for a note, amber for a warning, red for what stops the stream (docs/design-language.md, "Palette"). -->
-    <Style Selector="ti|TablerIcon.impact">
-      <Setter Property="Brush" Value="{StaticResource MutedBrush}" />
-    </Style>
-    <Style Selector="ti|TablerIcon.impact.warns">
-      <Setter Property="Brush" Value="{StaticResource CautionBrush}" />
-    </Style>
-    <Style Selector="ti|TablerIcon.impact.blocks">
-      <Setter Property="Brush" Value="{StaticResource AttentionBrush}" />
-    </Style>
-
     <!-- An open expert row already names its control in the row heading it, so the field row drops its own label. -->
     <Style Selector="ContentControl.expert TextBlock.fieldlabel">
       <Setter Property="IsVisible" Value="False" />
@@ -135,15 +124,7 @@
     <!-- Every encode control the questions leave, one closed row each, behind one disclosure. -->
     <Border Classes="card" Padding="16,14" IsVisible="{Binding Expert.Fold.HasAny}">
       <StackPanel>
-        <Button Theme="{StaticResource LinkButton}"
-                HorizontalAlignment="Left"
-                Command="{Binding Expert.Fold.ToggleCommand}">
-          <StackPanel Orientation="Horizontal" Spacing="8">
-            <ti:TablerIcon Icon="{Binding Expert.Fold.Glyph}" Brush="{StaticResource MutedBrush}" VerticalAlignment="Center" />
-            <TextBlock Classes="secondary" Text="{x:Static copy:Cards.ExpertTitle}" VerticalAlignment="Center" />
-            <TextBlock Classes="hint" Text="{Binding Expert.Fold.Count}" VerticalAlignment="Center" />
-          </StackPanel>
-        </Button>
+        <ContentControl Content="{Binding Expert.Fold}" ContentTemplate="{StaticResource FoldDisclosure}" />
 
         <ItemsControl ItemsSource="{Binding Expert.Rows}" IsVisible="{Binding Expert.Fold.Shown}" Margin="0,10,0,0">
           <ItemsControl.ItemTemplate>
@@ -172,6 +153,14 @@
                                      Margin="7,0,0,6"
                                      IsVisible="{Binding !Field.IsEnabled}"
                                      Text="{Binding Field.Reason}" />
+                <!-- The open control draws its own lines under it. -->
+                <ItemsControl Margin="7,0,0,0" IsVisible="{Binding !IsOpen}" ItemsSource="{Binding Field.Diagnostics}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="fields:Impact">
+                      <controls:CheckItem Margin="0,0,0,7" Text="{Binding Text}" State="{Binding State}" />
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
                 <ContentControl Classes="expert"
                                 Margin="7,4,0,0"
                                 IsVisible="{Binding IsOpen}"

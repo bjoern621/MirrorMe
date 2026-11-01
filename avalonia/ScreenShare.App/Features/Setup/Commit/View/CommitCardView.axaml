@@ -6,88 +6,86 @@
              x:DataType="vm:CommitViewModel">
 
   <!--
-    The commit, at the foot of the rail on the last step, where every other step's Continue sits
-    (Setup/View/SetupView.axaml).
+    The commit, in the floating foot on the last step, where every other step's Continue sits
+    (Setup/View/SetupView.axaml), which draws the bar around it.
   -->
 
-  <Border Classes="card" Padding="{StaticResource InsetPanel}">
-    <StackPanel>
-      <!--
-        Three runs, the stream name sitting inside the sentence at full strength
-        and the sentence itself moving with what the press will do (Model/CommitCopy.cs):
-        a literal here would be one of the two wordings, written where the other cannot reach it.
-      -->
-      <TextBlock Classes="hint"
-                 TextWrapping="Wrap"
-                 TextTrimming="None"
-                 LineHeight="{StaticResource LineHeightSmall}"
-                 Margin="0,0,0,11"
-                 IsVisible="{Binding ShowsPromise}">
-        <Run Text="{Binding PromiseLead}" />
-        <Run Text="{Binding StreamName}"
-             FontWeight="SemiBold"
-             Foreground="{StaticResource ForegroundBrush}" />
-        <Run Text="{Binding PromiseTail}" />
-      </TextBlock>
+  <StackPanel>
+    <!--
+      Three runs, the stream name sitting inside the sentence at full strength
+      and the sentence itself moving with what the press will do (Model/CommitCopy.cs):
+      a literal here would be one of the two wordings, written where the other cannot reach it.
+    -->
+    <TextBlock Classes="hint"
+               TextWrapping="Wrap"
+               TextTrimming="None"
+               LineHeight="{StaticResource LineHeightSmall}"
+               Margin="0,0,0,11"
+               IsVisible="{Binding ShowsPromise}">
+      <Run Text="{Binding PromiseLead}" />
+      <Run Text="{Binding StreamName}"
+           FontWeight="SemiBold"
+           Foreground="{StaticResource ForegroundBrush}" />
+      <Run Text="{Binding PromiseTail}" />
+    </TextBlock>
+
+    <!--
+      In the promise's place while the stream runs the draft as it stands, which greys the button.
+      A state the reader is in and no fault, so the plain hint colour (Model/CommitCopy.cs).
+    -->
+    <TextBlock Classes="hint"
+               TextWrapping="Wrap"
+               TextTrimming="None"
+               LineHeight="{StaticResource LineHeightSmall}"
+               Margin="0,0,0,11"
+               IsVisible="{Binding IsInForce}"
+               Text="{Binding InForce}" />
+
+    <!--
+      Why the button is locked, naming only the backend or the relay.
+      A settings problem stands under its control or on the checks card in the backend's own words,
+      and a stream on the air changes what the commit does, or says above that it runs the draft.
+    -->
+    <SelectableTextBlock Classes="hint danger"
+                         TextWrapping="Wrap"
+                         TextTrimming="None"
+                         LineHeight="{StaticResource LineHeightSmall}"
+                         Margin="0,0,0,11"
+                         IsVisible="{Binding IsBlocked}"
+                         Text="{Binding Blocked}" />
+
+    <SelectableTextBlock Classes="hint danger"
+                         TextWrapping="Wrap"
+                         TextTrimming="None"
+                         LineHeight="{StaticResource LineHeightSmall}"
+                         Margin="0,0,0,11"
+                         IsVisible="{Binding HasRefusal}"
+                         Text="{Binding Refusal}" />
+
+    <Grid ColumnDefinitions="Auto,*">
+      <Button Grid.Column="0" Theme="{StaticResource FooterButton}" Content="Back" Command="{Binding BackCommand}" />
 
       <!--
-        In the promise's place while the stream runs the draft as it stands, which greys the button.
-        A state the reader is in and no fault, so the plain hint colour (Model/CommitCopy.cs).
+        The dot takes the button's own Foreground, which the disabled treatment moves:
+        content naming a brush of its own would stay bright on a locked button.
       -->
-      <TextBlock Classes="hint"
-                 TextWrapping="Wrap"
-                 TextTrimming="None"
-                 LineHeight="{StaticResource LineHeightSmall}"
-                 Margin="0,0,0,11"
-                 IsVisible="{Binding IsInForce}"
-                 Text="{Binding InForce}" />
-
-      <!--
-        Why the button is locked, naming only the backend or the relay.
-        A settings problem is in the checks card above in the backend's own words,
-        and a stream on the air changes what the commit does, or says above that it runs the draft.
-      -->
-      <SelectableTextBlock Classes="hint danger"
-                           TextWrapping="Wrap"
-                           TextTrimming="None"
-                           LineHeight="{StaticResource LineHeightSmall}"
-                           Margin="0,0,0,11"
-                           IsVisible="{Binding IsBlocked}"
-                           Text="{Binding Blocked}" />
-
-      <SelectableTextBlock Classes="hint danger"
-                           TextWrapping="Wrap"
-                           TextTrimming="None"
-                           LineHeight="{StaticResource LineHeightSmall}"
-                           Margin="0,0,0,11"
-                           IsVisible="{Binding HasRefusal}"
-                           Text="{Binding Refusal}" />
-
-      <Grid ColumnDefinitions="Auto,*">
-        <Button Grid.Column="0" Theme="{StaticResource FooterButton}" Content="Back" Command="{Binding BackCommand}" />
-
-        <!--
-          The dot takes the button's own Foreground, which the disabled treatment moves:
-          content naming a brush of its own would stay bright on a locked button.
-        -->
-        <Button Grid.Column="1"
-                Theme="{StaticResource GoButton}"
-                Height="{StaticResource FooterButtonHeight}"
-                Margin="8,0,0,0"
-                Command="{Binding StartSharingCommand}"
-                controls:Pending.IsActive="{Binding StartSharingCommand.IsRunning}">
-          <StackPanel Orientation="Horizontal" Spacing="{StaticResource GapTight}" VerticalAlignment="Center">
-            <Ellipse Width="{StaticResource DotSize}"
-                     Height="{StaticResource DotSize}"
-                     Fill="{Binding $parent[Button].Foreground}"
-                     VerticalAlignment="Center" />
-            <TextBlock Text="{Binding CommitLabel}"
-                       FontSize="{StaticResource FontSizeHeading}"
-                       FontWeight="SemiBold" />
-          </StackPanel>
-        </Button>
-      </Grid>
-    </StackPanel>
-  </Border>
+      <Button Grid.Column="1"
+              Theme="{StaticResource GoButton}"
+              Height="{StaticResource FooterButtonHeight}"
+              Margin="8,0,0,0"
+              Command="{Binding StartSharingCommand}"
+              controls:Pending.IsActive="{Binding StartSharingCommand.IsRunning}">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource GapTight}" VerticalAlignment="Center">
+          <Ellipse Width="{StaticResource DotSize}"
+                   Height="{StaticResource DotSize}"
+                   Fill="{Binding $parent[Button].Foreground}"
+                   VerticalAlignment="Center" />
+          <TextBlock Text="{Binding CommitLabel}"
+                     FontSize="{StaticResource FontSizeHeading}"
+                     FontWeight="SemiBold" />
+        </StackPanel>
+      </Button>
+    </Grid>
+  </StackPanel>
 
 </UserControl>

@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using ScreenShare.App.Contracts;
 
-namespace ScreenShare.App.Features.Setup.CostRail.View;
+namespace ScreenShare.App.Features.Setup.CostBar.View;
 
 /// <summary>
 /// A figure against a limit, both as shares of one bar: a track, a fill, and a marker where the limit stands.

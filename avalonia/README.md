@@ -82,7 +82,7 @@ Four layers, dependency running one way: a feature reads the design system and t
 | `Features/Tray/` | the tray icon: its menu model, the view model pressing the destinations' own commands, and the host drawing the platform icon |
 | `Backend/` | the control-plane boundary: `IBackend`, the gRPC client answering it over the local socket, and the settings write going through the message descriptor |
 | `Features/Fields/` | the generic renderer for one group of the resolved form, and the placement table saying which destination draws which group. Not under a feature because two of them draw form groups |
-| `Features/Setup/` | the publish wizard, one step per sending-related group with the commit at the last one's foot: step strip, the share question with a chooser per kind, the presets card and the Quality form under it, audio source list, raw-property card, and the rail every step draws beside them carrying cost and checks. The share question is drawn again in a dialog at the press that starts a stream, one model behind both |
+| `Features/Setup/` | the publish wizard, one step per sending-related group with the commit at the last one's foot: step strip, the share question with a chooser per kind, the presets card and the encode questions under it, audio source list, raw-property card, the cost bar above every step and the checks card under it. The share question is drawn again in a dialog at the press that starts a stream, one model behind both |
 | `Features/Insights/` | the live overview: promoted figures, live-safe actions, read-only configuration, the outgoing preview, the per-viewer table, the sparklines |
 | `Features/Viewer/` | the tile grid and its rail: one entry per stream the relay carries, the arrangement of the ones being watched, and the panel holding how this machine receives |
 
@@ -211,7 +211,7 @@ It sends the draft to `StartPublish`, which persists it and starts the encoder o
 The reply says nothing and the stream arrives on the event stream, so the window that pressed the button and the window that did not learn it the same way.
 `Features/Setup/Model/PublishGate.cs` decides, and every condition in it is a whole state some other side stated: `Form.publishable`, the backend's own sentence when it cannot describe the settings at all, `RelayStatus.reachable`, and the presence of `PublishState.live`.
 None is ranked or re-decided here, and only one sentence is shown.
-A settings problem gets no sentence of its own, the checks card above the button already carrying every one of them in the backend's words.
+A settings problem gets no sentence of its own: each one stands under its control or on the checks card, in the backend's words.
 
 **The fourth decides what the commit does, and that decision is the whole shape of that file.**
 `ApplyToStream` is the effect for a stream already on the air, so a live stream decides *what the commit does* rather than whether it can be done.

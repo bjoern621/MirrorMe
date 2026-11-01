@@ -38,4 +38,20 @@ public static class Impacts
         Severity.Info => CheckState.Note,
         _ => Assert.Never<CheckState>("unexpected diagnostic severity", (int)severity),
     };
+
+    /// <summary>Lines of several controls in one list, what stops the stream first and a note last.</summary>
+    public static ValueList<Impact> Ranked(IEnumerable<Impact> impacts)
+    {
+        Assert.NotNull(impacts, "ranking lines needs the lines");
+
+        return new ValueList<Impact>(impacts.OrderBy(impact => Rank(impact.State)));
+    }
+
+    private static int Rank(CheckState state) => state switch
+    {
+        CheckState.Blocking => 0,
+        CheckState.Warned => 1,
+        CheckState.Note => 2,
+        _ => Assert.Never<int>("an impact carries a diagnostic's rank", (int)state),
+    };
 }

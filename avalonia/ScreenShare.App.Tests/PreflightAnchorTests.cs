@@ -21,11 +21,11 @@ public sealed class PreflightAnchorTests
 
         // Under the predicted rate, what the fixture warns on. The field sits on the network step.
         flow.CurrentStep = "network";
-        flow.CurrentGroup!.Fields.Single(field => field.Key == RailLayout.UplinkKey).Number = 4;
+        flow.CurrentGroup!.Fields.Single(field => field.Key == UplinkLayout.UplinkKey).Number = 4;
         await flow.Settled;
 
         flow.CurrentStep = flow.Steps[0].Key;
-        var warned = flow.Rail.Checks.Single(check => check.State == CheckState.Warned);
+        var warned = flow.Checks.Lines.Single(check => check.State == CheckState.Warned);
 
         Assert.Equal("network", warned.Anchor.StepKey);
         Assert.NotNull(warned.Anchor.Fix);
@@ -47,34 +47,17 @@ public sealed class PreflightAnchorTests
 
         flow.CurrentStep = "network";
         var group = flow.CurrentGroup!;
-        group.Fields.Single(field => field.Key == RailLayout.UplinkKey).Number = 4;
+        group.Fields.Single(field => field.Key == UplinkLayout.UplinkKey).Number = 4;
         await flow.Settled;
 
-        Assert.Contains(group.Folded, field => field.Key == RailLayout.UplinkKey);
+        Assert.Contains(group.Folded, field => field.Key == UplinkLayout.UplinkKey);
         Assert.False(group.Fold.Shown);
 
         flow.CurrentStep = flow.Steps[0].Key;
-        flow.Rail.Checks.Single(check => check.State == CheckState.Warned).Anchor.Fix!.Execute(null);
+        flow.Checks.Lines.Single(check => check.State == CheckState.Warned).Anchor.Fix!.Execute(null);
 
         Assert.Equal("network", flow.CurrentStep);
         Assert.True(group.Fold.Shown);
-    }
-
-    /// <summary>A pass over an unchanged list produces lines that compare equal, so the bound rows are left alone.</summary>
-    [Fact]
-    public async Task TheSameFaultProducesTheSameLine()
-    {
-        var flow = Flows.Setup(new SeededBackend("linux"));
-        await flow.Settled;
-
-        flow.CurrentStep = "network";
-        flow.CurrentGroup!.Fields.Single(field => field.Key == RailLayout.UplinkKey).Number = 4;
-        await flow.Settled;
-
-        var first = flow.Rail.Checks.Single(check => check.State == CheckState.Warned);
-        flow.Apply();
-
-        Assert.Equal(first, flow.Rail.Checks.Single(check => check.State == CheckState.Warned));
     }
 
     [Fact]
@@ -89,7 +72,7 @@ public sealed class PreflightAnchorTests
     [Fact]
     public void AWarnedLineMarksNothing()
     {
-        var chips = Chips([Line(CheckState.Warned, "network"), PreflightChecks.Clear]);
+        var chips = Chips([Line(CheckState.Warned, "network"), Line(CheckState.Passed, "")]);
 
         foreach (var chip in chips)
         {
@@ -113,6 +96,7 @@ public sealed class PreflightAnchorTests
     {
         Text = "something the form said",
         State = state,
+        FieldKey = "",
         Anchor = stepKey.Length == 0
             ? CheckAnchor.Nowhere
             : new CheckAnchor { Label = stepKey, StepKey = stepKey, Fix = new DelegateCommand(() => { }) },

@@ -115,7 +115,7 @@ public sealed class FieldGroupViewModel : Observable
     public ObservableCollection<FieldViewModel> Folded { get; }
 
     /// <summary>The disclosure over <see cref="Folded"/>.</summary>
-    public FoldViewModel Fold { get; } = new();
+    public FoldViewModel Fold { get; } = new(Copy.Fields.AdvancedTitle);
 
     public string Title { get => _title; private set => Set(ref _title, value); }
 
@@ -183,7 +183,7 @@ public sealed class FieldGroupViewModel : Observable
         var floor = _onFloor is null ? rendered : [.. rendered.Where(model => _onFloor(model.Key))];
         Reconcile.Onto(Floor, floor);
         Reconcile.Onto(Folded, _onFloor is null ? [] : [.. rendered.Where(model => !_onFloor(model.Key))]);
-        Fold.Apply(Folded.Count);
+        Fold.Apply(Folded);
 
         Assert.That(
             Floor.Count + Folded.Count == Fields.Count,

@@ -200,11 +200,13 @@ public static class Cards
 
     public const string GridUnwatched = "Nothing is picked to watch. Click a stream on the left to open its picture.";
 
-    /// <summary>
-    /// What the preflight list says when the form found nothing to say.
-    /// A line rather than an empty panel: a card that vanishes with the last warning reads as a card that broke.
-    /// </summary>
-    public const string PreflightClear = "Nothing to fix. These settings publish as they stand.";
+    /// <summary>Card at the step column's foot, holding what no control on screen already says.</summary>
+    public const string ChecksTitle = "Checks before sharing";
+
+    /// <summary>Beside the predicted rate on the cost bar.</summary>
+    public static string OfUplink(string uplink) => $"of {uplink} uplink";
+
+    public const string NoUplink = "No uplink stated";
 
     /// <summary>
     /// The relay check: its heading, the button that runs it, what the button does,
@@ -212,7 +214,7 @@ public static class Cards
     ///
     /// The heading names what is reached rather than what is run,
     /// the reader having come to this card from the address and the ports above it.
-    /// The unchecked-relay line is a line and not an empty card, for the reason <see cref="PreflightClear"/> is one.
+    /// The unchecked-relay line keeps the card from reading as broken before a check runs.
     /// </summary>
     public const string RelayCheckTitle = "What answers on this relay";
 

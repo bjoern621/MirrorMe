@@ -196,17 +196,7 @@
       </Button>
 
       <!-- The format's fold: a default stands behind it, so the rows above keep the floor to themselves. -->
-      <Button Theme="{StaticResource LinkButton}"
-              HorizontalAlignment="Left"
-              Margin="0,18,0,0"
-              IsVisible="{Binding Fold.HasAny}"
-              Command="{Binding Fold.ToggleCommand}">
-        <StackPanel Orientation="Horizontal" Spacing="8">
-          <ti:TablerIcon Icon="{Binding Fold.Glyph}" Brush="{StaticResource MutedBrush}" VerticalAlignment="Center" />
-          <TextBlock Classes="secondary" Text="{x:Static copy:Fields.AdvancedTitle}" VerticalAlignment="Center" />
-          <TextBlock Classes="hint" Text="{Binding Fold.Count}" VerticalAlignment="Center" />
-        </StackPanel>
-      </Button>
+      <ContentControl Margin="0,18,0,0" IsVisible="{Binding Fold.HasAny}" Content="{Binding Fold}" ContentTemplate="{StaticResource FoldDisclosure}" />
 
       <!--
         Everything the group holds that belongs to no entry, drawn under the list in the form's order.

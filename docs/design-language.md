@@ -151,6 +151,14 @@ The encode step asks what a viewer notices, smoothness, size and detail, as ques
 The rest of the encode group folds under them as closed rows, one row open at a time.
 The audio step folds the format under its rows.
 The fold is view state: opening one is the reader's press, and no run remembers it.
+A closed fold carries the mark of what its controls raise, the lines under them being out of view.
+
+Setup draws one column, capped on a wide window.
+Above it the cost bar prices the draft against the uplink on every step.
+A diagnostic stands under the control it names.
+The checks card at the column's foot lists the rest: lines about another step or screen, each with the press reaching it, lines about the settings as a whole, and why no pipeline builds.
+A card with nothing left to say is not drawn.
+The action bar floats over the foot on every step: Back and Continue, and the commit in Continue's place on the last step.
 
 ## Narrow windows
 
@@ -159,13 +167,11 @@ A tiling session hands one a quarter of the screen and offers no frame to drag, 
 
 **A window too narrow for two columns draws one, and the side column becomes a panel over the body.**
 The body keeps the whole width, and the panel opens from a control on the surface it belongs to.
-Three columns work this way: setup's rail, the insights cards, the viewer's watch settings.
+Two columns work this way: the insights cards and the viewer's watch settings.
 Each states its own width and the body it needs beside it, and the threshold is those two added (`Features/Shell/Model/SideColumns.cs`).
 
 A column that draws unasked carries its control only while it is a panel, a press that changes nothing reading as broken.
 One that opens on request carries its control at every width.
-
-The foot is the row a panel never covers: the wizard's Back and Continue, and the commit in Continue's place on its last step.
 
 A rail carrying names drops the names rather than the window dropping the rail.
 

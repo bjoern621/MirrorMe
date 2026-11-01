@@ -134,7 +134,7 @@ public sealed class TrayTests
         Assert.Empty(opened.Backend.Applied);
     }
 
-    /// <summary>Built-in rows first, saved rows after them, both as the rail's card lists them.</summary>
+    /// <summary>Built-in rows first, saved rows after them, both as the presets card lists them.</summary>
     [Fact]
     public async Task TheMenuListsBuiltinThenSavedPresets()
     {

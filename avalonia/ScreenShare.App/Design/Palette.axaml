@@ -101,7 +101,7 @@
 
   <!--
     One shadow the app draws, for the surface that floats over the window:
-    a menu, and the tooltip skinned like one.
+    a menu, the tooltip skinned like one, and the wizard's action bar.
     A window's is the platform's, cast around the frame by the compositor.
     BoxShadows rather than a brush, that being the type the setter takes.
   -->

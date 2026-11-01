@@ -29,7 +29,7 @@ public sealed class ExpertFoldViewModel : Observable
     private IReadOnlyList<FieldViewModel> _fields = [];
     private string _open = "";
 
-    public FoldViewModel Fold { get; } = new();
+    public FoldViewModel Fold { get; } = new(Copy.Cards.ExpertTitle);
 
     public ObservableCollection<ExpertRow> Rows { get; } = [];
 
@@ -55,7 +55,7 @@ public sealed class ExpertFoldViewModel : Observable
             IsOpen = field.Key == _open && field.IsEnabled,
             Toggle = ToggleOf(field.Key),
         }).ToList());
-        Fold.Apply(fields.Count);
+        Fold.Apply(fields);
 
         Assert.That(Rows.Count(row => row.IsOpen) <= 1, "the fold holds one control open at most", Rows.Count);
     }

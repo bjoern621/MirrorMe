@@ -1,7 +1,7 @@
 namespace ScreenShare.App.Features.Setup.Model;
 
 /// <summary>
-/// The one field key the relay step names, on the licence <see cref="RailLayout"/> takes: naming a key is placement,
+/// The one field key the relay step names, on the licence <see cref="UplinkLayout"/> takes: naming a key is placement,
 /// and what the field is called, what it holds and whether it is reachable stays the form's answer.
 ///
 /// Named because drawing a group key is an effect rather than a value: the service on the relay makes one,

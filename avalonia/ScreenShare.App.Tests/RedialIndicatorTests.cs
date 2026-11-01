@@ -36,7 +36,7 @@ public sealed class RedialIndicatorTests
     }
 
     /// <summary>
-    /// Rail draws on every step, so the preset card's refusal is the sentence a reader on setup sees.
+    /// Presets card draws on the encode step, so its refusal is the sentence a reader there sees.
     /// The refusal alone says nothing about a next attempt.
     /// </summary>
     [Fact]

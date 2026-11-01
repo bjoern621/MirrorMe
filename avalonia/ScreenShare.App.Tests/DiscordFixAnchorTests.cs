@@ -42,7 +42,7 @@ public sealed class DiscordFixAnchorTests
     {
         var (flow, settings) = await WindowAsync(Unlinked());
 
-        var blocking = flow.Rail.Checks.Single(check => check.State == CheckState.Blocking);
+        var blocking = flow.Checks.Lines.Single(check => check.State == CheckState.Blocking);
 
         Assert.Equal("", blocking.Anchor.StepKey);
         Assert.Equal("Go to Settings · Discord", blocking.Anchor.Label);

@@ -112,13 +112,13 @@ public sealed class SweepTests
         await backend.AnswerAsync(1);
 
         var quantizer = Flows.Encode(flow, "publish.cq");
-        var priced = flow.Rail.Bitrate;
+        var priced = flow.Cost.Bitrate;
 
         quantizer.IsSweeping = true;
         quantizer.Slide -= 6;
         await backend.AnswerAsync(2);
 
-        Assert.NotEqual(priced, flow.Rail.Bitrate);
+        Assert.NotEqual(priced, flow.Cost.Bitrate);
     }
 
     /// <summary>

@@ -377,7 +377,6 @@ public sealed class ShellViewModel : Observable
 
         // Pushed into the destinations rather than into their next render pass: each one renders what the width
         // decides, and the chrome around them stands at every width.
-        Setup.SetWindowWidth(_width);
         Insights.SetWindowWidth(_width);
         Viewer.SetWindowWidth(_width);
     }
@@ -419,7 +418,6 @@ public sealed class ShellViewModel : Observable
 
         // The window's width, pushed before the pass that arranges against it.
         // Every destination and not the showing one alone, for the reason their renders run on every pass.
-        Setup.SetWindowWidth(_width);
         Insights.SetWindowWidth(_width);
         Viewer.SetWindowWidth(_width);
 

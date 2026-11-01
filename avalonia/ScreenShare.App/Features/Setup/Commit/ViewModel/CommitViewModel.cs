@@ -6,10 +6,10 @@ using TablerIcons;
 namespace ScreenShare.App.Features.Setup.Commit.ViewModel;
 
 /// <summary>
-/// The one control that changes the world, drawn at the foot of the rail on the last step,
+/// The one control that changes the world, drawn in the floating foot on the last step,
 /// where every other step's Continue sits (<c>Setup/View/SetupView.axaml</c>).
-/// What the settings owe is the rail's, on every step alike
-/// (<c>Setup/CostRail/ViewModel/CostRailViewModel.cs</c>).
+/// What the settings owe stands under the controls and on the checks card
+/// (<c>Setup/Checks/ViewModel/ChecksCardViewModel.cs</c>).
 ///
 /// Outputs are written by <see cref="Apply"/> alone, each coming off a state some other side stated:
 /// the name is the draft's,
@@ -102,7 +102,7 @@ public sealed class CommitViewModel : Observable
 
     /// <summary>
     /// Why the button is locked, empty while it is not.
-    /// Never this step's own prose about a setting: a setting's own blocker is in the rail's checks,
+    /// Never this step's own prose about a setting: a setting's own blocker stands under its control or on the checks card,
     /// in the words the backend wrote it in.
     /// </summary>
     public string Blocked { get => _blocked; private set => Set(ref _blocked, value); }

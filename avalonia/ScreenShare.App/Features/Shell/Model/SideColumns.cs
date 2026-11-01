@@ -2,18 +2,11 @@ namespace ScreenShare.App.Features.Shell.Model;
 
 /// <summary>
 /// Every side column this app draws, with the body each needs beside it.
-/// One table read by the three destinations and by the tests, so a width is stated where the column is described
+/// One table read by the two destinations and by the tests, so a width is stated where the column is described
 /// and nowhere else.
 /// </summary>
 public static class SideColumns
 {
-    /// <summary>
-    /// Rail pricing the settings beside them: cost, checks and presets
-    /// (<c>Features/Setup/CostRail</c>).
-    /// The body is a step's form, whose controls sit under labels that wrap.
-    /// </summary>
-    public static readonly SideColumn SetupRail = new(330, 470, ColumnEdge.Right, DrawnUnasked: true);
-
     /// <summary>
     /// Preview and the configuration read-back, on the left of the live figures
     /// (<c>Features/Insights</c>).
