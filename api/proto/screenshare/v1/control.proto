@@ -127,6 +127,9 @@ service ControlService {
   // CheckUpdate is what asks the release service, and this reads what it last landed.
   rpc GetUpdateState(GetUpdateStateRequest) returns (UpdateState);
 
+  // The publish run as the backend judges it, the same payload stream_timeline pushes.
+  rpc GetStreamTimeline(GetStreamTimelineRequest) returns (StreamTimeline);
+
   // --- Effects -----------------------------------------------------------------
 
   // Persists the settings the shell holds.
@@ -536,6 +539,8 @@ message ListShareWindowsResponse {
 }
 
 message GetUpdateStateRequest {}
+
+message GetStreamTimelineRequest {}
 
 message CheckUpdateRequest {}
 

@@ -687,6 +687,12 @@ public static class Statements
             TextCode.UpdateInstallFailed =>
                 "The staged release could not be started. Get it from the release page instead.",
 
+            // How a running stream is judged (docs/insights.md).
+
+            TextCode.VerdictDip =>
+                $"Sending {Number(a.Fps)} of the {Number(a.TargetFps)} frames a second the stream asks for. "
+                + "Motion looks uneven to viewers.",
+
             // The tray.
 
             TextCode.TrayIconOff =>
@@ -857,6 +863,8 @@ public static class Statements
         public long Height => Num(TextArgName.Height);
 
         public long Fps => Num(TextArgName.Fps);
+
+        public long TargetFps => Num(TextArgName.TargetFps);
 
         public long RefreshHz => Num(TextArgName.RefreshHz);
 

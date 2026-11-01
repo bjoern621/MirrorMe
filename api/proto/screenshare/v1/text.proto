@@ -185,6 +185,8 @@ enum TextArgName {
   TEXT_ARG_NAME_VERSION = 67;
   // A step of the quantizer's detail ladder, least detail first: "lighter", "clean", "sharper".
   TEXT_ARG_NAME_DETAIL_STEP = 71;
+  // Frame rate a stream was asked to hold, fps.
+  TEXT_ARG_NAME_TARGET_FPS = 72;
 
   // Reserved for a rename rather than a removal:
   // TEXT_ARG_NAME_EFFORT carries the number,
@@ -264,6 +266,9 @@ enum TextCode {
   // the number alone not saying which step it is once the scale differs from 0..51.
   // TEXT_ARG_NAME_DETAIL_STEP.
   TEXT_CODE_DETAIL_STEP = 199;
+  // The stream runs under its target frame rate.
+  // TEXT_ARG_NAME_FPS is the rate measured, TEXT_ARG_NAME_TARGET_FPS the one asked for.
+  TEXT_CODE_VERDICT_DIP = 200;
   // This session has no capture element that reads one output apart from another,
   // so there is no picture of a single monitor to show.
   // TEXT_ARG_NAME_OS and, on Linux, TEXT_ARG_NAME_DISPLAY:

@@ -945,6 +945,12 @@ internal sealed class SeededBackend : IBackend
     public Task<UpdateState> UpdateAsync(CancellationToken cancellation = default)
         => Task.FromResult(Update);
 
+    /// <summary>The judged run, clean with nothing marked by default: no fixture publishes.</summary>
+    public StreamTimeline Timeline { get; set; } = new() { Verdict = new StreamVerdict { Level = StreamVerdict.Types.Level.Clean } };
+
+    public Task<StreamTimeline> StreamTimelineAsync(CancellationToken cancellation = default)
+        => Task.FromResult(Timeline);
+
     public Task CheckUpdateAsync(CancellationToken cancellation = default)
     {
         UpdateChecks++;

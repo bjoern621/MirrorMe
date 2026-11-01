@@ -19,6 +19,7 @@ import (
 	"bjoernblessin.de/screenshare/internal/groupclient"
 	"bjoernblessin.de/screenshare/internal/relay"
 	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/screenshare/internal/timeline"
 	"bjoernblessin.de/screenshare/internal/update"
 )
 
@@ -155,6 +156,8 @@ type App struct {
 	// Outside procMu because it is written faster than any frame rate, and a lock every publish path
 	// takes does not belong on that.
 	pointerAt pointerState
+	// The publish run as a viewer would judge it. Locks itself: stats and presence write it outside procMu.
+	timeline timeline.Timeline
 	// Local decode of the stream this machine is sending,
 	// nil while nothing publishes and while a publish runs without one.
 	// A field of its own rather than an entry in receivers because no StreamRef names it: the frames

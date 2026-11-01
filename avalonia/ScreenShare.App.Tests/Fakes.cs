@@ -272,6 +272,9 @@ internal sealed class DeferredBackend : IBackend
     public Task<UpdateState> UpdateAsync(CancellationToken cancellation = default)
         => _seed.UpdateAsync(cancellation);
 
+    public Task<StreamTimeline> StreamTimelineAsync(CancellationToken cancellation = default)
+        => _seed.StreamTimelineAsync(cancellation);
+
     public Task CheckUpdateAsync(CancellationToken cancellation = default)
         => _seed.CheckUpdateAsync(cancellation);
 
@@ -581,6 +584,9 @@ internal sealed class PublishingBackend : IBackend
 
     public Task<UpdateState> UpdateAsync(CancellationToken cancellation = default)
         => _seed.UpdateAsync(cancellation);
+
+    public Task<StreamTimeline> StreamTimelineAsync(CancellationToken cancellation = default)
+        => _seed.StreamTimelineAsync(cancellation);
 
     public Task CheckUpdateAsync(CancellationToken cancellation = default)
         => _seed.CheckUpdateAsync(cancellation);

@@ -31,6 +31,7 @@ import (
 	"bjoernblessin.de/screenshare/internal/receive"
 	"bjoernblessin.de/screenshare/internal/relay"
 	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/screenshare/internal/timeline"
 	"bjoernblessin.de/screenshare/internal/update"
 	"bjoernblessin.de/screenshare/internal/window"
 	"bjoernblessin.de/screenshare/internal/wire"
@@ -228,6 +229,8 @@ type Backend interface {
 	SendReport() (reportID string, err error)
 	// UpdateState is what this install knows about the release published beside it, reaching nothing.
 	UpdateState() update.State
+	// StreamTimeline reports the publish run as a viewer would judge it (internal/timeline).
+	StreamTimeline() timeline.Snapshot
 	// CheckUpdate reads the published release and fetches it where this install replaces its own
 	// files. It returns as soon as the work is under way, every step reaching the event stream.
 	// No context: what it starts outlives the call.

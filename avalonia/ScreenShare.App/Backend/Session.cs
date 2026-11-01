@@ -244,6 +244,11 @@ public sealed class Session
     public DiscordState? Discord { get; private set; }
 
     /// <summary>
+    /// This machine's publish run as the backend judged it. Null until the first read lands.
+    /// </summary>
+    public StreamTimeline? Timeline { get; private set; }
+
+    /// <summary>
     /// Synthetic publishers this machine runs, a row per slot of the set.
     /// Null until the first read lands, an empty set being a different reading from an unread one.
     /// </summary>
@@ -459,6 +464,7 @@ public sealed class Session
         var testStreams = await _backend.TestStreamsAsync(cancellation).ConfigureAwait(false);
         var version = await _backend.VersionAsync(cancellation).ConfigureAwait(false);
         var update = await _backend.UpdateAsync(cancellation).ConfigureAwait(false);
+        var timeline = await _backend.StreamTimelineAsync(cancellation).ConfigureAwait(false);
 
         Write(() =>
         {
@@ -478,6 +484,7 @@ public sealed class Session
             Members = members;
             Discord = discord;
             TestStreams = testStreams;
+            Timeline = timeline;
             IsLoaded = true;
         });
     }
@@ -671,6 +678,11 @@ public sealed class Session
                 // Every step of a check and every tenth of a download, from whichever window asked,
                 // so a second window shows a staged release without having asked for one.
                 Update = change.UpdateState;
+                break;
+
+            case Event.PayloadOneofCase.StreamTimeline:
+                // The whole run on every change, so a screen draws it rather than merging marks into what it held.
+                Timeline = change.StreamTimeline;
                 break;
 
             case Event.PayloadOneofCase.TestStreamState:

@@ -24,6 +24,7 @@ import (
 	"bjoernblessin.de/screenshare/internal/reach"
 	"bjoernblessin.de/screenshare/internal/relay"
 	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/screenshare/internal/timeline"
 	"bjoernblessin.de/screenshare/internal/update"
 	"bjoernblessin.de/screenshare/internal/window"
 	"bjoernblessin.de/screenshare/internal/wire"
@@ -40,7 +41,8 @@ type fakeBackend struct {
 	// settings is what the backend holds, for the reads and for the refusals decided off them.
 	settings settings.Settings
 	// members is the group this machine shares, as the presence loop last read it.
-	members wire.MembersSnapshot
+	members  wire.MembersSnapshot
+	timeline timeline.Snapshot
 	// legs is what a relay check answers, which no err field can stand in for:
 	// every leg comes back with a verdict of its own,
 	// and a relay that answers nothing is still a response.
@@ -145,9 +147,10 @@ func (f *fakeBackend) OpenLogsFolder() error              { return f.err }
 func (f *fakeBackend) SendReport() (string, error)        { return f.reportID, f.err }
 func (f *fakeBackend) OpenInBrowser(wire.StreamRef) error { return f.err }
 
-func (f *fakeBackend) UpdateState() update.State { return update.State{} }
-func (f *fakeBackend) CheckUpdate() error        { return f.err }
-func (f *fakeBackend) InstallUpdate() error      { return f.err }
+func (f *fakeBackend) UpdateState() update.State         { return update.State{} }
+func (f *fakeBackend) StreamTimeline() timeline.Snapshot { return f.timeline }
+func (f *fakeBackend) CheckUpdate() error                { return f.err }
+func (f *fakeBackend) InstallUpdate() error              { return f.err }
 
 // The handshake is the last call two sides that disagree about the contract can both understand,
 // so its refusal carries the one thing neither works out afterwards: which major each is on.

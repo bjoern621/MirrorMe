@@ -463,6 +463,10 @@ public sealed class ControlBackend : IBackend
         => ReadAsync(c => c.GetUpdateStateAsync(new GetUpdateStateRequest(), cancellationToken: cancellation), cancellation);
 
     /// <inheritdoc />
+    public Task<StreamTimeline> StreamTimelineAsync(CancellationToken cancellation = default)
+        => ReadAsync(c => c.GetStreamTimelineAsync(new GetStreamTimelineRequest(), cancellationToken: cancellation), cancellation);
+
+    /// <inheritdoc />
     public Task CheckUpdateAsync(CancellationToken cancellation = default)
         => ReadAsync(c => c.CheckUpdateAsync(new CheckUpdateRequest(), cancellationToken: cancellation), cancellation);
 

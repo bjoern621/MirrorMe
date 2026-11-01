@@ -245,6 +245,9 @@ public sealed class InsightsPreviewTests
         public Task<UpdateState> UpdateAsync(CancellationToken cancellation = default)
             => _seed.UpdateAsync(cancellation);
 
+        public Task<StreamTimeline> StreamTimelineAsync(CancellationToken cancellation = default)
+            => _seed.StreamTimelineAsync(cancellation);
+
         public Task CheckUpdateAsync(CancellationToken cancellation = default)
             => _seed.CheckUpdateAsync(cancellation);
 

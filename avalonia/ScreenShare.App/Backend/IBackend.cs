@@ -508,6 +508,12 @@ public interface IBackend
     Task<UpdateState> UpdateAsync(CancellationToken cancellation = default);
 
     /// <summary>
+    /// This machine's publish run as the backend judges it: a verdict on the stream now and what happened to it,
+    /// the payload the <c>stream_timeline</c> event pushes.
+    /// </summary>
+    Task<StreamTimeline> StreamTimelineAsync(CancellationToken cancellation = default);
+
+    /// <summary>
     /// Reads the published release, and fetches it where this install replaces its own files.
     ///
     /// Answers as soon as the work is under way: a download runs for as long as a download runs,

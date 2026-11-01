@@ -35,6 +35,7 @@ const (
 	ControlService_GetMonitorPreviewState_FullMethodName = "/screenshare.v1.ControlService/GetMonitorPreviewState"
 	ControlService_ListShareWindows_FullMethodName       = "/screenshare.v1.ControlService/ListShareWindows"
 	ControlService_GetUpdateState_FullMethodName         = "/screenshare.v1.ControlService/GetUpdateState"
+	ControlService_GetStreamTimeline_FullMethodName      = "/screenshare.v1.ControlService/GetStreamTimeline"
 	ControlService_SaveSettings_FullMethodName           = "/screenshare.v1.ControlService/SaveSettings"
 	ControlService_SavePreset_FullMethodName             = "/screenshare.v1.ControlService/SavePreset"
 	ControlService_DeletePreset_FullMethodName           = "/screenshare.v1.ControlService/DeletePreset"
@@ -168,6 +169,8 @@ type ControlServiceClient interface {
 	// Answers without reaching the network:
 	// CheckUpdate is what asks the release service, and this reads what it last landed.
 	GetUpdateState(ctx context.Context, in *GetUpdateStateRequest, opts ...grpc.CallOption) (*UpdateState, error)
+	// The publish run as the backend judges it, the same payload stream_timeline pushes.
+	GetStreamTimeline(ctx context.Context, in *GetStreamTimelineRequest, opts ...grpc.CallOption) (*StreamTimeline, error)
 	// Persists the settings the shell holds.
 	// Touches no running stream:
 	// what reaches a live pipeline is asked for separately, by ApplyToStream,
@@ -591,6 +594,16 @@ func (c *controlServiceClient) GetUpdateState(ctx context.Context, in *GetUpdate
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UpdateState)
 	err := c.cc.Invoke(ctx, ControlService_GetUpdateState_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *controlServiceClient) GetStreamTimeline(ctx context.Context, in *GetStreamTimelineRequest, opts ...grpc.CallOption) (*StreamTimeline, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StreamTimeline)
+	err := c.cc.Invoke(ctx, ControlService_GetStreamTimeline_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1043,6 +1056,8 @@ type ControlServiceServer interface {
 	// Answers without reaching the network:
 	// CheckUpdate is what asks the release service, and this reads what it last landed.
 	GetUpdateState(context.Context, *GetUpdateStateRequest) (*UpdateState, error)
+	// The publish run as the backend judges it, the same payload stream_timeline pushes.
+	GetStreamTimeline(context.Context, *GetStreamTimelineRequest) (*StreamTimeline, error)
 	// Persists the settings the shell holds.
 	// Touches no running stream:
 	// what reaches a live pipeline is asked for separately, by ApplyToStream,
@@ -1359,6 +1374,9 @@ func (UnimplementedControlServiceServer) ListShareWindows(context.Context, *List
 }
 func (UnimplementedControlServiceServer) GetUpdateState(context.Context, *GetUpdateStateRequest) (*UpdateState, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetUpdateState not implemented")
+}
+func (UnimplementedControlServiceServer) GetStreamTimeline(context.Context, *GetStreamTimelineRequest) (*StreamTimeline, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetStreamTimeline not implemented")
 }
 func (UnimplementedControlServiceServer) SaveSettings(context.Context, *SaveSettingsRequest) (*SaveSettingsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method SaveSettings not implemented")
@@ -1761,6 +1779,24 @@ func _ControlService_GetUpdateState_Handler(srv interface{}, ctx context.Context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ControlServiceServer).GetUpdateState(ctx, req.(*GetUpdateStateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ControlService_GetStreamTimeline_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetStreamTimelineRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ControlServiceServer).GetStreamTimeline(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ControlService_GetStreamTimeline_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ControlServiceServer).GetStreamTimeline(ctx, req.(*GetStreamTimelineRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2390,6 +2426,10 @@ var ControlService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUpdateState",
 			Handler:    _ControlService_GetUpdateState_Handler,
+		},
+		{
+			MethodName: "GetStreamTimeline",
+			Handler:    _ControlService_GetStreamTimeline_Handler,
 		},
 		{
 			MethodName: "SaveSettings",

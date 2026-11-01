@@ -49,6 +49,7 @@ const (
 	EventKind_EVENT_KIND_MEMBERS_STATE         EventKind = 16
 	EventKind_EVENT_KIND_DISCORD_STATE         EventKind = 17
 	EventKind_EVENT_KIND_UPDATE_STATE          EventKind = 18
+	EventKind_EVENT_KIND_STREAM_TIMELINE       EventKind = 19
 )
 
 // Enum value maps for EventKind.
@@ -72,6 +73,7 @@ var (
 		16: "EVENT_KIND_MEMBERS_STATE",
 		17: "EVENT_KIND_DISCORD_STATE",
 		18: "EVENT_KIND_UPDATE_STATE",
+		19: "EVENT_KIND_STREAM_TIMELINE",
 	}
 	EventKind_value = map[string]int32{
 		"EVENT_KIND_UNSPECIFIED":           0,
@@ -92,6 +94,7 @@ var (
 		"EVENT_KIND_MEMBERS_STATE":         16,
 		"EVENT_KIND_DISCORD_STATE":         17,
 		"EVENT_KIND_UPDATE_STATE":          18,
+		"EVENT_KIND_STREAM_TIMELINE":       19,
 	}
 )
 
@@ -120,6 +123,120 @@ func (x EventKind) Number() protoreflect.EnumNumber {
 // Deprecated: Use EventKind.Descriptor instead.
 func (EventKind) EnumDescriptor() ([]byte, []int) {
 	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{0}
+}
+
+type StreamVerdict_Level int32
+
+const (
+	StreamVerdict_LEVEL_UNSPECIFIED StreamVerdict_Level = 0
+	// No run is in force, or one holds its frame rate.
+	StreamVerdict_LEVEL_CLEAN StreamVerdict_Level = 1
+	// Running, and a viewer notices: the frame rate dipped under target, or the pipeline is restarting.
+	StreamVerdict_LEVEL_DISAPPOINTS StreamVerdict_Level = 2
+	// The run ended on a failure no retry recovers.
+	StreamVerdict_LEVEL_STOPPED StreamVerdict_Level = 3
+)
+
+// Enum value maps for StreamVerdict_Level.
+var (
+	StreamVerdict_Level_name = map[int32]string{
+		0: "LEVEL_UNSPECIFIED",
+		1: "LEVEL_CLEAN",
+		2: "LEVEL_DISAPPOINTS",
+		3: "LEVEL_STOPPED",
+	}
+	StreamVerdict_Level_value = map[string]int32{
+		"LEVEL_UNSPECIFIED": 0,
+		"LEVEL_CLEAN":       1,
+		"LEVEL_DISAPPOINTS": 2,
+		"LEVEL_STOPPED":     3,
+	}
+)
+
+func (x StreamVerdict_Level) Enum() *StreamVerdict_Level {
+	p := new(StreamVerdict_Level)
+	*p = x
+	return p
+}
+
+func (x StreamVerdict_Level) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (StreamVerdict_Level) Descriptor() protoreflect.EnumDescriptor {
+	return file_screenshare_v1_events_proto_enumTypes[1].Descriptor()
+}
+
+func (StreamVerdict_Level) Type() protoreflect.EnumType {
+	return &file_screenshare_v1_events_proto_enumTypes[1]
+}
+
+func (x StreamVerdict_Level) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use StreamVerdict_Level.Descriptor instead.
+func (StreamVerdict_Level) EnumDescriptor() ([]byte, []int) {
+	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{21, 0}
+}
+
+type StreamEvent_Kind int32
+
+const (
+	StreamEvent_KIND_UNSPECIFIED StreamEvent_Kind = 0
+	// The encoder's frame rate fell under target long enough for a viewer to see it.
+	StreamEvent_KIND_DIP StreamEvent_Kind = 1
+	// The pipeline ended and a retry relaunches it.
+	StreamEvent_KIND_RESTART StreamEvent_Kind = 2
+	// A member came into the group.
+	StreamEvent_KIND_JOIN StreamEvent_Kind = 3
+	// A member left the group.
+	StreamEvent_KIND_LEAVE StreamEvent_Kind = 4
+)
+
+// Enum value maps for StreamEvent_Kind.
+var (
+	StreamEvent_Kind_name = map[int32]string{
+		0: "KIND_UNSPECIFIED",
+		1: "KIND_DIP",
+		2: "KIND_RESTART",
+		3: "KIND_JOIN",
+		4: "KIND_LEAVE",
+	}
+	StreamEvent_Kind_value = map[string]int32{
+		"KIND_UNSPECIFIED": 0,
+		"KIND_DIP":         1,
+		"KIND_RESTART":     2,
+		"KIND_JOIN":        3,
+		"KIND_LEAVE":       4,
+	}
+)
+
+func (x StreamEvent_Kind) Enum() *StreamEvent_Kind {
+	p := new(StreamEvent_Kind)
+	*p = x
+	return p
+}
+
+func (x StreamEvent_Kind) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (StreamEvent_Kind) Descriptor() protoreflect.EnumDescriptor {
+	return file_screenshare_v1_events_proto_enumTypes[2].Descriptor()
+}
+
+func (StreamEvent_Kind) Type() protoreflect.EnumType {
+	return &file_screenshare_v1_events_proto_enumTypes[2]
+}
+
+func (x StreamEvent_Kind) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use StreamEvent_Kind.Descriptor instead.
+func (StreamEvent_Kind) EnumDescriptor() ([]byte, []int) {
+	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{22, 0}
 }
 
 // How a child process ended.
@@ -2103,6 +2220,7 @@ type Event struct {
 	//	*Event_DiscordState
 	//	*Event_Catalog
 	//	*Event_UpdateState
+	//	*Event_StreamTimeline
 	//	*Event_SettingsChanged
 	Payload       isEvent_Payload `protobuf_oneof:"payload"`
 	unknownFields protoimpl.UnknownFields
@@ -2297,6 +2415,15 @@ func (x *Event) GetUpdateState() *UpdateState {
 	return nil
 }
 
+func (x *Event) GetStreamTimeline() *StreamTimeline {
+	if x != nil {
+		if x, ok := x.Payload.(*Event_StreamTimeline); ok {
+			return x.StreamTimeline
+		}
+	}
+	return nil
+}
+
 func (x *Event) GetSettingsChanged() *SettingsChanged {
 	if x != nil {
 		if x, ok := x.Payload.(*Event_SettingsChanged); ok {
@@ -2420,6 +2547,12 @@ type Event_UpdateState struct {
 	UpdateState *UpdateState `protobuf:"bytes,21,opt,name=update_state,json=updateState,proto3,oneof"`
 }
 
+type Event_StreamTimeline struct {
+	// How this machine's stream is doing as a viewer would judge it, and what happened to it this run,
+	// on every change. The whole run, so a shell draws the timeline rather than merging events.
+	StreamTimeline *StreamTimeline `protobuf:"bytes,22,opt,name=stream_timeline,json=streamTimeline,proto3,oneof"`
+}
+
 type Event_SettingsChanged struct {
 	SettingsChanged *SettingsChanged `protobuf:"bytes,10,opt,name=settings_changed,json=settingsChanged,proto3,oneof"`
 }
@@ -2456,7 +2589,224 @@ func (*Event_Catalog) isEvent_Payload() {}
 
 func (*Event_UpdateState) isEvent_Payload() {}
 
+func (*Event_StreamTimeline) isEvent_Payload() {}
+
 func (*Event_SettingsChanged) isEvent_Payload() {}
+
+// One publish run as a viewer would judge it: a verdict on the stream now,
+// and the events that moved it since the run started.
+// Judged by the backend, which holds the stream; a shell draws the verdict and places the events.
+type StreamTimeline struct {
+	state   protoimpl.MessageState `protogen:"open.v1"`
+	Verdict *StreamVerdict         `protobuf:"bytes,1,opt,name=verdict,proto3" json:"verdict,omitempty"`
+	// Oldest first, capped at the most recent events of the run.
+	Events []*StreamEvent `protobuf:"bytes,2,rep,name=events,proto3" json:"events,omitempty"`
+	// When the run the events belong to started. Zero while no run has started.
+	StartedAtUnixMillis int64 `protobuf:"varint,3,opt,name=started_at_unix_millis,json=startedAtUnixMillis,proto3" json:"started_at_unix_millis,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *StreamTimeline) Reset() {
+	*x = StreamTimeline{}
+	mi := &file_screenshare_v1_events_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StreamTimeline) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StreamTimeline) ProtoMessage() {}
+
+func (x *StreamTimeline) ProtoReflect() protoreflect.Message {
+	mi := &file_screenshare_v1_events_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StreamTimeline.ProtoReflect.Descriptor instead.
+func (*StreamTimeline) Descriptor() ([]byte, []int) {
+	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *StreamTimeline) GetVerdict() *StreamVerdict {
+	if x != nil {
+		return x.Verdict
+	}
+	return nil
+}
+
+func (x *StreamTimeline) GetEvents() []*StreamEvent {
+	if x != nil {
+		return x.Events
+	}
+	return nil
+}
+
+func (x *StreamTimeline) GetStartedAtUnixMillis() int64 {
+	if x != nil {
+		return x.StartedAtUnixMillis
+	}
+	return 0
+}
+
+type StreamVerdict struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Level StreamVerdict_Level    `protobuf:"varint,1,opt,name=level,proto3,enum=screenshare.v1.StreamVerdict_Level" json:"level,omitempty"`
+	// Why, absent while clean.
+	// TEXT_CODE_VERDICT_DIP on a dip; the exit's own cause on a restart or a stop.
+	Cause *Text `protobuf:"bytes,2,opt,name=cause,proto3" json:"cause,omitempty"`
+	// The pipeline's words, as the exit carried them, on a stop.
+	Message string `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	// Full log of the run that stopped, empty otherwise.
+	LogPath       string `protobuf:"bytes,4,opt,name=log_path,json=logPath,proto3" json:"log_path,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StreamVerdict) Reset() {
+	*x = StreamVerdict{}
+	mi := &file_screenshare_v1_events_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StreamVerdict) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StreamVerdict) ProtoMessage() {}
+
+func (x *StreamVerdict) ProtoReflect() protoreflect.Message {
+	mi := &file_screenshare_v1_events_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StreamVerdict.ProtoReflect.Descriptor instead.
+func (*StreamVerdict) Descriptor() ([]byte, []int) {
+	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *StreamVerdict) GetLevel() StreamVerdict_Level {
+	if x != nil {
+		return x.Level
+	}
+	return StreamVerdict_LEVEL_UNSPECIFIED
+}
+
+func (x *StreamVerdict) GetCause() *Text {
+	if x != nil {
+		return x.Cause
+	}
+	return nil
+}
+
+func (x *StreamVerdict) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *StreamVerdict) GetLogPath() string {
+	if x != nil {
+		return x.LogPath
+	}
+	return ""
+}
+
+type StreamEvent struct {
+	state        protoimpl.MessageState `protogen:"open.v1"`
+	Kind         StreamEvent_Kind       `protobuf:"varint,1,opt,name=kind,proto3,enum=screenshare.v1.StreamEvent_Kind" json:"kind,omitempty"`
+	AtUnixMillis int64                  `protobuf:"varint,2,opt,name=at_unix_millis,json=atUnixMillis,proto3" json:"at_unix_millis,omitempty"`
+	// The member, on a join or a leave.
+	Who string `protobuf:"bytes,3,opt,name=who,proto3" json:"who,omitempty"`
+	// On a dip: the lowest frame rate it reached and the target it fell from.
+	Fps           float64 `protobuf:"fixed64,4,opt,name=fps,proto3" json:"fps,omitempty"`
+	TargetFps     float64 `protobuf:"fixed64,5,opt,name=target_fps,json=targetFps,proto3" json:"target_fps,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StreamEvent) Reset() {
+	*x = StreamEvent{}
+	mi := &file_screenshare_v1_events_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StreamEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StreamEvent) ProtoMessage() {}
+
+func (x *StreamEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_screenshare_v1_events_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StreamEvent.ProtoReflect.Descriptor instead.
+func (*StreamEvent) Descriptor() ([]byte, []int) {
+	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *StreamEvent) GetKind() StreamEvent_Kind {
+	if x != nil {
+		return x.Kind
+	}
+	return StreamEvent_KIND_UNSPECIFIED
+}
+
+func (x *StreamEvent) GetAtUnixMillis() int64 {
+	if x != nil {
+		return x.AtUnixMillis
+	}
+	return 0
+}
+
+func (x *StreamEvent) GetWho() string {
+	if x != nil {
+		return x.Who
+	}
+	return ""
+}
+
+func (x *StreamEvent) GetFps() float64 {
+	if x != nil {
+		return x.Fps
+	}
+	return 0
+}
+
+func (x *StreamEvent) GetTargetFps() float64 {
+	if x != nil {
+		return x.TargetFps
+	}
+	return 0
+}
 
 var File_screenshare_v1_events_proto protoreflect.FileDescriptor
 
@@ -2642,7 +2992,8 @@ const file_screenshare_v1_events_proto_rawDesc = "" +
 	"publishing\x18\x03 \x01(\bR\n" +
 	"publishing\x12\x12\n" +
 	"\x04self\x18\x04 \x01(\bR\x04self\x12\x16\n" +
-	"\x06avatar\x18\x05 \x01(\fR\x06avatar\"\xfd\t\n" +
+	"\x06avatar\x18\x05 \x01(\fR\x06avatar\"\xc8\n" +
+	"\n" +
 	"\x05Event\x12\x1a\n" +
 	"\bsequence\x18\x01 \x01(\x04R\bsequence\x12C\n" +
 	"\rpublish_state\x18\x02 \x01(\v2\x1c.screenshare.v1.PublishStateH\x00R\fpublishState\x12C\n" +
@@ -2661,11 +3012,40 @@ const file_screenshare_v1_events_proto_rawDesc = "" +
 	"\rmembers_state\x18\x13 \x01(\v2\x1c.screenshare.v1.MembersStateH\x00R\fmembersState\x12C\n" +
 	"\rdiscord_state\x18\x14 \x01(\v2\x1c.screenshare.v1.DiscordStateH\x00R\fdiscordState\x123\n" +
 	"\acatalog\x18\x0e \x01(\v2\x17.screenshare.v1.CatalogH\x00R\acatalog\x12@\n" +
-	"\fupdate_state\x18\x15 \x01(\v2\x1b.screenshare.v1.UpdateStateH\x00R\vupdateState\x12L\n" +
+	"\fupdate_state\x18\x15 \x01(\v2\x1b.screenshare.v1.UpdateStateH\x00R\vupdateState\x12I\n" +
+	"\x0fstream_timeline\x18\x16 \x01(\v2\x1e.screenshare.v1.StreamTimelineH\x00R\x0estreamTimeline\x12L\n" +
 	"\x10settings_changed\x18\n" +
 	" \x01(\v2\x1f.screenshare.v1.SettingsChangedH\x00R\x0fsettingsChangedB\t\n" +
 	"\apayloadJ\x04\b\a\x10\bJ\x04\b\b\x10\tJ\x04\b\v\x10\fR\n" +
-	"grid_stateR\tgrid_exitR\rshow_settings*\xca\x04\n" +
+	"grid_stateR\tgrid_exitR\rshow_settings\"\xb3\x01\n" +
+	"\x0eStreamTimeline\x127\n" +
+	"\averdict\x18\x01 \x01(\v2\x1d.screenshare.v1.StreamVerdictR\averdict\x123\n" +
+	"\x06events\x18\x02 \x03(\v2\x1b.screenshare.v1.StreamEventR\x06events\x123\n" +
+	"\x16started_at_unix_millis\x18\x03 \x01(\x03R\x13startedAtUnixMillis\"\x86\x02\n" +
+	"\rStreamVerdict\x129\n" +
+	"\x05level\x18\x01 \x01(\x0e2#.screenshare.v1.StreamVerdict.LevelR\x05level\x12*\n" +
+	"\x05cause\x18\x02 \x01(\v2\x14.screenshare.v1.TextR\x05cause\x12\x18\n" +
+	"\amessage\x18\x03 \x01(\tR\amessage\x12\x19\n" +
+	"\blog_path\x18\x04 \x01(\tR\alogPath\"Y\n" +
+	"\x05Level\x12\x15\n" +
+	"\x11LEVEL_UNSPECIFIED\x10\x00\x12\x0f\n" +
+	"\vLEVEL_CLEAN\x10\x01\x12\x15\n" +
+	"\x11LEVEL_DISAPPOINTS\x10\x02\x12\x11\n" +
+	"\rLEVEL_STOPPED\x10\x03\"\x89\x02\n" +
+	"\vStreamEvent\x124\n" +
+	"\x04kind\x18\x01 \x01(\x0e2 .screenshare.v1.StreamEvent.KindR\x04kind\x12$\n" +
+	"\x0eat_unix_millis\x18\x02 \x01(\x03R\fatUnixMillis\x12\x10\n" +
+	"\x03who\x18\x03 \x01(\tR\x03who\x12\x10\n" +
+	"\x03fps\x18\x04 \x01(\x01R\x03fps\x12\x1d\n" +
+	"\n" +
+	"target_fps\x18\x05 \x01(\x01R\ttargetFps\"[\n" +
+	"\x04Kind\x12\x14\n" +
+	"\x10KIND_UNSPECIFIED\x10\x00\x12\f\n" +
+	"\bKIND_DIP\x10\x01\x12\x10\n" +
+	"\fKIND_RESTART\x10\x02\x12\r\n" +
+	"\tKIND_JOIN\x10\x03\x12\x0e\n" +
+	"\n" +
+	"KIND_LEAVE\x10\x04*\xea\x04\n" +
 	"\tEventKind\x12\x1a\n" +
 	"\x16EVENT_KIND_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18EVENT_KIND_PUBLISH_STATE\x10\x01\x12\x1c\n" +
@@ -2685,7 +3065,8 @@ const file_screenshare_v1_events_proto_rawDesc = "" +
 	"\x18EVENT_KIND_RECEIVE_STATS\x10\x0f\x12\x1c\n" +
 	"\x18EVENT_KIND_MEMBERS_STATE\x10\x10\x12\x1c\n" +
 	"\x18EVENT_KIND_DISCORD_STATE\x10\x11\x12\x1b\n" +
-	"\x17EVENT_KIND_UPDATE_STATE\x10\x12\"\x04\b\v\x10\v*\x18EVENT_KIND_SHOW_SETTINGSB[ZDbjoernblessin.de/screenshare/api/gen/go/screenshare/v1;screensharev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
+	"\x17EVENT_KIND_UPDATE_STATE\x10\x12\x12\x1e\n" +
+	"\x1aEVENT_KIND_STREAM_TIMELINE\x10\x13\"\x04\b\v\x10\v*\x18EVENT_KIND_SHOW_SETTINGSB[ZDbjoernblessin.de/screenshare/api/gen/go/screenshare/v1;screensharev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
 
 var (
 	file_screenshare_v1_events_proto_rawDescOnce sync.Once
@@ -2699,80 +3080,91 @@ func file_screenshare_v1_events_proto_rawDescGZIP() []byte {
 	return file_screenshare_v1_events_proto_rawDescData
 }
 
-var file_screenshare_v1_events_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_screenshare_v1_events_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
+var file_screenshare_v1_events_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_screenshare_v1_events_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
 var file_screenshare_v1_events_proto_goTypes = []any{
 	(EventKind)(0),              // 0: screenshare.v1.EventKind
-	(*ExitInfo)(nil),            // 1: screenshare.v1.ExitInfo
-	(*ViewerExit)(nil),          // 2: screenshare.v1.ViewerExit
-	(*ViewerState)(nil),         // 3: screenshare.v1.ViewerState
-	(*TestStreamState)(nil),     // 4: screenshare.v1.TestStreamState
-	(*TestStreamSlot)(nil),      // 5: screenshare.v1.TestStreamSlot
-	(*SettingsChanged)(nil),     // 6: screenshare.v1.SettingsChanged
-	(*ReceiveExit)(nil),         // 7: screenshare.v1.ReceiveExit
-	(*ReceiveStream)(nil),       // 8: screenshare.v1.ReceiveStream
-	(*ReceiveState)(nil),        // 9: screenshare.v1.ReceiveState
-	(*ReceiveStatValue)(nil),    // 10: screenshare.v1.ReceiveStatValue
-	(*ReceiveStatGroup)(nil),    // 11: screenshare.v1.ReceiveStatGroup
-	(*ReceiveStreamStats)(nil),  // 12: screenshare.v1.ReceiveStreamStats
-	(*DelayBudget)(nil),         // 13: screenshare.v1.DelayBudget
-	(*ReceiveStats)(nil),        // 14: screenshare.v1.ReceiveStats
-	(*PreviewedMonitor)(nil),    // 15: screenshare.v1.PreviewedMonitor
-	(*MonitorPreviewState)(nil), // 16: screenshare.v1.MonitorPreviewState
-	(*MembersState)(nil),        // 17: screenshare.v1.MembersState
-	(*DiscordState)(nil),        // 18: screenshare.v1.DiscordState
-	(*Member)(nil),              // 19: screenshare.v1.Member
-	(*Event)(nil),               // 20: screenshare.v1.Event
-	(*Text)(nil),                // 21: screenshare.v1.Text
-	(*StreamRef)(nil),           // 22: screenshare.v1.StreamRef
-	(*PublishState)(nil),        // 23: screenshare.v1.PublishState
-	(*PublishStats)(nil),        // 24: screenshare.v1.PublishStats
-	(*RelayStatus)(nil),         // 25: screenshare.v1.RelayStatus
-	(*Catalog)(nil),             // 26: screenshare.v1.Catalog
-	(*UpdateState)(nil),         // 27: screenshare.v1.UpdateState
+	(StreamVerdict_Level)(0),    // 1: screenshare.v1.StreamVerdict.Level
+	(StreamEvent_Kind)(0),       // 2: screenshare.v1.StreamEvent.Kind
+	(*ExitInfo)(nil),            // 3: screenshare.v1.ExitInfo
+	(*ViewerExit)(nil),          // 4: screenshare.v1.ViewerExit
+	(*ViewerState)(nil),         // 5: screenshare.v1.ViewerState
+	(*TestStreamState)(nil),     // 6: screenshare.v1.TestStreamState
+	(*TestStreamSlot)(nil),      // 7: screenshare.v1.TestStreamSlot
+	(*SettingsChanged)(nil),     // 8: screenshare.v1.SettingsChanged
+	(*ReceiveExit)(nil),         // 9: screenshare.v1.ReceiveExit
+	(*ReceiveStream)(nil),       // 10: screenshare.v1.ReceiveStream
+	(*ReceiveState)(nil),        // 11: screenshare.v1.ReceiveState
+	(*ReceiveStatValue)(nil),    // 12: screenshare.v1.ReceiveStatValue
+	(*ReceiveStatGroup)(nil),    // 13: screenshare.v1.ReceiveStatGroup
+	(*ReceiveStreamStats)(nil),  // 14: screenshare.v1.ReceiveStreamStats
+	(*DelayBudget)(nil),         // 15: screenshare.v1.DelayBudget
+	(*ReceiveStats)(nil),        // 16: screenshare.v1.ReceiveStats
+	(*PreviewedMonitor)(nil),    // 17: screenshare.v1.PreviewedMonitor
+	(*MonitorPreviewState)(nil), // 18: screenshare.v1.MonitorPreviewState
+	(*MembersState)(nil),        // 19: screenshare.v1.MembersState
+	(*DiscordState)(nil),        // 20: screenshare.v1.DiscordState
+	(*Member)(nil),              // 21: screenshare.v1.Member
+	(*Event)(nil),               // 22: screenshare.v1.Event
+	(*StreamTimeline)(nil),      // 23: screenshare.v1.StreamTimeline
+	(*StreamVerdict)(nil),       // 24: screenshare.v1.StreamVerdict
+	(*StreamEvent)(nil),         // 25: screenshare.v1.StreamEvent
+	(*Text)(nil),                // 26: screenshare.v1.Text
+	(*StreamRef)(nil),           // 27: screenshare.v1.StreamRef
+	(*PublishState)(nil),        // 28: screenshare.v1.PublishState
+	(*PublishStats)(nil),        // 29: screenshare.v1.PublishStats
+	(*RelayStatus)(nil),         // 30: screenshare.v1.RelayStatus
+	(*Catalog)(nil),             // 31: screenshare.v1.Catalog
+	(*UpdateState)(nil),         // 32: screenshare.v1.UpdateState
 }
 var file_screenshare_v1_events_proto_depIdxs = []int32{
-	21, // 0: screenshare.v1.ExitInfo.cause:type_name -> screenshare.v1.Text
-	22, // 1: screenshare.v1.ViewerExit.viewer:type_name -> screenshare.v1.StreamRef
-	1,  // 2: screenshare.v1.ViewerExit.exit:type_name -> screenshare.v1.ExitInfo
-	22, // 3: screenshare.v1.ViewerState.viewers:type_name -> screenshare.v1.StreamRef
-	5,  // 4: screenshare.v1.TestStreamState.slots:type_name -> screenshare.v1.TestStreamSlot
-	21, // 5: screenshare.v1.TestStreamSlot.cause:type_name -> screenshare.v1.Text
-	22, // 6: screenshare.v1.ReceiveExit.stream:type_name -> screenshare.v1.StreamRef
-	21, // 7: screenshare.v1.ReceiveExit.cause:type_name -> screenshare.v1.Text
-	22, // 8: screenshare.v1.ReceiveStream.stream:type_name -> screenshare.v1.StreamRef
-	21, // 9: screenshare.v1.ReceiveStream.failure:type_name -> screenshare.v1.Text
-	8,  // 10: screenshare.v1.ReceiveState.streams:type_name -> screenshare.v1.ReceiveStream
-	10, // 11: screenshare.v1.ReceiveStatGroup.values:type_name -> screenshare.v1.ReceiveStatValue
-	22, // 12: screenshare.v1.ReceiveStreamStats.stream:type_name -> screenshare.v1.StreamRef
-	11, // 13: screenshare.v1.ReceiveStreamStats.groups:type_name -> screenshare.v1.ReceiveStatGroup
-	13, // 14: screenshare.v1.ReceiveStreamStats.delay:type_name -> screenshare.v1.DelayBudget
-	12, // 15: screenshare.v1.ReceiveStats.streams:type_name -> screenshare.v1.ReceiveStreamStats
-	15, // 16: screenshare.v1.MonitorPreviewState.monitors:type_name -> screenshare.v1.PreviewedMonitor
-	19, // 17: screenshare.v1.MembersState.members:type_name -> screenshare.v1.Member
-	21, // 18: screenshare.v1.MembersState.refusal:type_name -> screenshare.v1.Text
-	23, // 19: screenshare.v1.Event.publish_state:type_name -> screenshare.v1.PublishState
-	24, // 20: screenshare.v1.Event.publish_stats:type_name -> screenshare.v1.PublishStats
-	1,  // 21: screenshare.v1.Event.publish_exit:type_name -> screenshare.v1.ExitInfo
-	25, // 22: screenshare.v1.Event.relay_status:type_name -> screenshare.v1.RelayStatus
-	3,  // 23: screenshare.v1.Event.viewer_state:type_name -> screenshare.v1.ViewerState
-	2,  // 24: screenshare.v1.Event.viewer_exit:type_name -> screenshare.v1.ViewerExit
-	9,  // 25: screenshare.v1.Event.receive_state:type_name -> screenshare.v1.ReceiveState
-	7,  // 26: screenshare.v1.Event.receive_exit:type_name -> screenshare.v1.ReceiveExit
-	14, // 27: screenshare.v1.Event.receive_stats:type_name -> screenshare.v1.ReceiveStats
-	16, // 28: screenshare.v1.Event.monitor_preview_state:type_name -> screenshare.v1.MonitorPreviewState
-	4,  // 29: screenshare.v1.Event.test_stream_state:type_name -> screenshare.v1.TestStreamState
-	1,  // 30: screenshare.v1.Event.test_stream_exit:type_name -> screenshare.v1.ExitInfo
-	17, // 31: screenshare.v1.Event.members_state:type_name -> screenshare.v1.MembersState
-	18, // 32: screenshare.v1.Event.discord_state:type_name -> screenshare.v1.DiscordState
-	26, // 33: screenshare.v1.Event.catalog:type_name -> screenshare.v1.Catalog
-	27, // 34: screenshare.v1.Event.update_state:type_name -> screenshare.v1.UpdateState
-	6,  // 35: screenshare.v1.Event.settings_changed:type_name -> screenshare.v1.SettingsChanged
-	36, // [36:36] is the sub-list for method output_type
-	36, // [36:36] is the sub-list for method input_type
-	36, // [36:36] is the sub-list for extension type_name
-	36, // [36:36] is the sub-list for extension extendee
-	0,  // [0:36] is the sub-list for field type_name
+	26, // 0: screenshare.v1.ExitInfo.cause:type_name -> screenshare.v1.Text
+	27, // 1: screenshare.v1.ViewerExit.viewer:type_name -> screenshare.v1.StreamRef
+	3,  // 2: screenshare.v1.ViewerExit.exit:type_name -> screenshare.v1.ExitInfo
+	27, // 3: screenshare.v1.ViewerState.viewers:type_name -> screenshare.v1.StreamRef
+	7,  // 4: screenshare.v1.TestStreamState.slots:type_name -> screenshare.v1.TestStreamSlot
+	26, // 5: screenshare.v1.TestStreamSlot.cause:type_name -> screenshare.v1.Text
+	27, // 6: screenshare.v1.ReceiveExit.stream:type_name -> screenshare.v1.StreamRef
+	26, // 7: screenshare.v1.ReceiveExit.cause:type_name -> screenshare.v1.Text
+	27, // 8: screenshare.v1.ReceiveStream.stream:type_name -> screenshare.v1.StreamRef
+	26, // 9: screenshare.v1.ReceiveStream.failure:type_name -> screenshare.v1.Text
+	10, // 10: screenshare.v1.ReceiveState.streams:type_name -> screenshare.v1.ReceiveStream
+	12, // 11: screenshare.v1.ReceiveStatGroup.values:type_name -> screenshare.v1.ReceiveStatValue
+	27, // 12: screenshare.v1.ReceiveStreamStats.stream:type_name -> screenshare.v1.StreamRef
+	13, // 13: screenshare.v1.ReceiveStreamStats.groups:type_name -> screenshare.v1.ReceiveStatGroup
+	15, // 14: screenshare.v1.ReceiveStreamStats.delay:type_name -> screenshare.v1.DelayBudget
+	14, // 15: screenshare.v1.ReceiveStats.streams:type_name -> screenshare.v1.ReceiveStreamStats
+	17, // 16: screenshare.v1.MonitorPreviewState.monitors:type_name -> screenshare.v1.PreviewedMonitor
+	21, // 17: screenshare.v1.MembersState.members:type_name -> screenshare.v1.Member
+	26, // 18: screenshare.v1.MembersState.refusal:type_name -> screenshare.v1.Text
+	28, // 19: screenshare.v1.Event.publish_state:type_name -> screenshare.v1.PublishState
+	29, // 20: screenshare.v1.Event.publish_stats:type_name -> screenshare.v1.PublishStats
+	3,  // 21: screenshare.v1.Event.publish_exit:type_name -> screenshare.v1.ExitInfo
+	30, // 22: screenshare.v1.Event.relay_status:type_name -> screenshare.v1.RelayStatus
+	5,  // 23: screenshare.v1.Event.viewer_state:type_name -> screenshare.v1.ViewerState
+	4,  // 24: screenshare.v1.Event.viewer_exit:type_name -> screenshare.v1.ViewerExit
+	11, // 25: screenshare.v1.Event.receive_state:type_name -> screenshare.v1.ReceiveState
+	9,  // 26: screenshare.v1.Event.receive_exit:type_name -> screenshare.v1.ReceiveExit
+	16, // 27: screenshare.v1.Event.receive_stats:type_name -> screenshare.v1.ReceiveStats
+	18, // 28: screenshare.v1.Event.monitor_preview_state:type_name -> screenshare.v1.MonitorPreviewState
+	6,  // 29: screenshare.v1.Event.test_stream_state:type_name -> screenshare.v1.TestStreamState
+	3,  // 30: screenshare.v1.Event.test_stream_exit:type_name -> screenshare.v1.ExitInfo
+	19, // 31: screenshare.v1.Event.members_state:type_name -> screenshare.v1.MembersState
+	20, // 32: screenshare.v1.Event.discord_state:type_name -> screenshare.v1.DiscordState
+	31, // 33: screenshare.v1.Event.catalog:type_name -> screenshare.v1.Catalog
+	32, // 34: screenshare.v1.Event.update_state:type_name -> screenshare.v1.UpdateState
+	23, // 35: screenshare.v1.Event.stream_timeline:type_name -> screenshare.v1.StreamTimeline
+	8,  // 36: screenshare.v1.Event.settings_changed:type_name -> screenshare.v1.SettingsChanged
+	24, // 37: screenshare.v1.StreamTimeline.verdict:type_name -> screenshare.v1.StreamVerdict
+	25, // 38: screenshare.v1.StreamTimeline.events:type_name -> screenshare.v1.StreamEvent
+	1,  // 39: screenshare.v1.StreamVerdict.level:type_name -> screenshare.v1.StreamVerdict.Level
+	26, // 40: screenshare.v1.StreamVerdict.cause:type_name -> screenshare.v1.Text
+	2,  // 41: screenshare.v1.StreamEvent.kind:type_name -> screenshare.v1.StreamEvent.Kind
+	42, // [42:42] is the sub-list for method output_type
+	42, // [42:42] is the sub-list for method input_type
+	42, // [42:42] is the sub-list for extension type_name
+	42, // [42:42] is the sub-list for extension extendee
+	0,  // [0:42] is the sub-list for field type_name
 }
 
 func init() { file_screenshare_v1_events_proto_init() }
@@ -2802,6 +3194,7 @@ func file_screenshare_v1_events_proto_init() {
 		(*Event_DiscordState)(nil),
 		(*Event_Catalog)(nil),
 		(*Event_UpdateState)(nil),
+		(*Event_StreamTimeline)(nil),
 		(*Event_SettingsChanged)(nil),
 	}
 	type x struct{}
@@ -2809,8 +3202,8 @@ func file_screenshare_v1_events_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_screenshare_v1_events_proto_rawDesc), len(file_screenshare_v1_events_proto_rawDesc)),
-			NumEnums:      1,
-			NumMessages:   20,
+			NumEnums:      3,
+			NumMessages:   23,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

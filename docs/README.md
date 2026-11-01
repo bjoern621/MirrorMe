@@ -36,6 +36,7 @@ Read the page before guessing, and put a new fact on the page that owns it.
 | [field-availability.md](field-availability.md) | when a settings field is hidden and when it is greyed with a reason |
 | [settings-editing.md](settings-editing.md) | who owns a draft, and when an edit reaches the backend |
 | [delay-measurement.md](delay-measurement.md) | which stage of the delay is measured, and which is named without a figure |
+| [insights.md](insights.md) | how a running stream is judged, and which marks a run keeps |
 
 ## Writing and building
 

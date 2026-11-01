@@ -67,6 +67,10 @@ Discord mode holds the same shape.
 `SaveSettings` moves the group onto the voice channel, `LinkDiscord` and `UnlinkDiscord` are the two effects writing the link secret,
 and `GetDiscordState` reads the link off the settings and the channel off the last manager pass (`discord-mode.md`).
 
+**A shell reads the stream verdict and hears it change.**
+`GetStreamTimeline` answers the publish run as the backend judged it, and `stream_timeline` carries the same payload on every change (`insights.md`).
+No shell decides whether a stream disappoints.
+
 ## Why
 
 A shell with its own copy of the domain model is a chance to disagree with the encoder,

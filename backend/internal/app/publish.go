@@ -338,6 +338,9 @@ func (a *App) launchLocked(s settings.Settings, attempts int) error {
 			}
 			a.takePublishDelay(run, stats)
 			a.emit(wire.PublishStatsEvent(stats))
+			if a.timeline.Sample(time.Now(), stats.Fps) {
+				a.emitTimeline()
+			}
 		},
 		OnExit: func(err error, stderrTail string, logPath string) {
 			a.publishEnded(run, err, stderrTail, logPath)
@@ -360,6 +363,9 @@ func (a *App) launchLocked(s settings.Settings, attempts int) error {
 		return err
 	}
 	run.handle = handle
+	if attempts == 0 {
+		a.timeline.Begin(run.startedAt, float64(s.Publish.Fps))
+	}
 
 	logger.Infof("publishing '%s' via %s (%s, %s, %d fps)", s.Publish.Name(), s.Publish.Transport, s.Publish.Mode, s.Publish.Chroma, s.Publish.Fps)
 	return nil
@@ -423,6 +429,7 @@ func (a *App) StopPublish() {
 		}
 		a.cancelRetryLocked()
 		logger.Infof("publishing stopped")
+		a.timeline.End()
 		// The position belonged to the capture that just ended, so it goes with it:
 		// one held past the stream is drawn over a picture that has stopped.
 		a.pointerAt.clear()
@@ -519,4 +526,6 @@ func (a *App) GetPublishState() PublishState {
 func (a *App) emitPublishState() {
 	state := a.GetPublishState()
 	a.emit(wire.PublishStateEvent(publishSnapshot(state)))
+	// Every move of the publish state moves the judgment, so it rides along.
+	a.emitTimeline()
 }

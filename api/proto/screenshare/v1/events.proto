@@ -586,6 +586,7 @@ enum EventKind {
   EVENT_KIND_MEMBERS_STATE = 16;
   EVENT_KIND_DISCORD_STATE = 17;
   EVENT_KIND_UPDATE_STATE = 18;
+  EVENT_KIND_STREAM_TIMELINE = 19;
 
   // 11 was EVENT_KIND_SHOW_SETTINGS, and Event records why that payload left.
   reserved 11;
@@ -673,6 +674,9 @@ message Event {
     // Pushed like every other state,
     // so a second window learns that a release is staged without having asked for one.
     UpdateState update_state = 21;
+    // How this machine's stream is doing as a viewer would judge it, and what happened to it this run,
+    // on every change. The whole run, so a shell draws the timeline rather than merging events.
+    StreamTimeline stream_timeline = 22;
 
     SettingsChanged settings_changed = 10;
   }
@@ -687,4 +691,56 @@ message Event {
   // and it was the single payload here that asked instead of reporting.
   reserved 7, 8, 11;
   reserved "grid_state", "grid_exit", "show_settings";
+}
+
+// One publish run as a viewer would judge it: a verdict on the stream now,
+// and the events that moved it since the run started.
+// Judged by the backend, which holds the stream; a shell draws the verdict and places the events.
+message StreamTimeline {
+  StreamVerdict verdict = 1;
+  // Oldest first, capped at the most recent events of the run.
+  repeated StreamEvent events = 2;
+  // When the run the events belong to started. Zero while no run has started.
+  int64 started_at_unix_millis = 3;
+}
+
+message StreamVerdict {
+  enum Level {
+    LEVEL_UNSPECIFIED = 0;
+    // No run is in force, or one holds its frame rate.
+    LEVEL_CLEAN = 1;
+    // Running, and a viewer notices: the frame rate dipped under target, or the pipeline is restarting.
+    LEVEL_DISAPPOINTS = 2;
+    // The run ended on a failure no retry recovers.
+    LEVEL_STOPPED = 3;
+  }
+  Level level = 1;
+  // Why, absent while clean.
+  // TEXT_CODE_VERDICT_DIP on a dip; the exit's own cause on a restart or a stop.
+  Text cause = 2;
+  // The pipeline's words, as the exit carried them, on a stop.
+  string message = 3;
+  // Full log of the run that stopped, empty otherwise.
+  string log_path = 4;
+}
+
+message StreamEvent {
+  enum Kind {
+    KIND_UNSPECIFIED = 0;
+    // The encoder's frame rate fell under target long enough for a viewer to see it.
+    KIND_DIP = 1;
+    // The pipeline ended and a retry relaunches it.
+    KIND_RESTART = 2;
+    // A member came into the group.
+    KIND_JOIN = 3;
+    // A member left the group.
+    KIND_LEAVE = 4;
+  }
+  Kind kind = 1;
+  int64 at_unix_millis = 2;
+  // The member, on a join or a leave.
+  string who = 3;
+  // On a dip: the lowest frame rate it reached and the target it fell from.
+  double fps = 4;
+  double target_fps = 5;
 }

@@ -268,3 +268,8 @@ func (s *Server) ResolveLink(ctx context.Context, req *screensharev1.ResolveLink
 func (s *Server) GetUpdateState(ctx context.Context, req *screensharev1.GetUpdateStateRequest) (*screensharev1.UpdateState, error) {
 	return wire.UpdateState(s.backend.UpdateState()), nil
 }
+
+// GetStreamTimeline answers the publish run as the backend judged it, the event's read twin.
+func (s *Server) GetStreamTimeline(ctx context.Context, req *screensharev1.GetStreamTimelineRequest) (*screensharev1.StreamTimeline, error) {
+	return wire.StreamTimeline(s.backend.StreamTimeline()), nil
+}
