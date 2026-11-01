@@ -170,7 +170,7 @@ public static class Descriptions
     private static readonly Dictionary<string, string> GroupSources = new()
     {
         ["key"] = "Everyone holding the key can watch. Paste a key you were sent, or make one and pass it on like a meeting link.",
-        ["discord"] = "Everyone in the voice channel your Discord account is in can watch, and leaving it cuts them off within seconds. No key changes hands. Needs a linked Discord account.",
+        ["discord"] = "Recommended for a group that meets on Discord. Everyone in the voice channel your Discord account is in can watch, and leaving it cuts them off within seconds. No key changes hands. Needs a linked Discord account.",
     };
 
     private static readonly Dictionary<string, string> Transports = new()

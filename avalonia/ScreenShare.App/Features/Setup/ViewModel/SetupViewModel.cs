@@ -332,6 +332,7 @@ public sealed class SetupViewModel : Observable
     private string _unsaved = "";
     private bool _hasUnsaved;
     private FieldGroupViewModel? _currentGroup;
+    private FieldGroupViewModel? _hostedGroup;
 
     public QualityStepViewModel Quality { get; }
 
@@ -382,6 +383,12 @@ public sealed class SetupViewModel : Observable
 
     /// <summary>Renderer the step showing draws through, null on a step that draws something else.</summary>
     public FieldGroupViewModel? CurrentGroup { get => _currentGroup; private set => Set(ref _currentGroup, value); }
+
+    /// <summary>
+    /// Group the current step draws under its own, null where it hosts none (<see cref="StepLayout"/>).
+    /// Drawn whole, with its own fold, so a hosted group reads as it would on a step of its own.
+    /// </summary>
+    public FieldGroupViewModel? HostedGroup { get => _hostedGroup; private set => Set(ref _hostedGroup, value); }
 
     public bool ShowsFields { get => _showsFields; private set => Set(ref _showsFields, value); }
 
@@ -514,6 +521,7 @@ public sealed class SetupViewModel : Observable
         ShowsQuality = content == StepContent.Quality;
         ShowsAudio = content == StepContent.Audio;
         CurrentGroup = ShowsFields && current.Length > 0 ? Group(current) : null;
+        HostedGroup = CurrentGroup is not null && HostedOn(drawn, current) is { Length: > 0 } hosted ? Group(hosted) : null;
 
         // The relay check, on the step holding the relay's own settings.
         // What it last found is its own to hold: a check reads the moment it was asked for,
@@ -812,7 +820,14 @@ public sealed class SetupViewModel : Observable
     /// Read off the group view model that step renders, so a hidden field draws nothing and counts as undrawn.
     /// </summary>
     private bool DrawnOn(string step, string fieldKey)
-        => _groups.TryGetValue(step, out var group) && group.Visible(fieldKey) is not null;
+        => Holds(step, fieldKey) || StepLayout.HostedOn(step) is { Length: > 0 } hosted && Holds(hosted, fieldKey);
+
+    private bool Holds(string groupKey, string fieldKey)
+        => _groups.TryGetValue(groupKey, out var group) && group.Visible(fieldKey) is not null;
+
+    /// <summary>Group hosted on this step that the form carries, empty where none.</summary>
+    private static string HostedOn(IReadOnlyList<FieldGroup> drawn, string step)
+        => StepLayout.HostedOn(step) is { Length: > 0 } hosted && drawn.Any(group => group.Key == hosted) ? hosted : "";
 
     /// <summary>
     /// Anchors one diagnostic on the screen fixing it.
@@ -833,7 +848,7 @@ public sealed class SetupViewModel : Observable
         var owner = new Dictionary<string, CheckAnchor>();
         foreach (var group in form.Groups)
         {
-            if (SetupSteps.Of(steps, group.Key) is not { } step)
+            if (SetupSteps.Of(steps, StepLayout.HostOf(group.Key)) is not { } step)
             {
                 continue;
             }
@@ -997,9 +1012,12 @@ public sealed class SetupViewModel : Observable
     {
         GoTo(stepKey);
 
-        if (_groups.TryGetValue(stepKey, out var group) && group.Folded.Any(field => field.Key == fieldKey))
+        foreach (var groupKey in new[] { stepKey, StepLayout.HostedOn(stepKey) })
         {
-            group.Fold.Shown = true;
+            if (groupKey.Length > 0 && _groups.TryGetValue(groupKey, out var group) && group.Folded.Any(field => field.Key == fieldKey))
+            {
+                group.Fold.Shown = true;
+            }
         }
     }
 

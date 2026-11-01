@@ -31,16 +31,24 @@ public sealed record SetupStepRow
 public static class SetupSteps
 {
     /// <summary>
-    /// Steps for one resolved form: a step per group in the form's order.
+    /// Steps for one resolved form: a step per group in the form's order, a hosted group drawing on its host's
+    /// (<see cref="StepLayout"/>).
     /// Empty for a form that has not arrived.
     /// </summary>
     public static IReadOnlyList<SetupStepRow> For(IReadOnlyList<FieldGroup> groups)
     {
         Assert.NotNull(groups, "building the strip needs the groups the form carried");
 
+        var keys = groups.Select(group => group.Key).ToHashSet();
         var rows = new List<SetupStepRow>(groups.Count);
         foreach (var group in groups)
         {
+            var host = StepLayout.HostOf(group.Key);
+            if (host != group.Key && keys.Contains(host))
+            {
+                continue;
+            }
+
             rows.Add(new SetupStepRow
             {
                 Key = group.Key,
@@ -51,7 +59,7 @@ public static class SetupSteps
             });
         }
 
-        Assert.That(rows.Count == groups.Count, "a step per group", rows.Count, groups.Count);
+        Assert.That(rows.Count <= groups.Count, "a step per group no host draws", rows.Count, groups.Count);
         return rows;
     }
 

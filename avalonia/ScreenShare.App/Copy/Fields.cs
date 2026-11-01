@@ -52,9 +52,10 @@ public static class Fields
 
     /// <summary>
     /// One group's copy.
-    /// A group heading is a wizard step name too, so it stays short enough for a chip.
+    /// The title names a wizard step on its chip, so it stays short enough for one.
+    /// The question heads the step's card where the group has one.
     /// </summary>
-    public sealed record GroupEntry(string Title, string Help);
+    public sealed record GroupEntry(string Title, string Help, string Question = "");
 
     private const string DocChroma = "https://en.wikipedia.org/wiki/Chroma_subsampling";
     private const string DocYCbCr = "https://en.wikipedia.org/wiki/YCbCr";
@@ -292,7 +293,8 @@ public static class Fields
 
         ["source"] = new(
             "Capture",
-            "Which screen is shared and how the frames reach the encoder. The capture method fixes which encoder software runs, so the rest of the form follows from it."),
+            "Which screen is shared and how the frames reach the encoder. The capture method fixes which encoder software runs, so the rest of the form follows from it.",
+            "How should the screen be captured?"),
 
         ["quality"] = new(
             "Encode",
@@ -300,7 +302,8 @@ public static class Fields
 
         ["audio"] = new(
             "Audio",
-            "The sound track: where it comes from and what compresses it. Every source listed is mixed into the one track viewers hear. Which sources exist depends on the operating system. Which formats reach the relay depends on the sending protocol."),
+            "The sound track: where it comes from and what compresses it. Every source listed is mixed into the one track viewers hear. Which sources exist depends on the operating system. Which formats reach the relay depends on the sending protocol.",
+            "What should viewers hear?"),
 
         ["transport"] = new(
             "Sending",
@@ -312,7 +315,8 @@ public static class Fields
 
         ["relay"] = new(
             "Relay",
-            "Which computer carries the stream, and which port each of its listeners uses. The ports default to the relay's own, so they only matter for a relay set up differently."),
+            "Everyone in the same Discord voice channel, or holding the same group key, can watch. The relay carries the stream, and its ports default to the relay's own.",
+            "Who can watch?"),
 
         ["app"] = new(
             "App",

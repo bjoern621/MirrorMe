@@ -139,7 +139,7 @@ public sealed class AudioStepViewModel : Observable
     public void Apply()
     {
         IsResolved = _group.IsResolved;
-        Title = _group.Title;
+        Title = _group.Heading;
         Help = _group.Help;
         Summary = _group.Summary;
 

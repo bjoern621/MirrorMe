@@ -20,7 +20,7 @@
         so a centred row starts the title lower than every other step's card does.
       -->
       <Grid ColumnDefinitions="*,Auto">
-        <TextBlock Grid.Column="0" Classes="heading" VerticalAlignment="Top" Text="{Binding Title}" />
+        <TextBlock Grid.Column="0" Classes="heading" VerticalAlignment="Top" TextWrapping="Wrap" TextTrimming="None" Text="{Binding Heading}" />
         <Button Grid.Column="1"
                 Theme="{StaticResource OutlineButton}"
                 VerticalAlignment="Top"

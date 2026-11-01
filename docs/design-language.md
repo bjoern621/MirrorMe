@@ -145,6 +145,9 @@ It goes here rather than in the title bar because the foot is the one band every
 ## The wizard's floor
 
 A setup step shows what a guest has to touch: the screen to send, the group to join, the sources to record.
+Each step's card asks the question the step answers: how the screen is captured, how the picture should look, what viewers should hear, who can watch.
+How the stream reaches the relay folds under the relay step, so setup walks four steps (`Features/Setup/Model/StepLayout.cs`).
+The group source recommends Discord where the group meets there; a group key serves everyone else.
 Everything else folds behind the step's disclosure, closed on every launch (`Features/Setup/Model/FloorLayout.cs`).
 A preset or a shipped default stands behind every folded control.
 The encode step asks what a viewer notices, as questions answered by choices, each carrying its price and what picking it raises.

@@ -95,7 +95,9 @@ public sealed class FieldGroupViewModel : Observable
 
     // --- Outputs ------------------------------------------------------------------
 
+    private string _key = "";
     private string _title = "";
+    private string _heading = "";
     private string _help = "";
     private string _summary = "";
     private bool _hasHelp;
@@ -117,7 +119,13 @@ public sealed class FieldGroupViewModel : Observable
     /// <summary>The disclosure over <see cref="Folded"/>.</summary>
     public FoldViewModel Fold { get; } = new(Copy.Fields.AdvancedTitle);
 
+    /// <summary>Key of the group last rendered, empty before one arrives.</summary>
+    public string Key { get => _key; private set => Set(ref _key, value); }
+
     public string Title { get => _title; private set => Set(ref _title, value); }
+
+    /// <summary>What the card heading asks: the step's question where the copy has one, the title otherwise.</summary>
+    public string Heading { get => _heading; private set => Set(ref _heading, value); }
 
     public string Help { get => _help; private set => Set(ref _help, value); }
 
@@ -167,7 +175,9 @@ public sealed class FieldGroupViewModel : Observable
 
         // Heading and sentence are this side's words, looked up by the key the backend named the group by.
         var copy = group is null ? null : Copy.Fields.Group(group.Key);
+        Key = group?.Key ?? "";
         Title = copy?.Title ?? "";
+        Heading = copy is { Question.Length: > 0 } ? copy.Question : Title;
         Help = copy?.Help ?? "";
         Summary = words.Shorthand(group, settings);
         HasHelp = Help.Length > 0;

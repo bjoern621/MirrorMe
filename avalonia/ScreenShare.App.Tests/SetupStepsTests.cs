@@ -33,7 +33,9 @@ public sealed class SetupStepsTests
         var flow = await FlowAsync();
 
         // Form names the groups and this shell places them.
-        var sent = form.Groups.Where(group => GroupPlacement.InSetup(group.Key)).ToList();
+        var sent = form.Groups
+            .Where(group => GroupPlacement.InSetup(group.Key) && StepLayout.HostOf(group.Key) == group.Key)
+            .ToList();
 
         Assert.Equal(sent.Select(group => group.Key), flow.Steps.Select(step => step.Key));
         // Chip titles are this shell's, keyed by the form's group key.
@@ -41,6 +43,43 @@ public sealed class SetupStepsTests
         Assert.Equal(
             sent.Select(group => Fields.Group(group.Key).Title),
             flow.Steps.Select(step => step.Label));
+    }
+
+    /// <summary>How the stream reaches the relay folds into the step asking who can watch, so setup walks four steps.</summary>
+    [Fact]
+    public async Task TheSendingGroupStandsInsideTheRelayStep()
+    {
+        var flow = await FlowAsync();
+
+        Assert.DoesNotContain(flow.Steps, step => step.Key == "transport");
+
+        flow.CurrentStep = "relay";
+
+        Assert.Equal("relay", flow.CurrentGroup!.Key);
+        Assert.Equal("transport", flow.HostedGroup!.Key);
+        Assert.True(flow.HostedGroup.IsResolved);
+    }
+
+    [Fact]
+    public async Task AStepHostingNoOtherGroupDrawsNone()
+    {
+        var flow = await FlowAsync();
+
+        flow.CurrentStep = "network";
+
+        Assert.Null(flow.HostedGroup);
+    }
+
+    /// <summary>A step's card asks the question the step answers, and the chip keeps its short name.</summary>
+    [Fact]
+    public async Task TheRelayStepAsksWhoCanWatch()
+    {
+        var flow = await FlowAsync();
+
+        flow.CurrentStep = "relay";
+
+        Assert.Equal("Who can watch?", flow.CurrentGroup!.Heading);
+        Assert.Equal("Relay", flow.Steps.Single(step => step.Key == "relay").Label);
     }
 
     /// <summary>
