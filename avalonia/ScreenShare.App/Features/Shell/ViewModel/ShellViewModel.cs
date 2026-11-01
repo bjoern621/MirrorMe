@@ -382,6 +382,7 @@ public sealed class ShellViewModel : Observable
         // Pushed into the destinations rather than into their next render pass: each one renders what the width
         // decides, and the chrome around them stands at every width.
         Nav.SetWindowWidth(_width);
+        AppSettings.SetCompact(_width < NavWidth.LabelsMinWidth);
         Insights.SetWindowWidth(_width);
         Viewer.SetWindowWidth(_width);
     }

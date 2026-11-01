@@ -14,6 +14,8 @@ public static class AppSettingsCopy
 
     public const string CloseTip = "Closes this dialog. Every setting here is already kept.";
 
+    public const string BackTip = "Back to the list of settings";
+
     public const string OpenTip =
         "Opens settings for the app as a whole. Set sharing and watching in Setup and Viewer.";
 
@@ -24,9 +26,15 @@ public static class AppSettingsCopy
 
     public const string WindowHeading = "Window";
 
+    public const string WindowQuestion = "What happens when you close the window?";
+
+    public const string WindowLead = "With the tray icon on, sharing goes on after the window closes.";
+
     public const string LogsHeading = "Logs and reports";
 
-    public const string LogsBody = "One log per run, kept on this computer.";
+    public const string LogsQuestion = "Something went wrong?";
+
+    public const string LogsLead = "Send a report and quote its name when you describe the problem.";
 
     public const string OpenLogsFolder = "Open logs folder";
 
@@ -46,9 +54,17 @@ public static class AppSettingsCopy
 
     public const string UpdatesHeading = "Updates";
 
+    public const string UpdatesQuestion = "Is this the newest version?";
+
+    public const string UpdatesLead = "A check reads the published release and says whether a newer build exists.";
+
     public const string CheckNow = "Check for updates";
 
     public const string DiscordHeading = "Discord";
+
+    public const string DiscordQuestion = "Show what you share on Discord?";
+
+    public const string DiscordLead = "Your voice channel becomes the group, and your profile says what you share.";
 
     /// <summary>
     /// Press on a check line about the Discord link, which is fixed here rather than on a wizard step
@@ -59,7 +75,15 @@ public static class AppSettingsCopy
 
     public const string DevelopmentHeading = "Development";
 
+    public const string DevelopmentQuestion = "Testing MirrorMe itself?";
+
+    public const string DevelopmentLead = "Synthetic streams give a group something to watch with no screen shared.";
+
     public const string AboutHeading = "About";
+
+    public const string AboutQuestion = "Which build is this?";
+
+    public const string AboutLead = "Quote this version in a bug report.";
 
     public const string VersionLabel = "Version";
 

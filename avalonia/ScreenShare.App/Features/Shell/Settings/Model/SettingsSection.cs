@@ -1,3 +1,5 @@
+using static ScreenShare.App.Features.Shell.Settings.Model.AppSettingsCopy;
+
 namespace ScreenShare.App.Features.Shell.Settings.Model;
 
 /// <summary>
@@ -14,19 +16,22 @@ public enum SettingsSection
     Development,
 }
 
-/// <summary>One entry of the dialog's section list.</summary>
-public sealed record SettingsTab(SettingsSection Section, string Label);
+/// <summary>
+/// One entry of the dialog's section list, and the question its section opens on.
+/// SetApart: drawn under the others, past a divider.
+/// </summary>
+public sealed record SettingsTab(SettingsSection Section, string Label, string Question, string Lead, bool SetApart = false);
 
 /// <summary>Sections in the order the list draws them, the first being where a plain open lands.</summary>
 public static class SettingsSections
 {
     public static readonly IReadOnlyList<SettingsTab> All =
     [
-        new(SettingsSection.Window, AppSettingsCopy.WindowHeading),
-        new(SettingsSection.Updates, AppSettingsCopy.UpdatesHeading),
-        new(SettingsSection.Discord, AppSettingsCopy.DiscordHeading),
-        new(SettingsSection.Logs, AppSettingsCopy.LogsHeading),
-        new(SettingsSection.About, AppSettingsCopy.AboutHeading),
-        new(SettingsSection.Development, AppSettingsCopy.DevelopmentHeading),
+        new(SettingsSection.Window, WindowHeading, WindowQuestion, WindowLead),
+        new(SettingsSection.Updates, UpdatesHeading, UpdatesQuestion, UpdatesLead),
+        new(SettingsSection.Discord, DiscordHeading, DiscordQuestion, DiscordLead),
+        new(SettingsSection.Logs, LogsHeading, LogsQuestion, LogsLead),
+        new(SettingsSection.About, AboutHeading, AboutQuestion, AboutLead),
+        new(SettingsSection.Development, DevelopmentHeading, DevelopmentQuestion, DevelopmentLead, SetApart: true),
     ];
 }

@@ -7,8 +7,7 @@ using ScreenShare.App.Features.Shell.Settings.ViewModel;
 namespace ScreenShare.App.Features.Shell.Settings.View;
 
 /// <summary>
-/// Four things the markup cannot state: two dismissals, a section opening at its top,
-/// and the list moving over the section on a narrow dialog.
+/// Three things the markup cannot state: two dismissals and a section opening at its top.
 /// Every setting the dialog draws writes through its own binding.
 /// </summary>
 public sealed partial class AppSettingsView : UserControl
@@ -33,11 +32,7 @@ public sealed partial class AppSettingsView : UserControl
 
         DataContextChanged += (_, _) => Follow(DataContext as AppSettingsViewModel);
 
-        Body.SizeChanged += (_, change) => Body.Classes.Set("narrow", change.NewSize.Width < NarrowBelow);
     }
-
-    /// <summary>Body width, px, under which the section list stands over the section rather than beside it.</summary>
-    private const double NarrowBelow = 440;
 
     /// <summary>
     /// Takes the dialog's news, dropping the last one's.

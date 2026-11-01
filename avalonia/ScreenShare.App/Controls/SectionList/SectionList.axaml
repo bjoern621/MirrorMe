@@ -23,6 +23,7 @@
     <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
     <Setter Property="FontWeight" Value="Medium" />
     <Setter Property="Padding" Value="10,7" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
     <Setter Property="CornerRadius" Value="{StaticResource RadiusSegment}" />
     <Setter Property="Cursor" Value="Hand" />
     <Setter Property="Template">
@@ -33,7 +34,7 @@
                 Padding="{TemplateBinding Padding}">
           <ContentPresenter Content="{TemplateBinding Content}"
                             ContentTemplate="{TemplateBinding ContentTemplate}"
-                            HorizontalAlignment="Left"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                             VerticalAlignment="Center" />
         </Border>
       </ControlTemplate>
@@ -44,10 +45,13 @@
     </Style>
 
     <Style Selector="^:selected /template/ Border#Root">
-      <Setter Property="Background" Value="{StaticResource ControlBrush}" />
+      <Setter Property="Background" Value="{StaticResource SelectedBrush}" />
+    </Style>
+    <Style Selector="^:selected:pointerover /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource ControlForegroundBrush}" />
     </Style>
     <Style Selector="^:selected">
-      <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+      <Setter Property="Foreground" Value="{StaticResource OnSelectedBrush}" />
       <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
   </ControlTheme>

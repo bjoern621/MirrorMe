@@ -106,6 +106,7 @@ public sealed class AppSettingsViewModel : Observable
         // asks for what already holds (docs/development-principles.md, "Idempotency").
         OpenCommand = new DelegateCommand(() => Show(true));
         CloseCommand = new DelegateCommand(() => Show(false));
+        BackCommand = new DelegateCommand(() => Go(_place with { AtList = true }));
 
         // Pressed from a check line about the link, which is drawn behind this dialog
         // (Features/Setup/ViewModel/SetupViewModel.cs).
@@ -168,20 +169,77 @@ public sealed class AppSettingsViewModel : Observable
 
     public IReadOnlyList<SettingsTab> Tabs => SettingsSections.All;
 
+    /// <summary>Entries above the divider.</summary>
+    public IReadOnlyList<SettingsTab> MainTabs { get; } = [.. SettingsSections.All.Where(tab => !tab.SetApart)];
+
+    /// <summary>Entries under the divider.</summary>
+    public IReadOnlyList<SettingsTab> ApartTabs { get; } = [.. SettingsSections.All.Where(tab => tab.SetApart)];
+
     /// <summary>
     /// List entry of <see cref="Section"/>, read through.
+    /// None while a compact dialog stands on the list, so a press on any entry picks it, the current one included.
     /// A null the list writes while it rebuilds asks for nothing.
     /// </summary>
     public SettingsTab? SelectedTab
     {
-        get => Tabs.Single(tab => tab.Section == Section);
+        get => _place is { Compact: true, AtList: true } ? null : Tabs.Single(tab => tab.Section == Section);
         set
         {
             if (value is not null)
             {
                 Section = value.Section;
+                Go(_place with { AtList = false });
             }
         }
+    }
+
+    private SettingsPlace _place;
+    private bool _showsList = true;
+    private bool _showsSection = true;
+    private bool _showsBack;
+    private string _heading = AppSettingsCopy.Title;
+    private string _question = "";
+    private string _lead = "";
+    private bool _isCompact;
+
+    public bool ShowsList { get => _showsList; private set => Set(ref _showsList, value); }
+
+    public bool ShowsSection { get => _showsSection; private set => Set(ref _showsSection, value); }
+
+    /// <summary>Whether the header carries the arrow back to the list.</summary>
+    public bool ShowsBack { get => _showsBack; private set => Set(ref _showsBack, value); }
+
+    /// <summary>Dialog title, or the section's name where the section stands alone.</summary>
+    public string Heading { get => _heading; private set => Set(ref _heading, value); }
+
+    /// <summary>Question the section on screen opens on.</summary>
+    public string Question { get => _question; private set => Set(ref _question, value); }
+
+    public string Lead { get => _lead; private set => Set(ref _lead, value); }
+
+    /// <summary>Whether the dialog fills a window too narrow for the list beside a section.</summary>
+    public bool IsCompact { get => _isCompact; private set => Set(ref _isCompact, value); }
+
+    /// <summary>Returns a compact dialog from its section to the list.</summary>
+    public DelegateCommand BackCommand { get; }
+
+    /// <summary>States whether the window is too narrow for the list beside a section. Idempotent.</summary>
+    public void SetCompact(bool compact) => Go(_place with { Compact = compact });
+
+    private void Go(SettingsPlace place)
+    {
+        _place = place;
+        var tab = Tabs.Single(candidate => candidate.Section == Section);
+        IsCompact = place.Compact;
+        ShowsList = place.ShowsList;
+        ShowsSection = place.ShowsSection;
+        ShowsBack = place.ShowsBack;
+        Heading = place.ShowsBack ? tab.Label : AppSettingsCopy.Title;
+        Question = tab.Question;
+        Lead = tab.Lead;
+        OnPropertyChanged(nameof(SelectedTab));
+
+        Assert.That(ShowsList || ShowsSection, "the dialog draws the list, the section or both", place);
     }
 
     public DelegateCommand OpenCommand { get; }
@@ -317,10 +375,14 @@ public sealed class AppSettingsViewModel : Observable
     /// </summary>
     public ByteString DiscordAvatar { get => _discordAvatar; private set => Set(ref _discordAvatar, value); }
 
-    /// <summary>Names the state the press asks for, so pressing twice changes nothing the second time.</summary>
-    public void Show(bool open, SettingsSection at = SettingsSection.Window)
+    /// <summary>
+    /// Names the state the press asks for, so pressing twice changes nothing the second time.
+    /// A plain open lands on the first section, and on the list where the dialog is compact.
+    /// </summary>
+    public void Show(bool open, SettingsSection? at = null)
     {
-        Section = at;
+        Section = at ?? SettingsSection.Window;
+        Go(_place with { AtList = at is null });
         IsOpen = open;
     }
 

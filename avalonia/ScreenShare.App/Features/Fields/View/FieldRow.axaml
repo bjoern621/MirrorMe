@@ -28,37 +28,55 @@
         Unit beside the name and not over the control: it names what the figure is counted in, a fact about the
         setting, and an Auto column is as wide as the word rather than as wide as a column suiting every row.
       -->
-      <Grid ColumnDefinitions="*,Auto,Auto">
-        <TextBlock Grid.Column="0"
-                   Classes="secondary fieldlabel"
+      <!--
+        A flag is the switch and never a CheckBox.
+        One domain concept rendered two ways is the defect the shared control exists to prevent
+        (docs/design-language.md, "Selection").
+        It stands at the row's trailing edge, beside the name and the paragraph it answers.
+      -->
+      <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+        <Grid Grid.Row="0" Grid.Column="0" ColumnDefinitions="*,Auto,Auto">
+          <TextBlock Grid.Column="0"
+                     Classes="secondary fieldlabel"
+                     TextWrapping="Wrap"
+                     TextTrimming="None"
+                     VerticalAlignment="Center">
+            <Run Text="{Binding Label}" />
+            <InlineUIContainer BaselineAlignment="Center">
+              <ContentControl IsVisible="{Binding HasComparison}" Content="{Binding}" ContentTemplate="{StaticResource ComparisonGlyph}" />
+            </InlineUIContainer>
+          </TextBlock>
+          <TextBlock Grid.Column="1"
+                     Classes="hint"
+                     Margin="8,0,0,0"
+                     VerticalAlignment="Center"
+                     IsVisible="{Binding AppliesLive}"
+                     Text="{Binding LiveNotice}" />
+          <TextBlock Grid.Column="2"
+                     Classes="figure"
+                     Foreground="{StaticResource HintBrush}"
+                     Margin="10,0,0,0"
+                     VerticalAlignment="Center"
+                     IsVisible="{Binding HasUnit}"
+                     Text="{Binding Unit}" />
+        </Grid>
+
+        <TextBlock Grid.Row="1" Grid.Column="0"
+                   Classes="hint"
+                   Margin="0,6,0,0"
                    TextWrapping="Wrap"
                    TextTrimming="None"
-                   VerticalAlignment="Center">
-          <Run Text="{Binding Label}" />
-          <InlineUIContainer BaselineAlignment="Center">
-            <ContentControl IsVisible="{Binding HasComparison}" Content="{Binding}" ContentTemplate="{StaticResource ComparisonGlyph}" />
-          </InlineUIContainer>
-        </TextBlock>
-        <TextBlock Grid.Column="1"
-                   Classes="hint"
-                   Margin="8,0,0,0"
-                   VerticalAlignment="Center"
-                   IsVisible="{Binding AppliesLive}"
-                   Text="{Binding LiveNotice}" />
-        <TextBlock Grid.Column="2"
-                   Classes="figure"
-                   Foreground="{StaticResource HintBrush}"
-                   Margin="10,0,0,0"
-                   VerticalAlignment="Center"
-                   IsVisible="{Binding HasUnit}"
-                   Text="{Binding Unit}" />
-      </Grid>
+                   IsVisible="{Binding HasHelp}"
+                   Text="{Binding Help}" />
 
-      <TextBlock Classes="hint"
-                 TextWrapping="Wrap"
-                 TextTrimming="None"
-                 IsVisible="{Binding HasHelp}"
-                 Text="{Binding Help}" />
+        <ToggleButton Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
+                      Margin="16,0,0,0"
+                      VerticalAlignment="Center"
+                      IsVisible="{Binding IsToggle}"
+                      Theme="{StaticResource SwitchTheme}"
+                      IsEnabled="{Binding IsEnabled}"
+                      IsChecked="{Binding Flag, Mode=TwoWay}" />
+      </Grid>
 
       <!--
         Written on losing focus and not per keystroke.
@@ -161,16 +179,6 @@
                    VerticalAlignment="Center"
                    Text="{Binding Readback}" />
       </Grid>
-
-      <!--
-        A flag is the switch and never a CheckBox.
-        One domain concept rendered two ways is the defect the shared control exists to prevent
-        (docs/design-language.md, "Selection").
-      -->
-      <ToggleButton IsVisible="{Binding IsToggle}"
-                    Theme="{StaticResource SwitchTheme}"
-                    IsEnabled="{Binding IsEnabled}"
-                    IsChecked="{Binding Flag, Mode=TwoWay}" />
 
       <TextBlock Classes="figure"
                  IsVisible="{Binding IsReadonly}"

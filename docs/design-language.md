@@ -52,6 +52,7 @@ A number field is that box without a stepper.
 A button that acts on the value a box holds is drawn inside it, at the trailing edge, and the text stops in front of it.
 A slider is a 6px track whose travelled half takes the one light surface.
 A flag is the switch: one domain concept, one control.
+The switch stands at its row's trailing edge, beside the name and the paragraph it answers.
 
 ## Typography
 
@@ -186,7 +187,8 @@ A column that draws unasked carries its control only while it is a panel, a pres
 One that opens on request carries its control at every width.
 
 A rail carrying names drops the names rather than the window dropping the rail.
-The settings dialog shows one section at a time, its list beside the section and over it where the dialog is narrower than both.
+The settings dialog shows one section at a time, its list beside the section, and each section opens on the question it answers.
+Below 520 px the dialog fills the window and shows the list first, a picked section taking its place and an arrow leading back.
 
 Every band wraps where the window is narrower than its row: the status band's sentence and the insights header's title.
 Below 520 px `Edit in setup` keeps its pencil alone, and the chart's range picker drops under its figures.
