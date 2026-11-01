@@ -11,7 +11,8 @@ namespace ScreenShare.App.Features.Insights.Chart.View;
 /// <summary>
 /// One series over time: three gridlines labelled on the left, the limit as a dashed rule,
 /// the timeline's marks along the foot, and a rule where the pointer rests.
-/// Points come in the source space Extent names, X in seconds and Y in the figure's unit, 0 at the bottom.
+/// Points come in the source space that Extent names: X in seconds from 0, Y in the figure's unit from Extent.Y up.
+/// A segment touching a reading past the limit takes PastBrush.
 /// A press pins the pointer's moment, a touch screen having no hover.
 /// </summary>
 public sealed class TimeChart : Control
@@ -19,8 +20,11 @@ public sealed class TimeChart : Control
     public static readonly StyledProperty<IReadOnlyList<Point>?> PointsProperty =
         AvaloniaProperty.Register<TimeChart, IReadOnlyList<Point>?>(nameof(Points));
 
-    public static readonly StyledProperty<Size> ExtentProperty =
-        AvaloniaProperty.Register<TimeChart, Size>(nameof(Extent), new Size(60, 1));
+    public static readonly StyledProperty<Rect> ExtentProperty =
+        AvaloniaProperty.Register<TimeChart, Rect>(nameof(Extent), new Rect(0, 0, 60, 1));
+
+    public static readonly StyledProperty<IReadOnlyList<bool>?> PastProperty =
+        AvaloniaProperty.Register<TimeChart, IReadOnlyList<bool>?>(nameof(Past));
 
     public static readonly StyledProperty<double> LimitFractionProperty =
         AvaloniaProperty.Register<TimeChart, double>(nameof(LimitFraction), double.NaN);
@@ -50,23 +54,32 @@ public sealed class TimeChart : Control
     public static readonly StyledProperty<IBrush?> LabelBrushProperty =
         AvaloniaProperty.Register<TimeChart, IBrush?>(nameof(LabelBrush));
 
+    public static readonly StyledProperty<IBrush?> PastBrushProperty =
+        AvaloniaProperty.Register<TimeChart, IBrush?>(nameof(PastBrush));
+
     /// <summary>Width of the axis labels on the left, px.</summary>
     private const double Gutter = 30;
 
     /// <summary>Height of the marks band at the foot, px.</summary>
     private const double MarkBand = 22;
 
+    /// <summary>Room above the top gridline for the limit's label, px.</summary>
+    private const double TopBand = 16;
+
     private const double LabelSize = 11;
 
     private bool _pinned;
 
     static TimeChart() => AffectsRender<TimeChart>(
-        PointsProperty, ExtentProperty, LimitFractionProperty, LimitLabelProperty, MarksProperty,
-        HoverSecondsProperty, StrokeProperty, FillProperty, GridBrushProperty, LimitBrushProperty, LabelBrushProperty);
+        PointsProperty, PastProperty, ExtentProperty, LimitFractionProperty, LimitLabelProperty, MarksProperty,
+        HoverSecondsProperty, StrokeProperty, FillProperty, GridBrushProperty, LimitBrushProperty, LabelBrushProperty,
+        PastBrushProperty);
 
     public IReadOnlyList<Point>? Points { get => GetValue(PointsProperty); set => SetValue(PointsProperty, value); }
 
-    public Size Extent { get => GetValue(ExtentProperty); set => SetValue(ExtentProperty, value); }
+    public IReadOnlyList<bool>? Past { get => GetValue(PastProperty); set => SetValue(PastProperty, value); }
+
+    public Rect Extent { get => GetValue(ExtentProperty); set => SetValue(ExtentProperty, value); }
 
     public double LimitFraction { get => GetValue(LimitFractionProperty); set => SetValue(LimitFractionProperty, value); }
 
@@ -86,7 +99,9 @@ public sealed class TimeChart : Control
 
     public IBrush? LabelBrush { get => GetValue(LabelBrushProperty); set => SetValue(LabelBrushProperty, value); }
 
-    private Rect Plot => new(Gutter, 4, Math.Max(0, Bounds.Width - Gutter), Math.Max(0, Bounds.Height - MarkBand - 4));
+    public IBrush? PastBrush { get => GetValue(PastBrushProperty); set => SetValue(PastBrushProperty, value); }
+
+    private Rect Plot => new(Gutter, TopBand, Math.Max(0, Bounds.Width - Gutter), Math.Max(0, Bounds.Height - MarkBand - TopBand));
 
     public override void Render(DrawingContext context)
     {
@@ -144,7 +159,7 @@ public sealed class TimeChart : Control
 
     private Point Map(Rect plot, Point source)
         => new(plot.Left + source.X / Extent.Width * plot.Width,
-            plot.Bottom - Math.Clamp(source.Y / Extent.Height, 0, 1) * plot.Height);
+            plot.Bottom - Math.Clamp((source.Y - Extent.Y) / Extent.Height, 0, 1) * plot.Height);
 
     private void DrawGrid(DrawingContext context, Rect plot)
     {
@@ -154,7 +169,7 @@ public sealed class TimeChart : Control
             var y = plot.Bottom - share * plot.Height;
             context.DrawLine(pen, new Point(plot.Left, y), new Point(plot.Right, y));
 
-            var value = Extent.Height * share;
+            var value = Extent.Y + Extent.Height * share;
             var label = Text(value.ToString(value < 10 && value % 1 != 0 ? "0.#" : "0", CultureInfo.CurrentCulture));
             context.DrawText(label, new Point(Gutter - 6 - label.Width, y - label.Height / 2));
         }
@@ -199,6 +214,21 @@ public sealed class TimeChart : Control
         }
 
         context.DrawGeometry(null, new Pen(Stroke, 1.5, lineJoin: PenLineJoin.Round), line);
+
+        // Points and Past arrive as two bindings, so one can lead the other for a pass.
+        if (Past is not { } past || past.Count != points.Count)
+        {
+            return;
+        }
+
+        var pastPen = new Pen(PastBrush, 1.5, lineCap: PenLineCap.Round);
+        for (var i = 1; i < mapped.Count; i++)
+        {
+            if (past[i - 1] || past[i])
+            {
+                context.DrawLine(pastPen, mapped[i - 1], mapped[i]);
+            }
+        }
     }
 
     private void DrawLimit(DrawingContext context, Rect plot)
@@ -259,8 +289,9 @@ public sealed class TimeChart : Control
 
         if (Points is { Count: > 0 } points)
         {
-            var nearest = points.MinBy(point => Math.Abs(point.X - HoverSeconds));
-            context.DrawEllipse(Stroke, null, Map(plot, nearest), 3.5, 3.5);
+            var nearest = Enumerable.Range(0, points.Count).MinBy(i => Math.Abs(points[i].X - HoverSeconds));
+            var isPast = Past is { } past && past.Count == points.Count && past[nearest];
+            context.DrawEllipse(isPast ? PastBrush : Stroke, null, Map(plot, points[nearest]), 3.5, 3.5);
         }
     }
 

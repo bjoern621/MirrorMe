@@ -7,6 +7,14 @@
              x:DataType="vm:ChartViewModel">
 
   <UserControl.Styles>
+    <Style Selector="ListBox.ranges">
+      <Setter Property="DockPanel.Dock" Value="Right" />
+    </Style>
+    <Style Selector=":is(UserControl).narrow ListBox.ranges">
+      <Setter Property="DockPanel.Dock" Value="Bottom" />
+      <Setter Property="HorizontalAlignment" Value="Left" />
+      <Setter Property="Margin" Value="0,10,0,0" />
+    </Style>
     <Style Selector="TextBlock.stat">
       <Setter Property="FontFeatures" Value="{StaticResource FigureFeatures}" />
       <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
@@ -20,7 +28,7 @@
     <StackPanel Spacing="{StaticResource GapControl}">
 
       <DockPanel>
-        <ListBox DockPanel.Dock="Right"
+        <ListBox Classes="ranges"
                  Theme="{StaticResource SegmentedControlTheme}"
                  ItemContainerTheme="{StaticResource SegmentItemTheme}"
                  Height="{StaticResource ControlHeight}"
@@ -54,6 +62,7 @@
       <Panel Height="190">
         <chart:TimeChart IsVisible="{Binding HasPoints}"
                          Points="{Binding Points}"
+                         Past="{Binding PastAt}"
                          Extent="{Binding Extent}"
                          LimitFraction="{Binding LimitFraction}"
                          LimitLabel="{Binding LimitLabel}"
@@ -61,7 +70,8 @@
                          HoverSeconds="{Binding HoverSeconds, Mode=TwoWay}"
                          Stroke="{StaticResource ForegroundBrush}"
                          GridBrush="{StaticResource HairlineBrush}"
-                         LimitBrush="{StaticResource CautionBrush}"
+                         LimitBrush="{StaticResource MutedBrush}"
+                         PastBrush="{StaticResource CautionBrush}"
                          LabelBrush="{StaticResource HintBrush}">
           <chart:TimeChart.Fill>
             <SolidColorBrush Color="{StaticResource White}" Opacity="0.07" />

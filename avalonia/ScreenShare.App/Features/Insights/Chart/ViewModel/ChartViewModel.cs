@@ -64,10 +64,12 @@ public sealed class ChartViewModel : Observable
 
     public IReadOnlyList<Point> Points => Plot.Points;
 
-    public Size Extent => new(Plot.Span, Plot.Top);
+    public IReadOnlyList<bool> PastAt => Plot.Past;
+
+    public Rect Extent => new(0, Plot.Bottom, Plot.Span, Plot.Top - Plot.Bottom);
 
     /// <summary>Limit as a share of the height, 0 at the top, NaN where the figure has none.</summary>
-    public double LimitFraction => Plot.Limit is { } limit ? 1 - limit / Plot.Top : double.NaN;
+    public double LimitFraction => Plot.Limit is { } limit ? 1 - (limit - Plot.Bottom) / (Plot.Top - Plot.Bottom) : double.NaN;
 
     public string LimitLabel { get => _limitLabel; private set => Set(ref _limitLabel, value); }
 
@@ -165,6 +167,7 @@ public sealed class ChartViewModel : Observable
         var metric = Metrics.Of(Picked);
         Plot = ChartPlots.Of(_readings, metric, _limits, SelectedRange.Value, _events);
         OnPropertyChanged(nameof(Points));
+        OnPropertyChanged(nameof(PastAt));
         OnPropertyChanged(nameof(Extent));
         OnPropertyChanged(nameof(LimitFraction));
         OnPropertyChanged(nameof(Marks));

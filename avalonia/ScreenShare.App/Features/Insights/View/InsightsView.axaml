@@ -12,11 +12,30 @@
              x:DataType="vm:InsightsViewModel">
 
   <UserControl.Styles>
+    <Style Selector=":is(UserControl).narrow TextBlock.editword">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
     <Style Selector="TextBlock.cardfigure">
       <Setter Property="FontSize" Value="{StaticResource FontSizeHeading}" />
       <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="FontFeatures" Value="{StaticResource FigureFeatures}" />
       <Setter Property="Foreground" Value="{Binding $parent[Button].Foreground}" />
+    </Style>
+    <Style Selector="StackPanel.figure">
+      <Setter Property="Grid.Row" Value="1" />
+      <Setter Property="Grid.Column" Value="0" />
+    </Style>
+    <Style Selector="TextBlock.limit">
+      <Setter Property="Grid.Row" Value="2" />
+    </Style>
+    <Style Selector="ItemsControl.wide StackPanel.figure">
+      <Setter Property="Grid.Row" Value="0" />
+      <Setter Property="Grid.RowSpan" Value="2" />
+      <Setter Property="Grid.Column" Value="1" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="ItemsControl.wide TextBlock.limit">
+      <Setter Property="Grid.Row" Value="1" />
     </Style>
     <Style Selector="TextBlock.cardfigure.past">
       <Setter Property="Foreground" Value="{StaticResource CautionBrush}" />
@@ -31,10 +50,10 @@
           <TextBlock Classes="heading" TextWrapping="Wrap" TextTrimming="None" Text="{Binding Title}" />
           <TextBlock Classes="hint" TextWrapping="Wrap" TextTrimming="None" Text="{Binding Subtitle}" />
         </StackPanel>
-        <Button Grid.Column="1" VerticalAlignment="Top" Command="{Binding EditInSetup}">
+        <Button Grid.Column="1" VerticalAlignment="Top" Command="{Binding EditInSetup}" ToolTip.Tip="{Binding EditLabel}">
           <StackPanel Orientation="Horizontal" Spacing="{StaticResource GapTight}">
             <ti:TablerIcon Classes="button" Icon="IconPencil" />
-            <TextBlock Text="{Binding EditLabel}" VerticalAlignment="Center" />
+            <TextBlock Classes="editword" Text="{Binding EditLabel}" VerticalAlignment="Center" />
           </StackPanel>
         </Button>
       </Grid>
@@ -77,6 +96,7 @@
           <ItemsControl Grid.Row="{Binding CardsRow}"
                         Grid.Column="{Binding CardsColumn}"
                         Grid.ColumnSpan="{Binding PreviewSpan}"
+                        Classes.wide="{Binding IsWide}"
                         ItemsSource="{Binding Chart.Cards}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
@@ -93,14 +113,15 @@
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
                         Command="{Binding Pick}">
-                  <StackPanel Spacing="2">
-                    <TextBlock Classes="cardtitle" TextWrapping="Wrap" TextTrimming="None" Text="{Binding Label}" />
-                    <StackPanel Orientation="Horizontal" Spacing="4">
+                  <!-- Beside the preview the figure stands right of its label; in a row under it, below. -->
+                  <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto" VerticalAlignment="Center">
+                    <TextBlock Grid.Row="0" Classes="cardtitle" TextWrapping="Wrap" TextTrimming="None" Text="{Binding Label}" />
+                    <StackPanel Classes="figure" Orientation="Horizontal" Spacing="4">
                       <TextBlock Classes="cardfigure" Classes.past="{Binding IsPast}" Text="{Binding Value}" />
                       <TextBlock Classes="hint" VerticalAlignment="Bottom" Margin="0,0,0,2" Text="{Binding Unit}" />
                     </StackPanel>
-                    <TextBlock Classes="hint" Text="{Binding LimitCaption}" />
-                  </StackPanel>
+                    <TextBlock Classes="hint limit" Text="{Binding LimitCaption}" />
+                  </Grid>
                 </Button>
               </DataTemplate>
             </ItemsControl.ItemTemplate>

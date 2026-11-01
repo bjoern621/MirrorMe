@@ -14,17 +14,20 @@ public sealed record ChartSummary(double? Average, double? Worst, double PastLim
 
 /// <summary>
 /// One figure over one span.
-/// Points: X in seconds from the left edge, 0..Span; Y the reading itself, 0..Top.
+/// Points: X in seconds from the left edge, 0..Span; Y the reading itself, Bottom..Top.
+/// Past: one flag per point, set where that reading sits past the limit.
 /// </summary>
 public sealed record ChartPlot(
     IReadOnlyList<Point> Points,
+    IReadOnlyList<bool> Past,
     double Span,
+    double Bottom,
     double Top,
     double? Limit,
     ChartSummary Summary,
     IReadOnlyList<ChartMark> Marks)
 {
-    public static readonly ChartPlot Empty = new([], ChartPlots.MinimumSpanSeconds, 1, null, new(null, null, 0), []);
+    public static readonly ChartPlot Empty = new([], [], ChartPlots.MinimumSpanSeconds, 0, 1, null, new(null, null, 0), []);
 }
 
 /// <summary>Every card's figure at one reading, the one place the three meet.</summary>
@@ -41,9 +44,6 @@ public static class ChartPlots
 
     /// <summary>Gap between readings counted past a limit at most, s. A longer one went unmeasured.</summary>
     private const double MaxIntervalSeconds = 5;
-
-    /// <summary>Share of the height the highest value or limit may take, the rest keeping it off the top edge.</summary>
-    private const double Headroom = 0.85;
 
     public static ChartPlot Of(
         IReadOnlyList<PublishReading> readings,
@@ -64,6 +64,7 @@ public static class ChartPlots
         var limit = metric.Limit(limits);
 
         var points = new List<Point>(readings.Count);
+        var pastAt = new List<bool>(readings.Count);
         var past = 0.0;
         DateTimeOffset? previous = null;
         foreach (var reading in readings)
@@ -73,13 +74,15 @@ public static class ChartPlots
                 continue;
             }
 
-            if (limit is { } bound && metric.IsPast(value, bound) && previous is { } before)
+            var isPast = limit is { } bound && metric.IsPast(value, bound);
+            if (isPast && previous is { } before)
             {
                 past += Math.Min((reading.At - before).TotalSeconds, MaxIntervalSeconds);
             }
 
             previous = reading.At;
             points.Add(new Point((reading.At - start).TotalSeconds, value));
+            pastAt.Add(isPast);
         }
 
         var values = points.Select(point => point.Y).ToList();
@@ -87,12 +90,13 @@ public static class ChartPlots
             values.Count == 0 ? null : values.Average(),
             values.Count == 0 ? null : metric.LowIsBad ? values.Min() : values.Max(),
             past);
-        var top = Nice(Math.Max(values.DefaultIfEmpty(0).Max(), limit ?? 0) / Headroom);
+        var (bottom, top) = Axis(values, limit);
 
-        var plot = new ChartPlot(points, span, top, limit, summary, Marks(events, start, span));
+        var plot = new ChartPlot(points, pastAt, span, bottom, top, limit, summary, Marks(events, start, span));
 
         Assert.That(plot.Points.All(point => point.X >= 0 && point.X <= span), "every point sits inside the span", span);
-        Assert.That(plot.Top > 0, "the chart has height to draw in", plot.Top);
+        Assert.That(plot.Past.Count == plot.Points.Count, "every point carries its past flag", plot.Points.Count);
+        Assert.That(plot.Bottom >= 0 && plot.Top > plot.Bottom, "the chart has height to draw in", (plot.Bottom, plot.Top));
         return plot;
     }
 
@@ -165,6 +169,30 @@ public static class ChartPlots
     {
         var metric = Metrics.Of(key);
         return metric.Print(metric.Read(stats));
+    }
+
+    /// <summary>
+    /// Two round steps that hold every value and the limit, Bottom..Top.
+    /// The low end reaches half the high at least, so a steady line sits on a scale that shows it steady.
+    /// </summary>
+    private static (double Bottom, double Top) Axis(IReadOnlyList<double> values, double? limit)
+    {
+        var high = Math.Max(values.DefaultIfEmpty(0).Max(), limit ?? 0);
+        if (high <= 0)
+        {
+            return (0, 1);
+        }
+
+        var low = Math.Min(Math.Min(values.DefaultIfEmpty(high).Min(), limit ?? high), high / 2);
+        var step = Nice((high - low) / 2);
+        var top = Math.Ceiling(high / step) * step;
+        while (top - 2 * step > low)
+        {
+            step = Nice(step * 1.001);
+            top = Math.Ceiling(high / step) * step;
+        }
+
+        return (Math.Max(0, top - 2 * step), top);
     }
 
     /// <summary>Smallest round figure at or above value: 1, 2, 2.5, 5 or 10 times a power of ten.</summary>

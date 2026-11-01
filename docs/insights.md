@@ -38,6 +38,7 @@ Under it the verdict, then two tabs.
 
 Stream tab: the preview, a card per figure and a chart of the picked card over one minute, five minutes or the whole run.
 Each card holds its newest value against its limit, and the chart marks every moment the run kept.
+The chart's axis spans two round steps around the readings and the limit, and a stretch past the limit draws in amber.
 
 | Figure | Limit |
 | --- | --- |

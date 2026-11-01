@@ -57,35 +57,31 @@
       </Panel>
     </Border>
 
-    <Grid ColumnDefinitions="*,Auto">
-      <TextBlock Grid.Column="0"
-                 Classes="hint"
-                 Text="{Binding RouteChoice}"
-                 TextWrapping="Wrap"
-                 VerticalAlignment="Center"
-                 Margin="0,0,9,0" />
-
-      <ListBox Grid.Column="1"
-               Theme="{StaticResource SegmentedControlTheme}"
-               ItemContainerTheme="{StaticResource SegmentItemTheme}"
-               Height="{StaticResource ControlHeight}"
-               ItemsSource="{Binding Routes}"
-               SelectedItem="{Binding SelectedRoute, Mode=TwoWay}">
-        <ListBox.ItemTemplate>
-          <DataTemplate x:DataType="model:PreviewRouteTab">
-            <!--
-              Read back off the container: the app states a Foreground on every TextBlock, so
-              plain inheritance loses to it and every segment comes out one colour.
-            -->
-            <TextBlock Text="{Binding Label}"
-                       Foreground="{Binding $parent[ListBoxItem].Foreground}"
-                       FontWeight="{Binding $parent[ListBoxItem].FontWeight}" />
-          </DataTemplate>
-        </ListBox.ItemTemplate>
-      </ListBox>
-    </Grid>
-
-    <TextBlock Classes="hint" Text="{Binding Cost}" TextWrapping="Wrap" />
+    <!-- Each route's cost sits in the hover, keeping the column to the picture and its picker. -->
+    <ListBox Theme="{StaticResource SegmentedControlTheme}"
+             ItemContainerTheme="{StaticResource SegmentItemTheme}"
+             Height="{StaticResource ControlHeight}"
+             HorizontalAlignment="Left"
+             ItemsSource="{Binding Routes}"
+             SelectedItem="{Binding SelectedRoute, Mode=TwoWay}">
+      <ToolTip.Tip>
+        <StackPanel Spacing="4" MaxWidth="320">
+          <TextBlock FontWeight="SemiBold" Text="{Binding RouteChoice}" />
+          <TextBlock Text="{Binding Cost}" TextWrapping="Wrap" />
+        </StackPanel>
+      </ToolTip.Tip>
+      <ListBox.ItemTemplate>
+        <DataTemplate x:DataType="model:PreviewRouteTab">
+          <!--
+            Read back off the container: the app states a Foreground on every TextBlock, so
+            plain inheritance loses to it and every segment comes out one colour.
+          -->
+          <TextBlock Text="{Binding Label}"
+                     Foreground="{Binding $parent[ListBoxItem].Foreground}"
+                     FontWeight="{Binding $parent[ListBoxItem].FontWeight}" />
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
 
   </StackPanel>
 </UserControl>

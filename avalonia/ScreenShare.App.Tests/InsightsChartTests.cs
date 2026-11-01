@@ -79,12 +79,33 @@ public sealed class InsightsChartTests
     }
 
     [Fact]
-    public void TheTopClearsBothThePeakAndTheLimit()
+    public void TheAxisHoldsBothThePeakAndTheLimit()
     {
         var plot = ChartPlots.Of([Read(0, 30), Read(1, 31)], Metrics.Of(MetricKey.FrameRate), AtSixty,
             ChartRange.OneMinute, []);
 
-        Assert.True(plot.Top > 60, $"top {plot.Top} leaves the target off the chart");
+        Assert.True(plot.Top >= 60, $"top {plot.Top} leaves the target off the chart");
+        Assert.True(plot.Bottom <= 30, $"bottom {plot.Bottom} leaves the low off the chart");
+    }
+
+    /// <summary>A dip of a few frames fills the height that a zero-based axis would spend on nothing.</summary>
+    [Fact]
+    public void AShallowDipIsDrawnOnAnAxisCloseAroundIt()
+    {
+        var plot = ChartPlots.Of([Read(0, 60), Read(1, 48), Read(2, 60)], Metrics.Of(MetricKey.FrameRate), AtSixty,
+            ChartRange.OneMinute, []);
+
+        Assert.Equal(20, plot.Bottom);
+        Assert.Equal(60, plot.Top);
+    }
+
+    [Fact]
+    public void AReadingPastTheLimitIsMarkedPast()
+    {
+        var plot = ChartPlots.Of([Read(0, 60), Read(1, 48), Read(2, 60)], Metrics.Of(MetricKey.FrameRate), AtSixty,
+            ChartRange.OneMinute, []);
+
+        Assert.Equal([false, true, false], plot.Past);
     }
 
     [Fact]
