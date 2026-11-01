@@ -6,8 +6,8 @@ using Xunit;
 namespace ScreenShare.App.Tests;
 
 /// <summary>
-/// What the empty grid says, one sentence per cause: outside the group, a group with nobody sharing,
-/// or streams waiting unwatched. In Discord mode the way in is Discord's, so the sentence follows.
+/// What the empty grid says, one sentence per cause: a group with nobody sharing, streams waiting unwatched,
+/// or a linked machine outside a voice channel. Outside a group the join card asks instead.
 /// Quiet while a tile is up, while the first read is out, and while the rail's notice already speaks.
 /// </summary>
 public sealed class GridEmptyTests
@@ -19,18 +19,34 @@ public sealed class GridEmptyTests
         DiscordState? discord = null, bool discordMode = false)
         => GridEmpty.For(members, discord, discordMode, streams, tiles, relayReady);
 
+    /// <summary>Outside a group the join card asks the way in, and the line leaves the asking to it.</summary>
     [Fact]
-    public void OutsideTheGroupNamesTheWayIn()
+    public void OutsideTheGroupAsksToJoin()
     {
-        Assert.Equal(Cards.GridOutside, For(Group(joined: false), streams: 0, tiles: 0, relayReady: true));
+        Assert.True(GridEmpty.AsksToJoin(Group(joined: false), null, discordMode: false, tiles: 0));
+        Assert.Equal("", For(Group(joined: false), streams: 0, tiles: 0, relayReady: true));
     }
 
     [Fact]
-    public void InDiscordModeAnUnlinkedMachineNamesTheLink()
+    public void InDiscordModeAnUnlinkedMachineAsksToJoin()
     {
-        Assert.Equal(
-            Cards.GridUnlinked,
-            For(Group(joined: false), streams: 0, tiles: 0, relayReady: true, discordMode: true));
+        Assert.True(GridEmpty.AsksToJoin(Group(joined: false), null, discordMode: true, tiles: 0));
+        Assert.Equal("", For(Group(joined: false), streams: 0, tiles: 0, relayReady: true, discordMode: true));
+    }
+
+    /// <summary>A linked machine has picked its way in, and what is missing happens in Discord.</summary>
+    [Fact]
+    public void ALinkedMachineOutsideAChannelIsNotAskedAgain()
+    {
+        Assert.False(GridEmpty.AsksToJoin(
+            Group(joined: false), new DiscordState { Linked = true }, discordMode: true, tiles: 0));
+    }
+
+    [Fact]
+    public void AJoinedMachineIsNotAsked()
+    {
+        Assert.False(GridEmpty.AsksToJoin(Group(joined: true), null, discordMode: false, tiles: 0));
+        Assert.False(GridEmpty.AsksToJoin(null, null, discordMode: false, tiles: 0));
     }
 
     [Fact]

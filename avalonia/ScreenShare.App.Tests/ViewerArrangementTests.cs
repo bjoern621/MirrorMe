@@ -305,6 +305,20 @@ public sealed class ViewerArrangementTests
     private static TileViewModel Tile(ViewerViewModel viewer, string stream)
         => viewer.Tiles.Single(tile => tile.Name == stream);
 
+    /// <summary>The join card's rows ask the shell for the control that sets each way in, and write nothing.</summary>
+    [Fact]
+    public void TheJoinCardLeadsToWhereEachWayInIsSet()
+    {
+        var viewer = Grid();
+        var asked = new List<JoinRoute>();
+        viewer.JoinRequested += asked.Add;
+
+        viewer.JoinOverDiscord.Execute(null);
+        viewer.JoinWithKey.Execute(null);
+
+        Assert.Equal([JoinRoute.Discord, JoinRoute.Key], asked);
+    }
+
     /// <summary>One stream on the stage and the rest in the strip under it, the first stream staged.</summary>
     [Fact]
     public void SeveralStreamsOpenOnTheStage()

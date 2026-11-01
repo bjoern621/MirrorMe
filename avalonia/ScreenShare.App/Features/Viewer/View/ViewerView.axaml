@@ -320,6 +320,43 @@
         </StackPanel>
       </Grid>
 
+
+      <!--
+        Outside a group the grid asks the way in (Model/GridEmpty.cs).
+        Each row leads to the control that sets it, so the setting keeps one editor.
+      -->
+      <Border Classes="panel"
+              IsVisible="{Binding ShowsJoinCard}"
+              MaxWidth="420"
+              Padding="{StaticResource InsetSection}"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+        <StackPanel Spacing="{StaticResource GapControl}">
+          <StackPanel Spacing="4">
+            <TextBlock Classes="cardtitle" TextWrapping="Wrap" TextTrimming="None"
+                       Text="{x:Static copy:Cards.JoinTitle}" />
+            <TextBlock Classes="hint" TextWrapping="Wrap" TextTrimming="None"
+                       Text="{x:Static copy:Cards.JoinBody}" />
+          </StackPanel>
+
+          <Button Theme="{StaticResource OptionCard}" Classes="picked" Command="{Binding JoinOverDiscord}">
+            <StackPanel Spacing="4">
+              <WrapPanel>
+                <TextBlock Classes="optiontitle" Margin="0,0,8,0" Text="{x:Static copy:Cards.JoinDiscord}" />
+                <TextBlock Classes="mark" VerticalAlignment="Center" Text="{x:Static copy:Cards.Recommended}" />
+              </WrapPanel>
+              <TextBlock Classes="cardbody" Text="{x:Static copy:Cards.JoinDiscordDetail}" />
+            </StackPanel>
+          </Button>
+
+          <Button Theme="{StaticResource OptionCard}" Command="{Binding JoinWithKey}">
+            <StackPanel Spacing="4">
+              <TextBlock Classes="optiontitle" Text="{x:Static copy:Cards.JoinKey}" />
+              <TextBlock Classes="cardbody" Text="{x:Static copy:Cards.JoinKeyDetail}" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
+      </Border>
       </Panel>
 
     </DockPanel>

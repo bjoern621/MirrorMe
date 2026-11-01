@@ -7,28 +7,30 @@ namespace ScreenShare.App.Features.Viewer.Model;
 /// What the empty grid says, one sentence per cause, each naming the reader's next step.
 ///
 /// Quiet while a tile is up, while the first presence read is out,
-/// and while the relay's own notice on the rail already speaks: an empty grid is not told twice why.
+/// while the relay's own notice on the rail already speaks, and while the join card asks the way in:
+/// an empty grid is not told twice why.
 /// </summary>
 public static class GridEmpty
 {
+    /// <summary>
+    /// Whether the grid asks how to join a group.
+    /// A linked machine in Discord mode has picked its way in, and what it lacks is a voice channel.
+    /// </summary>
+    public static bool AsksToJoin(MembersState? members, DiscordState? discord, bool discordMode, int tiles)
+        => tiles == 0 && members is { Joined: false } && !(discordMode && discord is { Linked: true });
+
     public static string For(
         MembersState? members, DiscordState? discord, bool discordMode,
         int streams, int tiles, bool relayReady)
     {
-        if (tiles > 0 || members is null)
+        if (tiles > 0 || members is null || AsksToJoin(members, discord, discordMode, tiles))
         {
             return "";
         }
 
         if (!members.Joined)
         {
-            // In Discord mode the next step is Discord's rather than a key:
-            // link once, then stand in a voice channel.
-            if (discordMode)
-            {
-                return discord is { Linked: true } ? Cards.GridNoChannel : Cards.GridUnlinked;
-            }
-            return Cards.GridOutside;
+            return Cards.GridNoChannel;
         }
 
         if (streams > 0)

@@ -383,5 +383,7 @@ A dashed rounded border, a circular muted badge holding an outline icon, one mut
 No heading, no button.
 
 A step or panel with nothing to show says so plainly rather than inventing content.
+One empty state asks instead: a viewer outside any group gets a card with the two ways in, the Discord voice channel first and marked recommended.
+Each leads to the control that sets it, linking in Settings or the key on the relay step, so the card edits nothing.
 A figure the app has not measured prints `…`.
 It never prints zero.

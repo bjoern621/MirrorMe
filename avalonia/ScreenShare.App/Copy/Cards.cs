@@ -157,11 +157,7 @@ public static class Cards
     /// </summary>
     public const string SetupUnread = "Reading what this computer can send.";
 
-    public const string MembersOutside =
-        "This computer is not in a group. Set a group key and a name on the Relay step to join one.";
-
-    public const string MembersUnlinked =
-        "Not linked to Discord. Link Discord in Settings, and everyone in the voice channel is listed here.";
+    public const string MembersOutside = "This computer is not in a group.";
 
     public const string MembersNoChannel =
         "Not in a voice channel. Join one in Discord, and everyone in it is listed here.";
@@ -174,18 +170,26 @@ public static class Cards
     /// What the empty grid says, one sentence per cause and each naming the next step.
     /// Quiet where the rail's own notice already speaks (<c>Features/Viewer/Model/GridEmpty.cs</c>).
     /// </summary>
-    public const string GridOutside =
-        "Not in a group. Set a group key and a name on the Relay step, and every member's stream shows here.";
-
     public const string GridIdle = "Nobody in the group is sharing a screen.";
-
-    public const string GridUnlinked =
-        "Not linked to Discord. Link Discord in Settings, and the group follows the voice channel.";
 
     public const string GridNoChannel =
         "Not in a voice channel. Join one in Discord, and every member's stream shows here.";
 
     public const string GridUnwatched = "Nothing is picked to watch. Click a stream on the left to open its picture.";
+
+    public const string JoinTitle = "Join a group to watch and share";
+
+    public const string JoinBody = "Everyone in a group sees the others' streams.";
+
+    public const string JoinDiscord = "Use my Discord voice channel";
+
+    public const string JoinDiscordDetail = "The group follows the channel you sit in";
+
+    public const string JoinKey = "Paste a group key";
+
+    public const string JoinKeyDetail = "For a group outside Discord";
+
+    public const string Recommended = "Recommended";
 
     /// <summary>Card at the step column's foot, holding what no control on screen already says.</summary>
     public const string ChecksTitle = "Checks before sharing";

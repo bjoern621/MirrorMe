@@ -3,20 +3,23 @@ using ScreenShare.App.Backend;
 using ScreenShare.App.Contracts;
 using ScreenShare.App.Features.Insights.Model;
 using ScreenShare.App.Features.Insights.ViewModel;
+using ScreenShare.App.Features.Setup.Model;
 using ScreenShare.App.Features.Setup.RegionPicker.View;
 using ScreenShare.App.Features.Setup.SharePicker.ViewModel;
 using ScreenShare.App.Features.Setup.ShareQuestion.ViewModel;
 using ScreenShare.App.Features.Setup.ViewModel;
+using ScreenShare.App.Features.Shell.Consent.ViewModel;
 using ScreenShare.App.Features.Shell.Go.ViewModel;
 using ScreenShare.App.Features.Shell.Model;
 using ScreenShare.App.Features.Shell.NavStrip.ViewModel;
-using ScreenShare.App.Features.Shell.Consent.ViewModel;
+using ScreenShare.App.Features.Shell.Settings.Model;
 using ScreenShare.App.Features.Shell.Settings.ViewModel;
 using ScreenShare.App.Features.Shell.StatusBar.Model;
 using ScreenShare.App.Features.Shell.StatusBar.ViewModel;
 using ScreenShare.App.Features.Shell.TitleBar.ViewModel;
 using ScreenShare.App.Features.Shell.Update.ViewModel;
 using ScreenShare.App.Features.Tray.ViewModel;
+using ScreenShare.App.Features.Viewer.Model;
 using ScreenShare.App.Features.Viewer.ViewModel;
 using ScreenShare.App.Mvvm;
 
@@ -160,6 +163,7 @@ public sealed class ShellViewModel : Observable
             backend, _form, _session, SharePicker, AppSettings.OpenAtDiscordCommand, dispatch);
         Insights = new InsightsViewModel(backend, _form, _session, dispatch);
         Viewer = new ViewerViewModel(backend, _form, _session, dispatch);
+        Viewer.JoinRequested += OnJoinRequested;
 
         // The tray presses the destinations' own commands rather than carrying a gate of its own,
         // so it is built beside them.
@@ -487,6 +491,19 @@ public sealed class ShellViewModel : Observable
     /// The rest are the publisher's, and answering one here would be the shell inventing behaviour it does not
     /// own.
     /// </summary>
+    private void OnJoinRequested(JoinRoute route)
+    {
+        // An unlinked machine links first, and Settings holds the button; every other way in is the relay step's.
+        if (route == JoinRoute.Discord && _session.Discord is not { Linked: true })
+        {
+            AppSettings.Show(true, SettingsSection.Discord);
+            return;
+        }
+
+        Setup.CurrentStep = RelayLayout.GroupKey;
+        Show(Destination.Setup);
+    }
+
     private void OnInsightsRequested(InsightsAction action)
     {
         if (action == InsightsAction.EditInSetup)

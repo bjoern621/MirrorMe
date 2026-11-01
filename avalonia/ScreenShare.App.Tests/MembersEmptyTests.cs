@@ -25,16 +25,12 @@ public sealed class MembersEmptyTests
         Assert.Equal(Cards.MembersUnread, For(members: null));
     }
 
+    /// <summary>The grid's join card names the ways in, so the list states the fact alone.</summary>
     [Fact]
-    public void OutsideTheGroupNamesTheKeyAndTheName()
+    public void OutsideTheGroupLeavesTheWayInToTheJoinCard()
     {
         Assert.Equal(Cards.MembersOutside, For(Group(joined: false)));
-    }
-
-    [Fact]
-    public void InDiscordModeAnUnlinkedMachineNamesTheLink()
-    {
-        Assert.Equal(Cards.MembersUnlinked, For(Group(joined: false), discordMode: true));
+        Assert.Equal(Cards.MembersOutside, For(Group(joined: false), discordMode: true));
     }
 
     [Fact]

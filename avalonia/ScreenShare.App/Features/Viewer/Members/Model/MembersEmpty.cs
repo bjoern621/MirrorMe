@@ -22,15 +22,11 @@ public static class MembersEmpty
             return Cards.MembersUnread;
         }
 
+        // A linked machine in Discord mode lacks a voice channel.
+        // Every other machine outside a group is asked the way in by the grid's join card.
         if (!members.Joined)
         {
-            // In Discord mode the next step is Discord's rather than a key:
-            // link once, then stand in a voice channel.
-            if (discordMode)
-            {
-                return discord is { Linked: true } ? Cards.MembersNoChannel : Cards.MembersUnlinked;
-            }
-            return Cards.MembersOutside;
+            return discordMode && discord is { Linked: true } ? Cards.MembersNoChannel : Cards.MembersOutside;
         }
 
         return Cards.MembersNone;

@@ -119,6 +119,9 @@ public sealed class ViewerViewModel : Observable
             Apply();
         });
 
+        JoinOverDiscord = new DelegateCommand(() => JoinRequested?.Invoke(JoinRoute.Discord));
+        JoinWithKey = new DelegateCommand(() => JoinRequested?.Invoke(JoinRoute.Key));
+
         ToggleGrid = new DelegateCommand(() =>
         {
             _gridAsked = !IsGrid;
@@ -396,6 +399,22 @@ public sealed class ViewerViewModel : Observable
 
     public bool ShowsGridEmpty { get => _showsGridEmpty; private set => Set(ref _showsGridEmpty, value); }
 
+    private bool _showsJoinCard;
+
+    /// <summary>Whether the empty grid asks how to join a group (<see cref="GridEmpty.AsksToJoin"/>).</summary>
+    public bool ShowsJoinCard { get => _showsJoinCard; private set => Set(ref _showsJoinCard, value); }
+
+    /// <summary>
+    /// Raised by a row of the join card.
+    /// The rows lead to the control that sets each way in, which the shell reaches.
+    /// The card writes nothing, the setting having one editor.
+    /// </summary>
+    public event Action<JoinRoute>? JoinRequested;
+
+    public DelegateCommand JoinOverDiscord { get; }
+
+    public DelegateCommand JoinWithKey { get; }
+
     /// <summary>
     /// Whether the notice reports a failure rather than a state of the relay.
     /// True for the backend's own sentence, which is the one thing here that is broken:
@@ -539,6 +558,7 @@ public sealed class ViewerViewModel : Observable
             _session.Members, _session.Discord, discordMode,
             Streams.Count, _tiles.Count, relay?.Reachable == true);
         ShowsGridEmpty = GridEmptyLine.Length > 0;
+        ShowsJoinCard = GridEmpty.AsksToJoin(_session.Members, _session.Discord, discordMode, _tiles.Count);
 
         // Draws from the same draft on every pass,
         // so a vocabulary arriving with the catalog reaches the panel's entries without a notification of its own.
