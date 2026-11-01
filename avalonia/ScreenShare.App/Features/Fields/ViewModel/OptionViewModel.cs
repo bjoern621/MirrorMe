@@ -1,3 +1,4 @@
+using ScreenShare.App.Features.Fields.Model;
 using ScreenShare.App.Mvvm;
 
 namespace ScreenShare.App.Features.Fields.ViewModel;
@@ -46,6 +47,12 @@ public sealed record OptionViewModel
     /// <summary>Whether the backend marked the entry worth emphasising for this combination.</summary>
     public required bool IsRecommended { get; init; }
 
+    /// <summary>What the settings cost with this entry picked: "8.7 Mb/s". Empty where the form sent no price.</summary>
+    public string Price { get; init; } = "";
+
+    /// <summary>What picking this entry would raise that the field's other entries do not, ranked by the form.</summary>
+    public ValueList<Impact> Impacts { get; init; } = ValueList<Impact>.Empty;
+
     /// <summary>
     /// Disclosure row rather than an entry: no value, <see cref="Choose"/> lists the refused ones instead of picking,
     /// <see cref="IsSelected"/> reads whether they are listed.
@@ -65,4 +72,8 @@ public sealed record OptionViewModel
     public bool HasDetail => Detail.Length > 0;
 
     public bool HasNote => Note.Length > 0;
+
+    public bool HasPrice => Price.Length > 0;
+
+    public bool HasImpacts => Impacts.Count > 0;
 }

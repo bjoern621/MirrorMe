@@ -1,6 +1,7 @@
 using ScreenShare.Api.V1;
 using ScreenShare.App.Contracts;
 using ScreenShare.App.Controls;
+using ScreenShare.App.Features.Fields.Model;
 
 namespace ScreenShare.App.Features.Setup.Model;
 
@@ -50,7 +51,7 @@ public static class PreflightChecks
             .Select(diagnostic => new PreflightCheckRow
             {
                 Text = Copy.Statements.Of(diagnostic.Text),
-                State = StateOf(diagnostic.Severity),
+                State = Impacts.StateOf(diagnostic.Severity),
                 Anchor = anchorOf(diagnostic),
             })
             .ToList();
@@ -80,18 +81,6 @@ public static class PreflightChecks
             .Select(check => check.Anchor.StepKey)
             .ToList();
     }
-
-    /// <summary>
-    /// Exhaustive, so a severity added to the contract fails here,
-    /// rather than taking whatever a default arm would give it.
-    /// </summary>
-    private static CheckState StateOf(Severity severity) => severity switch
-    {
-        Severity.Error => CheckState.Blocking,
-        Severity.Warning => CheckState.Warned,
-        Severity.Info => CheckState.Note,
-        _ => Assert.Never<CheckState>("unexpected diagnostic severity", (int)severity),
-    };
 
     /// <summary>
     /// One line about the whole list: "2 blocking", "1 to know about", "nothing to fix".

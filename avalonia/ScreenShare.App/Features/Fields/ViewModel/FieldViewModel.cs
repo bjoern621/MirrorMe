@@ -786,6 +786,8 @@ public sealed class FieldViewModel : Observable
             IsEnabled = option.Enabled,
             Reason = Statements.Of(option.Reason),
             IsRecommended = option.Recommended,
+            Price = option.Estimate is { } estimate ? Copy.Fields.Megabits(estimate.BitrateMbps) : "",
+            Impacts = Impacts.Of(option.Impacts),
             IsReveal = false,
             Choose = ChooseCommand(option.Value),
         }).ToList();

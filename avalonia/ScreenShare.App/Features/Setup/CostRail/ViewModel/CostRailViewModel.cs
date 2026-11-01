@@ -162,9 +162,9 @@ public sealed class CostRailViewModel : Observable
         var capacity = estimate is null ? 0 : predicted + estimate.HeadroomMbps;
         var scale = Math.Max(Math.Max(predicted, capacity), 1) * Headroom;
 
-        Bitrate = Figure(predicted);
+        Bitrate = Copy.Fields.Mbps(predicted);
         BitrateCaption = Caption(raw, predicted);
-        UplinkCaption = capacity > 0 ? $"uplink {Figure(capacity)} Mb/s" : "no uplink stated";
+        UplinkCaption = capacity > 0 ? $"uplink {Copy.Fields.Megabits(capacity)}" : "no uplink stated";
 
         FillShare = Share(predicted, scale);
         UplinkShare = Share(capacity, scale);
@@ -200,8 +200,8 @@ public sealed class CostRailViewModel : Observable
 
         return
         [
-            new() { Label = "Uncompressed capture", Value = $"{Figure(estimate.RawMbps)} Mb/s" },
-            new() { Label = "Uplink headroom", Value = $"{Figure(estimate.HeadroomMbps)} Mb/s" },
+            new() { Label = "Uncompressed capture", Value = Copy.Fields.Megabits(estimate.RawMbps) },
+            new() { Label = "Uplink headroom", Value = Copy.Fields.Megabits(estimate.HeadroomMbps) },
         ];
     }
 
@@ -220,11 +220,8 @@ public sealed class CostRailViewModel : Observable
             ? $" · {(raw / coded).ToString("0.#", CultureInfo.InvariantCulture)}:1"
             : "";
 
-        return $"Mb/s predicted · {Figure(raw)} raw{ratio}";
+        return $"Mb/s predicted · {Copy.Fields.Mbps(raw)} raw{ratio}";
     }
-
-    private static string Figure(double mbps) => mbps.ToString(
-        Math.Abs(mbps) >= 100 ? "0" : "0.#", CultureInfo.InvariantCulture);
 
     private static double Share(double value, double scale)
         => scale > 0 ? Math.Clamp(value / scale, 0, 1) : 0;

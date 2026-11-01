@@ -343,6 +343,13 @@ public static class Fields
     public static GroupEntry Group(string key) =>
         key.Length > 0 && Groups.TryGetValue(key, out var entry) ? entry : new GroupEntry(key, "");
 
+    /// <summary>A rate with its unit: "8.7 Mb/s".</summary>
+    public static string Megabits(double mbps) => $"{Mbps(mbps)} Mb/s";
+
+    /// <summary>A rate in Mbit/s without its unit, one decimal under 100.</summary>
+    public static string Mbps(double mbps) => mbps.ToString(
+        Math.Abs(mbps) >= 100 ? "0" : "0.#", System.Globalization.CultureInfo.InvariantCulture);
+
     /// <summary>
     /// How a unit is written after its figure.
     /// Empty where the unit is unspecified, the case for a figure carrying none.
