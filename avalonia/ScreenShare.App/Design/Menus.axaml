@@ -34,7 +34,7 @@
                 CornerRadius="{TemplateBinding CornerRadius}"
                 Padding="{TemplateBinding Padding}"
                 BoxShadow="{StaticResource MenuShadow}">
-          <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+          <ScrollViewer Classes="menu" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
             <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}" />
           </ScrollViewer>
         </Border>
@@ -135,7 +135,7 @@
                     CornerRadius="{StaticResource RadiusPanel}"
                     Padding="{StaticResource InsetMenu}"
                     BoxShadow="{StaticResource MenuShadow}">
-              <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
+              <ScrollViewer Classes="menu" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
                             MaxHeight="360">
                 <ItemsPresenter Name="PART_ItemsPresenter" ItemsPanel="{TemplateBinding ItemsPanel}" />
               </ScrollViewer>

@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.VisualTree;
 
 using ScreenShare.App.Contracts;
+using ScreenShare.App.Controls;
 using ScreenShare.App.Features.Viewer.Model;
 
 namespace ScreenShare.App.Features.Viewer.View;
@@ -27,9 +28,6 @@ public sealed class TileGrid : Panel
     /// test and whose screen disagreed.
     /// </summary>
     private const double Gap = 8;
-
-    /// <summary>How far one wheel notch moves the rail, in device-independent pixels.</summary>
-    private const double WheelStep = 50;
 
     /// <summary>Width over height of one tile's stream, as the tile knows it.</summary>
     public static readonly AttachedProperty<double> AspectProperty =
@@ -145,7 +143,7 @@ public sealed class TileGrid : Panel
         }
 
         var delta = e.Delta.X != 0 ? e.Delta.X : e.Delta.Y;
-        scroll.Offset = scroll.Offset.WithX(Math.Clamp(scroll.Offset.X - (delta * WheelStep), 0, room));
+        scroll.Offset = scroll.Offset.WithX(Math.Clamp(scroll.Offset.X - (delta * WheelScroll.Step), 0, room));
         e.Handled = true;
     }
 

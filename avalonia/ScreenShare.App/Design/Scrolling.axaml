@@ -1,5 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:ScreenShare.App.Controls">
 
   <!--
     The idle thumb, a line drawn inside the lane: Fluent's scale against its own 16px bar,
@@ -10,27 +11,84 @@
   <TransformOperations x:Key="HorizontalSmallScrollThumbScaleTransform">scaleY(0.2) translateY(-2px)</TransformOperations>
 
   <!--
-    A scroll bar gets a lane of its own, taken out of the content beside it.
-    Fluent spans the presenter across both grid columns while a bar can auto-hide,
-    so the bar floats over whatever a view scrolls: a card edge, a button, a wrapped line.
-    That span comes from a style whose selector carries a property condition,
-    which outranks a plain setter, so the override here carries the same condition.
-    A view whose content fits keeps the full width, the bar being invisible and its column Auto.
+    Fluent's template with two changes.
+    The presenter takes a shorter wheel step (Controls/WheelScroll/WheelScrollPresenter.cs).
+    A bar sits in a lane of its own beside the content, where Fluent floats it over a card edge or a wrapped line.
+
+    An axis that can show a bar keeps its lane while the bar hides, held open by an empty border of the bar's size.
+    A lane opening with its bar would narrow the content the moment it outgrows the view.
+    The content would then rewrap and jump under the reader.
+    An axis whose bar never shows (Disabled, Hidden) has no lane.
   -->
   <ControlTheme x:Key="{x:Type ScrollViewer}" TargetType="ScrollViewer"
                 BasedOn="{StaticResource {x:Type ScrollViewer}}">
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Grid ColumnDefinitions="*,Auto" RowDefinitions="*,Auto">
+          <controls:WheelScrollPresenter Name="PART_ContentPresenter"
+                                         Background="{TemplateBinding Background}"
+                                         HorizontalSnapPointsType="{TemplateBinding HorizontalSnapPointsType}"
+                                         VerticalSnapPointsType="{TemplateBinding VerticalSnapPointsType}"
+                                         HorizontalSnapPointsAlignment="{TemplateBinding HorizontalSnapPointsAlignment}"
+                                         VerticalSnapPointsAlignment="{TemplateBinding VerticalSnapPointsAlignment}"
+                                         Padding="{TemplateBinding Padding}"
+                                         ScrollViewer.IsScrollInertiaEnabled="{TemplateBinding IsScrollInertiaEnabled}">
+            <controls:WheelScrollPresenter.GestureRecognizers>
+              <ScrollGestureRecognizer CanHorizontallyScroll="{Binding CanHorizontallyScroll, ElementName=PART_ContentPresenter}"
+                                       CanVerticallyScroll="{Binding CanVerticallyScroll, ElementName=PART_ContentPresenter}"
+                                       IsScrollInertiaEnabled="{Binding (ScrollViewer.IsScrollInertiaEnabled), ElementName=PART_ContentPresenter}"
+                                       Offset="{Binding Offset, ElementName=PART_ContentPresenter}"
+                                       Viewport="{Binding Viewport, ElementName=PART_ContentPresenter}"
+                                       Extent="{Binding Extent, ElementName=PART_ContentPresenter}" />
+            </controls:WheelScrollPresenter.GestureRecognizers>
+          </controls:WheelScrollPresenter>
 
-    <Style Selector="^[AllowAutoHide=True] /template/ ScrollContentPresenter#PART_ContentPresenter">
-      <Setter Property="Grid.ColumnSpan" Value="1" />
-      <Setter Property="Grid.RowSpan" Value="1" />
+          <Panel Grid.Row="1">
+            <Border Name="PART_HorizontalRoom"
+                    Height="{StaticResource ScrollBarSize}"
+                    Margin="{StaticResource ScrollBarGapHorizontal}" />
+            <ScrollBar Name="PART_HorizontalScrollBar"
+                       Orientation="Horizontal"
+                       Margin="{StaticResource ScrollBarGapHorizontal}" />
+          </Panel>
+
+          <Panel Grid.Column="1">
+            <Border Name="PART_VerticalRoom"
+                    Width="{StaticResource ScrollBarSize}"
+                    Margin="{StaticResource ScrollBarGapVertical}" />
+            <ScrollBar Name="PART_VerticalScrollBar"
+                       Orientation="Vertical"
+                       Margin="{StaticResource ScrollBarGapVertical}" />
+          </Panel>
+
+          <Panel Name="PART_ScrollBarsSeparator"
+                 Grid.Row="1"
+                 Grid.Column="1"
+                 Background="{DynamicResource ScrollViewerScrollBarsSeparatorBackground}"
+                 Opacity="0">
+            <Panel.Transitions>
+              <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.1" />
+              </Transitions>
+            </Panel.Transitions>
+          </Panel>
+        </Grid>
+      </ControlTemplate>
+    </Setter>
+
+    <Style Selector="^[HorizontalScrollBarVisibility=Disabled] /template/ Border#PART_HorizontalRoom,
+                     ^[HorizontalScrollBarVisibility=Hidden] /template/ Border#PART_HorizontalRoom,
+                     ^[VerticalScrollBarVisibility=Disabled] /template/ Border#PART_VerticalRoom,
+                     ^[VerticalScrollBarVisibility=Hidden] /template/ Border#PART_VerticalRoom">
+      <Setter Property="IsVisible" Value="False" />
     </Style>
 
-    <Style Selector="^ /template/ ScrollBar#PART_VerticalScrollBar">
-      <Setter Property="Margin" Value="{StaticResource ScrollBarGapVertical}" />
-    </Style>
-
-    <Style Selector="^ /template/ ScrollBar#PART_HorizontalScrollBar">
-      <Setter Property="Margin" Value="{StaticResource ScrollBarGapHorizontal}" />
+    <!--
+      A menu's rows stay put while it is open, so its lane opens with the bar.
+      A menu that fits keeps no empty strip down its right side.
+    -->
+    <Style Selector="^.menu /template/ Border#PART_HorizontalRoom, ^.menu /template/ Border#PART_VerticalRoom">
+      <Setter Property="IsVisible" Value="False" />
     </Style>
 
   </ControlTheme>
