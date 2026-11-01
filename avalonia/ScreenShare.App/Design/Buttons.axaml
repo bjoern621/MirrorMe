@@ -124,6 +124,16 @@
     <Style Selector="^.stop">
       <Setter Property="Background" Value="{StaticResource AttentionBrush}" />
     </Style>
+
+    <!-- Menu half beside a locked commit: still pressable, outlined like its locked neighbour. -->
+    <Style Selector="^.off">
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Foreground" Value="{StaticResource DisabledBrush}" />
+    </Style>
+    <Style Selector="^.off /template/ Border#Root">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}" />
+    </Style>
   </ControlTheme>
 
   <ControlTheme x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource HueButton}">

@@ -164,6 +164,9 @@ public sealed class InsightsViewModel : Observable
     /// <summary>Word on the stop control, wherever it is drawn: the tray's row and the Go-strip's button.</summary>
     public const string StopLabel = "Stop sharing";
 
+    /// <summary>That word where the strip has no room for it.</summary>
+    public const string StopShort = "Stop";
+
     public PendingCommand StopCommand { get; }
 
     public InsightsSnapshot Snapshot { get => _snapshot; private set => Set(ref _snapshot, value); }

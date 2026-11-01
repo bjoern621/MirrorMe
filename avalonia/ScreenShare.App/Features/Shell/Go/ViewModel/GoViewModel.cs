@@ -199,7 +199,13 @@ public sealed class GoViewModel : Observable
         ShowsStop = IsLive && _setup.Commit.IsInForce;
 
         Press = ShowsStop ? StopCommand : CommitCommand;
-        PressLabel = ShowsStop ? InsightsViewModel.StopLabel : CommitLabel;
+        PressLabel = (ShowsStop, _compact) switch
+        {
+            (true, true) => InsightsViewModel.StopShort,
+            (true, false) => InsightsViewModel.StopLabel,
+            (false, true) => _setup.Commit.CommitShort,
+            (false, false) => CommitLabel,
+        };
 
         // The gate's sentence is about the commit, so it leaves the button with the stop on it.
         BlockedTip = !ShowsStop && Blocked.Length > 0 ? Blocked : null;
@@ -208,8 +214,21 @@ public sealed class GoViewModel : Observable
 
         Assert.That(CommitLabel.Length > 0, "the commit says what pressing it will do");
         Assert.That(
-            ShowsStop == (PressLabel == InsightsViewModel.StopLabel),
+            ShowsStop == (PressLabel is InsightsViewModel.StopLabel or InsightsViewModel.StopShort),
             "the press and its word name one effect", PressLabel);
+    }
+
+    private bool _compact;
+
+    /// <summary>
+    /// States whether the strip around the button has room for the press's whole word.
+    /// The strip decides from the window's width (<c>Features/Shell/Model/NavWidth.cs</c>).
+    /// Idempotent.
+    /// </summary>
+    public void SetCompact(bool compact)
+    {
+        _compact = compact;
+        Apply();
     }
 
     private string SummaryOf()

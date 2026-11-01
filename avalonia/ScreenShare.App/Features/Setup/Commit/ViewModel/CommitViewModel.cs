@@ -87,6 +87,11 @@ public sealed class CommitViewModel : Observable
     /// </summary>
     public string CommitLabel { get => _commitLabel; private set => Set(ref _commitLabel, value); }
 
+    /// <summary>That label where the strip has no room for it, off the same row.</summary>
+    public string CommitShort { get => _commitShort; private set => Set(ref _commitShort, value); }
+
+    private string _commitShort = "";
+
     /// <summary>Mark for that same effect, off the same row, for a surface with an icon column to draw.</summary>
     public Icons CommitGlyph { get => _commitGlyph; private set => Set(ref _commitGlyph, value); }
 
@@ -156,6 +161,7 @@ public sealed class CommitViewModel : Observable
         // and a property written only in the apply branch is one that sticks.
         var words = CommitCopy.Of(gate.Commit);
         CommitLabel = words.Label;
+        CommitShort = words.Short;
         CommitGlyph = words.Glyph;
         PromiseLead = words.Lead;
         PromiseTail = words.Tail;

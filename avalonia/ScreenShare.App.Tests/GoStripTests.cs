@@ -84,6 +84,21 @@ public sealed class GoStripTests
         Assert.True(opened.Go.CommitCommand.CanExecute(null));
     }
 
+    /// <summary>A narrow strip keeps the press and drops the words a wide one spells out.</summary>
+    [Fact]
+    public void ANarrowStripPressesWithTheShortWord()
+    {
+        var opened = Open(new PublishingBackend());
+
+        opened.Go.SetCompact(true);
+
+        Assert.Equal(CommitCopy.Of(PublishCommit.Start).Short, opened.Go.PressLabel);
+
+        opened.Go.SetCompact(false);
+
+        Assert.Equal(CommitCopy.Of(PublishCommit.Start).Label, opened.Go.PressLabel);
+    }
+
     [Fact]
     public void TheStripPressStartsThePublish()
     {

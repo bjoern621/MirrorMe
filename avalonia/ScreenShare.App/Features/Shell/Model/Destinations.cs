@@ -1,4 +1,5 @@
 using ScreenShare.App.Contracts;
+using TablerIcons;
 
 namespace ScreenShare.App.Features.Shell.Model;
 
@@ -42,5 +43,14 @@ public static class Destinations
         Destination.Insights => "Insights",
         Destination.Viewer => "Viewer",
         _ => Assert.Never<string>("unexpected destination", (int)destination),
+    };
+
+    /// <summary>Mark beside that label, and in its place where the strip drops the words.</summary>
+    public static Icons IconOf(Destination destination) => destination switch
+    {
+        Destination.Setup => Icons.IconListDetails,
+        Destination.Insights => Icons.IconChartLine,
+        Destination.Viewer => Icons.IconDeviceTv,
+        _ => Assert.Never<Icons>("unexpected destination", (int)destination),
     };
 }

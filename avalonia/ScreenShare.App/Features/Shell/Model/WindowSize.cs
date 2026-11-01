@@ -15,7 +15,7 @@ public static class WindowSize
 
     public const double OpeningHeight = 760;
 
-    public const double Floor = 380;
+    public const double Floor = 360;
 
     public const double FloorHeight = 320;
 }

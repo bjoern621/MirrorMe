@@ -64,6 +64,17 @@ public sealed class NavStripViewModel : Observable
         Apply();
     }
 
+    private double _width = NavWidth.LabelsMinWidth;
+
+    /// <summary>States how wide the window is, which decides whether the strip spells out its words. Idempotent.</summary>
+    public void SetWindowWidth(double width)
+    {
+        Assert.That(width > 0, "a window states a width it has", width);
+
+        _width = width;
+        Apply();
+    }
+
     // --- Inputs --------------------------------------------------------------------
 
     private DestinationTab? _selectedTab;
@@ -97,11 +108,19 @@ public sealed class NavStripViewModel : Observable
 
     // --- Outputs -------------------------------------------------------------------
 
+    private bool _showsLabels = true;
+
+    /// <summary>Whether each segment carries its word beside its mark.</summary>
+    public bool ShowsLabels { get => _showsLabels; private set => Set(ref _showsLabels, value); }
+
     /// <summary>One render function: the whole strip off the shell's state, on every pass.</summary>
     public void Apply()
     {
         // Through the field, not the property: the setter would send the shell's own answer back to it as a click.
         Set<DestinationTab?>(ref _selectedTab, TabFor(_current), nameof(SelectedTab));
+
+        ShowsLabels = _width >= NavWidth.LabelsMinWidth;
+        Go?.SetCompact(!ShowsLabels);
     }
 
     private DestinationTab TabFor(Destination destination)

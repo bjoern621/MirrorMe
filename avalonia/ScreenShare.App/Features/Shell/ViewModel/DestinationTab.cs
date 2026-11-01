@@ -18,6 +18,7 @@ public sealed class DestinationTab
     {
         Value = value;
         Label = Destinations.LabelOf(value);
+        Icon = Destinations.IconOf(value);
 
         Assert.That(Label.Length > 0, "a segment carries the label its destination is named by", (int)value);
     }
@@ -27,4 +28,7 @@ public sealed class DestinationTab
 
     /// <summary>Verbatim from the destination table. Fixed for the tab's life.</summary>
     public string Label { get; }
+
+    /// <summary>Verbatim from the destination table. Fixed for the tab's life.</summary>
+    public TablerIcons.Icons Icon { get; }
 }

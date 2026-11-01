@@ -30,6 +30,9 @@ public static class CommitCopy
     {
         public required string Label { get; init; }
 
+        /// <summary>The label where the strip has no room for it (<c>Features/Shell/Model/NavWidth.cs</c>).</summary>
+        public required string Short { get; init; }
+
         /// <summary>
         /// Mark drawn beside that word where a row has an icon column, the strip's menu being the one that does.
         /// A restart is the effect a reader has to spot without reading the row,
@@ -55,6 +58,7 @@ public static class CommitCopy
         [PublishCommit.Start] = new Entry
         {
             Label = "Start sharing",
+            Short = "Share",
             Glyph = Icons.IconPlayerPlay,
             Lead = "Sharing starts on these settings. Everyone in the group can watch ",
             Tail = ".",
@@ -64,6 +68,7 @@ public static class CommitCopy
         [PublishCommit.Apply] = new Entry
         {
             Label = "Apply and restart",
+            Short = "Restart",
             Glyph = Icons.IconRefresh,
             Lead = "Applying restarts the stream on these settings. Everyone watching ",
             Tail = " loses the picture for a moment and reconnects.",

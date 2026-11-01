@@ -48,6 +48,7 @@
     <Button x:Name="MenuButton"
             Theme="{StaticResource GoButton}"
             Classes.stop="{Binding ShowsStop}"
+            Classes.off="{Binding BlockedTip, Converter={x:Static ObjectConverters.IsNotNull}}"
             CornerRadius="{StaticResource RadiusButtonTrailing}"
             Padding="7,0"
             Click="OnMenuPressed">
