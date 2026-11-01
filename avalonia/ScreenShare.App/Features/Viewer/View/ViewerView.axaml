@@ -80,7 +80,7 @@
           <Button Grid.Column="2" Theme="{StaticResource IconButton}"
                   Command="{Binding WatchColumn.Toggle}"
                   ToolTip.Tip="{Binding WatchColumn.ToggleTip}">
-            <ti:TablerIcon Classes="button" Icon="IconSettings" />
+            <ti:TablerIcon Classes="button" Icon="IconAdjustmentsHorizontal" />
           </Button>
 
           <!--

@@ -64,7 +64,7 @@ public sealed class FieldGroupViewModel : Observable
     private readonly Func<string, bool>? _reasonStatedAbove;
 
     /// <param name="onFloor">
-    /// The step's floor, null where the screen folds nothing (the viewer's watch panel).
+    /// The surface's floor, null where it folds nothing.
     /// A table rather than a flag per field: the fold is placement, which is this side's to decide
     /// (<c>avalonia/README.md</c>).
     /// </param>

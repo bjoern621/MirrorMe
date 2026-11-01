@@ -77,7 +77,8 @@ public sealed class WatchSettingsViewModel : Observable
         _close = close;
 
         // Renderer every wizard step goes through: a group is the same group whichever screen places it.
-        Group = new FieldGroupViewModel(_form.Write, groupActionOf: ResetOf, sweep: _form.Sweeping);
+        Group = new FieldGroupViewModel(
+            _form.Write, groupActionOf: ResetOf, sweep: _form.Sweeping, onFloor: Model.WatchLayout.OnFloor);
 
         // Round trip the backend can refuse.
         // The command holds whether one is out, which the button waits on and which refuses a second press.

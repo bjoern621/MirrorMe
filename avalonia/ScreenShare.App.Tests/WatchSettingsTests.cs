@@ -70,6 +70,22 @@ public sealed class WatchSettingsTests
     }
 
     /// <summary>
+    /// The panel opens on its question, the protocol a tile receives on.
+    /// Windows and the conversion chain have defaults behind them and wait in the fold.
+    /// </summary>
+    [Fact]
+    public async Task ThePanelAsksHowStreamsArriveAndFoldsTheRest()
+    {
+        var both = await BothAsync();
+        var group = both.Viewer.Watch.Group;
+
+        Assert.Equal("How should streams arrive?", group.Heading);
+        Assert.Equal(["viewer.tile_watch_transport"], group.Floor.Select(field => field.Key));
+        Assert.NotEmpty(group.Folded);
+        Assert.DoesNotContain(group.Folded, field => field.Key == "viewer.tile_watch_transport");
+    }
+
+    /// <summary>
     /// One draft behind both screens.
     /// The publish persists the whole settings message, so a draft per screen would overwrite the other's half.
     /// </summary>

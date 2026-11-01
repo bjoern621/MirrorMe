@@ -155,6 +155,7 @@ The first asks how the picture should look, answered by the built-in presets; sm
 Saved presets and the box that saves the draft fold under the first question.
 The rest of the encode group folds under them as closed rows, one row open at a time.
 The audio step folds the format under its rows.
+The viewer's watch panel takes the same shape: it asks how streams should arrive, answered by the protocol a tile receives on, and folds the windows and the conversion chain.
 The fold is view state: opening one is the reader's press, and no run remembers it.
 A closed fold carries the mark of what its controls raise, the lines under them being out of view.
 
@@ -344,7 +345,7 @@ A second editor for one setting is the defect this prevents.
 
 Setup owns the configuration of what this machine sends.
 Insights shows the running stream and edits nothing, with one `Edit in setup` link.
-Viewer owns how this machine receives: the watch settings, saved from a panel beside the grid, and the per-tile controls over a running decode.
+Viewer owns how this machine receives: the watch settings, saved from a panel beside the stage, and the per-tile controls over a running decode.
 They sit with the tiles because a reader who only watches never opens setup, and a draft setup holds is persisted by going live (`viewer-architecture.md`, "Two legs, two protocols").
 
 ## Icons

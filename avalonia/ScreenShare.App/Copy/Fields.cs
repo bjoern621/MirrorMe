@@ -311,7 +311,8 @@ public static class Fields
 
         ["watch"] = new(
             "Watching",
-            "How a stream comes back from the relay and how it is decoded. It covers every stream this window watches, anyone's as well as this computer's. External players and browser pages are not set here. Right-click a stream in the list to pick their protocol. A tile already on screen keeps its settings, so a change here reaches the next one."),
+            "How a stream comes back from the relay and how it is decoded. It covers every stream this window watches, anyone's as well as this computer's. External players and browser pages are not set here. Right-click a stream in the list to pick their protocol. A tile already on screen keeps its settings, so a change here reaches the next one.",
+            "How should streams arrive?"),
 
         ["relay"] = new(
             "Relay",
