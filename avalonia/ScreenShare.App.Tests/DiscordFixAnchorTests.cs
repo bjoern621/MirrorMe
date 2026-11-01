@@ -50,7 +50,7 @@ public sealed class DiscordFixAnchorTests
         blocking.Anchor.Fix!.Execute(null);
 
         Assert.True(settings.IsOpen);
-        Assert.Equal(SettingsSection.Discord, settings.OpenedAt);
+        Assert.Equal(SettingsSection.Discord, settings.Section);
     }
 
     /// <summary>No chip names a screen outside the flow, so the line greys the commit itself.</summary>
@@ -63,15 +63,15 @@ public sealed class DiscordFixAnchorTests
         Assert.DoesNotContain(flow.Steps, chip => chip.IsBlocked);
     }
 
-    /// <summary>A press on the strip's own settings button opens the dialog at its top.</summary>
+    /// <summary>A press on the strip's own settings button opens the dialog at its first section.</summary>
     [Fact]
-    public async Task OpeningTheDialogPlainlyStandsAtTheTop()
+    public async Task OpeningTheDialogPlainlyStandsAtTheFirstSection()
     {
         var (_, settings) = await WindowAsync(Unlinked());
 
         settings.OpenCommand.Execute(null);
 
         Assert.True(settings.IsOpen);
-        Assert.Equal(SettingsSection.Top, settings.OpenedAt);
+        Assert.Equal(SettingsSection.Window, settings.Section);
     }
 }

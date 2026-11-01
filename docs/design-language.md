@@ -180,6 +180,7 @@ A column that draws unasked carries its control only while it is a panel, a pres
 One that opens on request carries its control at every width.
 
 A rail carrying names drops the names rather than the window dropping the rail.
+The settings dialog shows one section at a time, its list beside the section and over it where the dialog is narrower than both.
 
 Every band wraps where the window is narrower than its row: the status band's sentence, and the insights header's title and action.
 The floor the window asks the desktop for is the narrowest one column is drawn for (`Features/Shell/Model/WindowSize.cs`).

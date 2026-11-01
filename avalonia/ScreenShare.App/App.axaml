@@ -30,6 +30,7 @@
         <ResourceInclude Source="/Controls/Avatar/Avatar.axaml" />
         <ResourceInclude Source="/Controls/CheckItem/CheckItem.axaml" />
         <ResourceInclude Source="/Controls/Segmented/Segmented.axaml" />
+        <ResourceInclude Source="/Controls/SectionList/SectionList.axaml" />
         <ResourceInclude Source="/Controls/Select/Select.axaml" />
         <ResourceInclude Source="/Controls/NumberSelect/NumberSelect.axaml" />
         <ResourceInclude Source="/Controls/Toggle/Toggle.axaml" />

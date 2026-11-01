@@ -3,6 +3,7 @@
              xmlns:controls="using:ScreenShare.App.Controls"
              xmlns:model="using:ScreenShare.App.Features.Shell.Settings.Model"
              xmlns:ti="using:TablerIcons"
+             xmlns:view="using:ScreenShare.App.Features.Shell.Settings.View"
              xmlns:vm="using:ScreenShare.App.Features.Shell.Settings.ViewModel"
              x:Class="ScreenShare.App.Features.Shell.Settings.View.AppSettingsView"
              x:DataType="vm:AppSettingsViewModel"
@@ -32,7 +33,7 @@
           PointerPressed="ScrimPressed">
 
     <Border Classes="panel"
-            MaxWidth="580"
+            MaxWidth="680"
             MaxHeight="680"
             Margin="{StaticResource InsetSection}"
             BoxShadow="{StaticResource MenuShadow}"
@@ -55,11 +56,47 @@
           </Button>
         </Grid>
 
-        <ScrollViewer Name="Sections" Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
-          <StackPanel Spacing="{StaticResource GapSection}">
+        <!--
+          One section on screen, picked from the list beside it (Model/SettingsSection.cs).
+          A dialog too narrow for both stands the list over the section, wrapping (AppSettingsView.axaml.cs).
+        -->
+        <DockPanel Name="Body" Grid.Row="1">
+          <DockPanel.Styles>
+            <Style Selector="DockPanel#Body > ListBox">
+              <Setter Property="DockPanel.Dock" Value="Left" />
+              <Setter Property="Width" Value="150" />
+              <Setter Property="Margin" Value="0,0,16,0" />
+            </Style>
+            <Style Selector="DockPanel#Body.narrow > ListBox">
+              <Setter Property="DockPanel.Dock" Value="Top" />
+              <Setter Property="Width" Value="NaN" />
+              <Setter Property="Margin" Value="0,0,0,14" />
+              <Setter Property="ItemsPanel">
+                <ItemsPanelTemplate>
+                  <WrapPanel />
+                </ItemsPanelTemplate>
+              </Setter>
+            </Style>
+          </DockPanel.Styles>
 
-            <StackPanel Spacing="{StaticResource GapTight}">
-              <TextBlock Classes="caption" Text="{x:Static model:AppSettingsCopy.WindowHeading}" />
+        <ListBox Theme="{StaticResource SectionListTheme}"
+                 ItemContainerTheme="{StaticResource SectionItemTheme}"
+                 ItemsSource="{Binding Tabs}"
+                 SelectedItem="{Binding SelectedTab, Mode=TwoWay}">
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="model:SettingsTab">
+              <TextBlock Text="{Binding Label}"
+                         Foreground="{Binding $parent[ListBoxItem].Foreground}"
+                         FontWeight="{Binding $parent[ListBoxItem].FontWeight}" />
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+
+        <ScrollViewer Name="Sections" HorizontalScrollBarVisibility="Disabled">
+          <Panel>
+
+            <StackPanel Spacing="{StaticResource GapTight}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Window}}">
+              <TextBlock Classes="cardtitle" Text="{x:Static model:AppSettingsCopy.WindowHeading}" />
 
               <!--
                 Pulled off the app group by key, so the write path stays the field's own (AppSettingsViewModel.Apply).
@@ -72,8 +109,8 @@
                               IsVisible="{Binding TrayIcon, Converter={x:Static ObjectConverters.IsNotNull}}" />
             </StackPanel>
 
-            <StackPanel Spacing="{StaticResource GapTight}">
-              <TextBlock Classes="caption" Text="{x:Static model:AppSettingsCopy.LogsHeading}" />
+            <StackPanel Spacing="{StaticResource GapTight}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Logs}}">
+              <TextBlock Classes="cardtitle" Text="{x:Static model:AppSettingsCopy.LogsHeading}" />
               <TextBlock Classes="hint"
                          TextWrapping="Wrap"
                          TextTrimming="None"
@@ -110,8 +147,8 @@
                                    Text="{Binding ReportLine}" />
             </StackPanel>
 
-            <StackPanel Spacing="{StaticResource GapTight}">
-              <TextBlock Classes="caption" Text="{x:Static model:AppSettingsCopy.UpdatesHeading}" />
+            <StackPanel Spacing="{StaticResource GapTight}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Updates}}">
+              <TextBlock Classes="cardtitle" Text="{x:Static model:AppSettingsCopy.UpdatesHeading}" />
 
               <!--
                 One reason over the section, both controls under it being inert for that one fact.
@@ -148,9 +185,8 @@
                       controls:Pending.IsActive="{Binding Updates.Check.IsRunning}" />
             </StackPanel>
 
-            <!-- Named so a press that came to fix the link scrolls here (AppSettingsView.axaml.cs). -->
-            <StackPanel Name="DiscordSection" Spacing="{StaticResource GapTight}">
-              <TextBlock Classes="caption" Text="{x:Static model:AppSettingsCopy.DiscordHeading}" />
+            <StackPanel Spacing="{StaticResource GapTight}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Discord}}">
+              <TextBlock Classes="cardtitle" Text="{x:Static model:AppSettingsCopy.DiscordHeading}" />
 
               <!-- The account's picture stands where the sentence names the account. -->
               <controls:AccountLine Classes="hint"
@@ -174,7 +210,8 @@
                         ToolTip.Tip="{Binding LinkTip}" />
 
                 <!-- Beside a link alone: an install holding none has none to hand back. -->
-                <Button Content="{Binding UnlinkLabel}"
+                <Button Theme="{StaticResource DangerButton}"
+                        Content="{Binding UnlinkLabel}"
                         Command="{Binding UnlinkDiscord}"
                         controls:Pending.IsActive="{Binding UnlinkDiscord.IsRunning}"
                         IsVisible="{Binding IsDiscordLinked}"
@@ -187,10 +224,16 @@
                                    TextTrimming="None"
                                    IsVisible="{Binding LinkHint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                    Text="{Binding LinkHint}" />
+
+              <!-- Same cancelling margin as the rows in the other sections. -->
+              <ContentControl Content="{Binding RichPresence}"
+                              ContentTemplate="{StaticResource FieldRow}"
+                              Margin="0,0,0,-18"
+                              IsVisible="{Binding RichPresence, Converter={x:Static ObjectConverters.IsNotNull}}" />
             </StackPanel>
 
-            <StackPanel Spacing="{StaticResource GapTight}">
-              <TextBlock Classes="caption" Text="{x:Static model:AppSettingsCopy.DevelopmentHeading}" />
+            <StackPanel Spacing="{StaticResource GapTight}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Development}}">
+              <TextBlock Classes="cardtitle" Text="{x:Static model:AppSettingsCopy.DevelopmentHeading}" />
 
               <!-- Same cancelling margin as the rows above. -->
               <ContentControl Content="{Binding TestStreams}"
@@ -199,14 +242,16 @@
                               IsVisible="{Binding TestStreams, Converter={x:Static ObjectConverters.IsNotNull}}" />
             </StackPanel>
 
-            <StackPanel Spacing="{StaticResource GapTight}">
-              <TextBlock Classes="caption" Text="{x:Static model:AppSettingsCopy.AboutHeading}" />
+            <StackPanel Spacing="{StaticResource GapTight}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.About}}">
+              <TextBlock Classes="cardtitle" Text="{x:Static model:AppSettingsCopy.AboutHeading}" />
               <!-- Selectable: the build is what a bug report names. -->
               <SelectableTextBlock Classes="hint" Text="{Binding Version}" />
             </StackPanel>
 
-          </StackPanel>
+          </Panel>
         </ScrollViewer>
+
+        </DockPanel>
       </Grid>
     </Border>
   </Border>

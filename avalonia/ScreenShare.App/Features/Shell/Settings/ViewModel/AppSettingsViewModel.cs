@@ -40,6 +40,7 @@ public sealed class AppSettingsViewModel : Observable
     private const string CheckUpdatesOnStartKey = "app.check_updates_on_start";
     private const string TrayIconKey = "app.tray_icon";
     private const string TestStreamsKey = "app.test_streams";
+    private const string RichPresenceKey = "app.discord_rich_presence";
 
     private readonly FormSession _form;
     private readonly Session _session;
@@ -137,7 +138,7 @@ public sealed class AppSettingsViewModel : Observable
     // --- Outputs ------------------------------------------------------------------
 
     private bool _isOpen;
-    private SettingsSection _openedAt;
+    private SettingsSection _section;
     private string _version = "";
     private string _discordLine = "";
     private bool _isDiscordLinked;
@@ -152,12 +153,36 @@ public sealed class AppSettingsViewModel : Observable
     /// <summary>Whether the dialog stands over the window.</summary>
     public bool IsOpen { get => _isOpen; private set => Set(ref _isOpen, value); }
 
+    /// <summary>Section on screen. Written by every open, so a plain one cannot land where the last press stood.</summary>
+    public SettingsSection Section
+    {
+        get => _section;
+        private set
+        {
+            if (Set(ref _section, value))
+            {
+                OnPropertyChanged(nameof(SelectedTab));
+            }
+        }
+    }
+
+    public IReadOnlyList<SettingsTab> Tabs => SettingsSections.All;
+
     /// <summary>
-    /// Heading the last press asked to stand at, which the view scrolls to as the dialog appears
-    /// (<c>Features/Shell/Settings/View/AppSettingsView.axaml.cs</c>).
-    /// Written by every press, so a press asking for the top cannot land on the heading a press before it named.
+    /// List entry of <see cref="Section"/>, read through.
+    /// A null the list writes while it rebuilds asks for nothing.
     /// </summary>
-    public SettingsSection OpenedAt { get => _openedAt; private set => Set(ref _openedAt, value); }
+    public SettingsTab? SelectedTab
+    {
+        get => Tabs.Single(tab => tab.Section == Section);
+        set
+        {
+            if (value is not null)
+            {
+                Section = value.Section;
+            }
+        }
+    }
 
     public DelegateCommand OpenCommand { get; }
 
@@ -191,6 +216,7 @@ public sealed class AppSettingsViewModel : Observable
     private FieldViewModel? _checkUpdatesOnStart;
     private FieldViewModel? _trayIcon;
     private FieldViewModel? _testStreams;
+    private FieldViewModel? _richPresence;
 
     /// <summary>Placed under the Logs heading, beside <see cref="OpenLogsFolder"/>.</summary>
     public FieldViewModel? CrashReports { get => _crashReports; private set => Set(ref _crashReports, value); }
@@ -217,6 +243,9 @@ public sealed class AppSettingsViewModel : Observable
     /// (<c>backend/internal/app/teststreams.go</c>).
     /// </summary>
     public FieldViewModel? TestStreams { get => _testStreams; private set => Set(ref _testStreams, value); }
+
+    /// <summary>What this machine shares, shown on the linked Discord profile.</summary>
+    public FieldViewModel? RichPresence { get => _richPresence; private set => Set(ref _richPresence, value); }
 
     /// <summary>Published release, the band's answer and this one being the same object.</summary>
     public UpdateViewModel Updates => _updates;
@@ -289,10 +318,9 @@ public sealed class AppSettingsViewModel : Observable
     public ByteString DiscordAvatar { get => _discordAvatar; private set => Set(ref _discordAvatar, value); }
 
     /// <summary>Names the state the press asks for, so pressing twice changes nothing the second time.</summary>
-    public void Show(bool open, SettingsSection at = SettingsSection.Top)
+    public void Show(bool open, SettingsSection at = SettingsSection.Window)
     {
-        // Section before the flag: the view reads it as the dialog appears.
-        OpenedAt = at;
+        Section = at;
         IsOpen = open;
     }
 
@@ -311,6 +339,7 @@ public sealed class AppSettingsViewModel : Observable
         CheckUpdatesOnStart = Group.Visible(CheckUpdatesOnStartKey);
         TrayIcon = Group.Visible(TrayIconKey);
         TestStreams = Group.Visible(TestStreamsKey);
+        RichPresence = Group.Visible(RichPresenceKey);
 
         UpdatesRefusal = CheckUpdatesOnStart?.Reason ?? "";
         UpdatesRefused = UpdatesRefusal.Length > 0;

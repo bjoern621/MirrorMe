@@ -2,14 +2,13 @@ using System.ComponentModel;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
-using ScreenShare.App.Contracts;
-using ScreenShare.App.Features.Shell.Settings.Model;
 using ScreenShare.App.Features.Shell.Settings.ViewModel;
 
 namespace ScreenShare.App.Features.Shell.Settings.View;
 
 /// <summary>
-/// Three things the markup cannot state: two dismissals, and the heading the dialog opens at.
+/// Four things the markup cannot state: two dismissals, a section opening at its top,
+/// and the list moving over the section on a narrow dialog.
 /// Every setting the dialog draws writes through its own binding.
 /// </summary>
 public sealed partial class AppSettingsView : UserControl
@@ -33,7 +32,12 @@ public sealed partial class AppSettingsView : UserControl
         };
 
         DataContextChanged += (_, _) => Follow(DataContext as AppSettingsViewModel);
+
+        Body.SizeChanged += (_, change) => Body.Classes.Set("narrow", change.NewSize.Width < NarrowBelow);
     }
+
+    /// <summary>Body width, px, under which the section list stands over the section rather than beside it.</summary>
+    private const double NarrowBelow = 440;
 
     /// <summary>
     /// Takes the dialog's news, dropping the last one's.
@@ -62,41 +66,11 @@ public sealed partial class AppSettingsView : UserControl
             return;
         }
 
-        if (change.PropertyName is nameof(AppSettingsViewModel.IsOpen)
-            or nameof(AppSettingsViewModel.OpenedAt))
+        // A section opens at its top, the offset otherwise carrying over from the last one shown.
+        if (change.PropertyName is nameof(AppSettingsViewModel.IsOpen) or nameof(AppSettingsViewModel.Section))
         {
-            StandAtOpenedSection(_settings.OpenedAt);
+            Dispatcher.UIThread.Post(Sections.ScrollToHome, DispatcherPriority.Loaded);
         }
-    }
-
-    /// <summary>
-    /// Puts the heading the press asked for in front of the reader.
-    /// The offset carries between openings, so a plain open scrolls home rather than standing where
-    /// the opening before it left off.
-    /// Posted at <see cref="DispatcherPriority.Loaded"/>: a panel the layout has not measured has nowhere
-    /// to be scrolled to.
-    /// </summary>
-    private void StandAtOpenedSection(SettingsSection section)
-    {
-        Dispatcher.UIThread.Post(
-            () =>
-            {
-                switch (section)
-                {
-                    case SettingsSection.Top:
-                        Sections.ScrollToHome();
-                        break;
-
-                    case SettingsSection.Discord:
-                        DiscordSection.BringIntoView();
-                        break;
-
-                    default:
-                        Assert.Never("unexpected settings section", (int)section);
-                        break;
-                }
-            },
-            DispatcherPriority.Loaded);
     }
 
     /// <summary>

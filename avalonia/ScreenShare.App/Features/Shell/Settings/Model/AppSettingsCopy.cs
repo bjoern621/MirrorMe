@@ -24,7 +24,7 @@ public static class AppSettingsCopy
 
     public const string WindowHeading = "Window";
 
-    public const string LogsHeading = "Logs";
+    public const string LogsHeading = "Logs and reports";
 
     public const string LogsBody = "One log per run, kept on this computer.";
 

@@ -3,6 +3,7 @@ using ScreenShare.App.Backend;
 using ScreenShare.App.Copy;
 using ScreenShare.App.Features.Fields.Model;
 using ScreenShare.App.Features.Setup.Model;
+using ScreenShare.App.Features.Shell.Settings.Model;
 using ScreenShare.App.Features.Shell.Settings.ViewModel;
 using ScreenShare.App.Features.Shell.Update.ViewModel;
 using Xunit;
@@ -67,6 +68,46 @@ public sealed class AppSettingsTests
         Assert.Equal(
             group.Fields.Where(field => field.Visible).Select(field => field.Key),
             panel.Settings.Group.Fields.Select(field => field.Key));
+    }
+
+    /// <summary>One section on screen, picked from the list beside it, in the order the table states.</summary>
+    [Fact]
+    public async Task PickingASectionShowsThatSectionAlone()
+    {
+        var panel = await PanelAsync();
+        panel.Settings.OpenCommand.Execute(null);
+
+        Assert.Equal(
+            ["Window", "Updates", "Discord", "Logs and reports", "About", "Development"],
+            panel.Settings.Tabs.Select(tab => tab.Label));
+        Assert.Equal(SettingsSection.Window, panel.Settings.Section);
+
+        panel.Settings.SelectedTab = panel.Settings.Tabs.Single(tab => tab.Section == SettingsSection.Updates);
+
+        Assert.Equal(SettingsSection.Updates, panel.Settings.Section);
+    }
+
+    /// <summary>A plain open lands on the first section, whichever one was showing when the dialog closed.</summary>
+    [Fact]
+    public async Task APlainOpenStandsAtTheFirstSection()
+    {
+        var panel = await PanelAsync();
+        panel.Settings.OpenAtDiscordCommand.Execute(null);
+        panel.Settings.CloseCommand.Execute(null);
+
+        panel.Settings.OpenCommand.Execute(null);
+
+        Assert.Equal(SettingsSection.Window, panel.Settings.Section);
+        Assert.Same(panel.Settings.Tabs[0], panel.Settings.SelectedTab);
+    }
+
+    /// <summary>The profile status stands beside the link it needs.</summary>
+    [Fact]
+    public async Task TheDiscordSectionHoldsTheProfileStatus()
+    {
+        var panel = await PanelAsync();
+
+        Assert.Equal("app.discord_rich_presence", panel.Settings.RichPresence?.Key);
     }
 
     /// <summary>
