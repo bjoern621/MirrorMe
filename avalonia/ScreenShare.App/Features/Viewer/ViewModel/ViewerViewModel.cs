@@ -119,6 +119,12 @@ public sealed class ViewerViewModel : Observable
             Apply();
         });
 
+        ToggleGrid = new DelegateCommand(() =>
+        {
+            _gridAsked = !IsGrid;
+            Apply();
+        });
+
         LeaveFullscreen = new DelegateCommand(() =>
         {
             Fullscreen = "";
@@ -171,21 +177,43 @@ public sealed class ViewerViewModel : Observable
 
     private LayoutMode _mode;
     private string _focused = "";
+    private bool _isGrid;
+    private bool _showsGridToggle;
+
+    /// <summary>Whether the reader asked for equal cells over the stage.</summary>
+    private bool _gridAsked;
+
+    /// <summary>
+    /// Stream the reader last put on the stage, empty before any pick.
+    /// Kept while its stream is gone, so one that drops out and comes back takes the stage again.
+    /// </summary>
+    private string _staged = "";
     private string _fullscreen = "";
 
     /// <summary>
-    /// How the tiles are arranged.
-    /// Follows the focus rather than being chosen separately: Focus with nothing focused has no drawing.
+    /// How the tiles are arranged: the stage with the strip under it wherever two streams are on screen and
+    /// the reader has not asked for the grid.
     /// </summary>
     public LayoutMode Mode { get => _mode; private set => Set(ref _mode, value); }
 
     /// <summary>
-    /// Stream that has focus, empty when none has.
-    /// <b>A name and not a tile.</b>
-    /// A stream that drops out keeps its focus and its slot,
-    /// which a reference to an object the drop threw away could not do.
+    /// Stream on the stage, empty in the grid.
+    /// The reader's pick where its tile is on screen, the first tile otherwise.
     /// </summary>
     public string Focused { get => _focused; private set => Set(ref _focused, value); }
+
+    /// <summary>Whether the tiles sit in equal cells, the state the Grid toggle shows.</summary>
+    public bool IsGrid { get => _isGrid; private set => Set(ref _isGrid, value); }
+
+    /// <summary>Whether there is a choice to make: one stream fills the window either way.</summary>
+    public bool ShowsGridToggle { get => _showsGridToggle; private set => Set(ref _showsGridToggle, value); }
+
+    /// <summary>Swaps between the stage and equal cells.</summary>
+    public DelegateCommand ToggleGrid { get; }
+
+    public Icons LayoutGlyph => IsGrid ? Icons.IconLayoutBoardSplit : Icons.IconLayoutGrid;
+
+    public string LayoutTip => IsGrid ? "Show one stream large, the others in a strip under it" : "Show every stream at the same size";
 
     /// <summary>
     /// Stream the main window is drawing fullscreen, empty when it is not.
@@ -431,12 +459,6 @@ public sealed class ViewerViewModel : Observable
 
         Reconcile.Onto(Streams, rows.Select(row => Of(row.Name)).ToList());
 
-        // The one way out of Focus the reader did not ask for: a mode whose subject left the grid draws nothing.
-        // A stream that merely stopped publishing keeps its tile.
-        if (Focused.Length > 0 && !_tiles.ContainsKey(Focused))
-        {
-            Focused = "";
-        }
 
         // A window whose stream left the grid has nothing behind it,
         // and a fullscreen state with no window has nothing to answer for.
@@ -456,7 +478,13 @@ public sealed class ViewerViewModel : Observable
             Fullscreen = "";
         }
 
-        Mode = Focused.Length > 0 ? LayoutMode.Focus : LayoutMode.Grid;
+        // A stage with an empty strip under it would shrink the one picture for nothing.
+        ShowsGridToggle = Tiles.Count >= 2;
+        Mode = ShowsGridToggle && !_gridAsked ? LayoutMode.Focus : LayoutMode.Grid;
+        IsGrid = Mode == LayoutMode.Grid;
+        Focused = Mode == LayoutMode.Grid ? ""
+            : _tiles.ContainsKey(_staged) ? _staged
+            : Tiles[0].Name;
 
         // Rendered from the backend's decode list, joined on the pair the contract keys a decode by.
         // A tile whose decode is not in it draws its own reason rather than disappearing:
@@ -522,6 +550,8 @@ public sealed class ViewerViewModel : Observable
         OnPropertyChanged(nameof(RailWidth));
         OnPropertyChanged(nameof(RailGlyph));
         OnPropertyChanged(nameof(RailToggleTip));
+        OnPropertyChanged(nameof(LayoutGlyph));
+        OnPropertyChanged(nameof(LayoutTip));
 
         WindowsChanged?.Invoke();
 
@@ -811,9 +841,10 @@ public sealed class ViewerViewModel : Observable
         switch (intent)
         {
             case TileIntent.Focus:
-                // A second stream asking for focus takes it.
-                // No state has two focused, so none has one to take away first.
-                Focused = Focused == stream ? "" : stream;
+                // The staged tile gives the stage up for the grid, any other takes it.
+                // No state has two staged, so none has one to take away first.
+                _gridAsked = Focused == stream;
+                _staged = _gridAsked ? _staged : stream;
                 break;
 
             case TileIntent.PopOut:

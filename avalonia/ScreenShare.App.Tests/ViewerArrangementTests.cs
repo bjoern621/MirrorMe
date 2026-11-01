@@ -305,26 +305,37 @@ public sealed class ViewerArrangementTests
     private static TileViewModel Tile(ViewerViewModel viewer, string stream)
         => viewer.Tiles.Single(tile => tile.Name == stream);
 
+    /// <summary>One stream on the stage and the rest in the strip under it, the first stream staged.</summary>
     [Fact]
-    public void FocusingATilePutsTheGridInFocusMode()
+    public void SeveralStreamsOpenOnTheStage()
     {
         var viewer = Grid("one", "two");
-
-        Tile(viewer, "one").ToggleFocus.Execute(null);
 
         Assert.Equal(LayoutMode.Focus, viewer.Mode);
         Assert.Equal("one", viewer.Focused);
         Assert.True(Tile(viewer, "one").IsFocused);
         Assert.False(Tile(viewer, "two").IsFocused);
+        Assert.False(viewer.IsGrid);
+        Assert.True(viewer.ShowsGridToggle);
     }
 
-    /// <summary>No state holds two focused tiles, so none needs focus given up first.</summary>
+    /// <summary>A stage with an empty strip under it would take the strip's height off the one picture.</summary>
     [Fact]
-    public void FocusMovesRatherThanAccumulating()
+    public void OneStreamFillsTheWindow()
+    {
+        var viewer = Grid("one");
+
+        Assert.Equal(LayoutMode.Grid, viewer.Mode);
+        Assert.Equal("", viewer.Focused);
+        Assert.False(viewer.ShowsGridToggle);
+    }
+
+    /// <summary>No state holds two staged tiles, so none needs the stage given up first.</summary>
+    [Fact]
+    public void AStripTileSwapsOntoTheStage()
     {
         var viewer = Grid("one", "two");
 
-        Tile(viewer, "one").ToggleFocus.Execute(null);
         Tile(viewer, "two").ToggleFocus.Execute(null);
 
         Assert.Equal("two", viewer.Focused);
@@ -332,16 +343,45 @@ public sealed class ViewerArrangementTests
     }
 
     [Fact]
-    public void FocusingTheFocusedTileReturnsToTheGrid()
+    public void TheGridTogglesBetweenEqualCellsAndTheStage()
     {
         var viewer = Grid("one", "two");
-        var tile = Tile(viewer, "one");
+        Tile(viewer, "two").ToggleFocus.Execute(null);
 
-        tile.ToggleFocus.Execute(null);
-        tile.ToggleFocus.Execute(null);
+        viewer.ToggleGrid.Execute(null);
+        Assert.Equal(LayoutMode.Grid, viewer.Mode);
+        Assert.Equal("", viewer.Focused);
+        Assert.True(viewer.IsGrid);
+
+        // The stage comes back on the stream it held.
+        viewer.ToggleGrid.Execute(null);
+        Assert.Equal(LayoutMode.Focus, viewer.Mode);
+        Assert.Equal("two", viewer.Focused);
+    }
+
+    [Fact]
+    public void FocusingTheStagedTileReturnsToTheGrid()
+    {
+        var viewer = Grid("one", "two");
+
+        Tile(viewer, "one").ToggleFocus.Execute(null);
 
         Assert.Equal(LayoutMode.Grid, viewer.Mode);
         Assert.Equal("", viewer.Focused);
+        Assert.True(viewer.IsGrid);
+    }
+
+    /// <summary>A tile in the grid asks for the stage and gets it.</summary>
+    [Fact]
+    public void FocusingATileInTheGridStagesIt()
+    {
+        var viewer = Grid("one", "two");
+        viewer.ToggleGrid.Execute(null);
+
+        Tile(viewer, "two").ToggleFocus.Execute(null);
+
+        Assert.Equal(LayoutMode.Focus, viewer.Mode);
+        Assert.Equal("two", viewer.Focused);
     }
 
     /// <summary>Slot stops the grid reflowing on a pop-out, and is what the stream comes back into.</summary>
@@ -362,12 +402,12 @@ public sealed class ViewerArrangementTests
     public void PoppingOutLeavesFocusAlone()
     {
         var viewer = Grid("one", "two");
-        var tile = Tile(viewer, "one");
+        var tile = Tile(viewer, "two");
 
         tile.ToggleFocus.Execute(null);
         tile.TogglePopOut.Execute(null);
 
-        Assert.Equal("one", viewer.Focused);
+        Assert.Equal("two", viewer.Focused);
         Assert.Equal(LayoutMode.Focus, viewer.Mode);
         Assert.True(tile.IsPoppedOut);
     }
@@ -516,7 +556,7 @@ public sealed class ViewerArrangementTests
     public void TheMenuReportsWhatIsInForce()
     {
         var viewer = Grid("one", "two");
-        var tile = Tile(viewer, "one");
+        var tile = Tile(viewer, "two");
 
         Assert.False(tile.IsFocused);
         Assert.False(tile.IsPoppedOut);

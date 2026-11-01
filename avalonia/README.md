@@ -463,6 +463,11 @@ Rows are centred in whatever width their contents leave over, the stack in whate
 Inside a scroll viewer, measure is handed an unbounded height and arrange is handed back the height measure returned.
 Solving against whatever each pass was given solves two different boxes, picks two different arrangements, and places the tiles by one having measured them by the other.
 
+**Two streams or more open on the stage.**
+One fills the space and the rest sit in a strip under it.
+A click on a strip tile swaps it onto the stage, and a click on the staged one or the rail's layout button gives every stream an equal cell.
+A single stream fills the window in a grid of one, a strip with nothing in it costing the picture its height.
+
 **Fullscreen and pop-out are window states.**
 `LayoutMode` has two members, Grid and Focus, and says how tiles sit relative to each other.
 Which window a tile is drawn in is a separate fact, which lets three windows be fullscreen on three monitors at once, a state a single app-wide fullscreen could not express.
