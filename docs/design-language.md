@@ -121,6 +121,7 @@ The bar is a thin line with no step buttons at its ends, and a pointer over it t
 
 The window's chrome is the app's where the platform has one caption to stand in for: a custom title bar on Windows and macOS.
 Beneath it a nav strip holds the same two regions on every screen: three destinations left, and on the right the settings gear and the strip commit.
+On the viewer a sliders button stands before the gear, opening how this computer receives.
 Each destination carries a mark beside its word, and a window narrower than 520 px keeps the marks alone, with the commit taking its short word (`Share`, `Restart`, `Stop`).
 A commit locked by a check outlines both halves, the chevron still opening its menu.
 The gear sits in the strip because what it opens belongs to no destination.
@@ -389,7 +390,7 @@ A dashed rounded border, a circular muted badge holding an outline icon, one mut
 No heading, no button.
 
 A step or panel with nothing to show says so plainly rather than inventing content.
-One empty state asks instead: a viewer outside any group gets a card with the two ways in, the Discord voice channel first and marked recommended.
-Each leads to the control that sets it, linking in Settings or the key on the relay step, so the card edits nothing.
+One empty state asks instead: a viewer outside any group gets a card picking one of the two ways in, the Discord voice channel picked first and marked recommended.
+Its press leads to the control that sets the picked way, linking in Settings or the key on the relay step, so the card edits nothing.
 A figure the app has not measured prints `…`.
 It never prints zero.

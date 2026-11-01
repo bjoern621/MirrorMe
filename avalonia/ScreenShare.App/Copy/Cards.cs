@@ -189,6 +189,12 @@ public static class Cards
 
     public const string JoinKeyDetail = "For a group outside Discord";
 
+    public const string JoinLinkDiscord = "Link Discord";
+
+    public const string JoinSetUpChannel = "Set up my voice channel";
+
+    public const string JoinEnterKey = "Enter a group key";
+
     public const string Recommended = "Recommended";
 
     /// <summary>Card at the step column's foot, holding what no control on screen already says.</summary>

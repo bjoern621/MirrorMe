@@ -119,8 +119,9 @@ public sealed class ViewerViewModel : Observable
             Apply();
         });
 
-        JoinOverDiscord = new DelegateCommand(() => JoinRequested?.Invoke(JoinRoute.Discord));
-        JoinWithKey = new DelegateCommand(() => JoinRequested?.Invoke(JoinRoute.Key));
+        PickDiscord = new DelegateCommand(() => PickJoin(JoinRoute.Discord));
+        PickKey = new DelegateCommand(() => PickJoin(JoinRoute.Key));
+        Join = new DelegateCommand(() => JoinRequested?.Invoke(PickedJoin));
 
         ToggleGrid = new DelegateCommand(() =>
         {
@@ -405,15 +406,40 @@ public sealed class ViewerViewModel : Observable
     public bool ShowsJoinCard { get => _showsJoinCard; private set => Set(ref _showsJoinCard, value); }
 
     /// <summary>
-    /// Raised by a row of the join card.
-    /// The rows lead to the control that sets each way in, which the shell reaches.
+    /// Raised by the join card's press, for the way in its rows picked.
+    /// The press leads to the control that sets it, which the shell reaches.
     /// The card writes nothing, the setting having one editor.
     /// </summary>
     public event Action<JoinRoute>? JoinRequested;
 
-    public DelegateCommand JoinOverDiscord { get; }
+    private JoinRoute _pickedJoin = JoinRoute.Discord;
+    private string _joinLabel = "";
+    private Icons _joinGlyph;
 
-    public DelegateCommand JoinWithKey { get; }
+    /// <summary>Way in the card's rows picked. Discord until a row says otherwise, the recommended way.</summary>
+    public JoinRoute PickedJoin { get => _pickedJoin; private set => Set(ref _pickedJoin, value); }
+
+    public bool PicksDiscord => PickedJoin == JoinRoute.Discord;
+
+    public bool PicksKey => PickedJoin == JoinRoute.Key;
+
+    public string JoinLabel { get => _joinLabel; private set => Set(ref _joinLabel, value); }
+
+    public Icons JoinGlyph { get => _joinGlyph; private set => Set(ref _joinGlyph, value); }
+
+    public DelegateCommand PickDiscord { get; }
+
+    public DelegateCommand PickKey { get; }
+
+    public DelegateCommand Join { get; }
+
+    private void PickJoin(JoinRoute route)
+    {
+        PickedJoin = route;
+        OnPropertyChanged(nameof(PicksDiscord));
+        OnPropertyChanged(nameof(PicksKey));
+        Apply();
+    }
 
     /// <summary>
     /// Whether the notice reports a failure rather than a state of the relay.
@@ -559,6 +585,9 @@ public sealed class ViewerViewModel : Observable
             Streams.Count, _tiles.Count, relay?.Reachable == true);
         ShowsGridEmpty = GridEmptyLine.Length > 0;
         ShowsJoinCard = GridEmpty.AsksToJoin(_session.Members, _session.Discord, discordMode, _tiles.Count);
+        var press = JoinPresses.Of(PickedJoin, _session.Discord is { Linked: true });
+        JoinLabel = press.Label;
+        JoinGlyph = press.Glyph;
 
         // Draws from the same draft on every pass,
         // so a vocabulary arriving with the catalog reaches the panel's entries without a notification of its own.

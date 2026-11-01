@@ -1,5 +1,6 @@
 using ScreenShare.App.Features.Shell.Model;
 using ScreenShare.App.Features.Shell.NavStrip.ViewModel;
+using ScreenShare.App.Features.Shell.ViewModel;
 using Xunit;
 
 namespace ScreenShare.App.Tests;
@@ -37,5 +38,20 @@ public sealed class NavStripWidthTests
         strip.SetWindowWidth(NavWidth.LabelsMinWidth - 1);
 
         Assert.False(strip.ShowsLabels);
+    }
+
+    /// <summary>The watch settings belong to the viewer, so the strip offers them on the viewer alone.</summary>
+    [Fact]
+    public void TheWatchSettingsOpenFromTheStripOnTheViewer()
+    {
+        var watch = new SideColumnViewModel(SideColumns.ViewerWatch, "open", "close");
+        var strip = new NavStripViewModel(_ => { }, watch: watch);
+
+        strip.Show(Destination.Setup);
+        Assert.False(strip.ShowsWatch);
+
+        strip.Show(Destination.Viewer);
+        Assert.True(strip.ShowsWatch);
+        Assert.Same(watch, strip.Watch);
     }
 }

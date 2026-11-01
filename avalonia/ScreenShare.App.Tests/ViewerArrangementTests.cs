@@ -305,7 +305,10 @@ public sealed class ViewerArrangementTests
     private static TileViewModel Tile(ViewerViewModel viewer, string stream)
         => viewer.Tiles.Single(tile => tile.Name == stream);
 
-    /// <summary>The join card's rows ask the shell for the control that sets each way in, and write nothing.</summary>
+    /// <summary>
+    /// The join card's rows pick a way in, Discord first, and its press asks the shell for the control that sets it.
+    /// Nothing is written.
+    /// </summary>
     [Fact]
     public void TheJoinCardLeadsToWhereEachWayInIsSet()
     {
@@ -313,10 +316,29 @@ public sealed class ViewerArrangementTests
         var asked = new List<JoinRoute>();
         viewer.JoinRequested += asked.Add;
 
-        viewer.JoinOverDiscord.Execute(null);
-        viewer.JoinWithKey.Execute(null);
+        Assert.Equal(JoinRoute.Discord, viewer.PickedJoin);
+        viewer.Join.Execute(null);
+        viewer.PickKey.Execute(null);
+        viewer.Join.Execute(null);
 
         Assert.Equal([JoinRoute.Discord, JoinRoute.Key], asked);
+        Assert.Equal(JoinRoute.Key, viewer.PickedJoin);
+    }
+
+    /// <summary>The press says what it does: an unlinked machine links Discord before any channel can be read.</summary>
+    [Fact]
+    public void TheJoinPressNamesWhatItLeadsTo()
+    {
+        var viewer = Grid();
+
+        Assert.Equal(JoinPresses.Of(JoinRoute.Discord, linked: false).Label, viewer.JoinLabel);
+
+        viewer.PickKey.Execute(null);
+
+        Assert.Equal(JoinPresses.Of(JoinRoute.Key, linked: false).Label, viewer.JoinLabel);
+        Assert.NotEqual(
+            JoinPresses.Of(JoinRoute.Discord, linked: false).Label,
+            JoinPresses.Of(JoinRoute.Discord, linked: true).Label);
     }
 
     /// <summary>One stream on the stage and the rest in the strip under it, the first stream staged.</summary>

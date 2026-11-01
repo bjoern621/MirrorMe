@@ -51,6 +51,17 @@
                   VerticalAlignment="Center">
 
         <!--
+          The watch group, which acts on the viewer alone and which the publish wizard does not draw
+          (Features/Fields/Model/GroupPlacement.cs).
+        -->
+        <Button Theme="{StaticResource IconButton}"
+                IsVisible="{Binding ShowsWatch}"
+                Command="{Binding Watch.Toggle, FallbackValue={x:Null}}"
+                ToolTip.Tip="{Binding Watch.ToggleTip, FallbackValue={x:Null}}">
+          <ti:TablerIcon Classes="button" Icon="IconAdjustmentsHorizontal" />
+        </Button>
+
+        <!--
           The settings about the app, which belong to no destination and so to no segment
           (Features/Shell/Settings/View/AppSettingsView.axaml).
           Drawn only where the shell gave the strip the command, as the commit beside it is.

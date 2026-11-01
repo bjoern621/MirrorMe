@@ -31,14 +31,19 @@ public sealed class NavStripViewModel : Observable
     /// Opens the settings about the app, the shell owning whether the dialog stands.
     /// Optional on the same terms as the commit beside it.
     /// </param>
+    /// <param name="watch">The viewer's watch settings column, toggled from the strip while the viewer shows.</param>
     public NavStripViewModel(
-        Action<Destination> select, GoViewModel? go = null, DelegateCommand? openSettings = null)
+        Action<Destination> select,
+        GoViewModel? go = null,
+        DelegateCommand? openSettings = null,
+        SideColumnViewModel? watch = null)
     {
         Assert.NotNull(select, "a strip needs somewhere to send the destination it was asked for");
 
         _select = select;
         Go = go;
         OpenSettings = openSettings;
+        Watch = watch;
         Tabs = [.. Destinations.All.Select(destination => new DestinationTab(destination))];
 
         Assert.That(Tabs.Count == Destinations.All.Count, "a segment per destination", Tabs.Count, Destinations.All.Count);
@@ -49,6 +54,9 @@ public sealed class NavStripViewModel : Observable
 
     /// <summary>Opens the app settings. Null in a strip built without them.</summary>
     public DelegateCommand? OpenSettings { get; }
+
+    /// <summary>Viewer's watch settings column. Null in a strip built without one.</summary>
+    public SideColumnViewModel? Watch { get; }
 
     /// <summary>A segment per destination, in the table's order. Fixed for the strip's life.</summary>
     public IReadOnlyList<DestinationTab> Tabs { get; }
@@ -113,6 +121,11 @@ public sealed class NavStripViewModel : Observable
     /// <summary>Whether each segment carries its word beside its mark.</summary>
     public bool ShowsLabels { get => _showsLabels; private set => Set(ref _showsLabels, value); }
 
+    private bool _showsWatch;
+
+    /// <summary>Whether the strip offers the watch settings: on the viewer, where they act.</summary>
+    public bool ShowsWatch { get => _showsWatch; private set => Set(ref _showsWatch, value); }
+
     /// <summary>One render function: the whole strip off the shell's state, on every pass.</summary>
     public void Apply()
     {
@@ -120,6 +133,7 @@ public sealed class NavStripViewModel : Observable
         Set<DestinationTab?>(ref _selectedTab, TabFor(_current), nameof(SelectedTab));
 
         ShowsLabels = _width >= NavWidth.LabelsMinWidth;
+        ShowsWatch = Watch is not null && _current == Destination.Viewer;
         Go?.SetCompact(!ShowsLabels);
     }
 
