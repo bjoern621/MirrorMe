@@ -169,6 +169,7 @@ public sealed class ShellViewModel : Observable
         // The strip's commit presses the destinations' own commands the way the tray does,
         // so it is built beside them and handed to the strip as its right-hand control.
         _go = new GoViewModel(_session, _form, Setup, Insights);
+        _go.SetupRequested += () => Show(Destination.Setup);
         Nav = new NavStripViewModel(Show, _go, AppSettings.OpenCommand);
 
         // A decode is keyed by stream and leg, and this machine's own stream is one the grid may tile, so

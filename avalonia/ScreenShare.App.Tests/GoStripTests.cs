@@ -4,6 +4,7 @@ using ScreenShare.App.Features.Insights.ViewModel;
 using ScreenShare.App.Features.Setup.Model;
 using ScreenShare.App.Features.Setup.ViewModel;
 using ScreenShare.App.Features.Shell.Go.ViewModel;
+using ScreenShare.App.Copy;
 using Xunit;
 
 namespace ScreenShare.App.Tests;
@@ -175,24 +176,39 @@ public sealed class GoStripTests
         Assert.Empty(opened.Backend.Applied);
     }
 
-    /// <summary>The line repeats the publish groups' own shorthands, so it says nothing the form does not.</summary>
+    /// <summary>The menu's last row leads into setup, and the shell decides where that is.</summary>
     [Fact]
-    public async Task TheSummaryRepeatsThePublishGroupShorthands()
+    public void OpenSetupAsksTheShellForSetup()
+    {
+        var opened = Open(new PublishingBackend());
+        var asked = 0;
+        opened.Go.SetupRequested += () => asked++;
+
+        opened.Go.OpenSetup.Execute(null);
+
+        Assert.Equal(1, asked);
+    }
+
+    /// <summary>
+    /// The line names what one press shares that no step question shows: codec, chroma, picture and transport.
+    /// The rate is each preset row's, and the tick marks the preset, so the line names neither.
+    /// </summary>
+    [Fact]
+    public async Task TheMenuLineNamesWhatNoStepQuestionShows()
     {
         var opened = Open(new PublishingBackend());
         await opened.Form.Settled;
         opened.Setup.Apply();
         opened.Go.Apply();
 
-        var form = opened.Form.Form!;
-        var parts = new[] { "source", "quality", "audio", "transport" }
-            .Select(key => opened.Session.Words.Shorthand(
-                form.Groups.FirstOrDefault(group => group.Key == key), form.Settings))
-            .Where(part => part.Length > 0);
+        var publish = opened.Form.Form!.Settings.Publish;
+        var line = opened.Go.Summary;
 
-        var expected = string.Join(" · ", parts);
-        Assert.NotEqual("", expected);
-        Assert.Equal(expected, opened.Go.Summary);
+        Assert.StartsWith($"{Words.Format(publish.Format)} · {Words.Chroma(publish.Chroma)} · ", line);
+        Assert.Contains(publish.Fps.ToString(System.Globalization.CultureInfo.InvariantCulture), line);
+        Assert.EndsWith($" · {Words.Transport(publish.PublishTransport)}", line);
+        Assert.DoesNotContain("Mbit/s", line);
+        Assert.DoesNotContain("quality", line);
     }
 
     /// <summary>

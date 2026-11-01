@@ -34,13 +34,6 @@ namespace ScreenShare.App.Features.Shell.Go.ViewModel;
 /// </summary>
 public sealed class GoViewModel : Observable
 {
-    /// <summary>
-    /// Groups the summary line repeats, in the wizard's order.
-    /// The publish half alone: relay and watch settings belong to this computer rather than to what it sends,
-    /// the same cut the presets card states (<c>Copy/Cards.cs</c>, <c>PresetsCovers</c>).
-    /// </summary>
-    private static readonly IReadOnlyList<string> SummaryGroups = ["source", "share", "quality", "audio", "transport"];
-
     private readonly Session _session;
     private readonly FormSession _form;
     private readonly SetupViewModel _setup;
@@ -71,6 +64,8 @@ public sealed class GoViewModel : Observable
         // The render pass writes it; a field the pass can compare against has to hold something first.
         _press = CommitCommand;
 
+        OpenSetup = new DelegateCommand(() => SetupRequested?.Invoke());
+
         Apply();
     }
 
@@ -85,6 +80,11 @@ public sealed class GoViewModel : Observable
     /// and the strip's own press while that stream runs the draft.
     /// </summary>
     public PendingCommand StopCommand => _insights.StopCommand;
+
+    /// <summary>Raised by the menu's row into setup. Where setup is drawn is the shell's.</summary>
+    public event Action? SetupRequested;
+
+    public DelegateCommand OpenSetup { get; }
 
     /// <summary>The presets card's rows, read through. The menu lists what the card lists.</summary>
     public ObservableCollection<BuiltinPresetRow> Builtin => _setup.Presets.Builtin;
@@ -140,7 +140,7 @@ public sealed class GoViewModel : Observable
     /// <summary><see cref="Blocked"/> shaped for the tooltip: null while free, an empty tip drawing an empty bubble.</summary>
     public string? BlockedTip { get => _blockedTip; private set => Set(ref _blockedTip, value); }
 
-    /// <summary>The publish groups' shorthands in one line, empty before the first form.</summary>
+    /// <summary>What one press shares that no step question shows, empty before the first form.</summary>
     public string Summary { get => _summary; private set => Set(ref _summary, value); }
 
     public bool IsLive { get => _isLive; private set => Set(ref _isLive, value); }
@@ -212,23 +212,9 @@ public sealed class GoViewModel : Observable
             "the press and its word name one effect", PressLabel);
     }
 
-    /// <summary>
-    /// The shorthands joined the way the step chips print them.
-    /// Groups with nothing worth a line drop out, so the line never carries a bare separator.
-    /// </summary>
     private string SummaryOf()
     {
         var form = _form.Form;
-        if (form is null)
-        {
-            return "";
-        }
-
-        var parts = SummaryGroups
-            .Select(key => _session.Words.Shorthand(
-                form.Groups.FirstOrDefault(group => group.Key == key), form.Settings))
-            .Where(part => part.Length > 0);
-
-        return string.Join(" · ", parts);
+        return form is null ? "" : _session.Words.MenuLine(form.Groups, form.Settings);
     }
 }

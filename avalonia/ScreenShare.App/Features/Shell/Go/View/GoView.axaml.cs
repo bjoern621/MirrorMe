@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -52,19 +53,28 @@ public sealed partial class GoView : UserControl
         if (model.Builtin.Count + model.Saved.Count > 0)
         {
             flyout.Items.Add(new Separator());
+            flyout.Items.Add(new MenuItem { Theme = Note(), Header = Copy.Strip.Presets });
 
             foreach (var row in model.Builtin)
             {
-                flyout.Items.Add(PresetRowOf(row.Name, row.IsCurrent, row.IsReachable,
+                flyout.Items.Add(PresetRowOf(row.Name, row.Price, row.IsCurrent, row.IsReachable,
                     new DelegateCommand(() => model.UseBuiltin(row.Key))));
             }
 
             foreach (var row in model.Saved)
             {
-                flyout.Items.Add(PresetRowOf(row.Name, row.IsCurrent, isReachable: true,
+                flyout.Items.Add(PresetRowOf(row.Name, "", row.IsCurrent, isReachable: true,
                     new DelegateCommand(() => model.UseSaved(row.Name))));
             }
         }
+
+        flyout.Items.Add(new Separator());
+        flyout.Items.Add(new MenuItem
+        {
+            Header = Copy.Strip.OpenSetup,
+            Icon = Mark(Icons.IconSettings),
+            Command = model.OpenSetup,
+        });
 
         if (model.IsLive)
         {
@@ -81,18 +91,35 @@ public sealed partial class GoView : UserControl
     }
 
     /// <summary>
-    /// One preset row: radio-marked where the draft delivers it, inert where nothing here reaches it.
+    /// One preset row: radio-marked where the draft delivers it, inert where nothing here reaches it,
+    /// its bitrate at the quiet end where the backend priced it.
     /// The reason stays on the rail card, a menu row having no line to carry it.
     /// </summary>
-    private static MenuItem PresetRowOf(string name, bool isCurrent, bool isReachable, DelegateCommand press)
+    private static MenuItem PresetRowOf(
+        string name, string price, bool isCurrent, bool isReachable, DelegateCommand press)
         => new()
         {
-            Header = name,
+            Header = PresetHeader(name, price),
             ToggleType = MenuItemToggleType.Radio,
             IsChecked = isCurrent,
             IsEnabled = isReachable,
             Command = press,
         };
+
+    private static Control PresetHeader(string name, string price)
+    {
+        var header = new DockPanel { LastChildFill = true };
+        if (price.Length > 0)
+        {
+            var figure = new TextBlock { Text = price, Margin = new Thickness(24, 0, 0, 0) };
+            figure.Classes.Add("muted");
+            DockPanel.SetDock(figure, Dock.Right);
+            header.Children.Add(figure);
+        }
+
+        header.Children.Add(new TextBlock { Text = name });
+        return header;
+    }
 
     /// <summary>
     /// Mark on a row that carries one, at the mark stroke, the icon set's own line reading thin against

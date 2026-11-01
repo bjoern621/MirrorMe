@@ -134,6 +134,24 @@ public sealed class Vocabulary
     }
 
     /// <summary>
+    /// What one press shares that no step question shows, in the Start menu's top line:
+    /// <c>H.264 · 4:4:4 full color · 1440p60 · SRT</c>.
+    /// The rate stands on each preset row and the tick marks the preset, so the line names neither.
+    /// </summary>
+    public string MenuLine(IReadOnlyList<FieldGroup> groups, Settings settings)
+    {
+        var quality = groups.FirstOrDefault(group => group.Key == "quality");
+        var transport = groups.FirstOrDefault(group => group.Key == "transport");
+        var publish = settings.Publish;
+
+        return Join(
+            quality is null ? "" : Chosen(quality, "publish.format", Words.Format(publish.Format)),
+            quality is null ? "" : Chosen(quality, "publish.chroma", Words.Chroma(publish.Chroma)),
+            Picture(publish),
+            transport is null ? "" : Chosen(transport, "publish.publish_transport", Words.Transport(publish.PublishTransport)));
+    }
+
+    /// <summary>
     /// A value one control settled on, or the word for a control that settled on nothing.
     /// Read off the entries the backend sent rather than judged here:
     /// where it greys every one, the value the settings still carry is greyed with them,
