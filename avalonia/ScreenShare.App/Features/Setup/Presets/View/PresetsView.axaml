@@ -7,11 +7,21 @@
              x:Class="ScreenShare.App.Features.Setup.Presets.View.PresetsView"
              x:DataType="vm:PresetsViewModel">
 
-  <Border Classes="card" Padding="{StaticResource InsetPanel}">
-    <StackPanel>
+  <!--
+    The encode step's first question: a built-in preset sets every control under it at once.
+    Each promise is a choice card like the entries of the questions below, priced at what it resolves to here,
+    and an unreachable one states its reason in the price's place (docs/tooltips.md, "An availability note is a line").
+  -->
+  <Border Classes="card" Padding="16,14">
+    <StackPanel Spacing="{StaticResource GapControl}">
 
-      <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,10">
-        <TextBlock Grid.Column="0" Classes="caption" Text="Presets" VerticalAlignment="Center" />
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBlock Grid.Column="0"
+                   Classes="heading"
+                   VerticalAlignment="Center"
+                   TextWrapping="Wrap"
+                   TextTrimming="None"
+                   Text="{x:Static copy:Cards.PresetQuestion}" />
         <Button Grid.Column="1"
                 Theme="{StaticResource IconButton}"
                 Command="{Binding RereadCommand}"
@@ -21,18 +31,73 @@
         </Button>
       </Grid>
 
-      <TextBlock Classes="hint"
-                 TextWrapping="Wrap"
-                 TextTrimming="None"
-                 LineHeight="{StaticResource LineHeightSmall}"
-                 Margin="0,0,0,10"
-                 Text="{Binding Covers}" />
-
-      <ItemsControl ItemsSource="{Binding Builtin}" Margin="0,0,0,10">
+      <ItemsControl ItemsSource="{Binding Builtin}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <controls:ChoiceRowPanel />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="vm:BuiltinPresetRow">
-            <StackPanel Margin="0,0,0,6">
-              <Grid ColumnDefinitions="Auto,*,Auto"
+            <Button Theme="{StaticResource OptionCard}"
+                    Classes.picked="{Binding IsCurrent}"
+                    IsEnabled="{Binding IsReachable}"
+                    Command="{Binding Apply}">
+              <StackPanel Spacing="3">
+                <Grid ColumnDefinitions="Auto,*">
+                  <Ellipse Grid.Column="0" Classes="radiodot" />
+                  <TextBlock Grid.Column="1"
+                             Classes="cardtitle"
+                             Margin="7,0,0,0"
+                             TextWrapping="Wrap"
+                             TextTrimming="None"
+                             VerticalAlignment="Center"
+                             Text="{Binding Name}" />
+                </Grid>
+                <TextBlock Classes="hint"
+                           Margin="20,0,0,0"
+                           FontFeatures="{StaticResource FigureFeatures}"
+                           IsVisible="{Binding HasPrice}"
+                           Text="{Binding Price}" />
+                <SelectableTextBlock Classes="reason"
+                                     Margin="20,0,0,0"
+                                     IsVisible="{Binding !IsReachable}"
+                                     Text="{Binding Reason}" />
+              </StackPanel>
+            </Button>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+
+      <!--
+        That the window is still dialling, under the refusal saying it could not be reached.
+        Outside the fold: a store nobody can read concerns the question above as well.
+      -->
+      <SelectableTextBlock Classes="hint danger"
+                           LineHeight="{StaticResource LineHeightSmall}"
+                           IsVisible="{Binding HasRefusal}"
+                           Text="{Binding Refusal}" />
+      <controls:Waiting IsVisible="{Binding IsDialling}" ToolTip.Tip="{x:Static copy:Cards.Redialling}" />
+
+      <Button Theme="{StaticResource LinkButton}" HorizontalAlignment="Left" Command="{Binding ToggleSaved}">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <ti:TablerIcon Icon="{Binding SavedGlyph}" Brush="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+          <TextBlock Classes="secondary" Text="{x:Static copy:Cards.SavedPresetsTitle}" VerticalAlignment="Center" />
+        </StackPanel>
+      </Button>
+
+      <StackPanel IsVisible="{Binding SavedShown}">
+        <TextBlock Classes="hint"
+                   TextWrapping="Wrap"
+                   TextTrimming="None"
+                   LineHeight="{StaticResource LineHeightSmall}"
+                   Margin="0,0,0,10"
+                   Text="{Binding Covers}" />
+
+        <ItemsControl ItemsSource="{Binding Rows}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:PresetRow">
+              <Grid ColumnDefinitions="Auto,*,Auto,Auto"
                     ColumnSpacing="{StaticResource GapTight}"
                     Height="{StaticResource ControlHeight}">
                 <Ellipse Grid.Column="0"
@@ -43,104 +108,54 @@
                          IsVisible="{Binding IsCurrent}" />
 
                 <TextBlock Grid.Column="1"
+                           Classes="ident"
                            VerticalAlignment="Center"
                            TextTrimming="CharacterEllipsis"
-                           IsEnabled="{Binding IsReachable}"
                            Text="{Binding Name}" />
 
                 <Button Grid.Column="2"
                         Theme="{StaticResource LinkButton}"
                         Content="Apply"
-                        IsEnabled="{Binding IsReachable}"
                         Command="{Binding Apply}" />
+
+                <Button Grid.Column="3"
+                        Theme="{StaticResource IconButton}"
+                        Command="{Binding Delete}"
+                        ToolTip.Tip="Delete this preset"
+                        controls:Pending.IsActive="{Binding Delete.IsRunning}">
+                  <ti:TablerIcon Classes="button" Icon="IconTrash" />
+                </Button>
               </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
 
-              <!-- In the row and not a tip: a disabled control takes no pointer, so a tip on it never opens. -->
-              <SelectableTextBlock Classes="reason"
-                                   IsVisible="{Binding !IsReachable}"
-                                   Text="{Binding Reason}" />
-            </StackPanel>
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
+        <TextBlock Classes="hint"
+                   TextWrapping="Wrap"
+                   TextTrimming="None"
+                   LineHeight="{StaticResource LineHeightSmall}"
+                   IsVisible="{Binding IsEmpty}"
+                   Text="{Binding Empty}" />
 
-      <TextBlock Classes="caption" Text="Saved" Margin="0,0,0,6" />
+        <SelectableTextBlock Classes="hint"
+                             LineHeight="{StaticResource LineHeightSmall}"
+                             Margin="0,6,0,0"
+                             IsVisible="{Binding HasNotice}"
+                             Text="{Binding Notice}" />
 
-      <ItemsControl ItemsSource="{Binding Rows}">
-        <ItemsControl.ItemTemplate>
-          <DataTemplate x:DataType="vm:PresetRow">
-            <Grid ColumnDefinitions="Auto,*,Auto,Auto"
-                  ColumnSpacing="{StaticResource GapTight}"
-                  Height="{StaticResource ControlHeight}">
-              <Ellipse Grid.Column="0"
-                       Width="{StaticResource DotSize}"
-                       Height="{StaticResource DotSize}"
-                       VerticalAlignment="Center"
-                       Fill="{StaticResource ForegroundBrush}"
-                       IsVisible="{Binding IsCurrent}" />
+        <Grid ColumnDefinitions="*,Auto" Margin="0,10,0,0">
+          <TextBox Grid.Column="0"
+                   PlaceholderText="Name this configuration"
+                   Text="{Binding Name, Mode=TwoWay}" />
 
-              <TextBlock Grid.Column="1"
-                         Classes="ident"
-                         VerticalAlignment="Center"
-                         TextTrimming="CharacterEllipsis"
-                         Text="{Binding Name}" />
-
-              <Button Grid.Column="2"
-                      Theme="{StaticResource LinkButton}"
-                      Content="Apply"
-                      Command="{Binding Apply}" />
-
-              <Button Grid.Column="3"
-                      Theme="{StaticResource IconButton}"
-                      Command="{Binding Delete}"
-                      ToolTip.Tip="Delete this preset"
-                      controls:Pending.IsActive="{Binding Delete.IsRunning}">
-                <ti:TablerIcon Classes="button" Icon="IconTrash" />
-              </Button>
-            </Grid>
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
-
-      <TextBlock Classes="hint"
-                 TextWrapping="Wrap"
-                 TextTrimming="None"
-                 LineHeight="{StaticResource LineHeightSmall}"
-                 IsVisible="{Binding IsEmpty}"
-                 Text="{Binding Empty}" />
-
-      <SelectableTextBlock Classes="hint"
-                           LineHeight="{StaticResource LineHeightSmall}"
-                           Margin="0,6,0,0"
-                           IsVisible="{Binding HasNotice}"
-                           Text="{Binding Notice}" />
-
-      <SelectableTextBlock Classes="hint danger"
-                           LineHeight="{StaticResource LineHeightSmall}"
-                           Margin="0,6,0,0"
-                           IsVisible="{Binding HasRefusal}"
-                           Text="{Binding Refusal}" />
-
-      <!--
-        That the window is still dialling, under the refusal saying it could not be reached.
-        Under rather than beside: the sentence wraps over the card's width.
-      -->
-      <controls:Waiting Margin="0,6,0,0"
-                        IsVisible="{Binding IsDialling}"
-                        ToolTip.Tip="{x:Static copy:Cards.Redialling}" />
-
-      <Grid ColumnDefinitions="*,Auto" Margin="0,10,0,0">
-        <TextBox Grid.Column="0"
-                 PlaceholderText="Name this configuration"
-                 Text="{Binding Name, Mode=TwoWay}" />
-
-        <Button Grid.Column="1"
-                Margin="8,0,0,0"
-                Theme="{StaticResource ActionButton}"
-                Content="{Binding SaveLabel}"
-                Command="{Binding SaveCommand}"
-                controls:Pending.IsActive="{Binding SaveCommand.IsRunning}" />
-      </Grid>
+          <Button Grid.Column="1"
+                  Margin="8,0,0,0"
+                  Theme="{StaticResource ActionButton}"
+                  Content="{Binding SaveLabel}"
+                  Command="{Binding SaveCommand}"
+                  controls:Pending.IsActive="{Binding SaveCommand.IsRunning}" />
+        </Grid>
+      </StackPanel>
 
     </StackPanel>
   </Border>

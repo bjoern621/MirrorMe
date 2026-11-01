@@ -229,6 +229,12 @@ public static class Cards
     /// <summary>Disclosure over the encode controls the step asks no question about.</summary>
     public const string ExpertTitle = "Expert options";
 
+    /// <summary>Encode step's first question, answered by the built-in presets.</summary>
+    public const string PresetQuestion = "How should the picture look?";
+
+    /// <summary>Disclosure over the saved presets and the box that saves the draft as one.</summary>
+    public const string SavedPresetsTitle = "Saved presets";
+
     /// <summary>Question the encode step asks of one control, keyed by its settings field.</summary>
     public static string Question(string key) => key switch
     {

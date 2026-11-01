@@ -17,18 +17,6 @@
   </UserControl.Resources>
 
   <UserControl.Styles>
-    <Style Selector="Ellipse.radiodot">
-      <Setter Property="Width" Value="13" />
-      <Setter Property="Height" Value="13" />
-      <Setter Property="Stroke" Value="{StaticResource HintBrush}" />
-      <Setter Property="StrokeThickness" Value="1" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
-    <Style Selector="Button.picked Ellipse.radiodot">
-      <Setter Property="Stroke" Value="{StaticResource ForegroundBrush}" />
-      <Setter Property="StrokeThickness" Value="4" />
-    </Style>
-
     <!-- An open expert row already names its control in the row heading it, so the field row drops its own label. -->
     <Style Selector="ContentControl.expert TextBlock.fieldlabel">
       <Setter Property="IsVisible" Value="False" />

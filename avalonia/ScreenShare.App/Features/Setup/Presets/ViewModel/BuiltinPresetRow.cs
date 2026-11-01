@@ -35,6 +35,11 @@ public sealed record BuiltinPresetRow
     /// </summary>
     public required bool IsReachable { get; init; }
 
+    /// <summary>What the settings it resolves to here would cost: "8.7 Mb/s". Empty where the form priced none.</summary>
+    public required string Price { get; init; }
+
+    public bool HasPrice => Price.Length > 0;
+
     /// <summary>Why nothing here reaches it, empty on a reachable row.</summary>
     public required string Reason { get; init; }
 

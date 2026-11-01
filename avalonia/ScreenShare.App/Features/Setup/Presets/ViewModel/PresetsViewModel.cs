@@ -94,6 +94,11 @@ public sealed class PresetsViewModel : Observable
         Builtin = [];
         SaveCommand = new PendingCommand(() => Start(SaveAsync), dispatch, () => CanSave);
         RereadCommand = new PendingCommand(() => Start(ReadAsync), dispatch);
+        ToggleSaved = new DelegateCommand(() =>
+        {
+            SavedShown = !SavedShown;
+            OnPropertyChanged(nameof(SavedGlyph));
+        });
 
         // Rendered before the store is asked for, so the first list is a later pass rather than a precondition.
         Apply();
@@ -121,6 +126,19 @@ public sealed class PresetsViewModel : Observable
             }
         }
     }
+
+    private bool _savedShown;
+
+    /// <summary>
+    /// Whether the saved presets and the save box stand open under the question.
+    /// View state the reader set, closed on every launch, like a step's fold.
+    /// </summary>
+    public bool SavedShown { get => _savedShown; private set => Set(ref _savedShown, value); }
+
+    /// <summary>Opens the saved presets, or closes them again. Two presses are two states.</summary>
+    public DelegateCommand ToggleSaved { get; }
+
+    public TablerIcons.Icons SavedGlyph => SavedShown ? TablerIcons.Icons.IconChevronDown : TablerIcons.Icons.IconChevronRight;
 
     // --- Outputs ------------------------------------------------------------------
 
@@ -286,6 +304,7 @@ public sealed class PresetsViewModel : Observable
                 IsCurrent = preset.Selected,
                 IsReachable = preset.Settings is not null,
                 Reason = Statements.Of(preset.Reason),
+                Price = preset.Estimate is { } estimate ? Copy.Fields.Megabits(estimate.BitrateMbps) : "",
                 Apply = BuiltinCommandOf(preset.Key),
             })
             .ToList();

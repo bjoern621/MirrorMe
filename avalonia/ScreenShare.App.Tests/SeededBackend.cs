@@ -1139,6 +1139,7 @@ internal sealed class SeededBackend : IBackend
         if (refusal is null)
         {
             preset.Settings = reached;
+            preset.Estimate = Priced(new Settings { Publish = reached });
         }
         else
         {

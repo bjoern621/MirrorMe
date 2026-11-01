@@ -41,6 +41,19 @@
     <Setter Property="Brush" Value="{DynamicResource AttentionBrush}" />
   </Style>
 
+  <!-- Radio mark of a choice card: a ring, filled to a thick ring on the picked card. -->
+  <Style Selector="Ellipse.radiodot">
+    <Setter Property="Width" Value="13" />
+    <Setter Property="Height" Value="13" />
+    <Setter Property="Stroke" Value="{DynamicResource HintBrush}" />
+    <Setter Property="StrokeThickness" Value="1" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+  <Style Selector="Button.picked Ellipse.radiodot">
+    <Setter Property="Stroke" Value="{DynamicResource ForegroundBrush}" />
+    <Setter Property="StrokeThickness" Value="4" />
+  </Style>
+
   <!--
     Paths and not text: Windows draws these from Segoe Fluent Icons' private use area,
     so a missing face paints a tofu box where the close button was.
