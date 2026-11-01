@@ -85,6 +85,7 @@
   <!-- Why something is inert, read off a surface whose own text has gone to the disabled grey. -->
   <SolidColorBrush x:Key="ReasonBrush" Color="{StaticResource Caution}" />
   <SolidColorBrush x:Key="OnSelectedBrush" Color="{StaticResource Grey900}" />
+  <SolidColorBrush x:Key="OnSelectedMutedBrush" Color="{StaticResource Grey500}" />
 
   <!-- Hues -->
 

@@ -50,7 +50,7 @@
     <Setter Property="VerticalAlignment" Value="Center" />
   </Style>
   <Style Selector="Button.picked Ellipse.radiodot">
-    <Setter Property="Stroke" Value="{DynamicResource ForegroundBrush}" />
+    <Setter Property="Stroke" Value="{DynamicResource OnSelectedBrush}" />
     <Setter Property="StrokeThickness" Value="4" />
   </Style>
 

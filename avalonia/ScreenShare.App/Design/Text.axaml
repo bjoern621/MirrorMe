@@ -222,15 +222,24 @@
     <Setter Property="LineHeight" Value="{DynamicResource LineHeightSmall}" />
   </Style>
 
-  <!-- Picked. The card's fill has already moved, so its text comes up a step to meet it. -->
+  <!-- Picked. The card's fill turns light, so its text turns dark to stay on it. -->
   <Style Selector="Button.picked :is(TextBlock).optiontitle">
-    <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource OnSelectedBrush}" />
   </Style>
   <Style Selector="Button.picked :is(TextBlock).cardtitle">
-    <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource OnSelectedBrush}" />
   </Style>
   <Style Selector="Button.picked :is(TextBlock).cardbody">
-    <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource OnSelectedMutedBrush}" />
+  </Style>
+  <Style Selector="Button.picked :is(TextBlock).hint">
+    <Setter Property="Foreground" Value="{DynamicResource OnSelectedMutedBrush}" />
+  </Style>
+  <Style Selector="Button.picked :is(TextBlock).figure">
+    <Setter Property="Foreground" Value="{DynamicResource OnSelectedMutedBrush}" />
+  </Style>
+  <Style Selector="Button.picked :is(TextBlock).mark">
+    <Setter Property="Foreground" Value="{DynamicResource OnSelectedMutedBrush}" />
   </Style>
 
   <!--

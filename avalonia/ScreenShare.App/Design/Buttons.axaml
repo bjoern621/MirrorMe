@@ -281,9 +281,16 @@
     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
     <Setter Property="VerticalContentAlignment" Value="Top" />
 
+    <!-- Picked inverts: the light fill marks the answer from across the column. -->
+    <Style Selector="^.picked">
+      <Setter Property="Foreground" Value="{StaticResource OnSelectedBrush}" />
+    </Style>
     <Style Selector="^.picked /template/ Border#Root">
-      <Setter Property="Background" Value="{StaticResource ControlBrush}" />
-      <Setter Property="BorderBrush" Value="{StaticResource ForegroundBrush}" />
+      <Setter Property="Background" Value="{StaticResource SelectedBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource SelectedBrush}" />
+    </Style>
+    <Style Selector="^.picked:pointerover /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource ControlForegroundBrush}" />
     </Style>
 
     <Style Selector="^:disabled /template/ Border#Root">
