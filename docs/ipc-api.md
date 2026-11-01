@@ -15,7 +15,7 @@ Without exception:
 
 - Every value a control offers comes from the backend. Codecs, pixel formats, rate-control modes, transports, capture backends, frame rates, output resolutions, audio codecs, encoder presets, frame-memory values, monitors, watch legs. No shell holds a list of its own.
 - Every greyed option and disabled field is decided in Go and arrives decided, with a **code** naming why. The four treatments in `field-availability.md` follow from the tables.
-- Every derived figure comes from the backend: the bitrate estimate, the headroom against the uplink, the command preview.
+- Every derived figure comes from the backend: the bitrate estimate, what each offered entry and each preset would cost, the headroom against the uplink, the command preview.
 - Every piece of state is read from the backend or received on its event stream. A shell caches nothing across a change notification.
 - **Every word on screen is the shell's.** Labels, help text, option names, the paragraph behind a choice, the sentence in place of a greyed entry, how a unit is spelled and where it sits. Written where the layout is, keyed by the identifiers the backend sends (`text.proto`).
 - Beyond words, a shell contributes layout, typography, colour, motion, input handling and accessibility. Its whole job.

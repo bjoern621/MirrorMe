@@ -338,6 +338,7 @@ func resolvePresets(d Deps, s settings.Settings) []*screensharev1.BuiltinPreset 
 
 		if reached, ok := presetResolve(d, p, s); ok {
 			entry.Settings = wire.PublishSettings(reached.Publish)
+			entry.Estimate = estimate(d, reached)
 		} else {
 			// The transport is the one dimension the search leaves alone,
 			// being how viewers are reached rather than a property of the picture,

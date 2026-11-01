@@ -268,7 +268,7 @@ That makes it a greyed field rather than a mode gap.
 | --- | --- |
 | availability | greying an option the rules refuse, and greying a rate-control field unless the mode uses it, the codec's encoder has it and the engine forwards it |
 | repair | walking an illegal combination to the first legal value, leaving it standing where the walk finds none |
-| the estimate | the pre-publish bitrate prediction, from coding efficiency and chroma weight |
+| the estimate | the pre-publish bitrate prediction, from coding efficiency and chroma weight, for the draft, for each entry a control offers and for each preset |
 | the option lists | so a control cannot offer a value the tables do not define |
 | the viewability verdict | what the carriage gives a receiving pipeline over the selected tile watch leg |
 | the preset search | the configuration a preset applies here (`presets.md`) |

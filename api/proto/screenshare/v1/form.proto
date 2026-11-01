@@ -167,6 +167,12 @@ message FieldOption {
   // Field.value carries what is set,
   // and Field.default_value what a fresh installation carries.
   bool recommended = 7;
+  // Predicted cost of the settings with this entry picked and nothing else moved.
+  // Present on every enabled entry of a field whose entries price differently,
+  // the entry already set included, which then repeats Summary.estimate.
+  // Absent on a ruled-out entry, on every entry of a field that moves no price,
+  // and where the settings cannot be priced at all.
+  Estimate estimate = 10;
 
   // 2, 4, 3 and 6 were label, detail, note and reason as prose.
   // Naming an entry and writing the paragraph behind it happen where a layout is visible,
@@ -454,4 +460,7 @@ message BuiltinPreset {
   // Never more than one selected: the keys are unique,
   // and the backend's table is held to it at load.
   bool selected = 4;
+  // Predicted cost of the settings this preset produces here,
+  // absent exactly where settings is, or where those settings cannot be priced.
+  Estimate estimate = 5;
 }

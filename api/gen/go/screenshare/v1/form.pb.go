@@ -465,7 +465,13 @@ type FieldOption struct {
 	// Entry a shell may emphasise: a hint about this combination.
 	// Field.value carries what is set,
 	// and Field.default_value what a fresh installation carries.
-	Recommended   bool `protobuf:"varint,7,opt,name=recommended,proto3" json:"recommended,omitempty"`
+	Recommended bool `protobuf:"varint,7,opt,name=recommended,proto3" json:"recommended,omitempty"`
+	// Predicted cost of the settings with this entry picked and nothing else moved.
+	// Present on every enabled entry of a field whose entries price differently,
+	// the entry already set included, which then repeats Summary.estimate.
+	// Absent on a ruled-out entry, on every entry of a field that moves no price,
+	// and where the settings cannot be priced at all.
+	Estimate      *Estimate `protobuf:"bytes,10,opt,name=estimate,proto3" json:"estimate,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -533,6 +539,13 @@ func (x *FieldOption) GetRecommended() bool {
 		return x.Recommended
 	}
 	return false
+}
+
+func (x *FieldOption) GetEstimate() *Estimate {
+	if x != nil {
+		return x.Estimate
+	}
+	return nil
 }
 
 // A control, decided down to the last flag.
@@ -1202,7 +1215,10 @@ type BuiltinPreset struct {
 	//
 	// Never more than one selected: the keys are unique,
 	// and the backend's table is held to it at load.
-	Selected      bool `protobuf:"varint,4,opt,name=selected,proto3" json:"selected,omitempty"`
+	Selected bool `protobuf:"varint,4,opt,name=selected,proto3" json:"selected,omitempty"`
+	// Predicted cost of the settings this preset produces here,
+	// absent exactly where settings is, or where those settings cannot be priced.
+	Estimate      *Estimate `protobuf:"bytes,5,opt,name=estimate,proto3" json:"estimate,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1265,6 +1281,13 @@ func (x *BuiltinPreset) GetSelected() bool {
 	return false
 }
 
+func (x *BuiltinPreset) GetEstimate() *Estimate {
+	if x != nil {
+		return x.Estimate
+	}
+	return nil
+}
+
 var File_screenshare_v1_form_proto protoreflect.FileDescriptor
 
 const file_screenshare_v1_form_proto_rawDesc = "" +
@@ -1280,13 +1303,15 @@ const file_screenshare_v1_form_proto_rawDesc = "" +
 	"\fNumericRange\x12\x10\n" +
 	"\x03min\x18\x01 \x01(\x03R\x03min\x12\x10\n" +
 	"\x03max\x18\x02 \x01(\x03R\x03max\x12\x12\n" +
-	"\x04step\x18\x03 \x01(\x03R\x04step\"\xde\x01\n" +
+	"\x04step\x18\x03 \x01(\x03R\x04step\"\x94\x02\n" +
 	"\vFieldOption\x12\x14\n" +
 	"\x05value\x18\x01 \x01(\tR\x05value\x12(\n" +
 	"\x04note\x18\b \x01(\v2\x14.screenshare.v1.TextR\x04note\x12\x18\n" +
 	"\aenabled\x18\x05 \x01(\bR\aenabled\x12,\n" +
 	"\x06reason\x18\t \x01(\v2\x14.screenshare.v1.TextR\x06reason\x12 \n" +
-	"\vrecommended\x18\a \x01(\bR\vrecommendedJ\x04\b\x02\x10\x03J\x04\b\x03\x10\x04J\x04\b\x04\x10\x05J\x04\b\x06\x10\aR\x05labelR\x06detail\"\xb2\x04\n" +
+	"\vrecommended\x18\a \x01(\bR\vrecommended\x124\n" +
+	"\bestimate\x18\n" +
+	" \x01(\v2\x18.screenshare.v1.EstimateR\bestimateJ\x04\b\x02\x10\x03J\x04\b\x03\x10\x04J\x04\b\x04\x10\x05J\x04\b\x06\x10\aR\x05labelR\x06detail\"\xb2\x04\n" +
 	"\x05Field\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x125\n" +
 	"\acontrol\x18\x02 \x01(\x0e2\x1b.screenshare.v1.ControlKindR\acontrol\x12(\n" +
@@ -1330,12 +1355,13 @@ const file_screenshare_v1_form_proto_rawDesc = "" +
 	"\vpublishable\x18\x06 \x01(\bR\vpublishable\x125\n" +
 	"\x17preset_owned_field_keys\x18\n" +
 	" \x03(\tR\x14presetOwnedFieldKeys\x12\x19\n" +
-	"\bin_force\x18\v \x01(\bR\ainForceJ\x04\b\x02\x10\x03J\x04\b\x04\x10\x05R\brepairedR\bwarnings\"\xa8\x01\n" +
+	"\bin_force\x18\v \x01(\bR\ainForceJ\x04\b\x02\x10\x03J\x04\b\x04\x10\x05R\brepairedR\bwarnings\"\xde\x01\n" +
 	"\rBuiltinPreset\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12;\n" +
 	"\bsettings\x18\x02 \x01(\v2\x1f.screenshare.v1.PublishSettingsR\bsettings\x12,\n" +
 	"\x06reason\x18\x03 \x01(\v2\x14.screenshare.v1.TextR\x06reason\x12\x1a\n" +
-	"\bselected\x18\x04 \x01(\bR\bselected*\xf9\x01\n" +
+	"\bselected\x18\x04 \x01(\bR\bselected\x124\n" +
+	"\bestimate\x18\x05 \x01(\v2\x18.screenshare.v1.EstimateR\bestimate*\xf9\x01\n" +
 	"\vControlKind\x12\x1c\n" +
 	"\x18CONTROL_KIND_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11CONTROL_KIND_TEXT\x10\x01\x12\x17\n" +
@@ -1394,30 +1420,32 @@ var file_screenshare_v1_form_proto_goTypes = []any{
 var file_screenshare_v1_form_proto_depIdxs = []int32{
 	13, // 0: screenshare.v1.FieldOption.note:type_name -> screenshare.v1.Text
 	13, // 1: screenshare.v1.FieldOption.reason:type_name -> screenshare.v1.Text
-	0,  // 2: screenshare.v1.Field.control:type_name -> screenshare.v1.ControlKind
-	1,  // 3: screenshare.v1.Field.unit:type_name -> screenshare.v1.Unit
-	13, // 4: screenshare.v1.Field.reason:type_name -> screenshare.v1.Text
-	13, // 5: screenshare.v1.Field.note:type_name -> screenshare.v1.Text
-	3,  // 6: screenshare.v1.Field.value:type_name -> screenshare.v1.FieldValue
-	3,  // 7: screenshare.v1.Field.default_value:type_name -> screenshare.v1.FieldValue
-	5,  // 8: screenshare.v1.Field.options:type_name -> screenshare.v1.FieldOption
-	4,  // 9: screenshare.v1.Field.range:type_name -> screenshare.v1.NumericRange
-	6,  // 10: screenshare.v1.FieldGroup.fields:type_name -> screenshare.v1.Field
-	2,  // 11: screenshare.v1.Diagnostic.severity:type_name -> screenshare.v1.Severity
-	13, // 12: screenshare.v1.Diagnostic.text:type_name -> screenshare.v1.Text
-	9,  // 13: screenshare.v1.Summary.estimate:type_name -> screenshare.v1.Estimate
-	14, // 14: screenshare.v1.Form.settings:type_name -> screenshare.v1.Settings
-	7,  // 15: screenshare.v1.Form.groups:type_name -> screenshare.v1.FieldGroup
-	8,  // 16: screenshare.v1.Form.diagnostics:type_name -> screenshare.v1.Diagnostic
-	10, // 17: screenshare.v1.Form.summary:type_name -> screenshare.v1.Summary
-	12, // 18: screenshare.v1.Form.presets:type_name -> screenshare.v1.BuiltinPreset
-	15, // 19: screenshare.v1.BuiltinPreset.settings:type_name -> screenshare.v1.PublishSettings
-	13, // 20: screenshare.v1.BuiltinPreset.reason:type_name -> screenshare.v1.Text
-	21, // [21:21] is the sub-list for method output_type
-	21, // [21:21] is the sub-list for method input_type
-	21, // [21:21] is the sub-list for extension type_name
-	21, // [21:21] is the sub-list for extension extendee
-	0,  // [0:21] is the sub-list for field type_name
+	9,  // 2: screenshare.v1.FieldOption.estimate:type_name -> screenshare.v1.Estimate
+	0,  // 3: screenshare.v1.Field.control:type_name -> screenshare.v1.ControlKind
+	1,  // 4: screenshare.v1.Field.unit:type_name -> screenshare.v1.Unit
+	13, // 5: screenshare.v1.Field.reason:type_name -> screenshare.v1.Text
+	13, // 6: screenshare.v1.Field.note:type_name -> screenshare.v1.Text
+	3,  // 7: screenshare.v1.Field.value:type_name -> screenshare.v1.FieldValue
+	3,  // 8: screenshare.v1.Field.default_value:type_name -> screenshare.v1.FieldValue
+	5,  // 9: screenshare.v1.Field.options:type_name -> screenshare.v1.FieldOption
+	4,  // 10: screenshare.v1.Field.range:type_name -> screenshare.v1.NumericRange
+	6,  // 11: screenshare.v1.FieldGroup.fields:type_name -> screenshare.v1.Field
+	2,  // 12: screenshare.v1.Diagnostic.severity:type_name -> screenshare.v1.Severity
+	13, // 13: screenshare.v1.Diagnostic.text:type_name -> screenshare.v1.Text
+	9,  // 14: screenshare.v1.Summary.estimate:type_name -> screenshare.v1.Estimate
+	14, // 15: screenshare.v1.Form.settings:type_name -> screenshare.v1.Settings
+	7,  // 16: screenshare.v1.Form.groups:type_name -> screenshare.v1.FieldGroup
+	8,  // 17: screenshare.v1.Form.diagnostics:type_name -> screenshare.v1.Diagnostic
+	10, // 18: screenshare.v1.Form.summary:type_name -> screenshare.v1.Summary
+	12, // 19: screenshare.v1.Form.presets:type_name -> screenshare.v1.BuiltinPreset
+	15, // 20: screenshare.v1.BuiltinPreset.settings:type_name -> screenshare.v1.PublishSettings
+	13, // 21: screenshare.v1.BuiltinPreset.reason:type_name -> screenshare.v1.Text
+	9,  // 22: screenshare.v1.BuiltinPreset.estimate:type_name -> screenshare.v1.Estimate
+	23, // [23:23] is the sub-list for method output_type
+	23, // [23:23] is the sub-list for method input_type
+	23, // [23:23] is the sub-list for extension type_name
+	23, // [23:23] is the sub-list for extension extendee
+	0,  // [0:23] is the sub-list for field type_name
 }
 
 func init() { file_screenshare_v1_form_proto_init() }
