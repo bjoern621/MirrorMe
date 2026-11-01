@@ -74,6 +74,15 @@
   </ItemGroup>
 
   <!--
+    Comparison crops, rendered by tools/crops.sh from the manifest beside them.
+    The manifest is embedded as well, so the table reading it loads without an Avalonia platform under it.
+  -->
+  <ItemGroup>
+    <AvaloniaResource Include="Assets/Crops/*.png" />
+    <EmbeddedResource Include="Assets/Crops/manifest.json" LogicalName="ScreenShare.App.Assets.Crops.manifest.json" />
+  </ItemGroup>
+
+  <!--
     The control contract. Grpc.Tools compiles the same .proto files the Go side generates
     from, during this build and into obj/, so there is no checked-in C# copy and no step
     that can be skipped on one side only (api/README.md).

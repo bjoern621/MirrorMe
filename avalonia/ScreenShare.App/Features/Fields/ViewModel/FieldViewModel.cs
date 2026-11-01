@@ -119,6 +119,11 @@ public sealed class FieldViewModel : Observable
     /// <summary>The settings field this control edits, as <c>publish.encoder</c>. Carried, never parsed.</summary>
     public string Key { get; }
 
+    /// <summary>Pictures comparing this field's entries, read off the crop manifest by key. Empty for most fields.</summary>
+    public ValueList<Crop> Comparison => Comparisons.Of(Key);
+
+    public bool HasComparison => Comparison.Count > 0;
+
     // --- Inputs -------------------------------------------------------------------
 
     private string _text = "";

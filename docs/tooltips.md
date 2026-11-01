@@ -51,8 +51,19 @@ Nothing opens over a greyed entry, and a disabled control takes no pointer event
 
 A reason is one of the codes the availability pass produces from the tables, so the shell cannot explain a greying the encoder does not have.
 
+## Comparison crops
+
+A field whose entries change what the picture looks like carries an info glyph beside its name, and the tip it opens sets crops of one test picture side by side.
+Each crop went through the real encoder at the settings its caption names, then was cut from the same spot and enlarged without smoothing.
+The pictures stand in the tip alone, so a choice card keeps its two lines.
+
+`avalonia/ScreenShare.App/Assets/Crops/manifest.json` lists every crop: the field it belongs to, its caption, and the encoder arguments that made it.
+`tools/crops.sh` renders the crops from that list, and the shell reads the same list to draw them.
+A still shows detail, chroma and size; smoothness has no still, so frame rate carries no crops.
+
 ## Adding a tooltip
 
 - A field or option: add the sentence to `Copy` under the identifier the backend sends. Nothing renders it specially, and no markup is written.
 - A reason: the backend adds a code, and the shell adds the sentence for it. A code with no sentence is visible on screen, which is the point at which somebody writes one.
 - A figure on a live screen: name it as the glossary names it, and say what a reading of it is evidence of. The unit is printed beside it already.
+- A comparison: add the field's entries to the crop manifest and run `tools/crops.sh`. The glyph appears on every control drawing that field.

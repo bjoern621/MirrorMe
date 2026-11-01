@@ -1,6 +1,6 @@
 # tools
 
-Things to point at a running relay or a running backend.
+Things to point at a running relay or a running backend, and the renderer for the pictures the app ships.
 
 Nothing here is built or shipped,
 and no task in `Taskfile.yml` calls any of it but `task dev:stop`.
@@ -15,9 +15,11 @@ and no task in `Taskfile.yml` calls any of it but `task dev:stop`.
 | `whoislive.ps1` | who is publishing on a relay, their tracks and their readers, over the MediaMTX API |
 | `diagnose.ps1` | run while a publish and a watch are up and the picture is broken |
 | `dev-stop.ps1` | release the control pipe a previous `task dev` left held on Windows |
+| `crops.sh` | render the comparison crops the settings tooltips show, from their manifest, through the real encoder |
 
-The scripts want `pwsh` and ffmpeg on `PATH`,
+The PowerShell scripts want `pwsh` and ffmpeg on `PATH`,
 and the capture backends `publish.ps1` offers are Windows'.
+`crops.sh` wants bash, ffmpeg with libx265, and jq.
 
 ## Splitting a broken picture
 

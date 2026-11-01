@@ -1,0 +1,19 @@
+{
+  "region": { "x": 32, "y": 32, "width": 112, "height": 88 },
+  "zoom": 2,
+  "comparisons": {
+    "publish.cq": [
+      { "caption": "Lighter, CRF 28", "file": "cq-28.png", "scale": "", "encode": "-c:v libx265 -preset veryfast -tune zerolatency -crf 28 -pix_fmt yuv420p" },
+      { "caption": "Clean, CRF 23", "file": "cq-23.png", "scale": "", "encode": "-c:v libx265 -preset veryfast -tune zerolatency -crf 23 -pix_fmt yuv420p" },
+      { "caption": "Sharper, CRF 18", "file": "cq-18.png", "scale": "", "encode": "-c:v libx265 -preset veryfast -tune zerolatency -crf 18 -pix_fmt yuv420p" }
+    ],
+    "publish.chroma": [
+      { "caption": "4:2:0", "file": "chroma-420.png", "scale": "", "encode": "-c:v libx265 -preset veryfast -tune zerolatency -crf 18 -pix_fmt yuv420p" },
+      { "caption": "4:4:4", "file": "chroma-444.png", "scale": "", "encode": "-c:v libx265 -preset veryfast -tune zerolatency -crf 18 -pix_fmt yuv444p" }
+    ],
+    "publish.output_resolution": [
+      { "caption": "1920 × 1080", "file": "size-1080.png", "scale": "", "encode": "-c:v libx265 -preset veryfast -tune zerolatency -crf 23 -pix_fmt yuv420p" },
+      { "caption": "1280 × 720, scaled back up", "file": "size-720.png", "scale": "1280:720", "encode": "-c:v libx265 -preset veryfast -tune zerolatency -crf 23 -pix_fmt yuv420p" }
+    ]
+  }
+}

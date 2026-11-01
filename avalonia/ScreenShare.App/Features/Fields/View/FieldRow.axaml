@@ -33,8 +33,12 @@
                    Classes="secondary fieldlabel"
                    TextWrapping="Wrap"
                    TextTrimming="None"
-                   VerticalAlignment="Center"
-                   Text="{Binding Label}" />
+                   VerticalAlignment="Center">
+          <Run Text="{Binding Label}" />
+          <InlineUIContainer BaselineAlignment="Center">
+            <ContentControl IsVisible="{Binding HasComparison}" Content="{Binding}" ContentTemplate="{StaticResource ComparisonGlyph}" />
+          </InlineUIContainer>
+        </TextBlock>
         <TextBlock Grid.Column="1"
                    Classes="hint"
                    Margin="8,0,0,0"

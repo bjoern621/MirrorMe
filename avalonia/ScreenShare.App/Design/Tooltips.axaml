@@ -18,6 +18,10 @@
     <Setter Property="Padding" Value="10,7" />
     <!-- Wide enough to hold a clause, short enough that the eye does not track back. -->
     <Setter Property="MaxWidth" Value="320" />
+    <!-- A tip carrying comparison crops holds them side by side. -->
+    <Style Selector="^.pictures">
+      <Setter Property="MaxWidth" Value="720" />
+    </Style>
     <Setter Property="HorizontalContentAlignment" Value="Left" />
     <Setter Property="VerticalContentAlignment" Value="Top" />
     <Setter Property="Template">

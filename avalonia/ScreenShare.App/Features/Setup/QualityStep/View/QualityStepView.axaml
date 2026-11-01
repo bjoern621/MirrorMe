@@ -41,8 +41,16 @@
             <StackPanel Spacing="{StaticResource GapControl}">
 
               <!-- A number with a ladder takes a typed value as well, beside the question asking it. -->
+              <!-- The glyph rides inline after the question, so a heading that wraps carries it on its last line. -->
               <Grid ColumnDefinitions="*,Auto">
-                <TextBlock Grid.Column="0" Classes="heading" VerticalAlignment="Center" TextWrapping="Wrap" TextTrimming="None" Text="{Binding Heading}" />
+                <TextBlock Grid.Column="0" Classes="heading" VerticalAlignment="Center" TextWrapping="Wrap" TextTrimming="None">
+                  <Run Text="{Binding Heading}" />
+                  <InlineUIContainer BaselineAlignment="Center">
+                    <ContentControl IsVisible="{Binding Field.HasComparison}"
+                                    Content="{Binding Field}"
+                                    ContentTemplate="{StaticResource ComparisonGlyph}" />
+                  </InlineUIContainer>
+                </TextBlock>
                 <NumericUpDown Grid.Column="1"
                                IsVisible="{Binding Field.IsNumberBox}"
                                IsEnabled="{Binding Field.IsEnabled}"
@@ -120,16 +128,21 @@
               <StackPanel>
                 <!-- A greyed row keeps its value and its reason, and opens onto nothing. -->
                 <Button Theme="{StaticResource RowButton}" Command="{Binding Toggle}">
-                  <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,6">
+                  <Grid ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,6">
                     <TextBlock Grid.Column="0" Classes="secondary" VerticalAlignment="Center" Text="{Binding Field.Label}" />
+                    <ContentControl Grid.Column="1"
+                                    HorizontalAlignment="Left"
+                                    IsVisible="{Binding Field.HasComparison}"
+                                    Content="{Binding Field}"
+                                    ContentTemplate="{StaticResource ComparisonGlyph}" />
                     <!-- The open control shows the value itself. -->
-                    <TextBlock Grid.Column="1"
+                    <TextBlock Grid.Column="2"
                                Margin="10,0,0,0"
                                VerticalAlignment="Center"
                                IsVisible="{Binding !IsOpen}"
                                FontFeatures="{StaticResource FigureFeatures}"
                                Text="{Binding Field.PickedLabel}" />
-                    <ti:TablerIcon Grid.Column="2"
+                    <ti:TablerIcon Grid.Column="3"
                                    Margin="8,0,0,0"
                                    Icon="IconChevronDown"
                                    Brush="{StaticResource MutedBrush}"
