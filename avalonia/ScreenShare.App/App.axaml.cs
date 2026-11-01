@@ -168,7 +168,7 @@ public sealed partial class App : Application
     /// <summary>
     /// The bundled mono face, before anything is drawn with it.
     /// A URI whose authority is not the assembly name, or a family name the files do not spell, loads nothing
-    /// and leaves the transcript role drawing a session log in whatever face the platform hands back
+    /// and leaves the transcript role drawing a pipeline's last words in whatever face the platform hands back
     /// (Design/Typography.axaml).
     /// The substitution is invisible on screen to anyone who has not seen the intended face, so it is asserted
     /// rather than looked for.

@@ -83,7 +83,7 @@ Four layers, dependency running one way: a feature reads the design system and t
 | `Backend/` | the control-plane boundary: `IBackend`, the gRPC client answering it over the local socket, and the settings write going through the message descriptor |
 | `Features/Fields/` | the generic renderer for one group of the resolved form, and the placement table saying which destination draws which group. Not under a feature because two of them draw form groups |
 | `Features/Setup/` | the publish wizard, one step per sending-related group with the commit at the last one's foot: step strip, the share question with a chooser per kind, the presets card and the encode questions under it, audio source list, raw-property card, the cost bar above every step and the checks card under it. The share question is drawn again in a dialog at the press that starts a stream, one model behind both |
-| `Features/Insights/` | the live overview: promoted figures, live-safe actions, read-only configuration, the outgoing preview, the per-viewer table, the sparklines |
+| `Features/Insights/` | the live overview: the verdict, the outgoing preview, the figure cards and the chart under them, the per-viewer table |
 | `Features/Viewer/` | the tile grid and its rail: one entry per stream the relay carries, the arrangement of the ones being watched, and the panel holding how this machine receives |
 
 ### The two rules the tree encodes
@@ -240,25 +240,21 @@ Every start earns the move, so the destination a commit leads to is not a settin
 Composed in `Features/Insights/Model/InsightsSnapshot.cs` out of three whole states: the publish state, the newest encoder sample, the relay snapshot.
 
 **The viewer table is a row per viewer, and the relay measures them one leg at a time.**
-The backend reads the relay's reader array per path and joins each entry to the per-protocol connection list its type names, so a row is an address, a join time, and whatever that leg is instrumented for (`backend/internal/relay/readers.go`).
+The backend reads the relay's reader array per path and joins each entry to the per-protocol connection list its type names, so a row is a name, the leg it watches over, and whatever that leg is instrumented for (`backend/internal/relay/readers.go`).
 SRT is the one the relay times a round trip and states a loss rate on.
 The rest report what was sent to them and what the relay's own queue discarded.
 A cell with no measurement is an ellipsis, so a viewer over RTMP reads as untimed.
-The severity rule in `Features/Insights/Model/ViewerRow.cs` reads presence rather than value, and the header promotes the *worst* viewer's round trip and loss under a label that says so.
+The severity rule in `Features/Insights/Model/ViewerRow.cs` reads presence rather than value.
 Buffer fill and the decoder in use are figures nobody reports to a publisher, so those columns carry what the relay does measure: what was dropped, and the leg it went out over.
 
-**The session log names who arrived and who left, and nothing announced either.**
-There is no arrival or departure event: the relay reports who is connected at each poll and says nothing about who stopped being.
-So the audience lines are the difference between two consecutive rosters in the snapshot series the session holds (`Features/Insights/Model/Audience.cs`), derived on every render pass rather than accumulated.
-An arrival carries the relay's own join time, a departure the arrival time of the poll that first did not name the reader.
-A poll naming no path for this stream contributes nothing at all: reading an unreachable relay as an empty roster would log every viewer leaving each time it hiccupped.
+**The chart draws what the session kept, against each figure's limit.**
+The session keeps the newest encoder samples, stamped as they land, and each pass places them by that stamp on a span ending at the newest one (`Features/Insights/Chart/Model/ChartPlots.cs`).
+A run younger than the span fills the right of the chart.
+Limits come from the running settings: the target frame rate, one frame's duration for the encode time, and the rate ceiling where one bounds the encode.
+Marks are the backend's, read off the stream timeline (`docs/insights.md`).
 
-The congestion band is absent.
-The relay states its figures as they stand at each poll and marks no interval, so a shaded window on the latency plot would be a detection this side performed and attributed to the backend.
-
-Both sparkline series are stamped, so a point is placed by when it was taken against a fixed span ending at the newest reading.
-A run younger than that span fills the right of the card instead of being stretched over it.
-The `vbv ceiling` rule is placed against the run's own peak or not drawn at all, the curve being scaled to that peak.
+**The verdict draws the timeline's level and cause, and judges nothing.**
+Its words come from `Copy/`, keyed by the text code the backend sent.
 
 **The preview tile draws a frame, by one of two routes the reader picks between.**
 `docs/viewer-architecture.md`, "What the insights preview draws", states the two, the off segment beside them and what each costs.

@@ -5,7 +5,7 @@ namespace ScreenShare.App.Features.Insights.Model;
 /// <summary>
 /// One reading of the running stream, composed from three states the backend reports: the publish state,
 /// the newest encoder sample and the relay snapshot.
-/// Record, so a pass over an unchanged reading compares equal and every card below leaves its widgets alone.
+/// Record, so a pass over an unchanged reading compares equal and every part below leaves its widgets alone.
 ///
 /// <b>Figures are nullable, "not measured" being a state this screen shows.</b> It prints
 /// as <see cref="Figure.NoValue"/>, and a zero is a measurement.
@@ -13,18 +13,6 @@ namespace ScreenShare.App.Features.Insights.Model;
 /// publishing, no first packet muxed, or a sample carrying no value for the figure.
 /// What the screen draws is this reading with each gap filled from the last pass that measured it
 /// (<see cref="HeldFigures"/>), so the ellipsis reaches a figure nothing has measured on this run.
-///
-/// <b>Round trip and loss are per reader, on the legs the relay instruments, so neither has a stream-wide
-/// value.</b> <see cref="RttMs"/> and <see cref="LossPercent"/> are the worst reader's, labelled as such wherever
-/// they are drawn.
-/// A mean would be a figure no viewer is experiencing and would average one struggling reader away.
-///
-/// <b><see cref="CongestionAt"/> is permanently absent.</b> The relay states figures as they stand at each poll
-/// and marks no interval, so naming where a congestion window started would be a detection this shell performed
-/// and attributed to the backend.
-/// Kept and shown absent rather than dropped, on the rule that greys an option instead of removing it:
-/// an absent figure reads as unmeasured, a missing row as nothing to measure
-/// (<c>docs/field-availability.md</c>, "The rule").
 /// </summary>
 public sealed record InsightsSnapshot
 {
@@ -84,32 +72,8 @@ public sealed record InsightsSnapshot
     /// </summary>
     public double? EncodeMs { get; init; }
 
-    /// <summary>
-    /// Worst round trip in ms among the viewers the relay times, absent while it times none.
-    /// Names that one viewer, never the stream.
-    /// </summary>
-    public int? RttMs { get; init; }
-
-    /// <summary>
-    /// Worst send-side loss among the viewers the relay states one for, absent while it states none.
-    /// Names that one viewer, never the stream.
-    /// </summary>
-    public double? LossPercent { get; init; }
-
     /// <summary>Readers the relay reports on this stream's path.</summary>
     public int? Viewers { get; init; }
-
-    /// <summary>
-    /// Legs this stream's viewers watch over, in the transport vocabulary: <c>"srt, rtmp"</c>.
-    /// Empty while the relay names no reader on the path.
-    ///
-    /// SRT is the one leg the relay times, so a stream watched over anything else has viewers and no round trip,
-    /// and this is what a sentence about an untimed figure names.
-    ///
-    /// One comma-separated string rather than a list: this record's equality keeps an unchanged pass
-    /// from repainting, and a fresh list compares unequal every pass.
-    /// </summary>
-    public string Legs { get; init; } = "";
 
     /// <summary>
     /// Path this stream publishes to, empty while nothing is publishing.
@@ -118,24 +82,12 @@ public sealed record InsightsSnapshot
     /// </summary>
     public string Stream { get; init; } = "";
 
-    public int? Cq { get; init; }
-
-    /// <summary>Output size the stream was built for, empty where it publishes at the source size.</summary>
-    public string Resolution { get; init; } = "";
-
     /// <summary>
     /// Rate the running encoder is held to, absent where the encode is bounded by nothing.
     /// The backend's reading rather than the ceiling field beside it: which figure bounds an encode, and whether
     /// one does at all, follows the rate-control mode and the encoder element.
     /// </summary>
     public double? VbvCeilingMbps { get; init; }
-
-    /// <summary>
-    /// Never filled: the relay marks no interval, so no congestion window has a start to name.
-    /// Nothing draws it either, a caption placed over a band the plot cannot shade being a window the shell would
-    /// be naming on its own (<c>Plots/View/PlotsView.axaml</c>).
-    /// </summary>
-    public string CongestionAt { get; init; } = "";
 
     /// <summary>
     /// Composes one reading from the three whole states the backend last sent.
@@ -173,13 +125,8 @@ public sealed record InsightsSnapshot
             EgressMbps = Measured(stats, sample => sample.HasInstMbps, sample => sample.InstMbps),
             Fps = Measured(stats, sample => sample.HasFps, sample => sample.Fps),
             EncodeMs = Measured(stats, sample => sample.HasTransitMs, sample => sample.TransitMs),
-            RttMs = WorstRttMs(path) is { } rtt ? (int)Math.Round(rtt) : null,
-            LossPercent = WorstLossPercent(path),
             Viewers = path?.Readers,
-            Legs = LegsOf(path),
             Stream = stream,
-            Cq = settings?.Cq,
-            Resolution = settings?.OutputResolution ?? "",
             VbvCeilingMbps = live is { HasRateCeilingMbps: true } ? live.RateCeilingMbps : null,
         };
     }
@@ -203,8 +150,8 @@ public sealed record InsightsSnapshot
     /// Relay entry for one stream.
     /// Null on no snapshot, no stream, an unreachable relay, or no path by that name yet: a stream that has just
     /// started publishes before the relay's next poll sees it.
-    /// Every relay figure on this screen goes through here, so the viewer count, the rows under it and
-    /// the latency plot describe one path (<c>docs/development-principles.md</c>, "A fact lives in one table").
+    /// Every relay figure on this screen goes through here, so the viewer count and the rows under it
+    /// describe one path (<c>docs/development-principles.md</c>, "A fact lives in one table").
     /// </summary>
     public static RelayPath? PathOf(RelayStatus? relay, string stream)
     {
@@ -222,61 +169,6 @@ public sealed record InsightsSnapshot
         }
 
         return null;
-    }
-
-    /// <summary>Highest round trip on the path's roster, null where no reader on it is timed.</summary>
-    public static double? WorstRttMs(RelayPath? path) => Worst(path, reader => reader.HasRttMs ? reader.RttMs : null);
-
-    /// <summary>Highest send-side loss on the path's roster, null where no reader states one.</summary>
-    public static double? WorstLossPercent(RelayPath? path)
-        => Worst(path, reader => reader.HasLossPercent ? reader.LossPercent : null);
-
-    /// <summary>
-    /// Distinct legs the path's readers are on, in roster order.
-    /// A reader the relay named no protocol for takes no part: an unnamed leg listed as an empty one puts a gap
-    /// in the sentence naming them.
-    /// </summary>
-    private static string LegsOf(RelayPath? path)
-    {
-        if (path is null)
-        {
-            return "";
-        }
-
-        var legs = new List<string>();
-        foreach (var reader in path.ReaderRoster)
-        {
-            if (reader.Transport.Length > 0 && !legs.Contains(reader.Transport))
-            {
-                legs.Add(reader.Transport);
-            }
-        }
-
-        return string.Join(", ", legs.Select(Copy.Words.Transport));
-    }
-
-    /// <summary>
-    /// Largest value of one figure across the readers reporting it.
-    /// A reader that reports none takes no part: an untimed viewer is not a viewer at zero, and counting it as one
-    /// makes every roster holding an RTMP viewer look perfect.
-    /// </summary>
-    private static double? Worst(RelayPath? path, Func<RelayReader, double?> figure)
-    {
-        if (path is null)
-        {
-            return null;
-        }
-
-        double? worst = null;
-        foreach (var reader in path.ReaderRoster)
-        {
-            if (figure(reader) is { } measured && (worst is null || measured > worst))
-            {
-                worst = measured;
-            }
-        }
-
-        return worst;
     }
 
     /// <summary>

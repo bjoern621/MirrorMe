@@ -233,11 +233,6 @@ public sealed class PreviewViewModel : Observable
     private bool _hasPlaceholder;
     private bool _isConnecting;
     private string _cost = "";
-    private string _encoded = "";
-    private string _quality = "";
-    private string _leg = "";
-    private bool _hasLeg;
-    private bool _isSharing;
     private bool _hasTile;
     private PreviewRouteTab _selectedRoute;
 
@@ -339,25 +334,6 @@ public sealed class PreviewViewModel : Observable
     /// </summary>
     public string Cost { get => _cost; private set => Set(ref _cost, value); }
 
-    public string Encoded { get => _encoded; private set => Set(ref _encoded, value); }
-
-    public string Quality { get => _quality; private set => Set(ref _quality, value); }
-
-    /// <summary>
-    /// Protocol the picture crossed, empty on the route that crossed none.
-    /// The leg the decode was opened on rather than the one the settings name now, read off the tile for the same
-    /// reason a stop is.
-    /// </summary>
-    public string Leg { get => _leg; private set => Set(ref _leg, value); }
-
-    public bool HasLeg { get => _hasLeg; private set => Set(ref _hasLeg, value); }
-
-    /// <summary>
-    /// Whether the inset red outline and the sharing badge show.
-    /// Both mean "this tile is what the world is receiving", so both follow one fact.
-    /// </summary>
-    public bool IsSharing { get => _isSharing; private set => Set(ref _isSharing, value); }
-
     private bool _hasPointer;
     private double _pointerLeft;
     private double _pointerTop;
@@ -441,9 +417,6 @@ public sealed class PreviewViewModel : Observable
         // either way.
         _tile?.Apply(pipeline, wanted is null ? null : _session.StatsOf(wanted.StreamName, wanted.Transport));
 
-        IsSharing = reading.IsLive;
-        Encoded = $"encoded {Figure.Of(reading.Fps, "0.0")} fps";
-        Quality = $"cq {Figure.Of(reading.Cq)}";
         Cost = PreviewRoutes.CostOf(Route);
 
         // The segment follows the settings like every other output,
@@ -451,11 +424,6 @@ public sealed class PreviewViewModel : Observable
         // Through the field: the property's setter is the reader's own write,
         // and going back through it would store the route this pass has just read.
         Set(ref _selectedRoute, Routes.Single(tab => tab.Value == Route), nameof(SelectedRoute));
-
-        // Only the end-to-end route has a leg and the local route's tile reports the empty string, so there is no
-        // case on the route here.
-        Leg = _tile is { Transport.Length: > 0 } tile ? Words.Transport(tile.Transport) : "";
-        HasLeg = Leg.Length > 0;
 
         // After the tile's own pass: a tile that is drawing has no sentence,
         // and one that is not has written it by now.
@@ -466,7 +434,6 @@ public sealed class PreviewViewModel : Observable
         HasTile = _tile is not null;
 
         Assert.That(HasPlaceholder == (Placeholder.Length > 0), "a placeholder and its sentence agree", HasPlaceholder);
-        Assert.That(HasLeg == (Leg.Length > 0), "a leg and the fact that there is one agree", Leg);
         Assert.That(HasTile == (Tile is not null), "a tile and the fact that there is one agree", HasTile);
         Assert.That(_tile is null || pipeline is not null, "a preview tile draws a picture something is producing");
         Assert.That(

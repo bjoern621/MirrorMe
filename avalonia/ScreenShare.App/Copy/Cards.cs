@@ -48,7 +48,7 @@ public static class Cards
         "This is what is being sent, decoded on this computer from a copy the encoder makes. It "
         + "never reaches the relay, costs one local decode and no bandwidth, and adds no viewer "
         + "to the counts. It shows nothing about what viewers receive. Switch to end to end for "
-        + "that, or read the viewer table and the round-trip plot.";
+        + "that, or read the Viewers tab.";
 
     /// <summary>
     /// End-to-end route's cost: decode opened with <c>StartReceive</c> like any tile,
@@ -103,19 +103,6 @@ public static class Cards
     /// that one is a pipeline up with no frame out of it, this the round trip before there is a pipeline at all.
     /// </summary>
     public const string PreviewOpening = "Opening a decode of this stream off the relay.";
-
-    public const string ConfigReadOnly =
-        "Read-only while live. Every setting here reaches a running stream by restarting it, "
-        + "through setup's commit.";
-
-    /// <summary>Unanswered resolve, what an empty configuration card shows while a stream runs.</summary>
-    public const string ConfigUndescribed = "Reading what the running stream was built from.";
-
-    /// <summary>
-    /// Other empty configuration card: nothing to describe rather than nothing back.
-    /// Names setup: this card describes a pipeline that was built, setup holds what the next one is built from.
-    /// </summary>
-    public const string ConfigIdle = "Nothing is publishing. Setup holds what a stream would be built from.";
 
     /// <summary>
     /// What a preset covers, said where the reader is about to make one.
@@ -245,21 +232,6 @@ public static class Cards
     };
 
     /// <summary>
-    /// Latency plot's two series, named beside the rule drawn in each one's stroke.
-    /// Short: they sit inside the plot, and the card's caption says whose figures these are.
-    /// </summary>
-    public const string PlotRoundTripLegend = "rtt";
-
-    public const string PlotLossLegend = "loss";
-
-    /// <summary>
-    /// What a stream waiting out a relaunch says beside the pill.
-    /// The pill stays up through a backoff, the reader having stopped nothing,
-    /// so this is the whole of what separates a stream carrying frames from one coming back.
-    /// </summary>
-    public static string RetryAttempt(int attempt, int budget) => $"reconnecting, attempt {attempt} of {budget}";
-
-    /// <summary>
     /// What the turning arc beside an unreachable backend means: waiting is enough, nothing has to be restarted.
     /// Shared by every screen drawing the arc, so it names no button only one of them offers.
     /// </summary>
@@ -301,17 +273,4 @@ public static class Cards
     /// (<c>Backend/IBackend.cs</c>, <c>PresetsAsync</c>).
     /// </summary>
     public const string PresetsReread = "Read the saved presets again. Nothing announces a preset another window saved.";
-
-    /// <summary>
-    /// Why a watched stream states no round trip and no loss: SRT is the leg the relay times
-    /// (<c>api/proto/screenshare/v1/session.proto</c>, <c>RelayReader</c>).
-    /// Written once, so the latency plot and the header stat bar cannot say different things about one roster.
-    /// </summary>
-    /// <param name="legs">
-    /// <see cref="Features.Insights.Model.InsightsSnapshot.Legs"/>, empty where the roster names no leg.
-    /// </param>
-    public static string Untimed(string legs)
-        => legs.Length == 0
-            ? "no viewer is on a leg the relay times"
-            : $"the relay times SRT legs only, and this stream is watched over {legs}";
 }

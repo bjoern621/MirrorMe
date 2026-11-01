@@ -8,20 +8,6 @@ namespace ScreenShare.App.Features.Shell.Model;
 public static class SideColumns
 {
     /// <summary>
-    /// Preview and the configuration read-back, on the left of the live figures
-    /// (<c>Features/Insights</c>).
-    /// The body is the plots, the viewer table and the session log, each of which is a row of figures.
-    /// </summary>
-    public static readonly SideColumn InsightsCards = new(396, 444, ColumnEdge.Left, DrawnUnasked: true);
-
-    /// <summary>
-    /// Live actions in the insights header, beside the figures they act on.
-    /// Under them on a narrower window: a band whose actions take the row leaves the figures a column one figure
-    /// wide, and the header then runs deeper than the screen it heads.
-    /// </summary>
-    public static readonly SideColumn InsightsActions = new(440, 300, ColumnEdge.Right, DrawnUnasked: true);
-
-    /// <summary>
     /// Watch settings, opened from the viewer's rail.
     /// The body it measures against is the tile grid and the stream rail together, both standing on the same
     /// window: measured against the grid alone, two side columns would leave the tiles a strip between them.

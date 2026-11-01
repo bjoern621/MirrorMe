@@ -21,7 +21,7 @@ public sealed class SideColumnTests
     private const double Quarter = 500;
 
     private static SideColumnViewModel Cards()
-        => new(SideColumns.InsightsCards, "Show the preview.", "Hide the preview.");
+        => new(SideColumns.ViewerRail, "Show the preview.", "Hide the preview.");
 
     private static SideColumnViewModel Watch()
         => new(SideColumns.ViewerWatch, "Change how streams come back.", "Close the watch settings.");
@@ -152,7 +152,7 @@ public sealed class SideColumnTests
     [Fact]
     public void TheThresholdIsTheColumnPlusTheBodyItNeeds()
     {
-        var row = SideColumns.InsightsCards;
+        var row = SideColumns.ViewerRail;
 
         Assert.Equal(row.Width + row.Body, row.Beside);
         Assert.True(row.FitsBeside(row.Beside));
@@ -173,8 +173,6 @@ public sealed class SideColumnTests
     [Fact]
     public void TheOpeningWindowCarriesEveryColumnBesideItsBody()
     {
-        Assert.True(SideColumns.InsightsActions.FitsBeside(WindowSize.Opening));
-        Assert.True(SideColumns.InsightsCards.FitsBeside(WindowSize.Opening));
         Assert.True(SideColumns.ViewerWatch.FitsBeside(WindowSize.Opening));
         Assert.True(SideColumns.ViewerRail.FitsBeside(WindowSize.Opening));
     }
@@ -183,8 +181,6 @@ public sealed class SideColumnTests
     [Fact]
     public void TheFloorIsNarrowerThanEveryRowsThreshold()
     {
-        Assert.False(SideColumns.InsightsActions.FitsBeside(WindowSize.Floor));
-        Assert.False(SideColumns.InsightsCards.FitsBeside(WindowSize.Floor));
         Assert.False(SideColumns.ViewerWatch.FitsBeside(WindowSize.Floor));
     }
 }

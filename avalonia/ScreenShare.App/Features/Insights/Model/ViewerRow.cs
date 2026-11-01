@@ -1,4 +1,3 @@
-using System.Globalization;
 using ScreenShare.Api.V1;
 using ScreenShare.App.Contracts;
 
@@ -8,24 +7,17 @@ namespace ScreenShare.App.Features.Insights.Model;
 /// One viewer of this stream, as the relay reports it.
 ///
 /// <b>Filled from the relay's reader roster, cell for cell.</b> The relay names each reader by the protocol it
-/// watches over and joins it to that protocol's connection list, so a row is an address, a join time and whatever
+/// watches over and joins it to that protocol's connection list, so a row holds an address and whatever
 /// the leg is instrumented for.
 /// SRT is the one leg the relay times a round trip and states a loss rate on.
 /// The rest report what was sent to them and what the relay's own queue threw away.
 /// A cell with no measurement behind it prints <see cref="Figure.NoValue"/> and never a zero, so a viewer
 /// on an untimed leg never reads as a perfect one.
 ///
-/// <b>Two of the design's columns name figures the relay does not have, and carry what it does measure
-/// instead.</b> Buffer fill and the decoder in use are the viewer's own facts and reach no publisher, so a column
-/// for either prints an ellipsis in every row forever.
-/// The fifth carries what was discarded on the way out, the sixth the leg it went out
-/// over (<c>docs/field-availability.md</c>, "A figure with no measurement").
-///
 /// <see cref="IsLast"/> is nobody's measurement: the render function derives it, the last row sitting flush
 /// against the card's rounded edge and carrying no separator.
 /// </summary>
 /// <param name="Name">Address the relay saw, or its handle on the connection.</param>
-/// <param name="Joined">When the relay accepted this reader, on the reading machine's clock.</param>
 /// <param name="Rtt">Round trip in ms, absent on every leg but SRT.</param>
 /// <param name="Loss">Send-side loss in percent, absent on every leg but SRT.</param>
 /// <param name="Dropped">What went out incomplete: packets given up on, or frames the relay's queue discarded.</param>
@@ -33,7 +25,6 @@ namespace ScreenShare.App.Features.Insights.Model;
 /// <param name="IsStruggling">Whether a measured figure reached a limit in <see cref="Strain"/>.</param>
 public sealed record ViewerRow(
     string Name,
-    string Joined,
     string Rtt,
     string Loss,
     string Dropped,
@@ -89,23 +80,30 @@ public sealed record ViewerRow(
     /// Nothing here is decided: a cell is the relay's figure for that reader, formatted, or the ellipsis saying
     /// the leg states none.
     /// </summary>
-    /// <remarks>
-    /// The two identifying cells fall back and then give up rather than asserting, and do it
-    /// in <see cref="Readers"/>, the session log naming the same readers (<c>docs/development-principles.md</c>,
-    /// "Contracts").
-    /// </remarks>
     public static ViewerRow Of(RelayReader reader)
     {
         Assert.NotNull(reader, "a viewer row describes a reader the relay reported");
 
         return new ViewerRow(
-            Name: Readers.NameOf(reader),
-            Joined: JoinedAt(reader),
+            Name: NameOf(reader),
             Rtt: Figure.Of(reader.HasRttMs ? reader.RttMs : null, "0"),
             Loss: Figure.Of(reader.HasLossPercent ? reader.LossPercent : null, "0.00"),
             Dropped: Figure.Of(Discards(reader), "0"),
             Via: reader.Transport.Length > 0 ? reader.Transport : Figure.NoValue,
             IsStruggling: Strain.Any(rule => rule.Figure(reader) is { } measured && measured >= rule.Limit));
+    }
+
+    /// <summary>
+    /// Who a reader is: the address the relay saw, its connection handle where the relay gave no address, and
+    /// <see cref="Figure.NoValue"/> where it stated neither.
+    /// Falls back and then gives up rather than asserting.
+    /// These are the relay's own words, so a reader it named nothing is an Umgebungsfehler this screen survives:
+    /// an unnameable viewer still reads as somebody connected.
+    /// </summary>
+    private static string NameOf(RelayReader reader)
+    {
+        var address = reader.HasRemoteAddr && reader.RemoteAddr.Length > 0 ? reader.RemoteAddr : reader.Id;
+        return address.Length > 0 ? address : Figure.NoValue;
     }
 
     /// <summary>
@@ -125,16 +123,4 @@ public sealed record ViewerRow(
         return (reader.HasPacketsDropped ? reader.PacketsDropped : 0)
              + (reader.HasFramesDiscarded ? reader.FramesDiscarded : 0);
     }
-
-    /// <summary>
-    /// When the relay accepted this reader, as a wall clock time: <c>14:07</c>.
-    /// An age reads better and is not used: this runs on every render pass, and an age would come from a clock
-    /// nobody handed it, so one roster would render differently on two consecutive passes and repaint under
-    /// the reader's pointer.
-    /// The relay's stamp is its own clock's, so this converts it to the local zone and drops the date.
-    /// </summary>
-    private static string JoinedAt(RelayReader reader)
-        => Readers.JoinedAt(reader) is { } joined
-            ? joined.ToLocalTime().ToString("HH:mm", CultureInfo.CurrentCulture)
-            : Figure.NoValue;
 }

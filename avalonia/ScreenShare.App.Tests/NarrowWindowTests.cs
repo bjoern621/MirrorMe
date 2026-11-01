@@ -26,31 +26,20 @@ public sealed class NarrowWindowTests
         return new InsightsViewModel(backend, new FormSession(backend, session, Inline), session, Inline);
     }
 
+    /// <summary>The preview stands beside the value cards on a wide window and over them in a row on a narrow one.</summary>
     [Fact]
-    public void ANarrowWindowTakesTheInsightsCardsOffTheFigures()
-    {
-        var insights = Insights(new SeededBackend("linux"));
-
-        insights.SetWindowWidth(Quarter);
-
-        Assert.False(insights.CardsColumn.IsBeside);
-        Assert.True(insights.CardsColumn.ShowsToggle);
-    }
-
-    /// <summary>
-    /// The live actions take the row on a narrow window, so the figures beside them keep a row of their own.
-    /// A header deeper than the screen it heads is what this prevents.
-    /// </summary>
-    [Fact]
-    public void ANarrowWindowPutsTheLiveActionsUnderTheFigures()
+    public void ANarrowWindowPutsTheValueCardsInARowUnderThePreview()
     {
         var insights = Insights(new SeededBackend("linux"));
 
         insights.SetWindowWidth(WindowSize.Opening);
-        Assert.Equal(Dock.Right, insights.ActionsDock);
+        Assert.True(insights.IsWide);
+        Assert.Equal(1, insights.CardColumns);
 
-        insights.SetWindowWidth(Quarter);
-        Assert.Equal(Dock.Bottom, insights.ActionsDock);
+        insights.SetWindowWidth(360);
+        Assert.False(insights.IsWide);
+        Assert.Equal(3, insights.CardColumns);
+        Assert.Equal(1, insights.CardsRow);
     }
 
     [Fact]
@@ -107,10 +96,9 @@ public sealed class NarrowWindowTests
     {
         var insights = Insights(new SeededBackend("linux"));
 
-        insights.SetWindowWidth(Quarter);
-        insights.CardsColumn.Toggle.Execute(null);
-        insights.SetWindowWidth(Quarter);
+        insights.SetWindowWidth(360);
+        insights.SetWindowWidth(360);
 
-        Assert.True(insights.CardsColumn.IsShowing);
+        Assert.False(insights.IsWide);
     }
 }

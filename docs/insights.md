@@ -1,4 +1,4 @@
-# Stream verdict
+# Insights
 
 Backend judges this machine's publish run the way a viewer would see it.
 Every shell draws that judgment and decides none of it.
@@ -30,3 +30,19 @@ Each run keeps the marks that moved it, oldest first, the most recent 200.
 | join, leave | the member, against the group's first reading of the run |
 
 `GetStreamTimeline` reads the run and `stream_timeline` pushes it whole on every change.
+
+## Screen
+
+Header: what is shared and to which group, the way it travels, the running time and `Edit in setup`.
+Under it the verdict, then two tabs.
+
+Stream tab: the preview, a card per figure and a chart of the picked card over one minute, five minutes or the whole run.
+Each card holds its newest value against its limit, and the chart marks every moment the run kept.
+
+| Figure | Limit |
+| --- | --- |
+| frame rate | the target frame rate |
+| encode time | one frame's duration at the target rate |
+| bitrate | the encode's rate ceiling, none where nothing bounds it |
+
+Viewers tab: a row per viewer the relay names, with round trip, loss and dropped wherever its leg measures them (`field-availability.md`).

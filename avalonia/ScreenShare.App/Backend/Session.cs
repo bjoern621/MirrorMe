@@ -4,23 +4,8 @@ using ScreenShare.App.Copy;
 
 namespace ScreenShare.App.Backend;
 
-/// <summary>
-/// One child process that ended, and when this shell heard about it.
-/// <c>At</c> is this shell's clock: the contract puts no timestamp on an exit, and a session log needs an order
-/// to be readable.
-/// <c>Info</c> is the backend's, unchanged.
-/// </summary>
-/// <param name="What">Which process ended: "publish pipeline", "viewer lab-04 over srt".</param>
-public sealed record SessionExit(string What, ExitInfo Info, DateTimeOffset At);
-
-/// <summary>
-/// One relay snapshot, and when this shell received it.
-/// <c>At</c> is this shell's clock, for the reason <see cref="SessionExit"/> carries one: the contract puts none
-/// on a snapshot.
-/// A viewer that left is dated by the poll that stopped naming it, the relay reporting who is connected and
-/// never that somebody disconnected.
-/// </summary>
-public sealed record RelayReading(RelayStatus Status, DateTimeOffset At);
+/// <summary>One encoder sample, stamped on arrival by this shell's clock so a chart lines it up with the timeline's marks.</summary>
+public sealed record PublishReading(PublishStats Stats, DateTimeOffset At);
 
 /// <summary>
 /// Running state, as the backend last reported it: what is publishing, what the encoder is measuring,
@@ -39,12 +24,11 @@ public sealed record RelayReading(RelayStatus Status, DateTimeOffset At);
 /// rather than being applied to it (<c>docs/ipc-api.md</c>, "Events"), which makes a duplicate event harmless
 /// and a dropped connection recoverable by reading again.
 ///
-/// <see cref="Samples"/> and <see cref="RelaySamples"/> accumulate, and neither departs from that:
+/// <see cref="Samples"/> accumulates, and does not depart from that:
 /// each entry is a whole state, the window is bounded, and nothing is derived from a series the backend also states.
 ///
-/// A relay snapshot describes every path the relay carries and a plot wants one of them.
-/// The path is picked at draw time and not at store time, the publish state answering which path is ours and
-/// being able to move under a recorded series
+/// A relay snapshot describes every path the relay carries and a screen wants one of them.
+/// The path is picked at draw time, the publish state answering which path is ours
 /// (<c>Features/Insights/Model/InsightsSnapshot.cs</c>, <c>PathOf</c>).
 ///
 /// <see cref="Start"/> and the subscription loops are the writers,
@@ -54,16 +38,16 @@ public sealed class Session
 {
     /// <summary>
     /// Readings a series keeps.
-    /// About one encoder sample per second per running pipeline, so roughly four minutes of stream, and bounded
-    /// so a window left open overnight costs nothing.
+    /// About one encoder sample per second per running pipeline, so four hours of stream,
+    /// the span the chart's session range reaches back over, and bounded so a window left open for days costs nothing.
     ///
     /// Readings rather than seconds because it bounds what this class holds rather than what anything draws:
     /// the relay poll period is not on the contract, so a span stated here would be one this side made up.
-    /// What a plot covers is its own and shorter,
-    /// taken against the clock each reading carries (<c>Features/Insights/Plots/Model/PlotSeries.cs</c>).
+    /// What the chart covers is its own range,
+    /// taken against the clock each reading carries (<c>Features/Insights/Chart/Model/ChartPlots.cs</c>).
     /// The history outlives the plot, so a card is never why a reading was dropped.
     /// </summary>
-    private const int SampleWindow = 240;
+    private const int SampleWindow = 14_400;
 
     /// <summary>
     /// Wait before a dropped stream is opened again.
@@ -75,9 +59,7 @@ public sealed class Session
     private readonly IBackend _backend;
     private readonly Action<Action> _dispatch;
     private readonly TimeProvider _clock;
-    private readonly List<PublishStats> _samples = [];
-    private readonly List<RelayReading> _relaySamples = [];
-    private readonly List<SessionExit> _exits = [];
+    private readonly List<PublishReading> _samples = [];
 
     private CancellationTokenSource? _cancel;
 
@@ -144,29 +126,17 @@ public sealed class Session
     /// Its <c>missing</c> list names the figures it carries no measurement for,
     /// drawn as absent rather than as a stalled encoder.
     /// </summary>
-    public PublishStats? Stats => _samples.Count == 0 ? null : _samples[^1];
+    public PublishStats? Stats => _samples.Count == 0 ? null : _samples[^1].Stats;
 
     /// <summary>Encoder samples of this run, oldest first, bounded to <see cref="SampleWindow"/>.</summary>
-    public IReadOnlyList<PublishStats> Samples => _samples;
+    public IReadOnlyList<PublishReading> Samples => _samples;
 
     /// <summary>
     /// Newest relay snapshot.
     /// Null until the first read lands.
     /// An unreachable relay is a snapshot saying so.
     /// </summary>
-    public RelayStatus? Relay => _relaySamples.Count == 0 ? null : _relaySamples[^1].Status;
-
-    /// <summary>
-    /// Relay snapshots of this run, oldest first, bounded the same way.
-    /// <see cref="Relay"/> is the last of them rather than a field beside them, so a figure on a card and the end
-    /// of the curve under it cannot disagree.
-    ///
-    /// Two cards ask the series different questions: the latency plot draws the shape the figures went through,
-    /// and the session log derives who arrived and who left from where consecutive rosters differ
-    /// (<c>Features/Insights/Model/Audience.cs</c>).
-    /// Neither answer is accumulated here. Both are functions of whole states in order.
-    /// </summary>
-    public IReadOnlyList<RelayReading> RelaySamples => _relaySamples;
+    public RelayStatus? Relay { get; private set; }
 
     /// <summary>
     /// How this shell names the values the backend sends, built from the catalog.
@@ -341,13 +311,6 @@ public sealed class Session
 
         return null;
     }
-
-    /// <summary>
-    /// Child processes that ended this session, oldest first: the publish pipeline, a viewer, a test stream.
-    /// Each carries the failure as prose and the run log's path, which a screen offers to open rather than
-    /// reading itself.
-    /// </summary>
-    public IReadOnlyList<SessionExit> Exits => _exits;
 
     /// <summary>
     /// Why the backend could not be reached, empty while it can.
@@ -592,24 +555,17 @@ public sealed class Session
         switch (change.PayloadCase)
         {
             case Event.PayloadOneofCase.PublishState:
-                // A run that ended takes its samples with it: they belong to the pipeline that produced them, and
-                // a sparkline carrying them across a restart draws two runs as one.
-                //
-                // The relay series goes for the same reason.
-                // The relay keeps answering, but the plot beside the egress curve describes this run's viewers,
-                // and readers of a path nothing publishes to are not what the next run starts with.
-                // The newest snapshot goes too, and the next poll brings one back.
+                // A run that ended takes its samples with it: a chart carrying them into the next run draws two runs as one.
                 if (change.PublishState.Live is null)
                 {
                     _samples.Clear();
-                    _relaySamples.Clear();
                 }
 
                 Publish = change.PublishState;
                 break;
 
             case Event.PayloadOneofCase.PublishStats:
-                _samples.Add(change.PublishStats);
+                _samples.Add(new PublishReading(change.PublishStats, _clock.GetUtcNow()));
                 if (_samples.Count > SampleWindow)
                 {
                     _samples.RemoveRange(0, _samples.Count - SampleWindow);
@@ -692,7 +648,7 @@ public sealed class Session
                 break;
 
             case Event.PayloadOneofCase.PublishExit:
-                Ended("publishing", change.PublishExit);
+                // Recorded nowhere: the backend's timeline carries a stopped run with its words and its log.
                 break;
 
             case Event.PayloadOneofCase.TestStreamExit:
@@ -702,14 +658,8 @@ public sealed class Session
                 break;
 
             case Event.PayloadOneofCase.ViewerExit:
-                // A viewer that ended moves the roster and, where it failed, the log.
-                // Only the log is taken here: the roster has an event of its own, and editing it from this one
+                // The roster has an event of its own, and editing it from this one
                 // would be two definitions of what is open.
-                if (change.ViewerExit.Exit is { } exit)
-                {
-                    Ended($"viewer {change.ViewerExit.Viewer.StreamName} over {change.ViewerExit.Viewer.Transport}", exit);
-                }
-
                 break;
         }
     }
@@ -722,20 +672,7 @@ public sealed class Session
     {
         Assert.NotNull(relay, "a relay snapshot is the whole state the backend answered with");
 
-        _relaySamples.Add(new RelayReading(relay, _clock.GetUtcNow()));
-        if (_relaySamples.Count > SampleWindow)
-        {
-            _relaySamples.RemoveRange(0, _relaySamples.Count - SampleWindow);
-        }
-
-        Assert.That(ReferenceEquals(Relay, relay), "the newest snapshot is the one just taken");
-    }
-
-    private void Ended(string what, ExitInfo info)
-    {
-        Assert.That(what.Length > 0, "an ended process is named");
-
-        _exits.Add(new SessionExit(what, info, _clock.GetUtcNow()));
+        Relay = relay;
     }
 
     /// <summary>

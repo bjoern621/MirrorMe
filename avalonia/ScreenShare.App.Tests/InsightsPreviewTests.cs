@@ -644,7 +644,6 @@ public sealed class InsightsPreviewTests
         Assert.NotNull(preview.Tile);
         Assert.True(preview.Tile.Source.IsRelay);
         Assert.Equal(Leg, preview.Tile.Transport);
-        Assert.True(preview.HasLeg);
     }
 
     /// <summary>

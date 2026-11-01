@@ -332,7 +332,7 @@ The **end-to-end** route reads this machine's own stream back off the relay like
 They differ by where the picture is taken and by nothing else, so what one shows and the other cannot is everything downstream of the encoder.
 
 **The two costs are opposite, which is why it is a choice.**
-The local route costs one decode here, spends no bandwidth and takes no reader slot, so the viewer count and worst-viewer round trip describe viewers rather than this machine watching itself.
+The local route costs one decode here, spends no bandwidth and takes no reader slot, so the viewer count and the viewer table describe viewers rather than this machine watching itself.
 The end-to-end route is a relay client: it occupies a reader slot, is counted among those figures, and pays a viewer's downstream bandwidth.
 So a fresh installation is stored on the local route and the other is asked for by name, each stating its own cost on screen.
 The third segment is off, which is why it stands on the same toggle rather than under a control of its own.
@@ -440,6 +440,6 @@ The screens that watch are built against the set, a relay carrying nothing putti
 
 The slot is the stream's identity rather than the process's, so a publisher that dies is relaunched into the slot it held and returns as the row the roster already shows.
 The wait walks 2, 4, 8, 15 and 30 seconds and then holds, with no attempt budget unlike the publish leg's: what is waited out is usually the relay, which this process starts before and outlives, and giving up would leave the roster empty for the rest of the run over an outage that ended a minute in.
-The exit reaches the session log once per outage rather than once per attempt.
+The backend reports the exit once per outage rather than once per attempt.
 
 The count is settable for one run and zero turns the set off, three encoders not being free and a machine measuring its own encode having reason to want them gone.

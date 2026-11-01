@@ -63,7 +63,7 @@ The module ships the family (`Avalonia.Fonts.Inter`, registered in `Program`), s
 
 **One family for what another program said: JetBrains Mono.** Bundled the same way, out of `Assets/Fonts`.
 
-A single role spends it, the **transcript**: a line reproduced from another process rather than composed here, which is the session log and what lands in it.
+A single role spends it, the **transcript**: a line reproduced from another process rather than composed here, which is a stopped pipeline's last words on the insights verdict.
 Such a line is an error nobody here wrote, wrapping over several rows of element names, socket addresses and codes.
 The reader's next move is to copy a piece of it into a search box or a bug report.
 Mono is what that reading needs: the columns hold under the wrap, and `0` stays unmistakable against `O`.
@@ -172,15 +172,15 @@ A tiling session hands one a quarter of the screen and offers no frame to drag, 
 
 **A window too narrow for two columns draws one, and the side column becomes a panel over the body.**
 The body keeps the whole width, and the panel opens from a control on the surface it belongs to.
-Two columns work this way: the insights cards and the viewer's watch settings.
-Each states its own width and the body it needs beside it, and the threshold is those two added (`Features/Shell/Model/SideColumns.cs`).
+One column works this way: the viewer's watch settings.
+It states its own width and the body it needs beside it, and the threshold is those two added (`Features/Shell/Model/SideColumns.cs`).
 
 A column that draws unasked carries its control only while it is a panel, a press that changes nothing reading as broken.
 One that opens on request carries its control at every width.
 
 A rail carrying names drops the names rather than the window dropping the rail.
 
-Every band wraps where the window is narrower than its row: the status band's sentence, and the insights header's figures and actions.
+Every band wraps where the window is narrower than its row: the status band's sentence, and the insights header's title and action.
 The floor the window asks the desktop for is the narrowest one column is drawn for (`Features/Shell/Model/WindowSize.cs`).
 
 ## Video surfaces
@@ -228,7 +228,7 @@ One vocabulary everywhere, on a chip, a tile, the status bar and a button:
 
 The dot stays small (7px).
 
-**The reason in words is selectable wherever it lands**: a banner over a step, a hint under a field, a preflight row, a session log line, the sentence a dark tile carries.
+**The reason in words is selectable wherever it lands**: a banner over a step, a hint under a field, a preflight row, a stopped pipeline's last words, the sentence a dark tile carries.
 It is the one string that has to leave the app for a bug report, a search box or a message to somebody else.
 A caps negotiation or a relay address is not something anyone retypes off a screen.
 Selectable text is a `SelectableTextBlock` carrying the role of the prose beside it, drawing its selection in the pair "Selection" states.
@@ -318,9 +318,9 @@ Broadcast television has a term of art for most of these and every one loses to 
 The test is whether a reader would have to be taught it: `program`, `on air`, `bug`, `lower third` and `take` all fail, and not one names something this product cannot already say.
 The machine the app runs on is `this computer` wherever a surface names it.
 
-`Sharing` is the state's name on every surface that has one: the pill on the insights header, the badge over the preview.
+`Sharing` is the state's name on every surface that has one.
 The controls that enter and leave it are `Start sharing` and `Stop sharing`, so button and state say one word rather than one saying `Go live` and the other answering `On air`.
-`Insights` names the destination reporting a stream: the preview, the figures, the log and the live-safe actions.
+`Insights` names the destination reporting a stream: the verdict, the preview, the figures and the viewers.
 
 A tooltip is prose: opens with a capital, closes with a full stop, and explains the control or figure instead of naming it again.
 An icon button whose tooltip repeats its glyph teaches nothing, so the tooltip says what pressing it does and what it leaves alone.
@@ -343,7 +343,7 @@ Any other showing the same value shows it read-only, with one link back to the o
 A second editor for one setting is the defect this prevents.
 
 Setup owns the configuration of what this machine sends.
-Insights owns the live-safe actions, the ones that change the stream without tearing it down, and shows configuration read-only with one `Edit in setup` link.
+Insights shows the running stream and edits nothing, with one `Edit in setup` link.
 Viewer owns how this machine receives: the watch settings, saved from a panel beside the grid, and the per-tile controls over a running decode.
 They sit with the tiles because a reader who only watches never opens setup, and a draft setup holds is persisted by going live (`viewer-architecture.md`, "Two legs, two protocols").
 

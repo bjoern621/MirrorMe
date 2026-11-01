@@ -215,13 +215,12 @@ So the rule is that presence decides (`design-language.md`, "Wording").
 **The row stays.**
 A figure a reader is looking for reads as unmeasured.
 A row that is gone reads as nothing to measure, and those are different facts about the app.
-The congestion band, the round trip and the loss stayed on the insights screen through the whole time nothing filled them.
+A viewer over a leg that times nothing keeps its round trip and loss cells, each printing `…`.
 
 **Where the measurement is per-something, the label names the something.**
 The relay measures round trip and loss per reader, so there is no such figure for a stream.
-The header promotes the worst reader's and says `worst` in the unit, because a bare `ms rtt` beside a viewer count reads as the stream's, a number nobody took.
-An average would be worse than either: it is a figure no viewer is experiencing,
-and one struggling viewer among five is the case the screen exists for and the case an average erases.
+Both sit in that reader's row and nowhere stream-wide.
+An average would be a figure no viewer is experiencing, and one struggling viewer among five is the case the screen exists for.
 
 ### What is measured, and by whom
 

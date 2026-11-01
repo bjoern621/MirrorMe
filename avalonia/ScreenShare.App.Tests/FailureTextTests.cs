@@ -1,6 +1,6 @@
 using ScreenShare.Api.V1;
 using ScreenShare.App.Backend;
-using ScreenShare.App.Features.Insights.HeaderStats.ViewModel;
+using ScreenShare.App.Features.Insights.Verdict.ViewModel;
 using ScreenShare.App.Features.Insights.Model;
 using ScreenShare.App.Features.Viewer.Tile.Model;
 using ScreenShare.App.Features.Viewer.Tile.ViewModel;
@@ -87,29 +87,26 @@ public sealed class FailureTextTests
             Message = "srt: connection was rejected by peer",
         };
 
-        var stats = new HeaderStatsViewModel { Snapshot = InsightsSnapshot.Of(new PublishState { Live = live }, null, null) };
+        var verdict = Verdict(Restarting(live.Retry.Cause), live);
 
-        Assert.True(stats.IsRetrying);
-        Assert.Contains("2", stats.Retry);
-        Assert.True(stats.HasRetryCause);
-        Assert.Contains("not a member of the group", stats.RetryCause);
-        Assert.True(stats.HasRetryMessage);
-        Assert.Equal("srt: connection was rejected by peer", stats.RetryMessage);
+        Assert.True(verdict.IsCaution);
+        Assert.Equal("Restarting, attempt 2 of 5", verdict.Headline);
+        Assert.Contains("not a member of the group", verdict.Detail);
+        Assert.True(verdict.HasMessage);
+        Assert.Equal("srt: connection was rejected by peer", verdict.Message);
     }
 
-    /// <summary>A stream carrying frames has no relaunch, so nothing under the pill is about one.</summary>
+    /// <summary>A stream carrying frames has no relaunch, so the verdict quotes no pipeline.</summary>
     [Fact]
     public void AStreamThatIsNotRelaunchingCarriesNoCause()
     {
         var live = new PublishState.Types.Live { Publish = new PublishSettings(), StreamName = "desk" };
 
-        var stats = new HeaderStatsViewModel { Snapshot = InsightsSnapshot.Of(new PublishState { Live = live }, null, null) };
+        var verdict = Verdict(new StreamTimeline { Verdict = new StreamVerdict { Level = StreamVerdict.Types.Level.Clean } }, live);
 
-        Assert.False(stats.IsRetrying);
-        Assert.False(stats.HasRetryCause);
-        Assert.False(stats.HasRetryMessage);
-        Assert.Equal("", stats.RetryCause);
-        Assert.Equal("", stats.RetryMessage);
+        Assert.False(verdict.IsCaution);
+        Assert.False(verdict.HasMessage);
+        Assert.False(verdict.HasLog);
     }
 
     /// <summary>
@@ -122,10 +119,42 @@ public sealed class FailureTextTests
         var live = new PublishState.Types.Live { Publish = new PublishSettings(), StreamName = "desk" };
         live.Retry = new PublishState.Types.Retry { Attempt = 1, Budget = 3 };
 
-        var stats = new HeaderStatsViewModel { Snapshot = InsightsSnapshot.Of(new PublishState { Live = live }, null, null) };
+        var verdict = Verdict(Restarting(null), live);
 
-        Assert.True(stats.IsRetrying);
-        Assert.NotEqual("", stats.Retry);
-        Assert.False(stats.HasRetryCause);
+        Assert.Equal("Restarting, attempt 1 of 3", verdict.Headline);
+        Assert.Equal("", verdict.Detail);
+    }
+
+    /// <summary>A run no retry recovers names its log, the one way to it from this screen.</summary>
+    [Fact]
+    public void AStoppedRunOffersItsLog()
+    {
+        var timeline = new StreamTimeline
+        {
+            Verdict = new StreamVerdict
+            {
+                Level = StreamVerdict.Types.Level.Stopped,
+                Message = "vaapih264enc: could not allocate a surface",
+                LogPath = "/tmp/publish.log",
+            },
+        };
+
+        var verdict = Verdict(timeline, null);
+
+        Assert.True(verdict.IsStopped);
+        Assert.Equal("vaapih264enc: could not allocate a surface", verdict.Message);
+        Assert.True(verdict.HasLog);
+    }
+
+    private static StreamTimeline Restarting(Text? cause) => new()
+    {
+        Verdict = new StreamVerdict { Level = StreamVerdict.Types.Level.Disappoints, Cause = cause },
+    };
+
+    private static VerdictViewModel Verdict(StreamTimeline timeline, PublishState.Types.Live? live)
+    {
+        var verdict = new VerdictViewModel(_ => Task.CompletedTask, Inline);
+        verdict.Apply(timeline, InsightsSnapshot.Of(new PublishState { Live = live }, null, null));
+        return verdict;
     }
 }

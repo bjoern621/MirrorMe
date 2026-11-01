@@ -9,17 +9,12 @@ namespace ScreenShare.App.Features.Insights.Model;
 /// A sample states a figure only where something measured it over that interval, and a second is short enough
 /// for that to fail on a healthy stream: an encoder that emitted no frame in one times nothing, and a relay poll
 /// that has not landed states no reader.
-/// Both are gaps in a figure that is otherwise there, and a row alternating between a number and an ellipsis
-/// is a row nobody reads.
+/// Both are gaps in a figure that is otherwise there, and a card alternating between a number and an ellipsis
+/// is one that nobody reads.
 ///
 /// Held for the run and no further.
 /// A stream that stopped, one waiting out a retry and one publishing under another name measure nothing at all,
 /// so every held figure goes and the screen reads absent.
-///
-/// The two relay figures are held only while the relay states no path.
-/// A path naming readers and timing none of them is the answer rather than a gap, which the header says
-/// in a sentence (<c>HeaderStats/ViewModel/HeaderStatsViewModel.cs</c>), and a number held over that sentence would
-/// name a round trip nobody is taking.
 /// </summary>
 public sealed class HeldFigures
 {
@@ -27,8 +22,6 @@ public sealed class HeldFigures
     private double? _egress;
     private double? _fps;
     private double? _encode;
-    private double? _loss;
-    private int? _rtt;
     private int? _viewers;
 
     /// <summary>
@@ -53,18 +46,12 @@ public sealed class HeldFigures
             Forget(reading.Stream);
         }
 
-        // Read before anything is filled: what it answers is whether the relay stated a path this pass, and
-        // a held count would make an unreachable relay look like one naming readers.
-        var stated = reading.Viewers is not null;
-
         var filled = reading with
         {
             EgressMbps = Held(ref _egress, reading.EgressMbps),
             Fps = Held(ref _fps, reading.Fps),
             EncodeMs = Held(ref _encode, reading.EncodeMs),
             Viewers = Held(ref _viewers, reading.Viewers),
-            RttMs = stated ? Stated(ref _rtt, reading.RttMs) : Held(ref _rtt, reading.RttMs),
-            LossPercent = stated ? Stated(ref _loss, reading.LossPercent) : Held(ref _loss, reading.LossPercent),
         };
 
         Assert.That(filled.IsLive && filled.Stream == reading.Stream,
@@ -76,8 +63,7 @@ public sealed class HeldFigures
     private void Forget(string stream)
     {
         _stream = stream;
-        _egress = _fps = _encode = _loss = null;
-        _rtt = null;
+        _egress = _fps = _encode = null;
         _viewers = null;
     }
 
@@ -90,12 +76,5 @@ public sealed class HeldFigures
         }
 
         return measured ?? held;
-    }
-
-    /// <summary>What this pass measured, absence included, for a figure whose source states both.</summary>
-    private static T? Stated<T>(ref T? held, T? measured) where T : struct
-    {
-        held = measured;
-        return measured;
     }
 }
