@@ -122,17 +122,17 @@ public sealed class FieldFloorTests
         Assert.False(group.Fold.Shown);
     }
 
-    /// <summary>Every quality control sits behind the step's own fold, the presets standing in for them.</summary>
+    /// <summary>Every encode control the step asks no question about sits behind its fold, closed.</summary>
     [Fact]
-    public void TheQualityStepFoldsWhole()
+    public void TheEncodeStepFoldsWhatItAsksNoQuestionAbout()
     {
         var group = GroupOf(null, Resolved("quality",
             Select("publish.format", "h264"), Number("publish.gop", 60)));
         var step = new QualityStepViewModel(group);
 
-        Assert.False(step.Fold.Shown);
-        Assert.True(step.Fold.HasAny);
-        Assert.Equal("2 options", step.Fold.Count);
+        Assert.False(step.Expert.Fold.Shown);
+        Assert.True(step.Expert.Fold.HasAny);
+        Assert.Equal("2 options", step.Expert.Fold.Count);
     }
 
     /// <summary>The source rows stay on the floor; the format under the list is what folds.</summary>

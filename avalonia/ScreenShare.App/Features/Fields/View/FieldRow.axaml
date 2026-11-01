@@ -29,7 +29,7 @@
       -->
       <Grid ColumnDefinitions="*,Auto,Auto">
         <TextBlock Grid.Column="0"
-                   Classes="secondary"
+                   Classes="secondary fieldlabel"
                    TextWrapping="Wrap"
                    TextTrimming="None"
                    VerticalAlignment="Center"

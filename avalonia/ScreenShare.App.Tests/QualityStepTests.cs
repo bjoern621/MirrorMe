@@ -10,20 +10,14 @@ using Xunit;
 namespace ScreenShare.App.Tests;
 
 /// <summary>
-/// Quality step end to end: backend describing a group, flow adopting the draft it answers with, controls drawn from it.
+/// Encode step end to end: backend describing a group, flow adopting the draft it answers with, controls drawn from it.
 /// Asserted through the properties the markup binds and against no value this module wrote:
-/// entries, labels, trailing notes and greying all arrive on the resolved form,
+/// entries, prices, impacts and greying all arrive on the resolved form,
 /// so a shell inventing a list fails here rather than on a screen (<c>docs/ipc-api.md</c>, "The rule").
 /// Every test awaits, the boundary being a round trip whose answer lands on a later pass.
-/// The stand-in answers from memory over an inline dispatcher,
-/// so skipping the wait asserts against a timing the real client does not have.
 /// </summary>
 public sealed class QualityStepTests
 {
-    /// <summary>
-    /// A flow whose first form has landed.
-    /// Answer is dispatched straight through, so what a test reads next is what the render pass wrote.
-    /// </summary>
     private static async Task<SetupViewModel> FlowAsync()
     {
         var backend = new SeededBackend("linux");
@@ -32,42 +26,8 @@ public sealed class QualityStepTests
         return flow;
     }
 
-    private static FieldViewModel Select(SetupViewModel flow, string key)
-        => flow.Quality.Selects.Single(field => field.Key == key);
-
-    /// <summary>
-    /// Step over a mode control offering the entries named, a leading dash marking a refused one.
-    /// Stated here rather than seeded, the fixture's backend refusing no mode.
-    /// A refusal shows in the layout only where <see cref="FieldViewModel.Offered"/>
-    /// and <see cref="FieldViewModel.Options"/> part company (RefusedEntriesTests seeds a select the same way).
-    /// </summary>
-    private static QualityStepViewModel StepOver(params string[] modes)
-    {
-        var field = new Field
-        {
-            Key = "publish.mode",
-            Control = ControlKind.Radio,
-            Visible = true,
-            Enabled = true,
-            Value = new FieldValue { Text = modes[0].TrimStart('-') },
-        };
-
-        foreach (var mode in modes)
-        {
-            field.Options.Add(new FieldOption
-            {
-                Value = mode.TrimStart('-'),
-                Enabled = !mode.StartsWith('-'),
-                Reason = mode.StartsWith('-') ? new Text { Code = TextCode.CodecNotImplemented } : null,
-            });
-        }
-
-        var group = new FieldGroupViewModel((_, _) => { });
-        group.Apply(
-            new FieldGroup { Key = QualityLayout.GroupKey, Fields = { field } }, Vocabulary.Empty, null);
-
-        return new QualityStepViewModel(group);
-    }
+    private static FieldViewModel Question(SetupViewModel flow, string key)
+        => flow.Quality.Questions.Single(question => question.Field.Key == key).Field;
 
     private static async Task ChooseAsync(SetupViewModel flow, OptionViewModel option)
     {
@@ -75,180 +35,157 @@ public sealed class QualityStepTests
         await flow.Settled;
     }
 
+    /// <summary>Which controls are asked is this shell's placement, and their order the form's.</summary>
     [Fact]
-    public async Task TheQualityStepDrawsTheGroupTheBackendDescribed()
+    public async Task TheStepAsksItsQuestionsInTheFormsOrder()
     {
+        var backend = new SeededBackend("linux");
+        var form = await backend.ResolveFormAsync(await backend.SettingsAsync());
         var flow = await FlowAsync();
 
+        var asked = form.Groups.Single(group => group.Key == QualityLayout.GroupKey).Fields
+            .Select(field => field.Key)
+            .Where(QualityLayout.Questions.Contains);
+
         Assert.True(flow.Quality.IsResolved);
-        Assert.NotEmpty(flow.Quality.Title);
-        Assert.True(flow.Quality.HasMode);
-        Assert.True(flow.Quality.HasQuantizer);
+        Assert.Equal(["publish.fps", "publish.output_resolution", "publish.cq"], asked);
+        Assert.Equal(asked, flow.Quality.Questions.Select(question => question.Field.Key));
+        Assert.All(flow.Quality.Questions, question => Assert.NotEmpty(question.Heading));
+    }
+
+    /// <summary>Between the questions and the fold, every control the group offers is drawn exactly once.</summary>
+    [Fact]
+    public async Task EveryOtherControlOfTheGroupSitsInTheExpertFold()
+    {
+        var backend = new SeededBackend("linux");
+        var form = await backend.ResolveFormAsync(await backend.SettingsAsync());
+        var flow = await FlowAsync();
+
+        var sent = form.Groups.Single(group => group.Key == QualityLayout.GroupKey).Fields
+            .Where(field => field.Visible)
+            .Select(field => field.Key)
+            .Where(key => !QualityLayout.Questions.Contains(key));
+
+        Assert.Equal(sent, flow.Quality.Expert.Rows.Select(row => row.Field.Key));
     }
 
     [Fact]
-    public async Task EveryDropdownOffersEntriesAndNoneOfThemIsEmpty()
+    public async Task EveryQuestionOffersNamedChoices()
     {
         var flow = await FlowAsync();
 
-        Assert.NotEmpty(flow.Quality.Selects);
-        Assert.All(flow.Quality.Selects, field =>
+        Assert.All(flow.Quality.Questions, question =>
         {
-            Assert.NotEmpty(field.Options);
-            Assert.All(field.Options, option => Assert.NotEmpty(option.Label));
+            Assert.NotEmpty(question.Field.Options);
+            Assert.All(question.Field.Options, option => Assert.NotEmpty(option.Label));
         });
     }
 
-    /// <summary>Control carries entries behind the value it prints, and never opens onto nothing.</summary>
     [Fact]
     public async Task TheOutputResolutionOffersTheSourceAndTheScalesBelowIt()
     {
-        var resolution = Select(await FlowAsync(), "publish.output_resolution");
+        var resolution = Question(await FlowAsync(), "publish.output_resolution");
 
         Assert.Contains(resolution.Options, option => option.Value == "1920x1080");
         Assert.Contains(resolution.Options, option => option.Value == "2560x1440");
         Assert.DoesNotContain(resolution.Options, option => option.Value == "3840x2160");
     }
 
-    /// <summary>
-    /// Note names what the entry was derived from,
-    /// so the cost reads without opening the step that owns the source.
-    /// </summary>
+    /// <summary>An entry the form priced no differently shows what it was derived from in the figure's place.</summary>
     [Fact]
-    public async Task AScaledResolutionSaysWhatItWasScaledFrom()
+    public async Task AnUnpricedScaledResolutionSaysWhatItWasScaledFrom()
     {
-        var scaled = Select(await FlowAsync(), "publish.output_resolution").Options.Single(option => option.Value == "1920x1080");
+        var scaled = Question(await FlowAsync(), "publish.output_resolution").Options
+            .Single(option => option.Value == "1920x1080");
 
-        Assert.True(scaled.HasNote);
-        Assert.Contains("2560", scaled.Note);
+        Assert.Contains("2560", scaled.Figure);
     }
 
     [Fact]
-    public async Task PickingAResolutionMovesTheDraftAndTheControlShowsIt()
+    public async Task APricedChoiceShowsWhatPickingItCosts()
+    {
+        var rate = Question(await FlowAsync(), "publish.fps").Options.Single(option => option.Value == "30");
+
+        Assert.True(rate.HasPrice);
+        Assert.Equal(rate.Price, rate.Figure);
+    }
+
+    [Fact]
+    public async Task PickingAResolutionMovesTheDraftAndTheQuestionShowsIt()
     {
         var flow = await FlowAsync();
-        var resolution = Select(flow, "publish.output_resolution");
-        var picked = resolution.Options.Single(option => option.Value == "1280x720");
+        var picked = Question(flow, "publish.output_resolution").Options.Single(option => option.Value == "1280x720");
 
         await ChooseAsync(flow, picked);
 
-        var after = Select(flow, "publish.output_resolution");
-        Assert.Equal(picked.Label, after.PickedLabel);
+        var after = Question(flow, "publish.output_resolution");
+        Assert.Equal("1280x720", after.Picked!.Value);
         Assert.Single(after.Options, option => option.IsSelected);
-        Assert.Equal("1280x720", after.Options.Single(option => option.IsSelected).Value);
     }
 
-    /// <summary>Frame rate is a select over a number, so a string-only write marks the entry while storing zero.</summary>
+    /// <summary>Frame rate is a choice over a number, so a string-only write marks the entry while storing zero.</summary>
     [Fact]
     public async Task PickingAFramerateStoresTheNumberAndNotAZero()
     {
         var flow = await FlowAsync();
-        var picked = Select(flow, "publish.fps").Options.Single(option => option.Value == "30");
 
-        await ChooseAsync(flow, picked);
+        await ChooseAsync(flow, Question(flow, "publish.fps").Options.Single(option => option.Value == "30"));
 
-        var after = Select(flow, "publish.fps");
-        Assert.Equal("30", after.Options.Single(option => option.IsSelected).Value);
+        var after = Question(flow, "publish.fps");
+        Assert.Equal("30", after.Picked!.Value);
         Assert.Equal("30", after.Number.ToString());
     }
 
     /// <summary>
-    /// Above the screen's refresh rate the encoder codes repeats, costing bandwidth and buying no motion.
-    /// Legal to ask for, so the form carries a diagnostic instead of taking the entry away.
+    /// Above the screen's refresh rate the encoder codes repeats.
+    /// Legal to ask for, so the entry stays and carries what picking it raises.
     /// </summary>
     [Fact]
-    public async Task AFramerateAboveTheSourceIsStillOffered()
+    public async Task AFramerateAboveTheSourceIsOfferedWithWhatItRaises()
     {
-        var above = Select(await FlowAsync(), "publish.fps").Options.Single(option => option.Value == "120");
+        var above = Question(await FlowAsync(), "publish.fps").Options.Single(option => option.Value == "120");
 
         Assert.True(above.IsEnabled);
-        Assert.Empty(above.Reason);
+        Assert.True(above.HasImpacts);
     }
 
-    /// <summary>
-    /// Nothing here knows a mode and a quantizer are related:
-    /// the backend states the greying and one control draws either answer.
-    /// </summary>
+    /// <summary>The picked choice's own statements stand under the question, once.</summary>
     [Fact]
-    public async Task TheQuantizerFollowsTheRateControlMode()
+    public async Task ThePickedChoiceCarriesItsImpactsUnderTheQuestion()
     {
         var flow = await FlowAsync();
-        var modes = flow.Quality.Mode!;
+
+        await ChooseAsync(flow, Question(flow, "publish.fps").Options.Single(option => option.Value == "120"));
+
+        Assert.True(Question(flow, "publish.fps").Picked!.HasImpacts);
+    }
+
+    /// <summary>The number of a detail step means another step on another codec's scale, so the step's own name labels it.</summary>
+    [Fact]
+    public async Task TheDetailChoicesAreNamedByTheirStep()
+    {
+        var detail = Question(await FlowAsync(), "publish.cq");
+
+        Assert.Equal(
+            ["Lighter", "Clean", "Sharper"],
+            detail.Options.Where(option => option.Value is "28" or "23" or "18").Select(option => option.Label));
+    }
+
+    /// <summary>Nothing here knows a mode and a quantizer are related: the backend states the greying.</summary>
+    [Fact]
+    public async Task TheDetailQuestionFollowsTheRateControlMode()
+    {
+        var flow = await FlowAsync();
+        var modes = flow.Quality.Expert.Rows.Single(row => row.Field.Key == "publish.mode").Field;
 
         await ChooseAsync(flow, modes.Options.Single(option => option.Value == "crf"));
-        Assert.True(flow.Quality.Quantizer!.IsEnabled);
+        Assert.True(Question(flow, "publish.cq").IsEnabled);
 
         await ChooseAsync(flow, modes.Options.Single(option => option.Value == "cbr"));
-        Assert.False(flow.Quality.Quantizer!.IsEnabled);
-        Assert.NotEmpty(flow.Quality.Quantizer!.Reason);
+        Assert.False(Question(flow, "publish.cq").IsEnabled);
+        Assert.NotEmpty(Question(flow, "publish.cq").Reason);
     }
 
-    /// <summary>
-    /// Shape is the step's and the count is the form's,
-    /// so one more mode from the backend is laid out by the same rule rather than by an edit here.
-    /// Measured against the drawn list the grid is given:
-    /// a shape derived from the offered entries opens a column for a card the refusals took away.
-    /// </summary>
-    [Fact]
-    public async Task TheRateControlCardsFillEveryRowTheyOpen()
-    {
-        var flow = await FlowAsync();
-        var modes = flow.Quality.Mode!.Offered.Count;
-        var columns = flow.Quality.ModeColumns;
-        var rows = (modes + columns - 1) / columns;
-
-        Assert.True(modes > 0);
-        Assert.True(rows * columns >= modes, "the grid holds every mode");
-        Assert.True((rows - 1) * columns < modes, "the last row of the grid carries a card");
-    }
-
-    /// <summary>
-    /// Five modes with one refused draw four cards,
-    /// and four across three columns leave the second row holding one card beside two empty cells.
-    /// </summary>
-    [Fact]
-    public void TheGridIsShapedForTheCardsARefusalLeavesStanding()
-    {
-        var step = StepOver("crf", "vbr", "cbr", "abr", "-lossless");
-
-        Assert.Equal(4, step.Mode!.Offered.Count);
-        Assert.Equal(2, step.ModeColumns);
-    }
-
-    /// <summary>
-    /// The cards over the disclosure are the ones that can be picked, whatever it is showing,
-    /// so opening it moves neither them nor the disclosure under them.
-    /// </summary>
-    [Fact]
-    public void RevealingARefusedModeLeavesTheGridOverItWhereItWas()
-    {
-        var step = StepOver("crf", "vbr", "cbr", "abr", "-lossless");
-
-        step.Mode!.RevealCommand.Execute(null);
-
-        Assert.Equal(4, step.Mode.Offered.Count);
-        Assert.Equal(["lossless"], step.Mode.Refused.Select(option => option.Value));
-        Assert.Equal(2, step.ModeColumns);
-    }
-
-    /// <summary>
-    /// Counts a UniformGrid gets wrong on its own: given neither dimension it squares off both,
-    /// so five options open a three by three and leave a row of empty columns under the cards.
-    /// </summary>
-    [Theory]
-    [InlineData(0, 1)]
-    [InlineData(1, 1)]
-    [InlineData(2, 2)]
-    [InlineData(4, 2)]
-    [InlineData(5, 3)]
-    [InlineData(7, 3)]
-    [InlineData(10, 4)]
-    public void ACardGridIsAsWideAsItsCountIsSquare(int options, int columns)
-    {
-        Assert.Equal(columns, QualityLayout.CardColumns(options));
-    }
-
-    /// <summary>A chip composed here could name a configuration the form does not.</summary>
     [Fact]
     public async Task TheStepChipRepeatsTheGroupsOwnSummary()
     {
@@ -259,18 +196,92 @@ public sealed class QualityStepTests
     }
 
     /// <summary>
-    /// Equal rows over an unchanged draft let an open menu survive a pass
+    /// Equal rows over an unchanged draft let an open tooltip survive a pass
     /// (<c>docs/development-principles.md</c>, "Idempotency").
     /// </summary>
     [Fact]
-    public async Task ASecondRenderPassLeavesTheEntriesAlone()
+    public async Task ASecondRenderPassLeavesTheQuestionsAndTheirChoicesAlone()
     {
         var flow = await FlowAsync();
-        var before = Select(flow, "publish.output_resolution").Options.ToList();
+        var questions = flow.Quality.Questions.ToList();
+        var choices = Question(flow, "publish.output_resolution").Options.ToList();
 
         flow.Apply();
         await flow.Settled;
 
-        Assert.Equal(before, Select(flow, "publish.output_resolution").Options);
+        Assert.Equal(questions, flow.Quality.Questions);
+        Assert.Equal(choices, Question(flow, "publish.output_resolution").Options);
+    }
+}
+
+/// <summary>The fold under the questions: every expert control as a closed row, one row open at a time.</summary>
+public sealed class ExpertFoldTests
+{
+    private static async Task<SetupViewModel> FlowAsync()
+    {
+        var flow = Flows.Setup(new SeededBackend("linux"));
+        await flow.Settled;
+        return flow;
+    }
+
+    private static ExpertRow Row(SetupViewModel flow, string key)
+        => flow.Quality.Expert.Rows.Single(row => row.Field.Key == key);
+
+    [Fact]
+    public async Task EveryRowStartsClosed()
+    {
+        var flow = await FlowAsync();
+
+        Assert.NotEmpty(flow.Quality.Expert.Rows);
+        Assert.All(flow.Quality.Expert.Rows, row => Assert.False(row.IsOpen));
+    }
+
+    [Fact]
+    public async Task OpeningARowClosesTheOneOpenBefore()
+    {
+        var flow = await FlowAsync();
+
+        Row(flow, "publish.mode").Toggle.Execute(null);
+        Row(flow, "publish.gop").Toggle.Execute(null);
+
+        Assert.Equal(["publish.gop"], flow.Quality.Expert.Rows.Where(row => row.IsOpen).Select(row => row.Field.Key));
+    }
+
+    [Fact]
+    public async Task PressingTheOpenRowClosesIt()
+    {
+        var flow = await FlowAsync();
+
+        Row(flow, "publish.gop").Toggle.Execute(null);
+        Row(flow, "publish.gop").Toggle.Execute(null);
+
+        Assert.DoesNotContain(flow.Quality.Expert.Rows, row => row.IsOpen);
+    }
+
+    /// <summary>The open row is the reader's, so a pass the form answers keeps it open.</summary>
+    [Fact]
+    public async Task TheOpenRowSurvivesAResolve()
+    {
+        var flow = await FlowAsync();
+
+        Row(flow, "publish.gop").Toggle.Execute(null);
+        flow.Apply();
+        await flow.Settled;
+
+        Assert.True(Row(flow, "publish.gop").IsOpen);
+    }
+
+    /// <summary>A greyed field states its reason on the closed row and opens onto nothing.</summary>
+    [Fact]
+    public async Task AGreyedRowDoesNotOpen()
+    {
+        var flow = await FlowAsync();
+        var greyed = flow.Quality.Expert.Rows.FirstOrDefault(row => !row.Field.IsEnabled);
+        Assert.NotNull(greyed);
+
+        greyed.Toggle.Execute(null);
+
+        Assert.False(Row(flow, greyed.Field.Key).IsOpen);
+        Assert.NotEmpty(greyed.Field.Reason);
     }
 }

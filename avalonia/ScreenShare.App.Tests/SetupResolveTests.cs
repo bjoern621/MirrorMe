@@ -14,7 +14,7 @@ namespace ScreenShare.App.Tests;
 public sealed class SetupResolveTests
 {
     private static FieldViewModel Select(SetupViewModel flow, string key)
-        => flow.Quality.Selects.Single(field => field.Key == key);
+        => Flows.Encode(flow, key);
 
     private static string PickedValue(SetupViewModel flow, string key)
         => Select(flow, key).Options.Single(option => option.IsSelected).Value;

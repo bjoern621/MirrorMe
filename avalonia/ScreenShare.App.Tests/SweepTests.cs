@@ -108,10 +108,10 @@ public sealed class SweepTests
         await backend.AnswerAsync(0);
 
         // Constant quality is the mode whose rate the quantizer prices.
-        flow.Quality.Mode!.Options.Single(option => option.Value == "crf").Choose.Execute(null);
+        Flows.Encode(flow, "publish.mode").Options.Single(option => option.Value == "crf").Choose.Execute(null);
         await backend.AnswerAsync(1);
 
-        var quantizer = flow.Quality.Quantizer!;
+        var quantizer = Flows.Encode(flow, "publish.cq");
         var priced = flow.Rail.Bitrate;
 
         quantizer.IsSweeping = true;

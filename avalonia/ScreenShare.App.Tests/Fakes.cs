@@ -1,5 +1,6 @@
 using ScreenShare.Api.V1;
 using ScreenShare.App.Backend;
+using ScreenShare.App.Features.Fields.ViewModel;
 using ScreenShare.App.Features.Shell.Update.ViewModel;
 using ScreenShare.App.Features.Setup.SharePicker.ViewModel;
 using ScreenShare.App.Features.Setup.ShareQuestion.ViewModel;
@@ -607,6 +608,12 @@ internal sealed class PublishingBackend : IBackend
 /// </summary>
 internal static class Flows
 {
+    /// <summary>One control of the encode step, asked as a question or folded under them.</summary>
+    public static FieldViewModel Encode(SetupViewModel flow, string key)
+        => flow.Quality.Questions.Select(question => question.Field)
+            .Concat(flow.Quality.Expert.Rows.Select(row => row.Field))
+            .Single(field => field.Key == key);
+
     /// <summary>Inline, so a render pass is over when the call is.</summary>
     private static readonly Action<Action> Inline = action => action();
 

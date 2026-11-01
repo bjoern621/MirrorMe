@@ -6,7 +6,6 @@
              xmlns:strip="using:ScreenShare.App.Features.Setup.StepStrip.View"
              xmlns:quality="using:ScreenShare.App.Features.Setup.QualityStep.View"
              xmlns:audio="using:ScreenShare.App.Features.Setup.AudioStep.View"
-             xmlns:advanced="using:ScreenShare.App.Features.Setup.AdvancedGroup.View"
              xmlns:rail="using:ScreenShare.App.Features.Setup.CostRail.View"
              xmlns:presets="using:ScreenShare.App.Features.Setup.Presets.View"
              xmlns:commit="using:ScreenShare.App.Features.Setup.Commit.View"
@@ -119,10 +118,6 @@
             <!-- A preset sets every field below it at once, so its card leads the step. -->
             <presets:PresetsView DataContext="{Binding Presets}" />
             <quality:QualityStepView DataContext="{Binding Quality}" />
-            <!-- Behind the step's fold with everything else quality; the wrapper keeps the binding on this flow. -->
-            <Panel IsVisible="{Binding Quality.Fold.Shown}">
-              <advanced:AdvancedGroupView DataContext="{Binding Advanced}" />
-            </Panel>
           </controls:CardColumn>
 
           <!--

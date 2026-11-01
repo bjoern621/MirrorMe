@@ -1,0 +1,43 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:fields="using:ScreenShare.App.Features.Fields.ViewModel">
+
+  <!--
+    One entry of a question: its name, and under it the price of picking it or what it was derived from.
+    The use case and the impacts stand once under the question for the picked entry,
+    so the card carries two short lines (QualityStepView.axaml).
+    A refused card states its reason in the figure's place, so nothing opens over it
+    (docs/tooltips.md, "An availability note is a line").
+    The radio dot's treatment is a style of the view, a ControlTheme carrying no descendant selector.
+  -->
+  <DataTemplate x:Key="ChoiceCard" x:DataType="fields:OptionViewModel">
+    <Button Theme="{StaticResource OptionCard}"
+            Classes.picked="{Binding IsSelected}"
+            IsEnabled="{Binding IsEnabled}"
+            Command="{Binding Choose}">
+      <StackPanel Spacing="3">
+        <!-- A grid: a horizontal stack measures against infinite width, and the name would run past the edge. -->
+        <Grid ColumnDefinitions="Auto,*">
+          <Ellipse Grid.Column="0" Classes="radiodot" />
+          <TextBlock Grid.Column="1"
+                     Classes="cardtitle"
+                     Text="{Binding Label}"
+                     Margin="7,0,0,0"
+                     TextWrapping="Wrap"
+                     TextTrimming="None"
+                     VerticalAlignment="Center" />
+        </Grid>
+        <TextBlock Classes="hint"
+                   Margin="20,0,0,0"
+                   FontFeatures="{StaticResource FigureFeatures}"
+                   IsVisible="{Binding !HasReason}"
+                   Text="{Binding Figure}" />
+        <SelectableTextBlock Classes="reason"
+                             Margin="20,0,0,0"
+                             IsVisible="{Binding HasReason}"
+                             Text="{Binding Reason}" />
+      </StackPanel>
+    </Button>
+  </DataTemplate>
+
+</ResourceDictionary>

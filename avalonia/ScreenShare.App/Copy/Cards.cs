@@ -224,8 +224,17 @@ public static class Cards
 
     public const string RelayCheckUnrun = "No check has run on this relay.";
 
-    /// <summary>Heading over the quality group's raw knobs, the one word on that card the form does not supply.</summary>
-    public const string AdvancedTitle = "Advanced";
+    /// <summary>Disclosure over the encode controls the step asks no question about.</summary>
+    public const string ExpertTitle = "Expert options";
+
+    /// <summary>Question the encode step asks of one control, keyed by its settings field.</summary>
+    public static string Question(string key) => key switch
+    {
+        "publish.fps" => "How smooth should motion be?",
+        "publish.output_resolution" => "How large?",
+        "publish.cq" => "How much detail?",
+        _ => Fields.Of(key).Label,
+    };
 
     /// <summary>
     /// Latency plot's two series, named beside the rule drawn in each one's stroke.
@@ -248,18 +257,6 @@ public static class Cards
     /// </summary>
     public const string Redialling =
         "This window is dialing the backend, and keeps doing so until it answers or the window closes.";
-
-    /// <summary>
-    /// Quantizer track's three labels, each carrying the number on the track it sits over.
-    /// Formatted and not written, the scale being the codec's and the encoder's:
-    /// 51 ends the H.26x scale, and libvpx or a raw quantizer index would show somebody else's ceiling
-    /// (<see cref="Features.Setup.Model.QualityLayout"/>).
-    /// </summary>
-    public static string QuantizerFloor(int at) => $"{at}: visually lossless, huge";
-
-    public static string QuantizerCeiling(int at) => $"{at}: unusable";
-
-    public static string QuantizerBand(int from, int to) => $"{from}-{to} recommended for screen content";
 
     /// <summary>
     /// What the button over the audio list says.

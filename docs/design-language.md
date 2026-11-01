@@ -147,7 +147,9 @@ It goes here rather than in the title bar because the foot is the one band every
 A setup step shows what a guest has to touch: the screen to send, the group to join, the sources to record.
 Everything else folds behind the step's disclosure, closed on every launch (`Features/Setup/Model/FloorLayout.cs`).
 A preset or a shipped default stands behind every folded control.
-The quality step folds whole, the Advanced card with it, and the audio step folds the format under its rows.
+The encode step asks what a viewer notices, smoothness, size and detail, as questions answered by choices, each carrying its price and what picking it raises.
+The rest of the encode group folds under them as closed rows, one row open at a time.
+The audio step folds the format under its rows.
 The fold is view state: opening one is the reader's press, and no run remembers it.
 
 ## Narrow windows

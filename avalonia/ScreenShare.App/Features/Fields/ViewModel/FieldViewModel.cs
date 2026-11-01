@@ -259,6 +259,7 @@ public sealed class FieldViewModel : Observable
     private string _pickedLabel = "";
     private string _pickedNote = "";
     private bool _hasPickedNote;
+    private OptionViewModel? _picked;
     private bool _hasNothingLeft;
     private bool _isVisible;
     private bool _isEnabled;
@@ -395,6 +396,12 @@ public sealed class FieldViewModel : Observable
     public string PickedNote { get => _pickedNote; private set => Set(ref _pickedNote, value); }
 
     public bool HasPickedNote { get => _hasPickedNote; private set => Set(ref _hasPickedNote, value); }
+
+    /// <summary>
+    /// Picked entry, what a question draws its detail and impacts from.
+    /// null where the value is none of the entries offered, or where every entry is greyed.
+    /// </summary>
+    public OptionViewModel? Picked { get => _picked; private set => Set(ref _picked, value); }
 
     /// <summary>
     /// Whether this combination leaves the control nothing to pick: every entry greyed, the held value with them.
@@ -657,6 +664,7 @@ public sealed class FieldViewModel : Observable
         // The closed dropdown's face, written on every pass including the branch where nothing is picked,
         // so a field whose entry went away cannot go on showing the last one it had.
         var picked = Options.FirstOrDefault(option => option.IsSelected);
+        Picked = HasNothingLeft ? null : picked;
         PickedLabel = HasNothingLeft ? Copy.Fields.NothingLeft : picked?.Label ?? Readback;
         PickedNote = HasNothingLeft ? "" : picked?.Note ?? "";
         HasPickedNote = PickedNote.Length > 0;
@@ -779,8 +787,9 @@ public sealed class FieldViewModel : Observable
         return field.Options.Select(option => new OptionViewModel
         {
             Value = option.Value,
-            Label = _words.Name(Key, option.Value),
-            Note = Statements.Of(option.Note),
+            // A detail step's number stands for another step on another codec's scale, so the step names the entry.
+            Label = NamedByNote(option) ? Statements.Of(option.Note) : _words.Name(Key, option.Value),
+            Note = NamedByNote(option) ? "" : Statements.Of(option.Note),
             Detail = _words.Describe(Key, option.Value),
             IsSelected = option.Value == picked,
             IsEnabled = option.Enabled,
@@ -792,6 +801,8 @@ public sealed class FieldViewModel : Observable
             Choose = ChooseCommand(option.Value),
         }).ToList();
     }
+
+    private static bool NamedByNote(FieldOption option) => option.Note?.Code == TextCode.DetailStep;
 
     /// <summary>
     /// The card list's three parts in one collection, for the surfaces whose list is a popup:

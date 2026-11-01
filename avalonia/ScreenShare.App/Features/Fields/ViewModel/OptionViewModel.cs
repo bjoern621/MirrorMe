@@ -73,6 +73,9 @@ public sealed record OptionViewModel
 
     public bool HasNote => Note.Length > 0;
 
+    /// <summary>What a choice prints beside its name: the price, or what the entry was derived from where it carries none.</summary>
+    public string Figure => HasPrice ? Price : Note;
+
     public bool HasPrice => Price.Length > 0;
 
     public bool HasImpacts => Impacts.Count > 0;

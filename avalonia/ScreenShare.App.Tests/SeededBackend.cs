@@ -46,6 +46,12 @@ internal sealed class SeededBackend : IBackend
 
         /// <summary>Why this combination rules the option out. null where it stands.</summary>
         public Text? Reason { get; init; }
+
+        /// <summary>What the settings cost with this entry picked. null where the field moves no price.</summary>
+        public Estimate? Estimate { get; init; }
+
+        /// <summary>What picking this entry raises that the field's other entries do not.</summary>
+        public IReadOnlyList<Diagnostic> Impacts { get; init; } = [];
     }
 
     /// <summary>One control, before the draft supplies its value.</summary>
@@ -1190,7 +1196,15 @@ internal sealed class SeededBackend : IBackend
                 Enabled = refusal is null,
                 Reason = refusal,
                 Recommended = false,
+                Estimate = refusal is null ? option.Estimate : null,
+                Impacts = { refusal is null ? option.Impacts : [] },
             });
+        }
+
+        // A held number off the ladder stays offered, as the backend keeps it (backend/internal/form/detail.go).
+        if (seed.Control == ControlKind.NumberSelect && field.Options.All(option => option.Value != picked))
+        {
+            field.Options.Add(new FieldOption { Value = picked, Enabled = true });
         }
 
         // The window control is the one select that starts on nothing.
@@ -1301,6 +1315,11 @@ internal sealed class SeededBackend : IBackend
                 return settings.Publish.Mode == "crf"
                     ? (true, true, null, null)
                     : (true, false, Say(TextCode.CqOnlyInConstantQuality), null);
+
+            case "publish.bitrate_mbps":
+                return settings.Publish.Mode is "crf" or "lossless"
+                    ? (true, false, Say(TextCode.BitrateNotInMode, Id(TextArgName.Mode, settings.Publish.Mode)), null)
+                    : (true, true, null, null);
 
             // Disabled from the update channel's own statement, which the toggle and the band both carry
             // (backend/internal/form/availability.go, KeyCheckUpdatesOnStart).
@@ -1510,10 +1529,32 @@ internal sealed class SeededBackend : IBackend
     /// rather than as a refusal, so nothing here is greyed
     /// (<c>docs/field-availability.md</c>, "One option disabled with a reason").
     /// </summary>
+    /// <summary>
+    /// Frame rates, each priced in proportion to the rate.
+    /// A rate above the source's refresh raises the repeated-frames statement, which no rate at or under it does.
+    /// </summary>
     private static IReadOnlyList<OptionSeed> FrameRateOptions() =>
         [.. FrameRates.Select(rate => new OptionSeed
         {
             Value = rate.ToString(),
+            Estimate = new Estimate { BitrateMbps = rate * 0.145 },
+            Impacts = rate > Source.RefreshHz
+                ? [new Diagnostic
+                    {
+                        Severity = Severity.Warning,
+                        FieldKey = "publish.fps",
+                        Text = Say(TextCode.FpsAboveRefresh,
+                            Num(TextArgName.Fps, rate), Num(TextArgName.RefreshHz, (int)Math.Round(Source.RefreshHz))),
+                    }]
+                : [],
+        })];
+
+    /// <summary>The detail steps on the 51-point scale, least detail first, each naming its step.</summary>
+    private static IReadOnlyList<OptionSeed> DetailOptions() =>
+        [.. new[] { ("lighter", 28), ("clean", 23), ("sharper", 18) }.Select(step => new OptionSeed
+        {
+            Value = step.Item2.ToString(),
+            Note = Say(TextCode.DetailStep, Id(TextArgName.DetailStep, step.Item1)),
         })];
 
     /// <summary>
@@ -1742,6 +1783,20 @@ internal sealed class SeededBackend : IBackend
             [
                 new()
                 {
+                    Key = "publish.fps",
+                    Control = ControlKind.NumberSelect,
+                    Unit = Unit.FramesPerSecond,
+                    Range = Bounded(1, 240),
+                    Options = FrameRateOptions(),
+                },
+                new()
+                {
+                    Key = "publish.output_resolution",
+                    Control = ControlKind.Select,
+                    Options = ResolutionOptions(),
+                },
+                new()
+                {
                     Key = "publish.mode",
                     Control = ControlKind.Radio,
                     Options =
@@ -1756,20 +1811,16 @@ internal sealed class SeededBackend : IBackend
                 new()
                 {
                     Key = "publish.cq",
-                    Control = ControlKind.Slider,
+                    Control = ControlKind.NumberSelect,
                     Range = Bounded(0, 51),
+                    Options = DetailOptions(),
                 },
                 new()
                 {
-                    Key = "publish.output_resolution",
-                    Control = ControlKind.Select,
-                    Options = ResolutionOptions(),
-                },
-                new()
-                {
-                    Key = "publish.fps",
-                    Control = ControlKind.Select,
-                    Options = FrameRateOptions(),
+                    Key = "publish.bitrate_mbps",
+                    Control = ControlKind.Number,
+                    Unit = Unit.MegabitsPerSecond,
+                    Range = Bounded(1, 500),
                 },
                 new()
                 {
