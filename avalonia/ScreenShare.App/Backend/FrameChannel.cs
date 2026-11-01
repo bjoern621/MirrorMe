@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Grpc.Core;
 using ScreenShare.Api.V1;
 using ScreenShare.App.Contracts;
@@ -136,9 +137,28 @@ public sealed class FrameChannel : IAsyncDisposable
     /// <summary>
     /// What the backend says, in order, until the subscription ends.
     /// Completes when the decode ends or the call is disposed.
+    /// A refused subscribe surfaces on the first read and throws as every unary call's refusal does
+    /// (<see cref="ControlBackend.Translate"/>).
     /// </summary>
-    public IAsyncEnumerable<FrameEvent> ReadAsync(CancellationToken cancellation)
-        => _call.ResponseStream.ReadAllAsync(cancellation);
+    public async IAsyncEnumerable<FrameEvent> ReadAsync([EnumeratorCancellation] CancellationToken cancellation)
+    {
+        while (await NextAsync(cancellation).ConfigureAwait(false))
+        {
+            yield return _call.ResponseStream.Current;
+        }
+    }
+
+    private async Task<bool> NextAsync(CancellationToken cancellation)
+    {
+        try
+        {
+            return await _call.ResponseStream.MoveNext(cancellation).ConfigureAwait(false);
+        }
+        catch (RpcException e)
+        {
+            throw ControlBackend.Translate(e, cancellation);
+        }
+    }
 
     /// <summary>
     /// Hands one slot back, naming the pool it came from.
