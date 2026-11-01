@@ -412,7 +412,7 @@ func resolveOptions(av availability, d Deps, s settings.Settings, f *field, entr
 	out := append(reachable, ruledOut...)
 	// A repeated control's key addresses no single setting until an entry index names one.
 	if !f.repeat {
-		priceOptions(d, s, f.key, out)
+		pickOptions(d, s, f.key, out)
 	}
 	assert.Assert(len(out) == len(built), "every entry the builder made is offered", f.key, len(out), len(built))
 	assert.Assert(len(out) == 0 || out[0].GetEnabled() || len(reachable) == 0,

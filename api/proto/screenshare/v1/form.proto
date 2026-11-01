@@ -173,6 +173,12 @@ message FieldOption {
   // Absent on a ruled-out entry, on every entry of a field that moves no price,
   // and where the settings cannot be priced at all.
   Estimate estimate = 10;
+  // Diagnostics the settings would raise with this entry picked and nothing else moved,
+  // ranked as Form.diagnostics ranks them.
+  // A diagnostic every enabled entry of the field raises is left off all of them,
+  // since it says nothing about the choice.
+  // Empty on a ruled-out entry.
+  repeated Diagnostic impacts = 11;
 
   // 2, 4, 3 and 6 were label, detail, note and reason as prose.
   // Naming an entry and writing the paragraph behind it happen where a layout is visible,

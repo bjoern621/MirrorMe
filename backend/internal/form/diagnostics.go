@@ -69,16 +69,28 @@ func diagnostics(
 	if _, reason := formCommand(s); reason != "" {
 		out = append(out, diagnosticFor(screensharev1.Severity_SEVERITY_ERROR, "", say(publishRefused)))
 	}
+	out = append(out, diagnosticsOfTheSettings(d, s, est)...)
+	return ranked(out)
+}
+
+// diagnosticsOfTheSettings runs every rule that reads the settings and the prediction alone, in gathering order.
+// An entry's impacts run these and no others (picked.go):
+// the stranded controls and the refusal need the whole form and the built command.
+func diagnosticsOfTheSettings(d Deps, s settings.Settings, est *screensharev1.Estimate) []*screensharev1.Diagnostic {
+	var out []*screensharev1.Diagnostic
 	out = append(out, diagnosticsAboutTheAudience(d, s)...)
 	out = append(out, diagnosticsAboutTheLine(d, s, est)...)
 	out = append(out, diagnosticsAboutTheCeiling(d, s)...)
 	out = append(out, diagnosticsAboutTheCapture(d, s)...)
 	out = append(out, diagnosticsAboutTheViewer(s)...)
 	out = append(out, diagnosticsAboutThePrediction(d, s, est)...)
+	return out
+}
 
-	// Highest rank first, stable, so equal ranks keep the gathering order above.
-	// An unstable sort would move diagnostics under the reader
-	// between two keystrokes that changed neither of them.
+// ranked orders diagnostics highest rank first, stable, so equal ranks keep the gathering order.
+// An unstable sort would move diagnostics under the reader
+// between two keystrokes that changed neither of them.
+func ranked(out []*screensharev1.Diagnostic) []*screensharev1.Diagnostic {
 	slices.SortStableFunc(out, func(a, b *screensharev1.Diagnostic) int {
 		return int(b.GetSeverity()) - int(a.GetSeverity())
 	})
