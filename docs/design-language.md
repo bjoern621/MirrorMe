@@ -126,7 +126,7 @@ On the viewer a sliders button stands before the gear, opening how this computer
 Each destination carries a mark beside its word, and a window narrower than 520 px keeps the marks alone, with the commit taking its short word (`Share`, `Restart`, `Stop`).
 A commit locked by a check outlines both halves, the chevron still opening its menu.
 The gear sits in the strip because what it opens belongs to no destination.
-The strip commit is the wizard's own start-sharing press, glued to a chevron whose menu holds the commit with the settings it applies that no step question shows, the presets with the bitrate each sends, a stop row while live, and a row into the wizard.
+The strip commit is the wizard's own start-sharing press, glued to a chevron whose menu holds the commit with the settings it applies that no step question shows, the presets with the bitrate each sends or the reason nothing here reaches one, a stop row while live, and a row into the wizard.
 A stream running the settings the draft builds hands that press to `Stop sharing`, both halves taking the way-out hue, and a value moved hands it back to the commit: restarting a pipeline into itself costs every viewer the picture for nothing, and stopping is what the strip is reached for from any destination.
 The commit's dot gives way to the stop glyph, which the menu's stop row carries in red as its only mark, so the way out is found without reading the rows.
 A preset picked there is applied and committed in one press, so going live is one click from any destination.

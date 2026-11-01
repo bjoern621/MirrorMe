@@ -40,15 +40,10 @@ public sealed partial class GoView : UserControl
 
         flyout.Items.Add(new MenuItem
         {
-            Header = model.CommitLabel,
+            Header = CommitHeader(model.CommitLabel, model.Summary),
             Icon = Mark(model.CommitGlyph),
             Command = model.CommitCommand,
         });
-
-        if (model.Summary.Length > 0)
-        {
-            flyout.Items.Add(new MenuItem { Theme = Note(), Header = model.Summary });
-        }
 
         if (model.Builtin.Count + model.Saved.Count > 0)
         {
@@ -57,13 +52,13 @@ public sealed partial class GoView : UserControl
 
             foreach (var row in model.Builtin)
             {
-                flyout.Items.Add(PresetRowOf(row.Name, row.Price, row.IsCurrent, row.IsReachable,
+                flyout.Items.Add(PresetRowOf(row.Name, row.Price, row.Reason, row.IsCurrent, row.IsReachable,
                     new DelegateCommand(() => model.UseBuiltin(row.Key))));
             }
 
             foreach (var row in model.Saved)
             {
-                flyout.Items.Add(PresetRowOf(row.Name, "", row.IsCurrent, isReachable: true,
+                flyout.Items.Add(PresetRowOf(row.Name, "", "", row.IsCurrent, isReachable: true,
                     new DelegateCommand(() => model.UseSaved(row.Name))));
             }
         }
@@ -72,7 +67,7 @@ public sealed partial class GoView : UserControl
         flyout.Items.Add(new MenuItem
         {
             Header = Copy.Strip.OpenSetup,
-            Icon = Mark(Icons.IconSettings),
+            Icon = Mark(Icons.IconAdjustmentsHorizontal),
             Command = model.OpenSetup,
         });
 
@@ -90,25 +85,48 @@ public sealed partial class GoView : UserControl
         return flyout;
     }
 
+    /// <summary>The commit's word over the settings it applies that no step question shows.</summary>
+    private static Control CommitHeader(string label, string summary)
+    {
+        var header = new StackPanel { Spacing = 2 };
+        header.Children.Add(new TextBlock { Text = label, FontWeight = FontWeight.SemiBold });
+        if (summary.Length > 0)
+        {
+            var line = new TextBlock { Text = summary, TextWrapping = TextWrapping.Wrap, MaxWidth = 260 };
+            line.Classes.Add("hint");
+            header.Children.Add(line);
+        }
+
+        return header;
+    }
+
     /// <summary>
-    /// One preset row: radio-marked where the draft delivers it, inert where nothing here reaches it,
+    /// One preset row: ticked where the draft delivers it, inert where nothing here reaches it,
     /// its bitrate at the quiet end where the backend priced it.
-    /// The reason stays on the rail card, a menu row having no line to carry it.
+    /// An inert row carries its reason under the name, read where it stands, a disabled row taking no pointer.
     /// </summary>
     private static MenuItem PresetRowOf(
-        string name, string price, bool isCurrent, bool isReachable, DelegateCommand press)
+        string name, string price, string reason, bool isCurrent, bool isReachable, DelegateCommand press)
         => new()
         {
-            Header = PresetHeader(name, price),
+            Header = PresetHeader(name, price, reason),
             ToggleType = MenuItemToggleType.Radio,
             IsChecked = isCurrent,
             IsEnabled = isReachable,
             Command = press,
         };
 
-    private static Control PresetHeader(string name, string price)
+    private static Control PresetHeader(string name, string price, string reason)
     {
         var header = new DockPanel { LastChildFill = true };
+        if (reason.Length > 0)
+        {
+            var why = new TextBlock { Text = reason };
+            why.Classes.Add("reason");
+            DockPanel.SetDock(why, Dock.Bottom);
+            header.Children.Add(why);
+        }
+
         if (price.Length > 0)
         {
             var figure = new TextBlock { Text = price, Margin = new Thickness(24, 0, 0, 0) };
