@@ -950,6 +950,22 @@ func TestTheBitrateRangeFollowsTheCodecsOwnCeiling(t *testing.T) {
 	}
 }
 
+// The burst ceiling's range ends where the target's does.
+// A ceiling above the target's limit is brought down to it on the next resolve (repairCeilings),
+// so every value of a longer range would be offered and then replaced.
+func TestTheBurstCeilingRangeEndsWhereTheTargetsDoes(t *testing.T) {
+	d, s := fieldTestDeps(), settings.Defaults()
+	s.Publish.Mode = capabilities.ModeVbr
+	for _, c := range capabilities.Codecs {
+		s.Publish.UseCodec(c.Name)
+		s.Publish.BitrateM = 1
+		want := fieldBitrateBounds(d, s).GetMax()
+		if got := fieldMaxrateBounds(d, s).GetMax(); got != want {
+			t.Errorf("%s offers a ceiling up to %d Mbit/s and a target up to %d", c.Name, got, want)
+		}
+	}
+}
+
 // The ceiling is on the target the encoder is given, so it binds in the modes that aim at one.
 // A constant-quality encode sends none,
 // and narrowing there would state a limit on a number nothing reads.

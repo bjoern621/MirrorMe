@@ -249,15 +249,8 @@ func repairCeilings(d Deps, m *screensharev1.Settings) []string {
 			s.Publish.BitrateM = ceiling
 			moved = append(moved, KeyBitrateM)
 		}
-		// The burst ceiling comes down with the target, where its control's range does not:
-		// fieldMaxrateBounds offers the full scale, because a codec's limit bounds the target the encoder
-		// is given rather than the headroom above it.
-		// The two disagree, and this is the side that keeps the pair reachable:
+		// The burst ceiling comes down with the target, its range ending at the same limit (fieldMaxrateBounds):
 		// a ceiling left where the target cannot follow is headroom nothing can ever use.
-		// Not a refusal being anticipated, though: no rule bands this key
-		// and capabilities.Validate weighs the target alone,
-		// so a maxrate above the limit is a draft nothing rejects.
-		// The move is named in the repaired keys, so the narrowing is never silent.
 		if s.Publish.MaxrateM > ceiling {
 			s.Publish.MaxrateM = ceiling
 			moved = append(moved, KeyMaxrateM)

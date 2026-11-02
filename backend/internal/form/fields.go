@@ -620,9 +620,9 @@ func fieldBitrateBounds(d Deps, s settings.Settings) *screensharev1.NumericRange
 	return bounded(low, high, 1)
 }
 
-// fieldMaxrateBounds takes no codec ceiling.
-// A codec's limit bounds the target the encoder is given and not the burst allowed above it,
-// so narrowing here would refuse headroom the encoder never sees as a target.
+// fieldMaxrateBounds ends where the target's range ends.
+// A ceiling above the target's limit is headroom the target never reaches,
+// and repairCeilings brings it down on the next resolve.
 //
 // Zero is a value, an encode bounded by nothing, except on an encoder whose constant-quality mode
 // is a bounded one: the vpx elements code CQ toward a target,
@@ -635,6 +635,7 @@ func fieldBitrateBounds(d Deps, s settings.Settings) *screensharev1.NumericRange
 // The target itself can sit past the scale, a stored draft holding whatever it holds,
 // and the floor stops at the ceiling rather than running the range backwards.
 func fieldMaxrateBounds(d Deps, s settings.Settings) *screensharev1.NumericRange {
+	high := int(fieldBitrateBounds(d, s).GetMax())
 	low := 0
 	if s.Publish.Mode == capabilities.ModeCrf {
 		if engine, err := publish.EngineFor(s.Publish.Capture); err == nil &&
@@ -642,9 +643,9 @@ func fieldMaxrateBounds(d Deps, s settings.Settings) *screensharev1.NumericRange
 			low = 1
 		}
 	} else {
-		low = min(s.Publish.BitrateM, fieldRateCeiling)
+		low = min(s.Publish.BitrateM, high)
 	}
-	return bounded(low, fieldRateCeiling, 1)
+	return bounded(low, high, 1)
 }
 
 // fieldVbvBounds starts at zero, which is a value and not an absence:
