@@ -226,8 +226,8 @@ func repairLadders(m *screensharev1.Settings) []string {
 // capabilities.Validate rejects, and neither has an entry to grey.
 // A ceiling of zero is an engine that states none, not a ceiling of nothing.
 //
-// Ceilings only, and downward only.
-// A figure under a limit is the user's to choose.
+// Ceilings, and the two floors a publish refuses under: a target rate and a frame rate.
+// A figure between the limits is the user's to choose.
 func repairCeilings(d Deps, m *screensharev1.Settings) []string {
 	// Off the message alone, where the walk above carries the draft's unsent half (walked):
 	// the codec, the bitrate and the ceiling all ride the message,
@@ -262,6 +262,10 @@ func repairCeilings(d Deps, m *screensharev1.Settings) []string {
 	if floor := fieldBitrateBounds(d, s).GetMin(); int64(s.Publish.BitrateM) < floor {
 		s.Publish.BitrateM = int(floor)
 		moved = append(moved, KeyBitrateM)
+	}
+	if floor := fieldFpsBounds(d, s).GetMin(); int64(s.Publish.Fps) < floor {
+		s.Publish.Fps = int(floor)
+		moved = append(moved, KeyFps)
 	}
 	if _, ceiling := v.Bounds(KeyGop, 0, fieldGopCeiling); s.Publish.Gop > ceiling {
 		s.Publish.Gop = ceiling

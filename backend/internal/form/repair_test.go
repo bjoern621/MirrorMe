@@ -582,6 +582,23 @@ func TestATargetOfZeroStandsWhereNothingSendsIt(t *testing.T) {
 	}
 }
 
+// A frame rate of zero is one a publish refuses and no control offers, so an empty draft or
+// an edited file carrying it is raised to the field's floor and the move named.
+func TestAFrameRateOfZeroIsRaisedToTheFloor(t *testing.T) {
+	d := Deps{Platform: platform.Info{OS: "linux", Display: "x11"}}
+	draft := availabilityDraft("x11grab", "libx264", "yuv420p", "rtsp")
+	draft.Publish.Fps = 0
+
+	out, repaired := Repair(d, draft)
+
+	if floor := int(fieldFpsBounds(d, out).GetMin()); out.Publish.Fps != floor {
+		t.Errorf("repaired frame rate = %d, want the floor %d", out.Publish.Fps, floor)
+	}
+	if !slices.Contains(repaired, KeyFps) {
+		t.Errorf("repaired = %v, want it to name %s", repaired, KeyFps)
+	}
+}
+
 // The format is what every viewer has to decode, so an encoder this machine cannot run moves
 // the encoder alone: the same bitstream goes out through whatever produces it here.
 //
