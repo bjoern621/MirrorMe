@@ -3,17 +3,17 @@
   "zoom": 2,
   "comparisons": {
     "publish.cq": [
-      { "caption": "Lighter, CRF 28", "file": "cq-28.png", "scale": "", "encode": "-c:v libx265 -preset veryfast -tune zerolatency -crf 28 -pix_fmt yuv420p" },
-      { "caption": "Clean, CRF 23", "file": "cq-23.png", "scale": "", "encode": "-c:v libx265 -preset veryfast -tune zerolatency -crf 23 -pix_fmt yuv420p" },
-      { "caption": "Sharper, CRF 18", "file": "cq-18.png", "scale": "", "encode": "-c:v libx265 -preset veryfast -tune zerolatency -crf 18 -pix_fmt yuv420p" }
+      { "name": "Lighter", "figure": "CRF 28", "value": "28", "file": "cq-28.png", "scale": "", "encode": "-c:v libx265 -preset veryfast -tune zerolatency -crf 28 -pix_fmt yuv420p" },
+      { "name": "Clean", "figure": "CRF 23", "value": "23", "file": "cq-23.png", "scale": "", "encode": "-c:v libx265 -preset veryfast -tune zerolatency -crf 23 -pix_fmt yuv420p" },
+      { "name": "Sharper", "figure": "CRF 18", "value": "18", "file": "cq-18.png", "scale": "", "encode": "-c:v libx265 -preset veryfast -tune zerolatency -crf 18 -pix_fmt yuv420p" }
     ],
     "publish.chroma": [
-      { "caption": "4:2:0", "file": "chroma-420.png", "scale": "", "encode": "-c:v libx265 -preset veryfast -tune zerolatency -crf 18 -pix_fmt yuv420p" },
-      { "caption": "4:4:4", "file": "chroma-444.png", "scale": "", "encode": "-c:v libx265 -preset veryfast -tune zerolatency -crf 18 -pix_fmt yuv444p" }
+      { "name": "Standard", "figure": "4:2:0", "value": "yuv420p", "file": "chroma-420.png", "scale": "", "encode": "-c:v libx265 -preset veryfast -tune zerolatency -crf 18 -pix_fmt yuv420p" },
+      { "name": "Full color", "figure": "4:4:4", "value": "yuv444p", "file": "chroma-444.png", "scale": "", "encode": "-c:v libx265 -preset veryfast -tune zerolatency -crf 18 -pix_fmt yuv444p" }
     ],
     "publish.output_resolution": [
-      { "caption": "1920 × 1080", "file": "size-1080.png", "scale": "", "encode": "-c:v libx265 -preset veryfast -tune zerolatency -crf 23 -pix_fmt yuv420p" },
-      { "caption": "1280 × 720, scaled back up", "file": "size-720.png", "scale": "1280:720", "encode": "-c:v libx265 -preset veryfast -tune zerolatency -crf 23 -pix_fmt yuv420p" }
+      { "name": "Screen size", "figure": "1920×1080", "value": "", "file": "size-1080.png", "scale": "", "encode": "-c:v libx265 -preset veryfast -tune zerolatency -crf 23 -pix_fmt yuv420p" },
+      { "name": "Smaller", "figure": "1280×720", "value": "1280x720", "file": "size-720.png", "scale": "1280:720", "encode": "-c:v libx265 -preset veryfast -tune zerolatency -crf 23 -pix_fmt yuv420p" }
     ]
   }
 }

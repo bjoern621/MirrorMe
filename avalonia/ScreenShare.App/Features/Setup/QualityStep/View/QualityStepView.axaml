@@ -45,7 +45,7 @@
               <Grid ColumnDefinitions="*,Auto">
                 <TextBlock Grid.Column="0" Classes="heading" VerticalAlignment="Center" TextWrapping="Wrap" TextTrimming="None">
                   <Run Text="{Binding Heading}" />
-                  <InlineUIContainer BaselineAlignment="Center">
+                  <InlineUIContainer BaselineAlignment="TextBottom">
                     <ContentControl IsVisible="{Binding Field.HasComparison}"
                                     Content="{Binding Field}"
                                     ContentTemplate="{StaticResource ComparisonGlyph}" />

@@ -5,10 +5,17 @@ using ScreenShare.App.Mvvm;
 
 namespace ScreenShare.App.Features.Fields.Model;
 
-/// <summary>One picture of a comparison: what it shows, and its file under <c>Assets/Crops/</c>.</summary>
+/// <summary>One picture of a comparison: the entry it shows, and its file under <c>Assets/Crops/</c>.</summary>
 public sealed record Crop
 {
-    public required string Caption { get; init; }
+    /// <summary>Entry's plain name: "Sharper".</summary>
+    public required string Name { get; init; }
+
+    /// <summary>What the picture was encoded at, where the entry carries no price of its own: "CRF 18".</summary>
+    public required string Figure { get; init; }
+
+    /// <summary>Settings value of the entry the picture shows, as the form offers it: "18".</summary>
+    public required string Value { get; init; }
 
     public required string File { get; init; }
 
@@ -49,15 +56,17 @@ public static class Comparisons
             var crops = field.Value.EnumerateArray()
                 .Select(entry => new Crop
                 {
-                    Caption = entry.GetProperty("caption").GetString() ?? "",
+                    Name = entry.GetProperty("name").GetString() ?? "",
+                    Figure = entry.GetProperty("figure").GetString() ?? "",
+                    Value = entry.GetProperty("value").GetString() ?? "",
                     File = entry.GetProperty("file").GetString() ?? "",
                 })
                 .ToList();
 
             Assert.That(crops.Count >= 2, "a comparison sets at least two pictures side by side", field.Name, crops.Count);
             Assert.That(
-                crops.All(crop => crop.Caption.Length > 0 && crop.File.Length > 0),
-                "every crop names what it shows and its file", field.Name);
+                crops.All(crop => crop.Name.Length > 0 && crop.Figure.Length > 0 && crop.File.Length > 0),
+                "every crop names what it shows, its figure and its file", field.Name);
 
             byField[field.Name] = new ValueList<Crop>(crops);
         }

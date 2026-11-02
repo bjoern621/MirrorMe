@@ -36,6 +36,17 @@
     <Setter Property="BorderBrush" Value="{DynamicResource OnSelectedBrush}" />
   </Style>
 
+  <!-- One comparison picture, outlined in white where it shows the entry the field holds. -->
+  <Style Selector="Border.crop">
+    <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="{DynamicResource RadiusControl}" />
+    <Setter Property="ClipToBounds" Value="True" />
+  </Style>
+  <Style Selector="Border.crop.picked">
+    <Setter Property="BorderBrush" Value="{DynamicResource ForegroundBrush}" />
+  </Style>
+
   <!-- What a choice raises, a glyph and a few words under its sentence. Inverts with the card it sits on. -->
   <Style Selector="Border.impact">
     <Setter Property="Background" Value="{DynamicResource HairlineBrush}" />

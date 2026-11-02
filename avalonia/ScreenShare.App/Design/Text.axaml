@@ -231,6 +231,27 @@
     <Setter Property="LineHeight" Value="{DynamicResource LineHeightSmall}" />
   </Style>
 
+  <!-- The sentence under a tip's heading. Stated rather than inherited, so a flyout draws it as the tip does. -->
+  <Style Selector=":is(TextBlock).tipbody">
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeSmall}" />
+    <Setter Property="FontWeight" Value="Medium" />
+    <Setter Property="LineHeight" Value="{DynamicResource LineHeightSmall}" />
+    <Setter Property="Foreground" Value="{DynamicResource SecondaryBrush}" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+    <Setter Property="TextTrimming" Value="None" />
+  </Style>
+
+  <!-- Name and figure under a comparison picture, brighter under the one the field holds. -->
+  <Style Selector=":is(TextBlock).cropcaption">
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeMinor}" />
+    <Setter Property="LineHeight" Value="{DynamicResource LineHeightSmall}" />
+    <Setter Property="FontFeatures" Value="{DynamicResource FigureFeatures}" />
+    <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
+  </Style>
+  <Style Selector=":is(TextBlock).cropcaption.picked">
+    <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
+  </Style>
+
   <Style Selector=":is(TextBlock).impact">
     <Setter Property="FontSize" Value="{DynamicResource FontSizeMinor}" />
     <Setter Property="LineHeight" Value="{DynamicResource LineHeightSmall}" />

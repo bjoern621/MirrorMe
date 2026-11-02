@@ -42,7 +42,7 @@
                      TextTrimming="None"
                      VerticalAlignment="Center">
             <Run Text="{Binding Label}" />
-            <InlineUIContainer BaselineAlignment="Center">
+            <InlineUIContainer BaselineAlignment="TextBottom">
               <ContentControl IsVisible="{Binding HasComparison}" Content="{Binding}" ContentTemplate="{StaticResource ComparisonGlyph}" />
             </InlineUIContainer>
           </TextBlock>

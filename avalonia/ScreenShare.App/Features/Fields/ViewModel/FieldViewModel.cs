@@ -119,10 +119,22 @@ public sealed class FieldViewModel : Observable
     /// <summary>The settings field this control edits, as <c>publish.encoder</c>. Carried, never parsed.</summary>
     public string Key { get; }
 
-    /// <summary>Pictures comparing this field's entries, read off the crop manifest by key. Empty for most fields.</summary>
-    public ValueList<Crop> Comparison => Comparisons.Of(Key);
+    private ComparisonViewModel? _comparison;
 
-    public bool HasComparison => Comparison.Count > 0;
+    /// <summary>Pictures comparing this field's entries, the held one marked. Null for most fields.</summary>
+    public ComparisonViewModel? Comparison
+    {
+        get => _comparison;
+        private set
+        {
+            if (Set(ref _comparison, value))
+            {
+                OnPropertyChanged(nameof(HasComparison));
+            }
+        }
+    }
+
+    public bool HasComparison => Comparison is not null;
 
     // --- Inputs -------------------------------------------------------------------
 
@@ -668,6 +680,7 @@ public sealed class FieldViewModel : Observable
         }
 
         Reconcile.Onto(Options, OptionRows(field));
+        Comparison = ComparisonViewModel.Of(Key, Options);
 
         Reconcile.Onto(Offered, Options.Where(option => option.IsEnabled).ToList());
         Reconcile.Onto(Refused, Options.Where(option => !option.IsEnabled).ToList());
