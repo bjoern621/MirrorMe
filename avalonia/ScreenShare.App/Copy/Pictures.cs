@@ -8,6 +8,9 @@ public static class Pictures
 {
     public sealed record Entry(string Title, string Sentence);
 
+    /// <summary>Closes the pictures where a narrow window shows them as a sheet.</summary>
+    public const string Done = "Done";
+
     private static readonly Dictionary<string, Entry> Entries = new()
     {
         ["publish.cq"] = new(

@@ -181,6 +181,7 @@ A tiling session hands one a quarter of the screen and offers no frame to drag, 
 **A panel opens over the surface, which keeps its whole width.**
 The viewer's watch settings open this way, from the sliders button in the nav strip.
 The panel floats at the window's right edge, and below 520 px it rises as a sheet from the foot over a dimmed surface, a tap on which closes it.
+A comparison opened from an info glyph rises the same way below 520 px, closed by `Done` or a tap on the dimmed surface.
 
 The settings dialog shows one section at a time, its list beside the section, and each section opens on the question it answers.
 Below 520 px the dialog fills the window and shows the list first, a picked section taking its place and an arrow leading back.
