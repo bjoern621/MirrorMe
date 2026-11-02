@@ -158,6 +158,9 @@ func (r *Receiver) onElement(e gst.Element) {
 			r.trackStats(e, src)
 		}
 	}
+	if factory == rtspSourceFactory {
+		readPlainSDP(e)
+	}
 }
 
 // trackDecoder records one track's decoder and starts counting the encoded stream handed to it.
