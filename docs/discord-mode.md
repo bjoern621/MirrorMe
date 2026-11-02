@@ -135,7 +135,7 @@ Type 3 is what Discord draws as "Watching".
 The purple streaming badge is type 1, which Discord grants a Twitch or YouTube address alone.
 
 The channel and the audience are this mode's answers,
-so the setting asking for the activity moves the group onto the channel with it (`internal/app`, `SaveSettings`).
+so the setting asking for the activity moves the group onto the channel with it (`internal/app`, `Set settings`).
 Switching it off closes the connection, which is what takes the activity off the profile.
 
 One button rides under the activity, "Watch stream", which Discord opens in a browser.

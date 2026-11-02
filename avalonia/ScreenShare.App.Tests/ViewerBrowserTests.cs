@@ -93,7 +93,7 @@ public sealed class ViewerBrowserTests
     }
 
     /// <summary>
-    /// <c>StartWatch</c> launches a viewer the backend supervises and reports.
+    /// <c>Set viewer</c> launches a viewer the backend supervises and reports.
     /// A page hands an address to a program neither side hears from again.
     /// </summary>
     [Fact]

@@ -208,7 +208,7 @@ func (s *session) oneStream(ctx context.Context, events *watcher, settings *v1.S
 	}
 
 	err := withTimeout(ctx, 30*time.Second, func(call context.Context) error {
-		_, err := s.control.StartPublish(call, &v1.StartPublishRequest{Settings: settings})
+		_, err := s.control.Set(call, publishWanted(true, settings))
 		return err
 	})
 	if err != nil {
@@ -224,7 +224,7 @@ func (s *session) oneStream(ctx context.Context, events *watcher, settings *v1.S
 		// and every start made while it waits is refused.
 		// Stopping here is what keeps one failure from being the rest of the run.
 		_ = withTimeout(ctx, 20*time.Second, func(call context.Context) error {
-			_, err := s.control.StopPublish(call, &v1.StopPublishRequest{})
+			_, err := s.control.Set(call, publishWanted(false, nil))
 			return err
 		})
 		return false, nil
@@ -232,7 +232,7 @@ func (s *session) oneStream(ctx context.Context, events *watcher, settings *v1.S
 
 	// The same stream again is the state that already holds, so it succeeds and changes nothing.
 	err = withTimeout(ctx, 15*time.Second, func(call context.Context) error {
-		_, err := s.control.StartPublish(call, &v1.StartPublishRequest{Settings: settings})
+		_, err := s.control.Set(call, publishWanted(true, settings))
 		return err
 	})
 	if err != nil {
@@ -240,8 +240,8 @@ func (s *session) oneStream(ctx context.Context, events *watcher, settings *v1.S
 			fmt.Sprintf("starting the running stream again answered %s", err), fields, settings)
 	}
 
-	// A different pipeline over a running one is refused:
-	// that stream is one the user asked for and has not stopped.
+	// A different pipeline over a running one restarts the stream on it,
+	// and the settings this run measures are put back after.
 	//
 	// What counts as different is the command the form renders, not the field that was moved:
 	// a bitrate never reaches a lossless encoder,
@@ -255,14 +255,16 @@ func (s *session) oneStream(ctx context.Context, events *watcher, settings *v1.S
 			running.GetSummary().GetCommand() != changed.GetSummary().GetCommand()
 
 		if differs {
-			err = withTimeout(ctx, 15*time.Second, func(call context.Context) error {
-				_, err := s.control.StartPublish(call, &v1.StartPublishRequest{Settings: changed.GetSettings()})
-				return err
-			})
-			if code := status.Code(err); code != codes.FailedPrecondition {
-				s.report.report("publish.different_start_not_refused", "publish/second-start/"+code.String(),
-					fmt.Sprintf("starting a pipeline the form renders differently, over a running one, answered %s", code),
-					fields, settings)
+			for _, wanted := range []*v1.Settings{changed.GetSettings(), settings} {
+				err = withTimeout(ctx, 30*time.Second, func(call context.Context) error {
+					_, err := s.control.Set(call, publishWanted(true, wanted))
+					return err
+				})
+				if err != nil {
+					s.report.report("publish.restart_refused", "publish/restart-other/"+status.Code(err).String(),
+						fmt.Sprintf("putting a pipeline the form renders differently over a running one answered %s", err),
+						fields, settings)
+				}
 			}
 		}
 	}
@@ -289,7 +291,7 @@ func (s *session) oneStream(ctx context.Context, events *watcher, settings *v1.S
 	// Stopping twice: the second names a state that already holds, so it succeeds and does nothing.
 	for i := 0; i < 2; i++ {
 		err := withTimeout(ctx, 20*time.Second, func(call context.Context) error {
-			_, err := s.control.StopPublish(call, &v1.StopPublishRequest{})
+			_, err := s.control.Set(call, publishWanted(false, nil))
 			return err
 		})
 		if err != nil {
@@ -302,8 +304,8 @@ func (s *session) oneStream(ctx context.Context, events *watcher, settings *v1.S
 	time.Sleep(2 * time.Second)
 	var state *v1.PublishState
 	_ = withTimeout(ctx, 10*time.Second, func(call context.Context) error {
-		answer, err := s.control.GetPublishState(call, &v1.GetPublishStateRequest{})
-		state = answer
+		answer, err := s.control.Read(call, readOf(v1.EventKind_EVENT_KIND_PUBLISH_STATE))
+		state = answer.GetStates()[0].GetPublishState()
 		return err
 	})
 	if state.GetLive() != nil {
@@ -489,7 +491,7 @@ func carries(stats []*v1.PublishStats, has func(*v1.PublishStats) bool) bool {
 // subscribe holds the event stream for the whole run, reopening it where it drops.
 func (s *session) subscribe(ctx context.Context, events *watcher) {
 	for ctx.Err() == nil {
-		stream, err := s.control.Subscribe(ctx, &v1.SubscribeRequest{})
+		stream, err := s.control.Watch(ctx, &v1.WatchRequest{})
 		if err != nil {
 			time.Sleep(time.Second)
 			continue

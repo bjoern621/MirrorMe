@@ -110,7 +110,7 @@ public sealed class Session
     /// so putting it there would re-render the shell at metering rate to move one bar.
     /// Only the meters and the pointer subscribe here.
     ///
-    /// The shell-side half of why <c>SubscribeAudioLevels</c> is a stream of its own rather than an event kind
+    /// The shell-side half of why <c>Watch audio_levels</c> is a stream of its own rather than an event kind
     /// (<c>docs/ipc-api.md</c>): that separation is worth nothing if both ends land on one notification here.
     /// </summary>
     public event Action? Metered;

@@ -170,8 +170,8 @@ func lastTimed(stats []*v1.PublishStats) *v1.PublishStats {
 func (s *session) checkRelayView(ctx context.Context, stream string, fields map[string]string, settings *v1.Settings) {
 	var status *v1.RelayStatus
 	err := withTimeout(ctx, 15*time.Second, func(call context.Context) error {
-		answer, err := s.control.GetRelayStatus(call, &v1.GetRelayStatusRequest{})
-		status = answer
+		answer, err := s.control.Read(call, readOf(v1.EventKind_EVENT_KIND_RELAY_STATUS))
+		status = answer.GetStates()[0].GetRelayStatus()
 		return err
 	})
 	if err != nil {

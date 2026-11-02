@@ -8,7 +8,7 @@ import (
 	"bjoernblessin.de/screenshare/internal/wire"
 )
 
-// CheckRelay dials every leg of the relay the draft names and answers what each listener said.
+// checkRelay dials every leg of the relay the draft names and answers what each listener said.
 //
 // An effect for the reason the measurements are:
 // it reaches the network and waits out a listener that is not there,
@@ -21,14 +21,14 @@ import (
 // and "the relay is down" is a thing the screen says rather than a thing the call failed at.
 //
 // The draft decides what is dialled,
-// so a request carrying none is refused by the gate every effect uses:
+// so a request carrying none is refused by the gate every Set and Do arm uses:
 // an empty one would check the relay nobody named and report every leg unaddressed,
 // reading as an answer about the relay on screen.
-func (s *Server) CheckRelay(ctx context.Context, req *screensharev1.CheckRelayRequest) (*screensharev1.CheckRelayResponse, error) {
-	draft, err := draftOf(req.GetSettings(), "check")
+func (s *Server) checkRelay(ctx context.Context, m *screensharev1.Settings) (*screensharev1.RelayCheck, error) {
+	draft, err := draftOf(m, "check")
 	if err != nil {
 		return nil, err
 	}
 
-	return &screensharev1.CheckRelayResponse{Legs: wire.RelayLegs(s.backend.CheckRelay(ctx, draft))}, nil
+	return &screensharev1.RelayCheck{Legs: wire.RelayLegs(s.backend.CheckRelay(ctx, draft))}, nil
 }

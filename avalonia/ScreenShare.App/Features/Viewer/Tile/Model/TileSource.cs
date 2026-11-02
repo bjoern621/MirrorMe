@@ -30,7 +30,7 @@ public sealed record TileSource
         Monitor = monitor;
     }
 
-    /// <summary>A decode of one stream on one leg, opened by <c>StartReceive</c>.</summary>
+    /// <summary>A decode of one stream on one leg, opened by <c>Set receive</c>.</summary>
     public static TileSource Relay(string streamName, string transport)
     {
         Contracts.Assert.That(streamName.Length > 0, "a relay tile names the stream it draws");
@@ -87,8 +87,8 @@ public sealed record TileSource
 
     /// <summary>
     /// Opens the frames of this source.
-    /// Opens no picture: the relay's decode is <c>StartReceive</c>'s, the publish preview's is the publish's,
-    /// a screen's is <c>StartMonitorPreview</c>'s, so a caller that established none is refused rather than served.
+    /// Opens no picture: the relay's decode is <c>Set receive</c>'s, the publish preview's is the publish's,
+    /// a screen's is <c>Set monitor_preview</c>'s, so a caller that established none is refused rather than served.
     /// </summary>
     public Task<FrameChannel> OpenAsync(IBackend backend, CancellationToken cancellation)
     {

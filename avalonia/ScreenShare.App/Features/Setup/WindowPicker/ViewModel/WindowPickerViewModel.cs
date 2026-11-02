@@ -16,7 +16,7 @@ namespace ScreenShare.App.Features.Setup.WindowPicker.ViewModel;
 /// Which handles can be picked is the resolved form's answer, read through on every pass
 /// (<c>docs/ipc-api.md</c>).
 /// What this adds is the read that names them: the form carries handles, and the titles behind them
-/// cross on a call of their own (<c>ListShareWindows</c>).
+/// cross on a call of their own (<c>Read share_windows</c>).
 ///
 /// <b>The list is read when the question comes up, and again on request.</b>
 /// Windows open and close while nobody is looking, so one held across a visit would offer one that is gone.

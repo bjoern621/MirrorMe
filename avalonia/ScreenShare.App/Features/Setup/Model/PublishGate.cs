@@ -10,11 +10,11 @@ namespace ScreenShare.App.Features.Setup.Model;
 /// </summary>
 public enum PublishCommit
 {
-    /// <summary>Nothing on air, so press starts a stream through <c>StartPublish</c>.</summary>
+    /// <summary>Nothing on air, so press starts a stream through <c>Set publish</c>.</summary>
     Start,
 
     /// <summary>
-    /// Stream on air, so press puts these settings onto it through <c>ApplyToStream</c>.
+    /// Stream on air, so press puts these settings onto it through <c>Set publish</c>.
     /// Pipeline restarts: both engines run a child built from an argv and neither takes a value back.
     /// </summary>
     Apply,

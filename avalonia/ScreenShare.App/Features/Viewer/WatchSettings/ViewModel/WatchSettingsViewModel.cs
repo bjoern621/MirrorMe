@@ -13,7 +13,7 @@ namespace ScreenShare.App.Features.Viewer.WatchSettings.ViewModel;
 /// <b>Drawn beside the tiles it governs.</b> The wizard configures what this machine <i>sends</i>, so a group
 /// placed there sends a reader who only watches into the sharing flow,
 /// and leaves these settings unkept until a publish, the wizard's draft reaching the backend
-/// through <c>StartPublish</c> (<see cref="GroupPlacement"/>).
+/// through <c>Set publish</c> (<see cref="GroupPlacement"/>).
 ///
 /// <b>The draft belongs to the window.</b> <see cref="FormSession"/> holds it and the wizard reads the same one,
 /// so this panel's writes and a publish commit are writes of one message.

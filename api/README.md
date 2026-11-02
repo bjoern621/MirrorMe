@@ -19,7 +19,7 @@ api/
     form.proto                Form: every field, option, greying and reason, decided
     session.proto             the running state: publish, relay, viewers
     events.proto              Event, the server-push envelope
-    control.proto             ControlService, the whole callable surface
+    control.proto             ControlService: Hello, Read, Watch, Ask, Set, Do
     frame.proto               FrameService: the frame channel's handles and loans
   gen/go/screenshare/v1/    generated Go, committed
   buf.yaml                  lint and breaking-change configuration
@@ -74,7 +74,7 @@ A change that cannot be additive is a `v2`: a new directory beside this one, bot
 Adding a settings field is three edits, and they belong together:
 
 1. the field in the settings group it belongs to, with the comment saying what it means and why it is its own field;
-2. the `Field` the backend emits for it from `ResolveForm`, with its label, help text and options;
+2. the `Field` the backend emits for it from `Ask form`, with its label, help text and options;
 3. the backend rule that reads it.
 
 A field in the message and not the form is a value no shell can set.

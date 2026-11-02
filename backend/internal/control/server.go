@@ -7,9 +7,9 @@
 // The tables sit in capabilities, transport, gpupath and publish, their presentation in form,
 // and both shaped for the wire in wire, so a method here dispatches rather than decides.
 //
-// Three kinds of method: a read computes and changes nothing,
-// an effect does the one thing the user asked for, and Subscribe carries what changed.
-// A method that is none of the three does not belong here.
+// Six methods: Hello settles the version, Read and Watch hand over states,
+// Ask computes an answer, Set makes a state true, and Do runs one effect.
+// A method that is none of these does not belong here.
 package control
 
 import (
@@ -262,10 +262,10 @@ type FrameStream interface {
 // The major is settled on Hello, before any other method is reached,
 // so a mismatch reads as a sentence naming both versions rather than as a silently empty field.
 // The minor is informational: a shell built against a lower minor works,
-// one built against a higher minor may find a method missing.
+// one built against a higher minor may find a kind or an arm missing.
 const (
-	ProtocolMajor = 1
-	ProtocolMinor = 1
+	ProtocolMajor = 2
+	ProtocolMinor = 0
 )
 
 // Server is the ControlService implementation.

@@ -1,3 +1,4 @@
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 using Grpc.Net.Client;
@@ -23,7 +24,7 @@ namespace ScreenShare.App.Backend;
 /// needs one.
 ///
 /// The encoder probe is asked for once, which is why this class has an event.
-/// <c>ResolveForm</c> reads what has been probed rather than probing, a resolve running on every keystroke
+/// <c>Ask form</c> reads what has been probed rather than probing, a resolve running on every keystroke
 /// and the probe costing seconds, so a machine nothing has probed greys no codec for missing hardware
 /// and goes on offering QSV where there is no Intel GPU.
 /// This asks, in the background, and raises <see cref="Changed"/> when the answer lands.
@@ -35,7 +36,7 @@ public sealed class ControlBackend : IBackend
     /// Contract major this shell was generated against, matching Go's <c>control.ProtocolMajor</c>.
     /// Sent on every handshake, and the backend refuses a major it does not implement.
     /// </summary>
-    private const uint ProtocolMajor = 1;
+    private const uint ProtocolMajor = 2;
 
     /// <summary>What this shell calls itself in the backend's log. No behaviour rides on it.</summary>
     private const string ClientName = "avalonia";
@@ -116,101 +117,67 @@ public sealed class ControlBackend : IBackend
     /// <inheritdoc />
     public async Task<Settings> SettingsAsync(CancellationToken cancellation = default)
     {
-        var answer = await ReadAsync(
-            c => c.GetSettingsAsync(new GetSettingsRequest(), cancellationToken: cancellation), cancellation)
-            .ConfigureAwait(false);
-
-        return Assert.NotNull(answer.Settings, "the backend answers a settings read with settings");
+        var state = await ReadStateAsync(EventKind.Settings, cancellation).ConfigureAwait(false);
+        return Assert.NotNull(state.Settings?.Settings, "the backend answers a settings read with settings");
     }
 
     /// <inheritdoc />
     public async Task<Catalog> CatalogAsync(CancellationToken cancellation = default)
     {
-        var answer = await ReadAsync(
-            c => c.GetCatalogAsync(new GetCatalogRequest(), cancellationToken: cancellation), cancellation)
-            .ConfigureAwait(false);
-
-        return Assert.NotNull(answer.Catalog, "the backend answers a catalog read with a catalog");
+        var state = await ReadStateAsync(EventKind.Catalog, cancellation).ConfigureAwait(false);
+        return Assert.NotNull(state.Catalog, "the backend answers a catalog read with a catalog");
     }
 
     /// <inheritdoc />
     public async Task<IReadOnlyList<ShareWindow>> ShareWindowsAsync(CancellationToken cancellation = default)
-    {
-        var answer = await ReadAsync(
-            c => c.ListShareWindowsAsync(new ListShareWindowsRequest(), cancellationToken: cancellation), cancellation)
-            .ConfigureAwait(false);
-
-        return answer.Windows;
-    }
+        => (await ReadStateAsync(EventKind.ShareWindows, cancellation).ConfigureAwait(false)).ShareWindows.Windows;
 
     /// <inheritdoc />
-    public Task<Form> ResolveFormAsync(Settings draft, CancellationToken cancellation = default)
+    public async Task<Form> ResolveFormAsync(Settings draft, CancellationToken cancellation = default)
     {
         Assert.NotNull(draft, "resolving a form needs the draft it is resolved against");
 
-        return ReadAsync(
-            c => c.ResolveFormAsync(new ResolveFormRequest { Settings = draft }, cancellationToken: cancellation),
-            r => r.Form,
-            cancellation);
+        var answer = await AskAsync(new AskRequest { Form = draft }, cancellation).ConfigureAwait(false);
+        return Assert.NotNull(answer.Form, "the backend answers a draft with its form");
     }
 
     /// <inheritdoc />
-    public Task<PublishState> PublishStateAsync(CancellationToken cancellation = default)
-        => ReadAsync(c => c.GetPublishStateAsync(new GetPublishStateRequest(), cancellationToken: cancellation), cancellation);
+    public async Task<PublishState> PublishStateAsync(CancellationToken cancellation = default)
+        => (await ReadStateAsync(EventKind.PublishState, cancellation).ConfigureAwait(false)).PublishState;
 
     /// <inheritdoc />
-    public Task<RelayStatus> RelayStatusAsync(CancellationToken cancellation = default)
-        => ReadAsync(c => c.GetRelayStatusAsync(new GetRelayStatusRequest(), cancellationToken: cancellation), cancellation);
+    public async Task<RelayStatus> RelayStatusAsync(CancellationToken cancellation = default)
+        => (await ReadStateAsync(EventKind.RelayStatus, cancellation).ConfigureAwait(false)).RelayStatus;
 
     /// <inheritdoc />
     public async Task<IReadOnlyList<StreamRef>> WatchingAsync(CancellationToken cancellation = default)
-    {
-        var answer = await ReadAsync(
-            c => c.GetViewerStateAsync(new GetViewerStateRequest(), cancellationToken: cancellation), cancellation)
-            .ConfigureAwait(false);
-
-        return answer.Viewers;
-    }
+        => (await ReadStateAsync(EventKind.ViewerState, cancellation).ConfigureAwait(false)).ViewerState.Viewers;
 
     /// <inheritdoc />
     public async Task<IReadOnlyList<ReceiveStream>> ReceivingAsync(CancellationToken cancellation = default)
-    {
-        var answer = await ReadAsync(
-            c => c.GetReceiveStateAsync(new GetReceiveStateRequest(), cancellationToken: cancellation), cancellation)
-            .ConfigureAwait(false);
-
-        return answer.Streams;
-    }
+        => (await ReadStateAsync(EventKind.ReceiveState, cancellation).ConfigureAwait(false)).ReceiveState.Streams;
 
     /// <inheritdoc />
     public async Task<IReadOnlyList<PreviewedMonitor>> PreviewedMonitorsAsync(CancellationToken cancellation = default)
-    {
-        var answer = await ReadAsync(
-            c => c.GetMonitorPreviewStateAsync(new GetMonitorPreviewStateRequest(), cancellationToken: cancellation), cancellation)
-            .ConfigureAwait(false);
-
-        return answer.Monitors;
-    }
+        => (await ReadStateAsync(EventKind.MonitorPreviewState, cancellation).ConfigureAwait(false))
+            .MonitorPreviewState.Monitors;
 
     /// <inheritdoc />
-    public Task<MembersState> MembersAsync(CancellationToken cancellation = default)
-        => ReadAsync(c => c.GetMembersStateAsync(new GetMembersStateRequest(), cancellationToken: cancellation), cancellation);
+    public async Task<MembersState> MembersAsync(CancellationToken cancellation = default)
+        => (await ReadStateAsync(EventKind.MembersState, cancellation).ConfigureAwait(false)).MembersState;
 
     /// <inheritdoc />
-    public Task<TestStreamState> TestStreamsAsync(CancellationToken cancellation = default)
-        => ReadAsync(
-            c => c.GetTestStreamStateAsync(new GetTestStreamStateRequest(), cancellationToken: cancellation), cancellation);
+    public async Task<TestStreamState> TestStreamsAsync(CancellationToken cancellation = default)
+        => (await ReadStateAsync(EventKind.TestStreamState, cancellation).ConfigureAwait(false)).TestStreamState;
 
     /// <inheritdoc />
     public async Task<PresetStore> PresetsAsync(CancellationToken cancellation = default)
     {
-        var answer = await ReadAsync(
-            c => c.ListPresetsAsync(new ListPresetsRequest(), cancellationToken: cancellation), cancellation)
-            .ConfigureAwait(false);
+        var presets = (await ReadStateAsync(EventKind.Presets, cancellation).ConfigureAwait(false)).Presets;
 
         // Both halves: an empty list without the notice is the wrong sentence on a machine whose store could not
         // be read (PresetStore).
-        return new PresetStore(answer.Presets, answer.Notice);
+        return new PresetStore(presets.Presets, presets.Notice);
     }
 
     /// <inheritdoc />
@@ -218,9 +185,7 @@ public sealed class ControlBackend : IBackend
     {
         Assert.NotNull(settings, "starting a publish names the settings the encoder runs on");
 
-        return ReadAsync(
-            c => c.StartPublishAsync(new StartPublishRequest { Settings = settings }, cancellationToken: cancellation),
-            cancellation);
+        return SetAsync(new SetRequest { Publish = new PublishWanted { Live = true, Settings = settings } }, cancellation);
     }
 
     /// <inheritdoc />
@@ -228,9 +193,7 @@ public sealed class ControlBackend : IBackend
     {
         Assert.NotNull(settings, "applying to the running stream names the settings it restarts on");
 
-        return ReadAsync(
-            c => c.ApplyToStreamAsync(new ApplyToStreamRequest { Settings = settings }, cancellationToken: cancellation),
-            cancellation);
+        return SetAsync(new SetRequest { Publish = new PublishWanted { Live = true, Settings = settings } }, cancellation);
     }
 
     /// <inheritdoc />
@@ -238,9 +201,7 @@ public sealed class ControlBackend : IBackend
     {
         Assert.NotNull(settings, "saving the settings names the settings to keep");
 
-        return ReadAsync(
-            c => c.SaveSettingsAsync(new SaveSettingsRequest { Settings = settings }, cancellationToken: cancellation),
-            cancellation);
+        return SetAsync(new SetRequest { Settings = settings }, cancellation);
     }
 
     /// <inheritdoc />
@@ -249,10 +210,7 @@ public sealed class ControlBackend : IBackend
         Assert.That(name.Length > 0, "a preset is saved under a name");
         Assert.NotNull(settings, "a preset is the way of publishing it was saved from");
 
-        return ReadAsync(
-            c => c.SavePresetAsync(
-                new SavePresetRequest { Name = name, Settings = settings }, cancellationToken: cancellation),
-            cancellation);
+        return SetAsync(new SetRequest { Preset = new PresetWanted { Name = name, Settings = settings } }, cancellation);
     }
 
     /// <inheritdoc />
@@ -260,59 +218,48 @@ public sealed class ControlBackend : IBackend
     {
         Assert.That(name.Length > 0, "a preset is deleted by the name it was saved under");
 
-        return ReadAsync(
-            c => c.DeletePresetAsync(new DeletePresetRequest { Name = name }, cancellationToken: cancellation),
-            cancellation);
+        return SetAsync(new SetRequest { Preset = new PresetWanted { Name = name } }, cancellation);
     }
 
     /// <inheritdoc />
     public Task StopPublishAsync(CancellationToken cancellation = default)
-        => ReadAsync(c => c.StopPublishAsync(new StopPublishRequest(), cancellationToken: cancellation), cancellation);
+        => SetAsync(new SetRequest { Publish = new PublishWanted { Live = false } }, cancellation);
 
     /// <inheritdoc />
-    public Task<double> MeasureUplinkAsync(CancellationToken cancellation = default)
-        => ReadAsync(
-            c => c.MeasureUplinkAsync(new MeasureUplinkRequest(), cancellationToken: cancellation),
-            r => r.Mbps,
-            cancellation);
+    public async Task<double> MeasureUplinkAsync(CancellationToken cancellation = default)
+        => (await DoAsync(new DoRequest { MeasureUplink = new Empty() }, cancellation).ConfigureAwait(false)).UplinkMbps;
 
     /// <inheritdoc />
-    public Task<IReadOnlyList<RelayLeg>> CheckRelayAsync(
+    public async Task<IReadOnlyList<RelayLeg>> CheckRelayAsync(
         Settings settings, CancellationToken cancellation = default)
     {
         Assert.NotNull(settings, "a check names the relay it dials");
 
-        return ReadAsync(
-            c => c.CheckRelayAsync(new CheckRelayRequest { Settings = settings }, cancellationToken: cancellation),
-            r => (IReadOnlyList<RelayLeg>)r.Legs,
-            cancellation);
+        var outcome = await DoAsync(new DoRequest { CheckRelay = settings }, cancellation).ConfigureAwait(false);
+        return Assert.NotNull(outcome.RelayCheck, "a relay check answers its legs").Legs;
     }
 
     /// <inheritdoc />
-    public Task<(string Key, string Id)> CreateGroupAsync(
+    public async Task<(string Key, string Id)> CreateGroupAsync(
         RelaySettings relay, CancellationToken cancellation = default)
     {
         Assert.NotNull(relay, "a group key is drawn at the relay the draft names");
 
-        return ReadAsync(
-            c => c.CreateGroupAsync(new CreateGroupRequest { Relay = relay }, cancellationToken: cancellation),
-            r => (r.Key, r.Id),
-            cancellation);
+        var outcome = await DoAsync(new DoRequest { CreateGroup = relay }, cancellation).ConfigureAwait(false);
+        var group = Assert.NotNull(outcome.Group, "drawing a group answers the group");
+        return (group.Key, group.Id);
     }
 
     /// <inheritdoc />
-    public Task<DiscordState> DiscordAsync(CancellationToken cancellation = default)
-        => ReadAsync(c => c.GetDiscordStateAsync(new GetDiscordStateRequest(), cancellationToken: cancellation), cancellation);
+    public async Task<DiscordState> DiscordAsync(CancellationToken cancellation = default)
+        => (await ReadStateAsync(EventKind.DiscordState, cancellation).ConfigureAwait(false)).DiscordState;
 
     /// <inheritdoc />
-    public Task<string> ResolveLinkAsync(string url, CancellationToken cancellation = default)
+    public async Task<string> ResolveLinkAsync(string url, CancellationToken cancellation = default)
     {
         Assert.That(url.Length > 0, "a link names a stream to open");
 
-        return ReadAsync(
-            c => c.ResolveLinkAsync(new ResolveLinkRequest { Url = url }, cancellationToken: cancellation),
-            r => r.StreamName,
-            cancellation);
+        return (await AskAsync(new AskRequest { Link = url }, cancellation).ConfigureAwait(false)).StreamName;
     }
 
     /// <inheritdoc />
@@ -320,49 +267,48 @@ public sealed class ControlBackend : IBackend
     {
         Assert.NotNull(relay, "a link runs against the relay the draft names");
 
-        return ReadAsync(
-            c => c.LinkDiscordAsync(new LinkDiscordRequest { Relay = relay }, cancellationToken: cancellation),
-            cancellation);
+        return SetAsync(
+            new SetRequest { DiscordLink = new DiscordLinkWanted { Linked = true, Relay = relay } }, cancellation);
     }
 
     /// <inheritdoc />
     public Task UnlinkDiscordAsync(CancellationToken cancellation = default)
-        => ReadAsync(
-            c => c.UnlinkDiscordAsync(new UnlinkDiscordRequest(), cancellationToken: cancellation),
-            cancellation);
-
+        => SetAsync(new SetRequest { DiscordLink = new DiscordLinkWanted { Linked = false } }, cancellation);
 
     /// <inheritdoc />
     public Task StartWatchAsync(string streamName, string transport, CancellationToken cancellation = default)
-        => KeyedAsync(streamName, transport, "opening a viewer",
-            (c, streamRef) => c.StartWatchAsync(new StartWatchRequest { Viewer = streamRef }, cancellationToken: cancellation),
+        => SetAsync(
+            new SetRequest { Viewer = new ViewerWanted { Viewer = Keyed(streamName, transport, "opening a viewer"), Open = true } },
             cancellation);
 
     /// <inheritdoc />
     public Task StopWatchAsync(string streamName, string transport, CancellationToken cancellation = default)
-        => KeyedAsync(streamName, transport, "closing a viewer",
-            (c, streamRef) => c.StopWatchAsync(new StopWatchRequest { Viewer = streamRef }, cancellationToken: cancellation),
+        => SetAsync(
+            new SetRequest { Viewer = new ViewerWanted { Viewer = Keyed(streamName, transport, "closing a viewer") } },
             cancellation);
 
     /// <inheritdoc />
     public Task OpenInBrowserAsync(string streamName, string transport, CancellationToken cancellation = default)
-        => KeyedAsync(streamName, transport, "opening a page in the browser",
-            (c, streamRef) => c.OpenInBrowserAsync(new OpenInBrowserRequest { Viewer = streamRef }, cancellationToken: cancellation),
-            cancellation);
+        => DoAsync(
+            new DoRequest { OpenInBrowser = Keyed(streamName, transport, "opening a page in the browser") }, cancellation);
 
     /// <inheritdoc />
     public Task StartReceiveAsync(
         string streamName, string transport, bool toneMap = false, CancellationToken cancellation = default)
-        => KeyedAsync(streamName, transport, "opening a decode",
-            (c, streamRef) => c.StartReceiveAsync(
-                new StartReceiveRequest { Stream = streamRef, ToneMap = toneMap },
-                cancellationToken: cancellation),
+        => SetAsync(
+            new SetRequest
+            {
+                Receive = new ReceiveWanted
+                {
+                    Stream = Keyed(streamName, transport, "opening a decode"), Open = true, ToneMap = toneMap,
+                },
+            },
             cancellation);
 
     /// <inheritdoc />
     public Task StopReceiveAsync(string streamName, string transport, CancellationToken cancellation = default)
-        => KeyedAsync(streamName, transport, "closing a decode",
-            (c, streamRef) => c.StopReceiveAsync(new StopReceiveRequest { Stream = streamRef }, cancellationToken: cancellation),
+        => SetAsync(
+            new SetRequest { Receive = new ReceiveWanted { Stream = Keyed(streamName, transport, "closing a decode") } },
             cancellation);
 
     /// <inheritdoc />
@@ -371,10 +317,14 @@ public sealed class ControlBackend : IBackend
     {
         Assert.That(volume >= 0, "a volume is not negative", volume);
 
-        return KeyedAsync(streamName, transport, "setting a decode's audio",
-            (c, streamRef) => c.SetReceiveAudioAsync(
-                new SetReceiveAudioRequest { Stream = streamRef, Volume = volume, Muted = muted },
-                cancellationToken: cancellation),
+        return SetAsync(
+            new SetRequest
+            {
+                ReceiveAudio = new ReceiveAudio
+                {
+                    Stream = Keyed(streamName, transport, "setting a decode's audio"), Volume = volume, Muted = muted,
+                },
+            },
             cancellation);
     }
 
@@ -412,17 +362,12 @@ public sealed class ControlBackend : IBackend
 
     /// <inheritdoc />
     public Task StartMonitorPreviewAsync(int monitor, CancellationToken cancellation = default)
-        => ReadAsync(
-            c => c.StartMonitorPreviewAsync(
-                new StartMonitorPreviewRequest { Monitor = monitor }, cancellationToken: cancellation),
-            cancellation);
+        => SetAsync(
+            new SetRequest { MonitorPreview = new MonitorPreviewWanted { Monitor = monitor, Open = true } }, cancellation);
 
     /// <inheritdoc />
     public Task StopMonitorPreviewAsync(int monitor, CancellationToken cancellation = default)
-        => ReadAsync(
-            c => c.StopMonitorPreviewAsync(
-                new StopMonitorPreviewRequest { Monitor = monitor }, cancellationToken: cancellation),
-            cancellation);
+        => SetAsync(new SetRequest { MonitorPreview = new MonitorPreviewWanted { Monitor = monitor } }, cancellation);
 
     /// <inheritdoc />
     public async Task<FrameChannel> OpenMonitorFramesAsync(int monitor, CancellationToken cancellation = default)
@@ -444,100 +389,51 @@ public sealed class ControlBackend : IBackend
     {
         Assert.That(path.Length > 0, "opening a run log names the log the backend handed out");
 
-        return ReadAsync(c => c.OpenLogAsync(new OpenLogRequest { Path = path }, cancellationToken: cancellation), cancellation);
+        return DoAsync(new DoRequest { OpenLog = path }, cancellation);
     }
 
     /// <inheritdoc />
     public Task OpenLogsFolderAsync(CancellationToken cancellation = default)
-        => ReadAsync(c => c.OpenLogsFolderAsync(new OpenLogsFolderRequest(), cancellationToken: cancellation), cancellation);
+        => DoAsync(new DoRequest { OpenLogsFolder = new Empty() }, cancellation);
 
     /// <inheritdoc />
-    public Task<string> SendReportAsync(CancellationToken cancellation = default)
-        => ReadAsync(
-            c => c.SendReportAsync(new SendReportRequest(), cancellationToken: cancellation),
-            r => r.ReportId,
-            cancellation);
+    public async Task<string> SendReportAsync(CancellationToken cancellation = default)
+        => (await DoAsync(new DoRequest { SendReport = new Empty() }, cancellation).ConfigureAwait(false)).ReportId;
 
     /// <inheritdoc />
-    public Task<UpdateState> UpdateAsync(CancellationToken cancellation = default)
-        => ReadAsync(c => c.GetUpdateStateAsync(new GetUpdateStateRequest(), cancellationToken: cancellation), cancellation);
+    public async Task<UpdateState> UpdateAsync(CancellationToken cancellation = default)
+        => (await ReadStateAsync(EventKind.UpdateState, cancellation).ConfigureAwait(false)).UpdateState;
 
     /// <inheritdoc />
-    public Task<StreamTimeline> StreamTimelineAsync(CancellationToken cancellation = default)
-        => ReadAsync(c => c.GetStreamTimelineAsync(new GetStreamTimelineRequest(), cancellationToken: cancellation), cancellation);
+    public async Task<StreamTimeline> StreamTimelineAsync(CancellationToken cancellation = default)
+        => (await ReadStateAsync(EventKind.StreamTimeline, cancellation).ConfigureAwait(false)).StreamTimeline;
 
     /// <inheritdoc />
     public Task CheckUpdateAsync(CancellationToken cancellation = default)
-        => ReadAsync(c => c.CheckUpdateAsync(new CheckUpdateRequest(), cancellationToken: cancellation), cancellation);
+        => DoAsync(new DoRequest { CheckUpdate = new Empty() }, cancellation);
 
     /// <inheritdoc />
     public Task InstallUpdateAsync(CancellationToken cancellation = default)
-        => ReadAsync(c => c.InstallUpdateAsync(new InstallUpdateRequest(), cancellationToken: cancellation), cancellation);
+        => DoAsync(new DoRequest { InstallUpdate = new Empty() }, cancellation);
 
     /// <inheritdoc />
-    public async IAsyncEnumerable<Event> SubscribeAsync(
-        [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellation = default)
-    {
-        await GreetAsync().ConfigureAwait(false);
-
-        // Opened outside the loop so a failure to open it is translated like a failed read, rather than surfacing
-        // as a status from inside an enumeration the caller is already iterating.
-        using var call = _client.Subscribe(new SubscribeRequest(), cancellationToken: cancellation);
-
-        while (true)
-        {
-            bool more;
-            try
-            {
-                more = await call.ResponseStream.MoveNext(cancellation).ConfigureAwait(false);
-            }
-            catch (RpcException e)
-            {
-                throw Translate(e, cancellation);
-            }
-
-            if (!more)
-            {
-                yield break;
-            }
-
-            yield return call.ResponseStream.Current;
-        }
-    }
+    public IAsyncEnumerable<Event> SubscribeAsync(CancellationToken cancellation = default)
+        => WatchAsync(new WatchRequest(), cancellation);
 
     /// <inheritdoc />
     public async IAsyncEnumerable<PointerPosition> SubscribePointerAsync(
         StreamRef? stream = null,
         [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellation = default)
     {
-        await GreetAsync().ConfigureAwait(false);
-
-        var request = new SubscribePointerRequest();
+        var request = new WatchRequest { Kinds = { EventKind.Pointer } };
         if (stream is not null)
         {
-            request.Stream = stream;
+            request.PointerOf = stream;
         }
 
-        using var call = _client.SubscribePointer(request, cancellationToken: cancellation);
-
-        while (true)
+        await foreach (var e in WatchAsync(request, cancellation).ConfigureAwait(false))
         {
-            bool more;
-            try
-            {
-                more = await call.ResponseStream.MoveNext(cancellation).ConfigureAwait(false);
-            }
-            catch (RpcException e)
-            {
-                throw Translate(e, cancellation);
-            }
-
-            if (!more)
-            {
-                yield break;
-            }
-
-            yield return call.ResponseStream.Current;
+            yield return Assert.NotNull(e.Pointer, "a pointer watch delivers positions");
         }
     }
 
@@ -545,10 +441,25 @@ public sealed class ControlBackend : IBackend
     public async IAsyncEnumerable<AudioLevels> SubscribeAudioLevelsAsync(
         [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellation = default)
     {
+        var request = new WatchRequest { Kinds = { EventKind.AudioLevels } };
+        await foreach (var e in WatchAsync(request, cancellation).ConfigureAwait(false))
+        {
+            yield return Assert.NotNull(e.AudioLevels, "a level watch delivers levels");
+        }
+    }
+
+    /// <summary>
+    /// One watch, with the handshake in front of it and every failure translated.
+    /// The call opens outside the loop, so a failure to open it is translated like a failed read
+    /// rather than surfacing from inside an enumeration the caller is already iterating.
+    /// </summary>
+    private async IAsyncEnumerable<Event> WatchAsync(
+        WatchRequest request,
+        [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellation)
+    {
         await GreetAsync().ConfigureAwait(false);
 
-        // Opened outside the loop for the reason the event stream's call is.
-        using var call = _client.SubscribeAudioLevels(new SubscribeAudioLevelsRequest(), cancellationToken: cancellation);
+        using var call = _client.Watch(request, cancellationToken: cancellation);
 
         while (true)
         {
@@ -571,12 +482,31 @@ public sealed class ControlBackend : IBackend
         }
     }
 
+    /// <summary>One state, whole, as the backend holds it now.</summary>
+    private async Task<Event> ReadStateAsync(EventKind kind, CancellationToken cancellation)
+    {
+        var answer = await CallAsync(
+            c => c.ReadAsync(new ReadRequest { Kinds = { kind } }, cancellationToken: cancellation), cancellation)
+            .ConfigureAwait(false);
+
+        Assert.That(answer.States.Count == 1, "a read of one kind answers one state", kind, answer.States.Count);
+        return answer.States[0];
+    }
+
+    private Task<AskResponse> AskAsync(AskRequest question, CancellationToken cancellation)
+        => CallAsync(c => c.AskAsync(question, cancellationToken: cancellation), cancellation);
+
+    private Task SetAsync(SetRequest state, CancellationToken cancellation)
+        => CallAsync(c => c.SetAsync(state, cancellationToken: cancellation), cancellation);
+
+    private Task<DoResponse> DoAsync(DoRequest action, CancellationToken cancellation)
+        => CallAsync(c => c.DoAsync(action, cancellationToken: cancellation), cancellation);
+
     /// <summary>
     /// One call, with the handshake in front of it and the failure translated behind it.
-    /// Every read and every effect is those three steps, so they are written once.
     /// The delegate takes the client rather than closing over it, so nothing here decides which call is made.
     /// </summary>
-    private async Task<T> ReadAsync<T>(
+    private async Task<T> CallAsync<T>(
         Func<ControlService.ControlServiceClient, AsyncUnaryCall<T>> call, CancellationToken cancellation)
     {
         await GreetAsync().ConfigureAwait(false);
@@ -592,37 +522,16 @@ public sealed class ControlBackend : IBackend
     }
 
     /// <summary>
-    /// One effect keyed by the stream and leg a viewer and a decode are identified by.
-    /// The methods above differ in the request they wrap that pair in and in nothing else, so the pair is asserted
-    /// and built here.
-    /// <paramref name="what"/> names the effect as its assertions name it, the caller's only part of the sentence.
+    /// The stream and leg a viewer and a decode are identified by, asserted where every effect on them builds it.
+    /// <paramref name="what"/> names the effect as its assertions name it.
     /// </summary>
-    private Task KeyedAsync<TResponse>(
-        string streamName,
-        string transport,
-        string what,
-        Func<ControlService.ControlServiceClient, StreamRef, AsyncUnaryCall<TResponse>> call,
-        CancellationToken cancellation)
+    private static StreamRef Keyed(string streamName, string transport, string what)
     {
         Assert.That(streamName.Length > 0, $"{what} names the stream it is for");
         Assert.That(transport.Length > 0, $"{what} names the leg it runs over", streamName);
 
-        var streamRef = new StreamRef { StreamName = streamName, Transport = transport };
-        return ReadAsync(c => call(c, streamRef), cancellation);
+        return new StreamRef { StreamName = streamName, Transport = transport };
     }
-
-    /// <summary>
-    /// Same read, where the response wraps the state rather than being it.
-    /// The contract wraps every read whose answer does not also travel on the event stream,
-    /// so a response can grow a field the state itself has no business carrying.
-    /// Unwrapping belongs here:
-    /// a view model reaching through the envelope would be a second place knowing which reads are wrapped.
-    /// </summary>
-    private async Task<TState> ReadAsync<TResponse, TState>(
-        Func<ControlService.ControlServiceClient, AsyncUnaryCall<TResponse>> call,
-        Func<TResponse, TState> state,
-        CancellationToken cancellation)
-        => state(await ReadAsync(call, cancellation).ConfigureAwait(false));
 
     /// <summary>
     /// Settles the contract version, once, and asks for the encoder probe behind it.
@@ -723,8 +632,8 @@ public sealed class ControlBackend : IBackend
     {
         try
         {
-            await _client.ProbeEncodersAsync(
-                new ProbeEncodersRequest(), deadline: DateTime.UtcNow.Add(ProbeDeadline))
+            await _client.DoAsync(
+                new DoRequest { ProbeEncoders = new Empty() }, deadline: DateTime.UtcNow.Add(ProbeDeadline))
                 .ResponseAsync.ConfigureAwait(false);
         }
         catch (RpcException)
@@ -782,14 +691,13 @@ public sealed class ControlBackend : IBackend
         // and carries no prose, and the wording for a prose-less status says the backend answered.
         //
         // Whether the call landed is not visible from here.
-        // Repeating an effect that names a state finds the work already done;
-        // ApplyToStream names a transition on purpose, so a second one is a second restart.
+        // Repeating a Set finds the work already done.
         if (e.StatusCode == StatusCode.DeadlineExceeded)
         {
             return new BackendUnavailableException(
                 $"The backend did not answer in time over {ControlEndpoint.Describe()}. "
                 + "Whether it acted before going quiet is not visible from here, "
-                + "so anything that names a state (starting or stopping a stream, a viewer or a decode) "
+                + "so anything that names a state (a stream, a viewer or a decode) "
                 + "is safe to ask for again.", e);
         }
 

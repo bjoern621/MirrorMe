@@ -21,7 +21,7 @@ namespace ScreenShare.App.Features.Viewer.ViewModel;
 /// </summary>
 public sealed record WatchLegViewModel
 {
-    /// <summary>Transport as the contract names it, what <c>StartWatch</c> takes.</summary>
+    /// <summary>Transport as the contract names it, what <c>Set viewer</c> takes.</summary>
     public required string Value { get; init; }
 
     public required string Label { get; init; }

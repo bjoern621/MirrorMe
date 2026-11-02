@@ -51,7 +51,7 @@ public static class Cards
         + "that, or read the Viewers tab.";
 
     /// <summary>
-    /// End-to-end route's cost: decode opened with <c>StartReceive</c> like any tile,
+    /// End-to-end route's cost: decode opened with <c>Set receive</c> like any tile,
     /// so the relay counts it among the viewers beside this card and it pays a viewer's downstream bandwidth.
     /// </summary>
     public const string PreviewEndToEndCost =

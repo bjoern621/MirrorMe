@@ -27,30 +27,30 @@ import (
 // That is still the stream the user asked for and it returns by itself,
 // so a measurement started in the gap would be running when it does.
 
-// MeasureUplink probes this machine's real upload throughput,
+// measureUplink probes this machine's real upload throughput,
 // so a guessed uplink figure can be replaced with a measured one.
-func (s *Server) MeasureUplink(ctx context.Context, req *screensharev1.MeasureUplinkRequest) (*screensharev1.MeasureUplinkResponse, error) {
+func (s *Server) measureUplink(ctx context.Context) (float64, error) {
 	if s.backend.PublishState().Publishing() {
-		return nil, failedPrecondition(
+		return 0, failedPrecondition(
 			"a stream is publishing, and an uplink measurement would compete with it for the line. Stop the stream to measure")
 	}
 
 	mbps, err := s.backend.MeasureUplink(ctx)
 	if err != nil {
-		return nil, fromBackend("cannot measure the uplink", err)
+		return 0, fromBackend("cannot measure the uplink", err)
 	}
-	return &screensharev1.MeasureUplinkResponse{Mbps: mbps}, nil
+	return mbps, nil
 }
 
-// MeasureEncodeRate times the configured encoder on generated frames of the captured monitor's size,
+// measureEncodeRate times the configured encoder on generated frames of the captured monitor's size,
 // so a target frame rate can be held against what this machine encodes at these settings.
 //
 // The settings decide what is timed,
-// so a request carrying none is refused by the gate the effects use (draftOf, in effects.go):
+// so a request carrying none is refused by the gate Set and Do use (draftOf, in effects.go):
 // the empty draft would time an encoder nobody chose,
 // and the figure would read as an answer about the one they did.
-func (s *Server) MeasureEncodeRate(ctx context.Context, req *screensharev1.MeasureEncodeRateRequest) (*screensharev1.MeasureEncodeRateResponse, error) {
-	draft, err := draftOf(req.GetSettings(), "time")
+func (s *Server) measureEncodeRate(ctx context.Context, m *screensharev1.Settings) (*screensharev1.EncodeRate, error) {
+	draft, err := draftOf(m, "time")
 	if err != nil {
 		return nil, err
 	}
@@ -64,5 +64,5 @@ func (s *Server) MeasureEncodeRate(ctx context.Context, req *screensharev1.Measu
 	if err != nil {
 		return nil, fromBackend("cannot measure the encode rate", err)
 	}
-	return &screensharev1.MeasureEncodeRateResponse{Rate: wire.EncodeRate(rate)}, nil
+	return wire.EncodeRate(rate), nil
 }

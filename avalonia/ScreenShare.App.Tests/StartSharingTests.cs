@@ -126,7 +126,7 @@ public sealed class StartSharingTests
     }
 
     /// <summary>
-    /// <c>ApplyToStream</c> is the effect for a stream in force, so a lock here stands in front of a call that succeeds.
+    /// <c>Set publish</c> is the effect for a stream in force, so a lock here stands in front of a call that succeeds.
     /// </summary>
     [Fact]
     public void AStreamAlreadyPublishingLeavesTheCommitPressable()

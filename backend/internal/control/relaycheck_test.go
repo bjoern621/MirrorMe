@@ -21,7 +21,7 @@ import (
 func TestCheckRelayRefusesARequestWithNoDraft(t *testing.T) {
 	server := New(&fakeBackend{}, events.New(), "test")
 
-	_, err := server.CheckRelay(context.Background(), &screensharev1.CheckRelayRequest{})
+	_, err := server.Do(context.Background(), &screensharev1.DoRequest{Action: &screensharev1.DoRequest_CheckRelay{}})
 	if err == nil {
 		t.Fatal("a check with no settings was answered, want it refused")
 	}
@@ -39,9 +39,10 @@ func TestARelayAnsweringNothingIsStillAnAnswer(t *testing.T) {
 	}}
 	server := New(backend, events.New(), "test")
 
-	answer, err := server.CheckRelay(context.Background(), &screensharev1.CheckRelayRequest{
-		Settings: wire.Settings(settings.Defaults()),
+	outcome, err := server.Do(context.Background(), &screensharev1.DoRequest{
+		Action: &screensharev1.DoRequest_CheckRelay{CheckRelay: wire.Settings(settings.Defaults())},
 	})
+	answer := outcome.GetRelayCheck()
 	if err != nil {
 		t.Fatalf("a relay nothing answered on failed the call: %v", err)
 	}

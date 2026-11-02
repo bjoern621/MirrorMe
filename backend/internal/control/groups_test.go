@@ -1,7 +1,6 @@
 package control
 
 import (
-	"context"
 	"testing"
 
 	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
@@ -14,17 +13,14 @@ import (
 // so a shell that mounts and one that listened are told the same thing.
 // There is no membership call beside it:
 // the group key and the display name in the settings are what put this machine in a group.
-func TestGetMembersStateAnswersWithTheGroupAsItWasRead(t *testing.T) {
+func TestReadingTheMembersStateAnswersWithTheGroupAsItWasRead(t *testing.T) {
 	backend := &fakeBackend{members: wire.MembersSnapshot{
 		Joined:  true,
 		Members: []wire.Member{{MemberID: "MFZWIZLTOQ2DGNBV", DisplayName: "Björn", Self: true}},
 	}}
 	server := New(backend, events.New(), "test")
 
-	got, err := server.GetMembersState(context.Background(), &screensharev1.GetMembersStateRequest{})
-	if err != nil {
-		t.Fatalf("reading the group answered %v, want the membership", err)
-	}
+	got := readState(t, server, screensharev1.EventKind_EVENT_KIND_MEMBERS_STATE).GetMembersState()
 	if !got.GetJoined() {
 		t.Error("a machine in a group reads as out of it")
 	}

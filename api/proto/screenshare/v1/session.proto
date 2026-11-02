@@ -388,3 +388,26 @@ enum UpdateStage {
   // The check or the download did not finish, and failure says which.
   UPDATE_STAGE_FAILED = 8;
 }
+
+// Where the publishing machine's pointer was, and when.
+//
+// Sending a position rather than drawing it into the picture costs no frame,
+// so it moves at its own rate rather than the stream's.
+// Positions arrive only while a publish whose cursor mode is metadata runs.
+//
+// The coordinates are fractions of the picture, from its top left,
+// so a viewer places one knowing nothing but the size it is drawing at.
+message PointerPosition {
+  // 0..1 across the picture and down it, read only where visible holds.
+  float x = 5;
+  float y = 6;
+  // When the position was read, on the publishing machine's clock,
+  // so a viewer can hold a position back to the frame it belongs to.
+  int64 captured_at_unix_nanos = 3;
+  // False where the pointer is not over the captured surface,
+  // which keeps one from sticking against an edge for as long as it is away.
+  bool visible = 4;
+
+  // 1 and 2: x and y in the captured picture's own pixels.
+  reserved 1, 2;
+}

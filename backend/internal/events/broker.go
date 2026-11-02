@@ -50,6 +50,11 @@ var Kinds = []screensharev1.EventKind{
 	screensharev1.EventKind_EVENT_KIND_DISCORD_STATE,
 	screensharev1.EventKind_EVENT_KIND_UPDATE_STATE,
 	screensharev1.EventKind_EVENT_KIND_STREAM_TIMELINE,
+	screensharev1.EventKind_EVENT_KIND_SETTINGS,
+	screensharev1.EventKind_EVENT_KIND_PRESETS,
+	screensharev1.EventKind_EVENT_KIND_SHARE_WINDOWS,
+	screensharev1.EventKind_EVENT_KIND_AUDIO_LEVELS,
+	screensharev1.EventKind_EVENT_KIND_POINTER,
 }
 
 // queueDepth is how many events one subscriber may fall behind by before the oldest is dropped.
@@ -256,6 +261,16 @@ func KindOf(e *screensharev1.Event) screensharev1.EventKind {
 		return screensharev1.EventKind_EVENT_KIND_UPDATE_STATE
 	case *screensharev1.Event_StreamTimeline:
 		return screensharev1.EventKind_EVENT_KIND_STREAM_TIMELINE
+	case *screensharev1.Event_Settings:
+		return screensharev1.EventKind_EVENT_KIND_SETTINGS
+	case *screensharev1.Event_Presets:
+		return screensharev1.EventKind_EVENT_KIND_PRESETS
+	case *screensharev1.Event_ShareWindows:
+		return screensharev1.EventKind_EVENT_KIND_SHARE_WINDOWS
+	case *screensharev1.Event_AudioLevels:
+		return screensharev1.EventKind_EVENT_KIND_AUDIO_LEVELS
+	case *screensharev1.Event_Pointer:
+		return screensharev1.EventKind_EVENT_KIND_POINTER
 	default:
 		assert.Never("unexpected event payload", e.GetPayload())
 		return screensharev1.EventKind_EVENT_KIND_UNSPECIFIED

@@ -145,7 +145,7 @@ A dash is a leg this deployment addresses nowhere, and is no failure: settings n
 The relay's own API is no leg here at all, being an operator's endpoint that no publish and no viewer dials.
 The command's exit status is 1 where a leg that was dialled did not answer.
 
-A relay that answers on nothing still comes back as a response, every leg carrying its own verdict, which is what `CheckRelay` returns (`docs/ipc-api.md`, "Errors").
+A relay that answers on nothing still comes back as a response, every leg carrying its own verdict, which is what `Do check_relay` returns (`docs/ipc-api.md`, "Errors").
 
 ## Who holds what
 
@@ -154,7 +154,7 @@ The group service trades that key for a relay token granting publish and read on
 The relay verifies it locally against a published key set, so nothing is called per connection.
 
 A group key is drawn at the service on request, so a group is made by asking for one rather than by an operator writing it down anywhere.
-`POST /groups` answers a fresh group key and the app reaches it through `CreateGroup`, rate limited per address.
+`POST /groups` answers a fresh group key and the app reaches it through `Do create_group`, rate limited per address.
 The relay holds no list of groups, and the service stores nothing beyond the presence leases each member's own app states, the prefix being the group key's own digest.
 `auth-flow.md` draws the exchanges and `membership.md` the leases.
 

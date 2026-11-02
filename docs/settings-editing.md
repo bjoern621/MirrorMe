@@ -9,7 +9,7 @@ What crosses while they edit is one read that stores nothing.
 | Fact | Owner | Lifetime |
 |---|---|---|
 | Draft, the settings being edited | Shell, one per window | Until the window closes |
-| Form: which controls exist, which entries are greyed, the ends of a range, what a configuration costs | Backend, answered per draft (`ResolveForm`) | Replaced by the next answer |
+| Form: which controls exist, which entries are greyed, the ends of a range, what a configuration costs | Backend, answered per draft (`Ask form`) | Replaced by the next answer |
 | Stored settings | Backend, on disk | Until a write replaces them |
 
 The window opens on the stored settings, read once, and edits that copy.
@@ -18,15 +18,15 @@ The window opens on the stored settings, read once, and edits that copy.
 
 | Reader does | Call | Cadence |
 |---|---|---|
-| Picks an entry, flips a switch, steps a slider by key | `ResolveForm` | Per change, one in flight at a time |
-| Sweeps a slider's thumb | `ResolveForm` | Per pointer move, one in flight at a time |
-| Types in a text box | `ResolveForm` | On leaving the box |
-| Presses a group's save | `SaveSettings` | Per press |
-| Presses publish | `StartPublish` | Per press |
-| Edits a group the form marks `applied` | `SaveSettings` | Per change, one write in flight at a time |
-| Picks a route on the insights preview | `SaveSettings` | Per press, on the same queue |
+| Picks an entry, flips a switch, steps a slider by key | `Ask form` | Per change, one in flight at a time |
+| Sweeps a slider's thumb | `Ask form` | Per pointer move, one in flight at a time |
+| Types in a text box | `Ask form` | On leaving the box |
+| Presses a group's save | `Set settings` | Per press |
+| Presses publish | `Set publish` | Per press |
+| Edits a group the form marks `applied` | `Set settings` | Per change, one write in flight at a time |
+| Picks a route on the insights preview | `Set settings` | Per press, on the same queue |
 
-`ResolveForm` is a read: no file is written, no pipeline is touched, and asking twice for one draft answers twice the same (`ipc-api.md`).
+`Ask form` is a read: no file is written, no pipeline is touched, and asking twice for one draft answers twice the same (`ipc-api.md`).
 
 ## The form is an answer about one draft
 
@@ -43,7 +43,7 @@ The answer lands, and where the draft has moved since, one more resolve asks abo
 A slider dragged across its range therefore costs a round trip per answer rather than one per pointer move.
 The reader waits the same round trip either way.
 
-The same shape holds for the write half: one `SaveSettings` is out at a time, and the newest draft is the one that lands.
+The same shape holds for the write half: one `Set settings` is out at a time, and the newest draft is the one that lands.
 
 An answer describing a draft the reader has already left is still drawn, being the newest answer there is.
 The draft does not take it back, since adopting it would drag a control back to where the pointer was a round trip ago.

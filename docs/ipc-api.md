@@ -29,46 +29,48 @@ A shell may never decide that a group exists, what is in it, or which entries ar
 A shell looking a name up knows no more about a codec than one printing a sentence the backend sent.
 It is the only side that can see the column, the tone and the language.
 
-Three kinds of method, the rule in executable form:
+Six methods, the rule in executable form:
 
-| Kind | What it does | Examples |
-| --- | --- | --- |
-| Reads | Hand the shell something to draw. Compute, change nothing, cheap enough for a keystroke. | `GetCatalog`, `ListShareWindows`, `ResolveForm`, `GetPublishState`, `GetRelayStatus`, `GetMembersState` |
-| Effects | Do the one thing the user asked for. The only methods that change the world. | `StartPublish`, `ApplyToStream`, `StopPublish`, `StartWatch`, `StartReceive`, `StopReceive`, `SetReceiveAudio`, `StartMonitorPreview`, `StopMonitorPreview`, `SaveSettings`, `ProbeEncoders`, `MeasureUplink`, `MeasureEncodeRate`, `CheckRelay`, `CheckUpdate`, `InstallUpdate`, `OpenInBrowser`, `CreateGroup` |
-| Stream | Carries what changed, including what this shell did not do. | `Subscribe`, `SubscribeAudioLevels`, `SubscribePointer` |
+| Method | What it does |
+| --- | --- |
+| `Hello` | Settles the contract major before anything else is reached. |
+| `Read` | Hands over each named state, whole, as the backend holds it now. Changes nothing. |
+| `Watch` | Hands over each named state, whole, each time it moves, for as long as the shell holds the call. |
+| `Ask` | Computes an answer from its arguments and changes nothing: `form` for a settings draft, `link` for a link this machine was handed. Cheap enough for a keystroke. |
+| `Set` | Makes one state true: `settings`, `preset`, `publish`, `viewer`, `receive`, `receive_audio`, `monitor_preview`, `test_streams`, `discord_link`. A state that already holds is a success. |
+| `Do` | Runs one effect that leaves no state a `Set` could name: the measurements, the relay check, the update steps, a group key, a log or a page opened, a report sent. |
 
-The table lists samples.
-`control.proto` carries the whole surface.
-A method that is neither a read nor an effect does not belong here.
-A shell that wants one is about to hold state the backend owns.
+Every state crosses as one `EventKind` inside one `Event`, on `Read` and on `Watch` alike, so a state has one shape wherever it crosses.
+`control.proto` names the arms of `Set`, `Do` and `Ask`, and `events.proto` the kinds.
+A wish for a seventh method is a shell about to hold state the backend owns.
 
-Measurements are effects, by the test rather than by category.
-`ProbeEncoders`, `MeasureUplink` and `MeasureEncodeRate` each start real work, take seconds, and leave a result a later read answers from.
-The probe most of all: what it finds is what every subsequent `ResolveForm` greys codecs against.
+Measurements are `Do`, by the test rather than by category.
+`Do probe_encoders`, `Do measure_uplink` and `Do measure_encode_rate` each start real work, take seconds, and leave a result a later read answers from.
+The probe most of all: what it finds is what every subsequent `Ask form` greys codecs against.
 A read that replaces the answer another shell's next resolve would give, with nothing on the wire announcing it, is what this test catches.
 
-`CheckRelay` is an effect on the first half of that test and not the second.
+`Do check_relay` meets the first half of that test and not the second.
 It opens a connection on every leg of the relay and waits out the ones with nothing behind them, so no shell may ask on a keystroke.
 What it answers is a reading of the moment, held by whoever asked rather than by a state a later read serves.
 
 **Membership is a settings write and a read.**
-The group key and the display name are what put this machine in a group, so `SaveSettings` is what joins one and leaves one,
-and `GetMembersState` answers the group as the backend last read it.
+The group key and the display name are what put this machine in a group, so `Set settings` is what joins one and leaves one,
+and `Read members_state` answers the group as the backend last read it.
 Nothing on the contract joins, leaves or refreshes presence.
 The backend states it on the loop that already polls the relay, so a method for it would be a second thing deciding when this machine is in a group (`membership.md`).
 
-**An update is two effects and a read.**
-`CheckUpdate` reads the published release and downloads it where the install replaces its own files,
-`InstallUpdate` starts what a restart runs, and `GetUpdateState` answers what the last check landed.
-Both effects return at once and report on the event stream, a download running for as long as a download runs.
+**An update is two actions and a read.**
+`Do check_update` reads the published release and downloads it where the install replaces its own files,
+`Do install_update` starts what a restart runs, and `Read update_state` answers what the last check landed.
+Both return at once and report on `Watch`, a download running for as long as a download runs.
 Which copies may replace themselves is the backend's answer, on `UpdateState` before a shell draws a control (`updates.md`).
 
 Discord mode holds the same shape.
-`SaveSettings` moves the group onto the voice channel, `LinkDiscord` and `UnlinkDiscord` are the two effects writing the link secret,
-and `GetDiscordState` reads the link off the settings and the channel off the last manager pass (`discord-mode.md`).
+`Set settings` moves the group onto the voice channel, `Set discord_link` writes or drops the link secret,
+and `Read discord_state` reads the link off the settings and the channel off the last manager pass (`discord-mode.md`).
 
 **A shell reads the stream verdict and hears it change.**
-`GetStreamTimeline` answers the publish run as the backend judged it, and `stream_timeline` carries the same payload on every change (`insights.md`).
+`Read stream_timeline` answers the publish run as the backend judged it, and `stream_timeline` carries the same payload on every change (`insights.md`).
 No shell decides whether a stream disappoints.
 
 ## Why
@@ -104,28 +106,28 @@ No grid, no tile, no window layout, no widget arrangement.
 How a viewer arranges what it receives is the shell's job, on the list "The rule" gives it, which is exhaustive both ways.
 
 What the contract carries instead is a viewer that reads.
-`StartReceive` and `StopReceive` open and close a decode for one stream on one leg.
-Receive state travels on the event stream.
+`Set receive` opens and closes a decode for one stream on one leg.
+Receive state travels on `Watch`.
 `ViewerSettings` carries the watch leg, the jitter buffer, the render chain it is built from, and whether this machine reads its own stream back off the relay to watch it (`viewer-architecture.md`).
 Facts about receiving, none of them a tile, an arrangement or a window.
-A method that opened a *window* is the one thing this contract may not have.
+A call that opened a *window* is the one thing this contract may not have.
 
-`SetReceiveAudio` and `SubscribeAudioLevels` sit on the same side of that line, worth saying because a volume slider and a level meter are things a reader sees on a tile.
+`Set receive_audio` and `Watch audio_levels` sit on the same side of that line, worth saying because a volume slider and a level meter are things a reader sees on a tile.
 They name the decode's audio branch: one pipeline holds one, it plays on this machine, so loudness is the decode's property and not any window's.
 Two tiles on one decode share the branch, so a per-tile volume would be several controls over one element.
 The tile is where the slider is *drawn*.
 What it sets is not the shell's.
 
-`SubscribeAudioLevels` is a stream of its own.
-`Subscribe` carries whole states when something changed, and a level changes continuously.
-Folding it in would push the receive state at metering rate and re-render every consumer for a figure none of them reads.
+A shell watches audio levels on a call of its own.
+A state watch carries whole states when something changed, and a level changes continuously.
+Sharing one call would push the receive state at metering rate and re-render every consumer for a figure none of them reads.
 Frequency alone is no reason to leave this service: the frame channel exists for frames, and a level is not one.
 Each tick carries the whole set, fifteen a second, coalesced to the newest, so a reader that fell behind receives the present rather than a queue of the past.
 
 ## ResolveForm
 
 `Form` is the one to read first: what makes a shell a display.
-`ResolveForm` takes the three settings drafts and returns the whole screen: groups, fields in order, each field's control kind and unit, whether it is visible and enabled and why not as a `Text`, its value, and a fresh installation's value.
+`Ask form` takes the three settings drafts and returns the whole screen: groups, fields in order, each field's control kind and unit, whether it is visible and enabled and why not as a `Text`, its value, and a fresh installation's value.
 Every control offering entries (select, radio, and the number carrying a ladder) carries each option with its value, note, enabled flag and reason.
 The default travels per field for the reason every value does: a shell offering to put a group back would otherwise hold a table of defaults, which is the domain written twice.
 Built-in presets ride here too, one entry each: what applying it would produce here, or a `Text` saying why nothing reaches it, and whether the draft follows it (`presets.md`).
@@ -147,11 +149,11 @@ Three messages because they answer to different owners.
 `RelaySettings` is the one both need, the relay being publish destination and subscribe source.
 One host stored twice is two hosts able to disagree.
 
-`ResolveForm` has no side effect and is cheap on every keystroke.
+`Ask form` has no side effect and is cheap on every keystroke.
 It returns a possibly repaired draft alongside the form and names the fields it repaired: where the draft held a value the tables forbid, the backend walked to the first legal one.
 A shell adopts the returned settings wholesale, so a greyed option and its replacement cannot disagree.
 
-`Form.in_force` says whether a stream is in force and was built from the pipeline the returned settings build, the sameness a repeated `StartPublish` reads (`publish.SamePipeline`).
+`Form.in_force` says whether a stream is in force and was built from the pipeline the returned settings build, the sameness a repeated `Set publish` reads (`publish.SamePipeline`).
 A shell greys the apply on it: a restart into the same pipeline costs every viewer the picture for nothing.
 The answer moves with the stream, so a shell resolves again when the publish state changes under an unchanged draft.
 
@@ -227,19 +229,19 @@ A synthetic transport entry would tell every consumer of that table that some pr
 A group is a path prefix, and that prefix is a group key's digest the backend derives, takes off every snapshot and puts back on to reach the relay.
 The name `RelayStatus` lists a stream under is the name a `StreamRef` takes and the name `PublishState.Live` states, so one string prints, opens, and matches a live publish against its own row.
 
-**Which effect opens each keeps the frame channel from deciding anything.**
-A relay decode: `StartReceive`.
-The publish preview: the publish itself, the loopback port having to be in the child's argv, so there is no `StartPreview` for a shell to call.
-A monitor preview: `StartMonitorPreview`.
+**Which call opens each keeps the frame channel from deciding anything.**
+A relay decode: `Set receive`.
+The publish preview: the publish itself, the loopback port having to be in the child's argv, so `Set` has no preview arm for a shell to call.
+A monitor preview: `Set monitor_preview`.
 All three the same division: the frame channel finds a picture or is refused with `FAILED_PRECONDITION`.
 What tells a shell there is one to ask for is a state it reads first: `PublishState.Live.preview`, present exactly while a preview runs and carrying the port and what the pipeline turned out to be, and `MonitorPreviewState`.
 
-**The monitor preview is an effect and the publish preview is not, and the difference is who owns the pipeline.**
+**The monitor preview is a `Set` and the publish preview is not, and the difference is who owns the pipeline.**
 A publish preview exists because a publish does.
-A method to start one would be a method whose only correct implementation is to refuse.
+A `Set` arm to start one would be an arm whose only correct implementation is to refuse.
 A monitor preview exists because somebody wants to look at a screen, which no other state implies.
 So it is asked for, it goes on reading until something stops it, and what runs reaches every shell on the event stream.
-Not a read, for the reason `ProbeEncoders` is not: it starts work that outlives the call.
+Not a read, for the reason `Do probe_encoders` is not: it starts work that outlives the call.
 
 Where a session cannot read one output apart from another, every such call is refused, and `Catalog.no_monitor_preview` says so beforehand.
 The ordinary shape of a capability here: the fact is stated, the shell offers what it allows, and the refusal exists for the caller that asked anyway.
@@ -274,7 +276,7 @@ Which code that wears is the platform's business, an absent named pipe being `IN
 Reading `UNAVAILABLE` as absence turns a relay that refused a publish into a sentence about the endpoint, on a connection the same shell had just resolved a form through.
 
 **An unreachable relay is not a call failure.**
-`GetRelayStatus` succeeds and returns a snapshot whose `reachable` is false, carrying the reason.
+`Read relay_status` succeeds and returns a snapshot whose `reachable` is false, carrying the reason.
 The screen renders that reason as "The relay is down."
 
 The same holds one level down.
@@ -297,7 +299,7 @@ It does not apply it to something it held.
 A duplicate is harmless, and a dropped connection is recovered from by reading state again rather than replaying history.
 
 **A shell that acted still waits for the event.**
-`StopPublish` answers empty.
+`Set` answers empty.
 What the state became arrives on the stream.
 One path into the display is what stops the window that pressed the button and the window that did not from showing different things.
 
@@ -310,17 +312,14 @@ A draft equal to the copy the backend last said it held becomes what the setting
 
 ## Versioning
 
-Package `screenshare.v1`, and the directory says so, which makes a `v2` a new directory rather than an edit.
+Package `screenshare.v1`.
+The shell and the backend ship in one package and update together, so no shell outlives the backend it was built against.
 
-Within v1, evolution is additive: new fields take new numbers, no number is reused, no field changes type or meaning, and `buf breaking` checks against the previous commit.
-
-**Before the first release, a rename is a rename.**
-A field may be renamed in place, keeping number and type, with `FIELD_SAME_NAME` overridden for that one commit.
-Nothing is deployed and both sides build from this tree, so a new number and a tombstone would spend the compatibility mechanism to preserve compatibility with nobody.
-The exception ends at the first release, written here rather than left as an unexplained override in CI.
+A field, an arm or a kind grows additively: a new number, no number reused, no field changing type or meaning, and `buf breaking` checks against the previous commit.
+A change that reshapes the surface raises the major in the same commit.
 
 `Hello` is the first call on a connection and settles the major version before any other method, so a mismatch is a sentence naming both versions rather than a field that arrives empty.
-The minor version is informational: a lower minor works, a higher one may find a method missing.
+The minor version is informational: a lower minor works, a higher one may find a kind or an arm missing.
 
 ## Fields the contract leads
 
@@ -330,7 +329,7 @@ A control the contract declares and the backend disables is a fact.
 A control the backend later implements needs no shell edit.
 
 `PublishSettings.output_resolution` is the field that shows it.
-A field the Go pipeline cannot honour is drawn by every shell all the same, `ResolveForm` answering it disabled with that as its reason.
+A field the Go pipeline cannot honour is drawn by every shell all the same, `Ask form` answering it disabled with that as its reason.
 Scaling is a `scale` filter on the ffmpeg software path, the size on the device conversion's own filter where frames never leave the GPU, and `videoscale` plus a size on the encoder input caps for GStreamer.
 One pair stays greyed: a device path with no conversion at all, the encoder reading captured surfaces directly, has nothing that can resize.
 The scaled entries grey there with the frame memory named as the way across.
@@ -351,21 +350,21 @@ In the Avalonia shell: `ScreenShare.App/Copy`.
 
 It owes the render-function discipline (`development-principles.md`): one function per component, every output set on every pass, nothing cached that the backend owns.
 
-It owes a `SaveSettings` for every write to a group the form marks `applied`, and none for the others.
+It owes a `Set settings` for every write to a group the form marks `applied`, and none for the others.
 Those are the settings the backend reads on a schedule of its own instead of being handed them by an effect.
 The relay's address is the case that exists.
 A shell holding one for a commit would leave the backend dialling the address the reader had just replaced, and the publish that would have carried it is refused for exactly that reason.
-At the cadence of a settled value rather than a keystroke, `ResolveForm` per keystroke being cheap and `SaveSettings` per keystroke being a file write, so a text control writes when the reader leaves it.
+At the cadence of a settled value rather than a keystroke, `Ask form` per keystroke being cheap and `Set settings` per keystroke being a file write, so a text control writes when the reader leaves it.
 Which call a reader's move produces, and when, is `settings-editing.md`.
 And it owes showing a disabled field rather than inventing an enabled one.
 
 It also owes **asking for the encoder probe once.**
-`ResolveForm` reads what has been probed rather than probing: a resolve runs on every keystroke and the probe test-encodes on every engine.
+`Ask form` reads what has been probed rather than probing: a resolve runs on every keystroke and the probe test-encodes on every engine.
 So on a machine nothing has asked about, no codec is greyed for missing hardware: the honest reading of a fact nobody established, and also a dropdown offering QSV with no Intel GPU.
-A shell calls `ProbeEncoders` once, in the background, and goes on drawing what it has.
+A shell calls `Do probe_encoders` once, in the background, and goes on drawing what it has.
 
 **Reading again is not owed, and that is the point of the split.**
-`ProbeEncoders` announces the whole catalog on the event stream, so the shell that asked and the shell that did not are told the same thing at the same time, by the mechanism every other change uses.
+`Do probe_encoders` announces the whole catalog on the event stream, so the shell that asked and the shell that did not are told the same thing at the same time, by the mechanism every other change uses.
 What comes back is the backend's answer in every particular.
 A shell learns only that the answer moved.
 

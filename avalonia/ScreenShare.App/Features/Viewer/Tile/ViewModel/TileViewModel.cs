@@ -18,7 +18,7 @@ namespace ScreenShare.App.Features.Viewer.Tile.ViewModel;
 /// cannot see a compositor too slow to take a frame.
 ///
 /// Decides nothing about the decode.
-/// Whether a stream is received is <c>StartReceive</c>'s answer,
+/// Whether a stream is received is <c>Set receive</c>'s answer,
 /// whether the publish's local preview runs is the publish's.
 /// This draws what the subscription hands it and says why when handed nothing.
 ///

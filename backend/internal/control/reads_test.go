@@ -103,7 +103,7 @@ func encoderOption(t *testing.T, form *screensharev1.Form, encoder string) *scre
 func TestResolveFormGreysAnEncoderTheProbeCouldNotRun(t *testing.T) {
 	server := New(&probedBackend{probed: qsvMissing}, events.New(), "test")
 
-	form, err := server.ResolveForm(context.Background(), &screensharev1.ResolveFormRequest{})
+	form, err := server.Ask(context.Background(), &screensharev1.AskRequest{Question: &screensharev1.AskRequest_Form{}})
 	if err != nil {
 		t.Fatalf("resolving a form answered %v, want an answer", err)
 	}
@@ -133,7 +133,7 @@ func TestResolveFormGreysAnEncoderTheProbeCouldNotRun(t *testing.T) {
 func TestResolveFormGreysNothingBeforeTheProbeHasRun(t *testing.T) {
 	server := New(&probedBackend{}, events.New(), "test")
 
-	form, err := server.ResolveForm(context.Background(), &screensharev1.ResolveFormRequest{})
+	form, err := server.Ask(context.Background(), &screensharev1.AskRequest{Question: &screensharev1.AskRequest_Form{}})
 	if err != nil {
 		t.Fatalf("resolving a form answered %v, want an answer", err)
 	}
@@ -152,7 +152,7 @@ func TestResolveFormReportsADraftTheRunningStreamWasBuiltFrom(t *testing.T) {
 	backend := &probedBackend{}
 	server := New(backend, events.New(), "test")
 
-	idle, err := server.ResolveForm(context.Background(), &screensharev1.ResolveFormRequest{})
+	idle, err := server.Ask(context.Background(), &screensharev1.AskRequest{Question: &screensharev1.AskRequest_Form{}})
 	if err != nil {
 		t.Fatalf("resolving a form answered %v, want an answer", err)
 	}
@@ -163,7 +163,7 @@ func TestResolveFormReportsADraftTheRunningStreamWasBuiltFrom(t *testing.T) {
 	running := idle.GetForm().GetSettings()
 	backend.publish = wire.PublishSnapshot{Live: &wire.LiveSnapshot{Settings: wire.ToSettings(running)}}
 
-	same, err := server.ResolveForm(context.Background(), &screensharev1.ResolveFormRequest{Settings: running})
+	same, err := server.Ask(context.Background(), &screensharev1.AskRequest{Question: &screensharev1.AskRequest_Form{Form: running}})
 	if err != nil {
 		t.Fatalf("resolving the running settings answered %v, want an answer", err)
 	}
@@ -173,7 +173,7 @@ func TestResolveFormReportsADraftTheRunningStreamWasBuiltFrom(t *testing.T) {
 
 	moved := proto.Clone(running).(*screensharev1.Settings)
 	moved.Publish.Fps = running.GetPublish().GetFps() + 1
-	changed, err := server.ResolveForm(context.Background(), &screensharev1.ResolveFormRequest{Settings: moved})
+	changed, err := server.Ask(context.Background(), &screensharev1.AskRequest{Question: &screensharev1.AskRequest_Form{Form: moved}})
 	if err != nil {
 		t.Fatalf("resolving a moved draft answered %v, want an answer", err)
 	}
@@ -186,14 +186,11 @@ func TestResolveFormReportsADraftTheRunningStreamWasBuiltFrom(t *testing.T) {
 // which lets a mount call it without putting seconds in front of the first paint.
 // A flag that started the probe would let one shell's read replace the result a different shell's
 // next resolve answers from.
-func TestGetCatalogNeverProbes(t *testing.T) {
+func TestReadingTheCatalogNeverProbes(t *testing.T) {
 	backend := &probedBackend{probed: qsvMissing}
 	server := New(backend, events.New(), "test")
 
-	got, err := server.GetCatalog(context.Background(), &screensharev1.GetCatalogRequest{})
-	if err != nil {
-		t.Fatalf("reading the catalog answered %v, want an answer", err)
-	}
+	got := readState(t, server, screensharev1.EventKind_EVENT_KIND_CATALOG)
 	if backend.probes != 0 {
 		t.Errorf("reading the catalog ran the probe %d times, want none", backend.probes)
 	}
@@ -221,7 +218,7 @@ func TestProbeEncodersAnnouncesWhatItFound(t *testing.T) {
 	}
 	defer cancel()
 
-	if _, err := server.ProbeEncoders(context.Background(), &screensharev1.ProbeEncodersRequest{}); err != nil {
+	if _, err := server.Do(context.Background(), &screensharev1.DoRequest{Action: &screensharev1.DoRequest_ProbeEncoders{ProbeEncoders: empty()}}); err != nil {
 		t.Fatalf("probing answered %v, want an answer", err)
 	}
 	if backend.probes != 1 {
@@ -262,14 +259,14 @@ func TestResolveFormReportsADiscordStreamInForce(t *testing.T) {
 	backend := &probedBackend{}
 	server := New(backend, events.New(), "test")
 
-	idle, err := server.ResolveForm(context.Background(), &screensharev1.ResolveFormRequest{})
+	idle, err := server.Ask(context.Background(), &screensharev1.AskRequest{Question: &screensharev1.AskRequest_Form{}})
 	if err != nil {
 		t.Fatalf("resolving a form answered %v, want an answer", err)
 	}
 	draft := idle.GetForm().GetSettings()
 	draft.Relay.GroupSource = group.SourceDiscord
 
-	resolved, err := server.ResolveForm(context.Background(), &screensharev1.ResolveFormRequest{Settings: draft})
+	resolved, err := server.Ask(context.Background(), &screensharev1.AskRequest{Question: &screensharev1.AskRequest_Form{Form: draft}})
 	if err != nil {
 		t.Fatalf("resolving a Discord draft answered %v, want an answer", err)
 	}
@@ -278,7 +275,7 @@ func TestResolveFormReportsADiscordStreamInForce(t *testing.T) {
 	running := backend.Brokered(wire.ToSettings(resolved.GetForm().GetSettings()))
 	backend.publish = wire.PublishSnapshot{Live: &wire.LiveSnapshot{Settings: running}}
 
-	same, err := server.ResolveForm(context.Background(), &screensharev1.ResolveFormRequest{Settings: draft})
+	same, err := server.Ask(context.Background(), &screensharev1.AskRequest{Question: &screensharev1.AskRequest_Form{Form: draft}})
 	if err != nil {
 		t.Fatalf("resolving the running settings answered %v, want an answer", err)
 	}

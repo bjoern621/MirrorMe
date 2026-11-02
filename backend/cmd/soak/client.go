@@ -31,7 +31,7 @@ func waitReady(ctx context.Context, c v1.ControlServiceClient, within time.Durat
 	var last error
 	for time.Now().Before(deadline) {
 		call, cancel := context.WithTimeout(ctx, 2*time.Second)
-		_, err := c.Hello(call, &v1.HelloRequest{Client: "soak", ProtocolMajor: 1})
+		_, err := c.Hello(call, &v1.HelloRequest{Client: "soak", ProtocolMajor: 2})
 		cancel()
 		if err == nil {
 			return nil
@@ -50,4 +50,14 @@ func withTimeout(ctx context.Context, d time.Duration, fn func(context.Context) 
 	call, cancel := context.WithTimeout(ctx, d)
 	defer cancel()
 	return fn(call)
+}
+
+// readOf asks Read for one state, which the answer carries first.
+func readOf(kind v1.EventKind) *v1.ReadRequest {
+	return &v1.ReadRequest{Kinds: []v1.EventKind{kind}}
+}
+
+// publishWanted asks for a stream on the air on settings, or off it.
+func publishWanted(live bool, settings *v1.Settings) *v1.SetRequest {
+	return &v1.SetRequest{State: &v1.SetRequest_Publish{Publish: &v1.PublishWanted{Live: live, Settings: settings}}}
 }

@@ -76,8 +76,8 @@ func runEncode(ctx context.Context, run *session, rng *rand.Rand, until time.Tim
 		var rate *v1.EncodeRate
 		start := time.Now()
 		err := withTimeout(ctx, 90*time.Second, func(call context.Context) error {
-			answer, err := run.control.MeasureEncodeRate(call, &v1.MeasureEncodeRateRequest{Settings: settings})
-			rate = answer.GetRate()
+			answer, err := run.control.Do(call, &v1.DoRequest{Action: &v1.DoRequest_MeasureEncodeRate{MeasureEncodeRate: settings}})
+			rate = answer.GetEncodeRate()
 			return err
 		})
 		took := time.Since(start)
@@ -246,8 +246,8 @@ func runMulti(ctx context.Context, run *session, rng *rand.Rand, until time.Time
 			engines := watchEngines(run.backendPid)
 			var rate *v1.EncodeRate
 			err := withTimeout(ctx, 120*time.Second, func(call context.Context) error {
-				answer, err := run.control.MeasureEncodeRate(call, &v1.MeasureEncodeRateRequest{Settings: settings})
-				rate = answer.GetRate()
+				answer, err := run.control.Do(call, &v1.DoRequest{Action: &v1.DoRequest_MeasureEncodeRate{MeasureEncodeRate: settings}})
+				rate = answer.GetEncodeRate()
 				return err
 			})
 			delta := diff(before, sampleTree(run.backendPid))

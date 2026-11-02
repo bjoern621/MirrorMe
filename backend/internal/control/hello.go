@@ -25,8 +25,8 @@ import (
 //
 // The minor is never refused.
 // It is informational in both directions: a shell built against a lower minor works,
-// and one built against a higher minor may find a method missing,
-// reported as UNIMPLEMENTED at the call rather than here.
+// and one built against a higher minor may find a kind or an arm missing,
+// reported as INVALID_ARGUMENT at the call rather than here.
 func (s *Server) Hello(ctx context.Context, req *screensharev1.HelloRequest) (*screensharev1.HelloResponse, error) {
 	assert.IsNotNil(req, "a handshake carries a request")
 

@@ -29,7 +29,7 @@ Each run keeps the marks that moved it, oldest first, the most recent 200.
 | restart | when the pipeline ended |
 | join, leave | the member, against the group's first reading of the run |
 
-`GetStreamTimeline` reads the run and `stream_timeline` pushes it whole on every change.
+`Read stream_timeline` reads the run and `stream_timeline` pushes it whole on every change.
 
 ## Screen
 

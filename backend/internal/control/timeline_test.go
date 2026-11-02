@@ -1,7 +1,6 @@
 package control
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -12,7 +11,7 @@ import (
 )
 
 // The read answers the run as the backend judged it, the payload the event pushes.
-func TestGetStreamTimelineAnswersTheJudgedRun(t *testing.T) {
+func TestReadingTheStreamTimelineAnswersTheJudgedRun(t *testing.T) {
 	started := time.UnixMilli(1_800_000_000_000)
 	backend := &fakeBackend{timeline: timeline.Snapshot{
 		Level:     screensharev1.StreamVerdict_LEVEL_DISAPPOINTS,
@@ -21,10 +20,7 @@ func TestGetStreamTimelineAnswersTheJudgedRun(t *testing.T) {
 	}}
 	server := New(backend, events.New(), "test")
 
-	got, err := server.GetStreamTimeline(context.Background(), &screensharev1.GetStreamTimelineRequest{})
-	if err != nil {
-		t.Fatalf("reading the timeline answered %v, want the run", err)
-	}
+	got := readState(t, server, screensharev1.EventKind_EVENT_KIND_STREAM_TIMELINE).GetStreamTimeline()
 	if got.GetVerdict().GetLevel() != screensharev1.StreamVerdict_LEVEL_DISAPPOINTS {
 		t.Errorf("verdict reads %v, want the judged level", got.GetVerdict().GetLevel())
 	}

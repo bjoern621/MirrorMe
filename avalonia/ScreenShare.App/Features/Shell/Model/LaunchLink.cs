@@ -8,7 +8,7 @@ namespace ScreenShare.App.Features.Shell.Model;
 /// Matched by scheme rather than by position: what else rides in argv is the platform's business, and a launcher
 /// is free to put its own arguments first.
 ///
-/// What the link means is the backend's answer, which is <c>ResolveLink</c> (<c>backend/internal/applink</c>).
+/// What the link means is the backend's answer, which is <c>Ask link</c> (<c>backend/internal/applink</c>).
 /// This side only picks it out of a list.
 /// </summary>
 public static class LaunchLink

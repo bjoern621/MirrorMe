@@ -22,7 +22,7 @@ namespace ScreenShare.App.Backend;
 /// A stand-in answers from memory on an already-completed task, so implementations differ in latency
 /// and in nothing else.
 ///
-/// <c>ResolveForm</c> is cheap enough to call on every keystroke,
+/// <c>Ask form</c> is cheap enough to call on every keystroke,
 /// so a keystroke routinely arrives while the previous draft's answer is in flight,
 /// and cancelling the older call stops paying for an answer about to be discarded.
 /// Cancellation is cooperative and can lose that race, so a caller that must be right when it does guards itself.
@@ -38,7 +38,7 @@ public interface IBackend
     /// "Events"), so a signal carries the news and a read carries the state.
     ///
     /// Encoder probe landing is one raiser.
-    /// <c>ResolveForm</c> reads what has been probed rather than probing, so a form resolved before the probe
+    /// <c>Ask form</c> reads what has been probed rather than probing, so a form resolved before the probe
     /// greys no codec for missing hardware and one resolved after greys with what is missing named.
     ///
     /// Raised on whichever thread the transport completed on, so a subscriber writing a bound property marshals
@@ -47,7 +47,7 @@ public interface IBackend
     event Action? Changed;
 
     /// <summary>
-    /// Stored settings, as <c>GetSettings</c> answers.
+    /// Stored settings, as <c>Read settings</c> answers.
     /// A caller never constructs a <see cref="Settings"/>: it changes the one field the user moved on the draft
     /// it received and sends the whole message back.
     /// </summary>
@@ -60,7 +60,7 @@ public interface IBackend
     Task<string> VersionAsync(CancellationToken cancellation = default);
 
     /// <summary>
-    /// Every fixed fact about this machine and the encoding model, as <c>GetCatalog</c> answers: which codecs
+    /// Every fixed fact about this machine and the encoding model, as <c>Read catalog</c> answers: which codecs
     /// exist and what each produces, what the screens are, what each transport carries.
     ///
     /// Read to explain, never to decide: which values a control may offer is the form's answer.
@@ -72,7 +72,7 @@ public interface IBackend
     Task<Catalog> CatalogAsync(CancellationToken cancellation = default);
 
     /// <summary>
-    /// Windows a capture can be pointed at, as <c>ListShareWindows</c> answers.
+    /// Windows a capture can be pointed at, as <c>Read share_windows</c> answers.
     ///
     /// Off the catalog because a window list settles at nothing:
     /// somebody opens and closes windows while nobody is looking,
@@ -86,7 +86,7 @@ public interface IBackend
     Task<IReadOnlyList<ShareWindow>> ShareWindowsAsync(CancellationToken cancellation = default);
 
     /// <summary>
-    /// Complete description of the screen for one draft, as <c>ResolveForm</c> answers.
+    /// Complete description of the screen for one draft, as <c>Ask form</c> answers.
     /// Side-effect free and idempotent: one draft resolves to one form, so a caller skips the round trip while
     /// the draft has not moved since the one the form on screen was resolved against.
     ///
@@ -166,7 +166,7 @@ public interface IBackend
     Task<TestStreamState> TestStreamsAsync(CancellationToken cancellation = default);
 
     /// <summary>
-    /// Configurations the user saved, as <c>ListPresets</c> answers, with the notice saying why the store holds
+    /// Configurations the user saved, as <c>Read presets</c> answers, with the notice saying why the store holds
     /// fewer than it did.
     ///
     /// The one read whose answer never arrives on the stream.

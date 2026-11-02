@@ -56,6 +56,8 @@ type fakeBackend struct {
 	linkRefusal error
 	// reportID is the name a sent report is stored under, answered where err is nil.
 	reportID string
+	// starts and applies count the publishes started and the running ones restarted.
+	starts, applies int
 }
 
 func (f *fakeBackend) Settings() settings.Settings                    { return f.settings }
@@ -100,8 +102,8 @@ func (f *fakeBackend) CheckRelay(context.Context, settings.Settings) []reach.Res
 }
 
 func (f *fakeBackend) SaveSettings(settings.Settings) error    { return f.err }
-func (f *fakeBackend) StartPublish(settings.Settings) error    { return f.err }
-func (f *fakeBackend) ApplyToStream(settings.Settings) error   { return f.err }
+func (f *fakeBackend) StartPublish(settings.Settings) error    { f.starts++; return f.err }
+func (f *fakeBackend) ApplyToStream(settings.Settings) error   { f.applies++; return f.err }
 func (f *fakeBackend) StopPublish()                            {}
 func (f *fakeBackend) StartWatch(wire.StreamRef) error         { return f.err }
 func (f *fakeBackend) StopWatch(wire.StreamRef)                {}

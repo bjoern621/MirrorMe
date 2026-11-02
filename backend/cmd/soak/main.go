@@ -32,6 +32,7 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	v1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
 	"bjoernblessin.de/screenshare/internal/control"
@@ -115,7 +116,7 @@ func main() {
 	// A measurement is refused while anything publishes, which would be the whole run.
 	if *reset {
 		_ = withTimeout(ctx, 30*time.Second, func(call context.Context) error {
-			_, err := control.StopPublish(call, &v1.StopPublishRequest{})
+			_, err := control.Set(call, publishWanted(false, nil))
 			return err
 		})
 		_ = run.setLoad(ctx, 0)
@@ -215,8 +216,8 @@ func (s *session) alive() bool {
 func (s *session) settled(ctx context.Context) (*v1.Settings, error) {
 	var settings *v1.Settings
 	err := withTimeout(ctx, 10*time.Second, func(call context.Context) error {
-		answer, err := s.control.GetSettings(call, &v1.GetSettingsRequest{})
-		settings = answer.GetSettings()
+		answer, err := s.control.Read(call, readOf(v1.EventKind_EVENT_KIND_SETTINGS))
+		settings = answer.GetStates()[0].GetSettings().GetSettings()
 		return err
 	})
 	return settings, err
@@ -225,7 +226,7 @@ func (s *session) settled(ctx context.Context) (*v1.Settings, error) {
 func (s *session) resolve(ctx context.Context, settings *v1.Settings) (*v1.Form, error) {
 	var form *v1.Form
 	err := withTimeout(ctx, 20*time.Second, func(call context.Context) error {
-		answer, err := s.control.ResolveForm(call, &v1.ResolveFormRequest{Settings: settings})
+		answer, err := s.control.Ask(call, &v1.AskRequest{Question: &v1.AskRequest_Form{Form: settings}})
 		form = answer.GetForm()
 		return err
 	})
@@ -239,8 +240,8 @@ func (s *session) fetchCatalog(ctx context.Context) (*v1.Catalog, error) {
 		return s.catalog, nil
 	}
 	err := withTimeout(ctx, 20*time.Second, func(call context.Context) error {
-		answer, err := s.control.GetCatalog(call, &v1.GetCatalogRequest{})
-		s.catalog = answer.GetCatalog()
+		answer, err := s.control.Read(call, readOf(v1.EventKind_EVENT_KIND_CATALOG))
+		s.catalog = answer.GetStates()[0].GetCatalog()
 		return err
 	})
 	return s.catalog, err
@@ -304,11 +305,7 @@ func (s *session) codecNames() []string {
 // setLoad puts the named number of synthetic publishers on the machine.
 func (s *session) setLoad(ctx context.Context, count int) error {
 	return withTimeout(ctx, 30*time.Second, func(call context.Context) error {
-		if count == 0 {
-			_, err := s.control.StopTestStreams(call, &v1.StopTestStreamsRequest{})
-			return err
-		}
-		_, err := s.control.StartTestStreams(call, &v1.StartTestStreamsRequest{Count: int32(count)})
+		_, err := s.control.Set(call, &v1.SetRequest{State: &v1.SetRequest_TestStreams{TestStreams: int32(count)}})
 		return err
 	})
 }
@@ -447,7 +444,7 @@ func (s *session) reportDrift(base, last *treeSample) {
 // so what the run measures is what this machine was found able to run.
 func (s *session) probeEncoders(ctx context.Context) error {
 	err := withTimeout(ctx, 3*time.Minute, func(call context.Context) error {
-		_, err := s.control.ProbeEncoders(call, &v1.ProbeEncodersRequest{})
+		_, err := s.control.Do(call, &v1.DoRequest{Action: &v1.DoRequest_ProbeEncoders{ProbeEncoders: &emptypb.Empty{}}})
 		return err
 	})
 	if err != nil {

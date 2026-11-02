@@ -4,6 +4,7 @@ package screenshare.v1;
 
 import "screenshare/v1/catalog.proto";
 import "screenshare/v1/session.proto";
+import "screenshare/v1/settings.proto";
 import "screenshare/v1/text.proto";
 
 option go_package = "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1;screensharev1";
@@ -86,6 +87,27 @@ message TestStreamSlot {
 // No values ride along, leaving one way to learn them:
 // read the settings, resolve the form again.
 message SettingsChanged {}
+
+// The settings the backend holds: the starting draft for a form, and the values a fresh shell opens on.
+message StoredSettings {
+  Settings settings = 1;
+  // Why the persisted settings could not be restored, absent when they were.
+  // The settings above are then the defaults, and the file holding the old values is moved aside,
+  // so the notice carries where they are.
+  Text store_notice = 2;
+}
+
+message PresetList {
+  repeated Preset presets = 1;
+  // Why the preset store could not be read, absent when it was.
+  Text notice = 2;
+}
+
+// The windows this machine holds, in the order the platform enumerates them,
+// which puts the frontmost first where the platform reports one.
+message ShareWindowList {
+  repeated ShareWindow windows = 1;
+}
 
 // A decode ended, and why.
 //
@@ -587,6 +609,16 @@ enum EventKind {
   EVENT_KIND_DISCORD_STATE = 17;
   EVENT_KIND_UPDATE_STATE = 18;
   EVENT_KIND_STREAM_TIMELINE = 19;
+  // Read alone: a write arrives as EVENT_KIND_SETTINGS_CHANGED, which says to read again.
+  EVENT_KIND_SETTINGS = 20;
+  // Read alone.
+  EVENT_KIND_PRESETS = 21;
+  // Read alone: windows open and close with no event behind them.
+  EVENT_KIND_SHARE_WINDOWS = 22;
+  // Watched alone, and only where named.
+  EVENT_KIND_AUDIO_LEVELS = 23;
+  // Watched alone, and only where named.
+  EVENT_KIND_POINTER = 24;
 
   // 11 was EVENT_KIND_SHOW_SETTINGS, and Event records why that payload left.
   reserved 11;
@@ -679,6 +711,12 @@ message Event {
     StreamTimeline stream_timeline = 22;
 
     SettingsChanged settings_changed = 10;
+
+    StoredSettings settings = 23;
+    PresetList presets = 24;
+    ShareWindowList share_windows = 25;
+    AudioLevels audio_levels = 26;
+    PointerPosition pointer = 27;
   }
 
   // 7 and 8 were grid_state and grid_exit, covering a GTK4 grid window.

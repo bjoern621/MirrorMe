@@ -24,8 +24,9 @@ func TestARefusedMonitorPreviewIsAPrecondition(t *testing.T) {
 	server := New(&fakeBackend{err: errors.New("this session cannot read one monitor apart from another")},
 		events.New(), "test")
 
-	_, err := server.StartMonitorPreview(context.Background(),
-		&screensharev1.StartMonitorPreviewRequest{Monitor: 2})
+	_, err := server.Set(context.Background(), &screensharev1.SetRequest{State: &screensharev1.SetRequest_MonitorPreview{
+		MonitorPreview: &screensharev1.MonitorPreviewWanted{Monitor: 2, Open: true},
+	}})
 	if err == nil {
 		t.Fatal("a backend that refused the screen answered success")
 	}
@@ -50,8 +51,9 @@ func TestAPreviewOfAScreenThatDoesNotExistIsARequestFault(t *testing.T) {
 	server := New(&fakeBackend{err: Refuse("monitor 9 is not one of this machine's outputs")},
 		events.New(), "test")
 
-	_, err := server.StartMonitorPreview(context.Background(),
-		&screensharev1.StartMonitorPreviewRequest{Monitor: 9})
+	_, err := server.Set(context.Background(), &screensharev1.SetRequest{State: &screensharev1.SetRequest_MonitorPreview{
+		MonitorPreview: &screensharev1.MonitorPreviewWanted{Monitor: 9, Open: true},
+	}})
 	if err == nil {
 		t.Fatal("a screen this machine does not have was previewed")
 	}
@@ -70,13 +72,17 @@ func TestAWatchOverALegThisBuildHasNoViewerForIsARequestFault(t *testing.T) {
 	viewer := &screensharev1.StreamRef{StreamName: "desk", Transport: "moq"}
 
 	refused := New(&fakeBackend{err: Refuse("no viewer implements transport %q", "moq")}, events.New(), "test")
-	_, err := refused.StartWatch(context.Background(), &screensharev1.StartWatchRequest{Viewer: viewer})
+	_, err := refused.Set(context.Background(), &screensharev1.SetRequest{State: &screensharev1.SetRequest_Viewer{
+		Viewer: &screensharev1.ViewerWanted{Viewer: viewer, Open: true},
+	}})
 	if got := status.Code(err); got != codes.InvalidArgument {
 		t.Errorf("a leg with no viewer answered %s, want %s", got, codes.InvalidArgument)
 	}
 
 	unready := New(&fakeBackend{err: errors.New("desk is av1, which srt cannot carry")}, events.New(), "test")
-	_, err = unready.StartWatch(context.Background(), &screensharev1.StartWatchRequest{Viewer: viewer})
+	_, err = unready.Set(context.Background(), &screensharev1.SetRequest{State: &screensharev1.SetRequest_Viewer{
+		Viewer: &screensharev1.ViewerWanted{Viewer: viewer, Open: true},
+	}})
 	if got := status.Code(err); got != codes.FailedPrecondition {
 		t.Errorf("a leg that cannot carry the format answered %s, want %s", got, codes.FailedPrecondition)
 	}
@@ -88,8 +94,9 @@ func TestAWatchOverALegThisBuildHasNoViewerForIsARequestFault(t *testing.T) {
 func TestStoppingAScreenNobodyIsReadingSucceeds(t *testing.T) {
 	server := New(&fakeBackend{err: errors.New("would refuse anything that asked")}, events.New(), "test")
 
-	if _, err := server.StopMonitorPreview(context.Background(),
-		&screensharev1.StopMonitorPreviewRequest{Monitor: 7}); err != nil {
+	if _, err := server.Set(context.Background(), &screensharev1.SetRequest{State: &screensharev1.SetRequest_MonitorPreview{
+		MonitorPreview: &screensharev1.MonitorPreviewWanted{Monitor: 7},
+	}}); err != nil {
 		t.Errorf("stopping a screen nothing is reading was refused: %v", err)
 	}
 }

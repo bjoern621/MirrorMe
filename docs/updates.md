@@ -64,13 +64,13 @@ A release publishing no hash is refused: what arrived cannot be told from what w
 
 ## What a restart does
 
-`InstallUpdate` starts an applier and answers while the app is still up.
+`Do install_update` starts an applier and answers while the app is still up.
 
 The applier is a copy of the backend binary, in the staging directory, so the tree it replaces holds nothing it is reading from.
 Windows refuses to replace a running executable, and a swap that deleted the running applier would be the same bug on Linux.
 
 The shell ends the backend by killing its whole process tree, and the kill reaches every process whose parent is still in that tree.
-The applier is started by a launcher run, gone before `InstallUpdate` answers, so the kill stops short of it.
+The applier is started by a launcher run, gone before `Do install_update` answers, so the kill stops short of it.
 
 It waits for the backend to exit, then installs, then starts the app again.
 The setup channel runs the downloaded installer silently.
@@ -92,6 +92,6 @@ The next start sweeps it, along with any staged release no newer than the one ru
 | Staging directory and `pending.json` | `backend/internal/update/stage.go` |
 | Applier subcommand | `backend/internal/update/apply.go` |
 | Tree swap and archive extraction | `backend/internal/update/swap.go` |
-| Contract | `UpdateState` in `session.proto`, `CheckUpdate` and `InstallUpdate` in `control.proto` |
+| Contract | `UpdateState` in `session.proto`, `Do check_update` and `Do install_update` in `control.proto` |
 | Band and dialog | `avalonia/ScreenShare.App/Features/Shell/Update` |
 | Wording | `avalonia/ScreenShare.App/Copy/Updates.cs` |

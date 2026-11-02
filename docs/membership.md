@@ -109,7 +109,7 @@ machine following it is in that group:
 a link into another group answers with the way into it, which in Discord mode is the voice channel to join.
 A link to a stream the relay is not carrying says that instead, a link outliving the share it names.
 
-`ResolveLink` is where that is decided, and it opens no decode and no tile:
+`Ask link` is where that is decided, and it opens no decode and no tile:
 it answers which stream the link means, and the window opens it the way a press does (`docs/ipc-api.md`).
 
 ## Leaving

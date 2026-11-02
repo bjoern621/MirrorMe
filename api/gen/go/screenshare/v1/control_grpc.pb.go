@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -19,55 +20,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ControlService_Hello_FullMethodName                  = "/screenshare.v1.ControlService/Hello"
-	ControlService_GetCatalog_FullMethodName             = "/screenshare.v1.ControlService/GetCatalog"
-	ControlService_GetSettings_FullMethodName            = "/screenshare.v1.ControlService/GetSettings"
-	ControlService_ResolveForm_FullMethodName            = "/screenshare.v1.ControlService/ResolveForm"
-	ControlService_ListPresets_FullMethodName            = "/screenshare.v1.ControlService/ListPresets"
-	ControlService_GetPublishState_FullMethodName        = "/screenshare.v1.ControlService/GetPublishState"
-	ControlService_GetRelayStatus_FullMethodName         = "/screenshare.v1.ControlService/GetRelayStatus"
-	ControlService_GetViewerState_FullMethodName         = "/screenshare.v1.ControlService/GetViewerState"
-	ControlService_GetTestStreamState_FullMethodName     = "/screenshare.v1.ControlService/GetTestStreamState"
-	ControlService_GetMembersState_FullMethodName        = "/screenshare.v1.ControlService/GetMembersState"
-	ControlService_GetDiscordState_FullMethodName        = "/screenshare.v1.ControlService/GetDiscordState"
-	ControlService_ResolveLink_FullMethodName            = "/screenshare.v1.ControlService/ResolveLink"
-	ControlService_GetReceiveState_FullMethodName        = "/screenshare.v1.ControlService/GetReceiveState"
-	ControlService_GetMonitorPreviewState_FullMethodName = "/screenshare.v1.ControlService/GetMonitorPreviewState"
-	ControlService_ListShareWindows_FullMethodName       = "/screenshare.v1.ControlService/ListShareWindows"
-	ControlService_GetUpdateState_FullMethodName         = "/screenshare.v1.ControlService/GetUpdateState"
-	ControlService_GetStreamTimeline_FullMethodName      = "/screenshare.v1.ControlService/GetStreamTimeline"
-	ControlService_SaveSettings_FullMethodName           = "/screenshare.v1.ControlService/SaveSettings"
-	ControlService_SavePreset_FullMethodName             = "/screenshare.v1.ControlService/SavePreset"
-	ControlService_DeletePreset_FullMethodName           = "/screenshare.v1.ControlService/DeletePreset"
-	ControlService_StartPublish_FullMethodName           = "/screenshare.v1.ControlService/StartPublish"
-	ControlService_ApplyToStream_FullMethodName          = "/screenshare.v1.ControlService/ApplyToStream"
-	ControlService_StopPublish_FullMethodName            = "/screenshare.v1.ControlService/StopPublish"
-	ControlService_StartWatch_FullMethodName             = "/screenshare.v1.ControlService/StartWatch"
-	ControlService_StopWatch_FullMethodName              = "/screenshare.v1.ControlService/StopWatch"
-	ControlService_OpenInBrowser_FullMethodName          = "/screenshare.v1.ControlService/OpenInBrowser"
-	ControlService_StartReceive_FullMethodName           = "/screenshare.v1.ControlService/StartReceive"
-	ControlService_StopReceive_FullMethodName            = "/screenshare.v1.ControlService/StopReceive"
-	ControlService_StartMonitorPreview_FullMethodName    = "/screenshare.v1.ControlService/StartMonitorPreview"
-	ControlService_StopMonitorPreview_FullMethodName     = "/screenshare.v1.ControlService/StopMonitorPreview"
-	ControlService_SetReceiveAudio_FullMethodName        = "/screenshare.v1.ControlService/SetReceiveAudio"
-	ControlService_StartTestStreams_FullMethodName       = "/screenshare.v1.ControlService/StartTestStreams"
-	ControlService_StopTestStreams_FullMethodName        = "/screenshare.v1.ControlService/StopTestStreams"
-	ControlService_ProbeEncoders_FullMethodName          = "/screenshare.v1.ControlService/ProbeEncoders"
-	ControlService_MeasureUplink_FullMethodName          = "/screenshare.v1.ControlService/MeasureUplink"
-	ControlService_MeasureEncodeRate_FullMethodName      = "/screenshare.v1.ControlService/MeasureEncodeRate"
-	ControlService_CheckRelay_FullMethodName             = "/screenshare.v1.ControlService/CheckRelay"
-	ControlService_CheckUpdate_FullMethodName            = "/screenshare.v1.ControlService/CheckUpdate"
-	ControlService_InstallUpdate_FullMethodName          = "/screenshare.v1.ControlService/InstallUpdate"
-	ControlService_ForgetPortalConsent_FullMethodName    = "/screenshare.v1.ControlService/ForgetPortalConsent"
-	ControlService_CreateGroup_FullMethodName            = "/screenshare.v1.ControlService/CreateGroup"
-	ControlService_LinkDiscord_FullMethodName            = "/screenshare.v1.ControlService/LinkDiscord"
-	ControlService_UnlinkDiscord_FullMethodName          = "/screenshare.v1.ControlService/UnlinkDiscord"
-	ControlService_OpenLog_FullMethodName                = "/screenshare.v1.ControlService/OpenLog"
-	ControlService_OpenLogsFolder_FullMethodName         = "/screenshare.v1.ControlService/OpenLogsFolder"
-	ControlService_SendReport_FullMethodName             = "/screenshare.v1.ControlService/SendReport"
-	ControlService_Subscribe_FullMethodName              = "/screenshare.v1.ControlService/Subscribe"
-	ControlService_SubscribeAudioLevels_FullMethodName   = "/screenshare.v1.ControlService/SubscribeAudioLevels"
-	ControlService_SubscribePointer_FullMethodName       = "/screenshare.v1.ControlService/SubscribePointer"
+	ControlService_Hello_FullMethodName = "/screenshare.v1.ControlService/Hello"
+	ControlService_Read_FullMethodName  = "/screenshare.v1.ControlService/Read"
+	ControlService_Watch_FullMethodName = "/screenshare.v1.ControlService/Watch"
+	ControlService_Ask_FullMethodName   = "/screenshare.v1.ControlService/Ask"
+	ControlService_Set_FullMethodName   = "/screenshare.v1.ControlService/Set"
+	ControlService_Do_FullMethodName    = "/screenshare.v1.ControlService/Do"
 )
 
 // ControlServiceClient is the client API for ControlService service.
@@ -75,361 +33,42 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
 // The whole surface a shell may reach.
-// There is no second way in:
-// no shared file the shell parses, no relay endpoint it calls directly,
+// No shared file the shell parses, no relay endpoint it calls directly,
 // no environment variable it reads to learn a port.
 //
-// The methods divide into three kinds,
-// and the division is the boundary rule (docs/ipc-api.md):
+// Six methods, and the division between them is the boundary rule (docs/ipc-api.md):
 //
-//	Reads    hand the shell something to draw.
-//	         They compute, they change nothing,
-//	         and they are cheap enough to call on a keystroke or a mount.
-//	Effects  do the one thing the user asked for,
-//	         and are the only methods that change the world.
-//	         The measurements are among them:
-//	         probing the uplink, timing the encoder, probing the encoders.
-//	         Each starts real work, takes seconds, and leaves a result a later read sees.
-//	Streams  carry what changed, for as long as the shell holds the call.
+//	Read   hands over every named state, whole, as the backend holds it now.
+//	Watch  hands over every named state, whole, each time it moves.
+//	Ask    computes an answer from its arguments and changes nothing.
+//	Set    makes a state true. A state that already holds is a success.
+//	Do     runs one effect that leaves no state a later Set could name.
 //
-// A method that is neither a read nor one of the listed effects does not belong here,
-// and a shell that wants one is about to hold state the backend owns.
+// Every state is one EventKind, and the same Event message carries it on Read and on Watch,
+// so a state has one shape wherever it crosses.
+// A wish for a method beyond these is a shell about to hold state the backend owns.
 type ControlServiceClient interface {
 	// First call on a connection.
-	// Settles which contract version both sides are on before any other method is reached,
+	// Settles the contract major before any other method is reached,
 	// so a mismatch is stated rather than arriving as a field that is silently empty.
 	Hello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloResponse, error)
-	// Every fixed fact about this machine and the encoding model, as the backend holds them.
-	// Probes nothing.
-	// ProbeEncoders does, and what it finds arrives here on the next call
-	// and on the event stream for every shell, including the ones that did not ask.
-	GetCatalog(ctx context.Context, in *GetCatalogRequest, opts ...grpc.CallOption) (*GetCatalogResponse, error)
-	// The settings the backend holds:
-	// the starting draft for a form, and the values a fresh shell opens on.
-	GetSettings(ctx context.Context, in *GetSettingsRequest, opts ...grpc.CallOption) (*GetSettingsResponse, error)
-	// Turns a settings draft into the complete description of the screen:
-	// every field, every option, every greying and its reason,
-	// the diagnostics and the derived figures.
-	//
-	// No side effect, and safe to call on every keystroke.
-	// Reads what has been probed rather than probing, and saves nothing:
-	// a resolve that wrote would make every intermediate keystroke a persisted setting.
-	ResolveForm(ctx context.Context, in *ResolveFormRequest, opts ...grpc.CallOption) (*ResolveFormResponse, error)
-	// The user's saved configurations.
-	// The notice states why the store could not be read,
-	// in which case the empty list means nothing readable remained rather than nothing saved,
-	// and the difference is the user's to see.
-	ListPresets(ctx context.Context, in *ListPresetsRequest, opts ...grpc.CallOption) (*ListPresetsResponse, error)
-	// Whether a stream is in force, and whether the held settings have moved off it.
-	// A shell reads it when it mounts,
-	// and receives the same message on the event stream thereafter.
-	GetPublishState(ctx context.Context, in *GetPublishStateRequest, opts ...grpc.CallOption) (*PublishState, error)
-	// The latest relay snapshot.
-	// The backend polls the relay on its own interval,
-	// so several shells reading do not multiply the polling,
-	// and the byte-delta bitrates stay computed against one steady interval.
-	GetRelayStatus(ctx context.Context, in *GetRelayStatusRequest, opts ...grpc.CallOption) (*RelayStatus, error)
-	GetViewerState(ctx context.Context, in *GetViewerStateRequest, opts ...grpc.CallOption) (*ViewerState, error)
-	GetTestStreamState(ctx context.Context, in *GetTestStreamStateRequest, opts ...grpc.CallOption) (*TestStreamState, error)
-	// Who this machine shares a group with, as the presence loop last read it.
-	// A read and no membership call of its own:
-	// the group key and the display name in the settings are what put this machine in a group,
-	// and presence is stated on the loop that already polls the relay.
-	GetMembersState(ctx context.Context, in *GetMembersStateRequest, opts ...grpc.CallOption) (*MembersState, error)
-	// Discord mode as the backend's last manager pass read it, the event's read twin.
-	// Meaningful while the settings hold the Discord group source.
-	GetDiscordState(ctx context.Context, in *GetDiscordStateRequest, opts ...grpc.CallOption) (*DiscordState, error)
-	// Reads a link this machine was handed and answers the stream it opens
-	// (backend/internal/applink).
-	// A link names a stream inside a group, so a link into a group this machine is not in is refused
-	// with the move that would put it there: in Discord mode, the voice channel to join.
-	//
-	// Nothing is opened here.
-	// What follows is StartReceive and a tile, both of them the caller's,
-	// so this stays a read and the grid stays the shell's (docs/ipc-api.md, "The rule").
-	ResolveLink(ctx context.Context, in *ResolveLinkRequest, opts ...grpc.CallOption) (*ResolveLinkResponse, error)
-	GetReceiveState(ctx context.Context, in *GetReceiveStateRequest, opts ...grpc.CallOption) (*ReceiveState, error)
-	// What a shell that has just connected converges against.
-	// A preview outlives the window that asked for it, exactly as a decode does,
-	// so a shell that crashed with screens being read leaves them running,
-	// and the next one closes what nothing is drawing.
-	GetMonitorPreviewState(ctx context.Context, in *GetMonitorPreviewStateRequest, opts ...grpc.CallOption) (*MonitorPreviewState, error)
-	// The windows a capture can read, as they stand.
-	//
-	// Off the catalog because a window list has no settled state to announce:
-	// it moves whenever somebody opens or closes something,
-	// so it is asked for when a surface is about to draw it.
-	// The form offers the handles and greys them, as it does monitor indexes,
-	// and this carries the title and the app a reader picks by.
-	//
-	// A session that cannot enumerate windows answers with an empty list
-	// and Catalog.no_window_enumeration says so beforehand.
-	ListShareWindows(ctx context.Context, in *ListShareWindowsRequest, opts ...grpc.CallOption) (*ListShareWindowsResponse, error)
-	// What this install knows about the release published beside it.
-	// Answers without reaching the network:
-	// CheckUpdate is what asks the release service, and this reads what it last landed.
-	GetUpdateState(ctx context.Context, in *GetUpdateStateRequest, opts ...grpc.CallOption) (*UpdateState, error)
-	// The publish run as the backend judges it, the same payload stream_timeline pushes.
-	GetStreamTimeline(ctx context.Context, in *GetStreamTimelineRequest, opts ...grpc.CallOption) (*StreamTimeline, error)
-	// Persists the settings the shell holds.
-	// Touches no running stream:
-	// what reaches a live pipeline is asked for separately, by ApplyToStream,
-	// because both engines run a child built from an argv,
-	// and neither takes a value back afterwards.
-	SaveSettings(ctx context.Context, in *SaveSettingsRequest, opts ...grpc.CallOption) (*SaveSettingsResponse, error)
-	// Replaces a same-named preset.
-	SavePreset(ctx context.Context, in *SavePresetRequest, opts ...grpc.CallOption) (*SavePresetResponse, error)
-	DeletePreset(ctx context.Context, in *DeletePresetRequest, opts ...grpc.CallOption) (*DeletePresetResponse, error)
-	// Persists the settings and starts the encoder on them.
-	// Refused while a stream is already in force, a retry backoff included,
-	// because that is a stream the user asked for and has not stopped.
-	StartPublish(ctx context.Context, in *StartPublishRequest, opts ...grpc.CallOption) (*StartPublishResponse, error)
-	// Restarts the running stream on new settings, which is how an edit reaches a live pipeline.
-	// A separate method from SaveSettings because the user's two intentions differ:
-	// keep this for next time, and put this on the air now.
-	//
-	// The command is rendered before anything is torn down,
-	// so a combination no engine can build refuses the call,
-	// and the stream goes on running what it has.
-	// A launch that fails after the teardown leaves nothing publishing:
-	// the pipeline carrying the stream is gone by then, and there is no earlier one to return to.
-	ApplyToStream(ctx context.Context, in *ApplyToStreamRequest, opts ...grpc.CallOption) (*ApplyToStreamResponse, error)
-	// Ends the stream, whether it is running or waiting out a backoff.
-	// A stop is the one answer the retry budget has no say in.
-	StopPublish(ctx context.Context, in *StopPublishRequest, opts ...grpc.CallOption) (*StopPublishResponse, error)
-	// Opens an external viewer for one stream over one transport.
-	// The transport is per viewer and independent of the publish leg,
-	// so one stream can be watched over any leg the relay serves it on.
-	// A leg that cannot carry the stream's format is refused with the format named,
-	// rather than opening a viewer that connects and receives nothing.
-	StartWatch(ctx context.Context, in *StartWatchRequest, opts ...grpc.CallOption) (*StartWatchResponse, error)
-	StopWatch(ctx context.Context, in *StopWatchRequest, opts ...grpc.CallOption) (*StopWatchResponse, error)
-	// Opens the relay's own player page for one stream in the machine's default browser,
-	// over one of the legs the relay serves a page for (Catalog.browser_watch_transports).
-	// A leg that cannot carry the stream's format is refused the way StartWatch refuses one.
-	//
-	// It opens a page and starts no viewer this process owns,
-	// which is the whole difference from StartWatch:
-	// nothing appears in ViewerState, and there is no stop.
-	// A tab belongs to the browser that owns it,
-	// and this backend can neither read whether it is still open nor close it,
-	// so it says nothing about either.
-	//
-	// Repeating the call opens the page again,
-	// a departure from the idempotency elsewhere on this contract
-	// (docs/development-principles.md).
-	// OpenLog and OpenLogsFolder depart the same way for the same reason:
-	// the effect lands in a program this one does not own,
-	// and no state reads back to tell a second call that it had already happened.
-	OpenInBrowser(ctx context.Context, in *OpenInBrowserRequest, opts ...grpc.CallOption) (*OpenInBrowserResponse, error)
-	// Opens a decode for one stream on one leg, inside the backend.
-	// The tile path's counterpart of StartWatch, and the difference is where the frames end up:
-	// a watch opens a player window the backend does not draw in,
-	// a receive decodes into this process,
-	// from where the frame channel hands the frames to the shell (docs/viewer-architecture.md).
-	//
-	// The shell's whole job is where the frames are drawn:
-	// how large, beside which others, in what order.
-	//
-	// A leg that cannot carry the stream's format is refused with the format named,
-	// rather than opening a pipeline that connects and decodes nothing.
-	StartReceive(ctx context.Context, in *StartReceiveRequest, opts ...grpc.CallOption) (*StartReceiveResponse, error)
-	// A pair nothing is decoding succeeds and does nothing: the state it names already holds.
-	StopReceive(ctx context.Context, in *StopReceiveRequest, opts ...grpc.CallOption) (*StopReceiveResponse, error)
-	// Reads one of this machine's monitors into a picture the frame channel can hand over,
-	// so a screen is chosen by looking at it instead of by its number.
-	// Nothing is encoded and nothing is sent anywhere:
-	// the capture element feeds the render chain inside the backend,
-	// and the handles go to the shell.
-	//
-	// An effect, on the test every method here is put to:
-	// it opens a screen capture that goes on running until something closes it,
-	// and what is running reaches every shell as MonitorPreviewState.
-	// The frame channel opens none of it, for the reason it opens no relay decode.
-	//
-	// Idempotent.
-	// A monitor already being previewed is the state this asks for,
-	// so a second call changes nothing and succeeds.
-	// A monitor no output is enumerated under is INVALID_ARGUMENT.
-	// FAILED_PRECONDITION where the session has no way to read one screen apart from another,
-	// which a shell reads off Catalog.no_monitor_preview instead of discovering by asking.
-	StartMonitorPreview(ctx context.Context, in *StartMonitorPreviewRequest, opts ...grpc.CallOption) (*StartMonitorPreviewResponse, error)
-	// A monitor nothing is previewing succeeds and does nothing: the state it names already holds.
-	StopMonitorPreview(ctx context.Context, in *StopMonitorPreviewRequest, opts ...grpc.CallOption) (*StopMonitorPreviewResponse, error)
-	// Sets how loud one decode plays, and whether it plays at all.
-	//
-	// An effect on the receiver rather than anything the frame channel carries.
-	// The audio branch ends in a sink of its own inside this process
-	// (docs/viewer-architecture.md).
-	// The backend runs on the machine the shell is on,
-	// so carrying samples across the process boundary would be a longer way to the same device.
-	//
-	// Two windows on one decode share one audio branch,
-	// so a per-window volume would be two controls over one element,
-	// each showing a value the other had overwritten.
-	//
-	// Idempotent in both directions:
-	// a request for the loudness a decode already has succeeds and does nothing,
-	// and a volume set before the decoder has exposed an audio pad is held until it does.
-	// A decode that does not exist is NOT_FOUND with the pair named,
-	// that being a request about something absent rather than a state that already holds.
-	SetReceiveAudio(ctx context.Context, in *SetReceiveAudioRequest, opts ...grpc.CallOption) (*SetReceiveAudioResponse, error)
-	// Launches synthetic publishers, which exercise the viewing paths without a screen capture.
-	// A running set is replaced.
-	StartTestStreams(ctx context.Context, in *StartTestStreamsRequest, opts ...grpc.CallOption) (*StartTestStreamsResponse, error)
-	StopTestStreams(ctx context.Context, in *StopTestStreamsRequest, opts ...grpc.CallOption) (*StopTestStreamsResponse, error)
-	// Test-encodes on every engine and records what this machine can really run,
-	// so a form can grey NVENC on a machine with no NVIDIA GPU.
-	//
-	// An effect, on the test every method here is put to:
-	// it costs seconds on its first call and nothing afterwards,
-	// it replaces the result ResolveForm answers from,
-	// and the answer it lands reaches every shell on the event stream.
-	// A flag on GetCatalog would let one shell's request change another shell's next resolve,
-	// with nothing on the wire to announce it.
-	ProbeEncoders(ctx context.Context, in *ProbeEncodersRequest, opts ...grpc.CallOption) (*ProbeEncodersResponse, error)
-	// Probes this machine's real upload throughput,
-	// so a shell can replace the user's guessed uplink figure with a measured one.
-	//
-	// It and MeasureEncodeRate both run the real thing, take seconds,
-	// and are refused while a stream is publishing:
-	// one would compete with the stream for the line,
-	// and the other with the encoder for the silicon.
-	// The refusal is FAILED_PRECONDITION with that as the reason.
-	MeasureUplink(ctx context.Context, in *MeasureUplinkRequest, opts ...grpc.CallOption) (*MeasureUplinkResponse, error)
-	// Times the configured encoder on generated frames of the captured monitor's size,
-	// so a shell can say whether the target frame rate is above what this machine reaches.
-	MeasureEncodeRate(ctx context.Context, in *MeasureEncodeRateRequest, opts ...grpc.CallOption) (*MeasureEncodeRateResponse, error)
-	// Dials every leg of the relay the draft names and answers what each listener said.
-	//
-	// An effect on the same test the measurements meet:
-	// it reaches the network, it takes seconds against a listener that is not there,
-	// and it reports a reading of the moment rather than a fact a later read answers from.
-	// Unlike them it competes with nothing, so a live stream does not refuse it:
-	// a handshake per leg is no load on the line or on the encoder.
-	//
-	// Each leg is dialled where the transport carrying it says its listener answers,
-	// so a check reaches what a stream reaches,
-	// and it is asked in its own protocol because an open socket proves nothing
-	// (backend/internal/reach, docs/network-architecture.md).
-	CheckRelay(ctx context.Context, in *CheckRelayRequest, opts ...grpc.CallOption) (*CheckRelayResponse, error)
-	// Reads the published release, and fetches it where this install replaces its own files.
-	//
-	// An effect on the test the measurements meet:
-	// it reaches the network and it leaves a result a later read answers from.
-	// The call returns at once and the work outlives it,
-	// as StartMonitorPreview's does: a download runs for as long as a download runs,
-	// and every step of it reaches every shell on the event stream.
-	//
-	// One call for both steps because they are one thing asked for.
-	// A reader pressing this wants the newer build running,
-	// and a separate fetch would be a second press for a step with no decision in it.
-	// Where UpdateState.uninstallable stands, it stops at UPDATE_STAGE_AVAILABLE
-	// and downloads nothing.
-	//
-	// Idempotent: a check over a staged release checks again,
-	// and a release already on disk and verified is not fetched twice.
-	// Refused with FAILED_PRECONDITION where UpdateState.unchecked stands,
-	// this install asking the service nothing at all.
-	CheckUpdate(ctx context.Context, in *CheckUpdateRequest, opts ...grpc.CallOption) (*CheckUpdateResponse, error)
-	// Starts the staged release and leaves the running one to close.
-	//
-	// The applier is a process of its own, outliving both halves of the app:
-	// it waits for the control endpoint to go quiet,
-	// puts the staged files in place and starts the app again (docs/updates.md).
-	// So this call answers while the running app is still up,
-	// and the shell that asked closes itself afterwards.
-	//
-	// Refused with FAILED_PRECONDITION below UPDATE_STAGE_READY:
-	// nothing is installed that has not been fetched and verified.
-	InstallUpdate(ctx context.Context, in *InstallUpdateRequest, opts ...grpc.CallOption) (*InstallUpdateResponse, error)
-	// Drops the stored screen-capture consent,
-	// so the next capture asks the compositor to pick again.
-	// How a share aimed at the wrong window or monitor is corrected.
-	ForgetPortalConsent(ctx context.Context, in *ForgetPortalConsentRequest, opts ...grpc.CallOption) (*ForgetPortalConsentResponse, error)
-	// Draws a group key at the relay's group service and answers it, without storing it.
-	//
-	// A call of its own, because possession of the key is membership:
-	// a key minted as a side effect of publishing would put a stream in a group nobody reaches,
-	// and say so only afterwards.
-	// The shell shows what came back and writes it to the settings field like any other value,
-	// which keeps the one write that changes a machine's group in the same place as every other.
-	CreateGroup(ctx context.Context, in *CreateGroupRequest, opts ...grpc.CallOption) (*CreateGroupResponse, error)
-	// Links this install to a Discord account (docs/discord-mode.md).
-	//
-	// An effect that takes as long as a person takes:
-	// the backend opens the browser on the manager's consent flow,
-	// catches the redirect on a loopback port it listens on for the duration,
-	// and stores the link secret it lands with.
-	// The call answers when the link landed, failed or was cancelled,
-	// and the stored settings moving is announced like any other settings write.
-	LinkDiscord(ctx context.Context, in *LinkDiscordRequest, opts ...grpc.CallOption) (*LinkDiscordResponse, error)
-	// Drops this install's link to a Discord account (docs/discord-mode.md).
-	//
-	// The secret leaving the stored settings is the whole of it:
-	// nothing is revoked at the manager, no browser opens,
-	// and an install holding no link is left holding none.
-	UnlinkDiscord(ctx context.Context, in *UnlinkDiscordRequest, opts ...grpc.CallOption) (*UnlinkDiscordResponse, error)
-	// OpenLog opens one run log in the machine's default application,
-	// OpenLogsFolder the directory holding them.
-	// Backend methods because the files are the backend's:
-	// it writes them, it rotates them,
-	// and it is the only side that knows which still exist under the name it handed out.
-	OpenLog(ctx context.Context, in *OpenLogRequest, opts ...grpc.CallOption) (*OpenLogResponse, error)
-	OpenLogsFolder(ctx context.Context, in *OpenLogsFolderRequest, opts ...grpc.CallOption) (*OpenLogsFolderResponse, error)
-	// Sends one report to the group service beside the stored relay:
-	// what this machine is, the settings with every secret blanked,
-	// and the newest run logs, each capped at its tail (backend/internal/report).
-	//
-	// The press is the consent, so SettingsApp.send_crash_reports leaves this alone.
-	// That setting covers the report a crash sends unasked, on the next start.
-	//
-	// A second call sends a second report and answers a second id,
-	// the departure from idempotency OpenInBrowser states:
-	// what the effect leaves behind is a store this process does not own,
-	// and nothing reads back to tell a second call that it had already happened.
-	//
-	// Refused with FAILED_PRECONDITION where the settings name no relay,
-	// a report going to the group service of the deployment in use.
-	SendReport(ctx context.Context, in *SendReportRequest, opts ...grpc.CallOption) (*SendReportResponse, error)
-	// Delivers what changed, for as long as the shell holds the call.
-	// events.proto states why every event carries a whole state,
-	// and why a shell that acted still waits for the event.
-	Subscribe(ctx context.Context, in *SubscribeRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[Event], error)
-	// Delivers how loud every decode is, on a fixed cadence,
-	// for as long as the shell holds the call.
-	//
-	// A stream of its own rather than an event kind, and the difference is cadence.
-	// Subscribe carries whole states when something changed, and a level changes continuously:
-	// folding it in would push the receive state at metering rate,
-	// and make every consumer of that state re-render for a number none of them read.
-	//
-	// A read, so it belongs on this service rather than on the frame channel.
-	// That channel carries frames alone, and a level is not one.
-	// Frequency alone is no reason to leave this service.
-	//
-	// One call covers every decode,
-	// so a tile appearing needs no second subscription and a tile leaving needs no cancellation.
-	// Each tick is the whole set:
-	// a decode with no audio track has no entry, and a silent one reads negative infinity.
-	// The backend coalesces to the newest tick,
-	// so a reader that fell behind receives the present rather than a queue of the past.
-	SubscribeAudioLevels(ctx context.Context, in *SubscribeAudioLevelsRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[AudioLevels], error)
-	// Delivers where the publishing machine's pointer is,
-	// for as long as the shell holds the call.
-	//
-	// A stream of its own for the reason the levels are one, and one degree more so:
-	// sending a position instead of drawing it into the picture costs no frame,
-	// so it moves at its own rate rather than the stream's.
-	// A 240 Hz pointer over a 30 fps stream is the win,
-	// and folding it into Subscribe would push the publish state at that rate,
-	// for a figure nothing else reads.
-	//
-	// It carries positions only while a publish whose cursor mode is metadata is running.
-	// Any other mode draws the pointer into the frames or leaves it out,
-	// and the stream stays open and silent rather than being refused,
-	// since a shell subscribes once and the mode may change under it.
-	SubscribePointer(ctx context.Context, in *SubscribePointerRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[PointerPosition], error)
+	Read(ctx context.Context, in *ReadRequest, opts ...grpc.CallOption) (*ReadResponse, error)
+	// Delivers the named kinds for as long as the shell holds the call.
+	// A shell opens one call per cadence:
+	// state kinds move when something happened,
+	// audio levels on a fixed tick, the pointer at the rate it moves.
+	// Folding them into one call would re-render every state reader at metering rate.
+	Watch(ctx context.Context, in *WatchRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[Event], error)
+	// Cheap enough to call on every keystroke.
+	Ask(ctx context.Context, in *AskRequest, opts ...grpc.CallOption) (*AskResponse, error)
+	// Answers empty.
+	// What the state became arrives on Watch, which is the one path into the display:
+	// the window that acted and the window that watched learn one fact one way.
+	Set(ctx context.Context, in *SetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Answers the outcome an effect leaves with its caller, empty where it leaves none.
+	// Each effect here reaches something this process does not own, or takes seconds,
+	// so none of them runs on a keystroke.
+	Do(ctx context.Context, in *DoRequest, opts ...grpc.CallOption) (*DoResponse, error)
 }
 
 type controlServiceClient struct {
@@ -450,463 +89,23 @@ func (c *controlServiceClient) Hello(ctx context.Context, in *HelloRequest, opts
 	return out, nil
 }
 
-func (c *controlServiceClient) GetCatalog(ctx context.Context, in *GetCatalogRequest, opts ...grpc.CallOption) (*GetCatalogResponse, error) {
+func (c *controlServiceClient) Read(ctx context.Context, in *ReadRequest, opts ...grpc.CallOption) (*ReadResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetCatalogResponse)
-	err := c.cc.Invoke(ctx, ControlService_GetCatalog_FullMethodName, in, out, cOpts...)
+	out := new(ReadResponse)
+	err := c.cc.Invoke(ctx, ControlService_Read_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *controlServiceClient) GetSettings(ctx context.Context, in *GetSettingsRequest, opts ...grpc.CallOption) (*GetSettingsResponse, error) {
+func (c *controlServiceClient) Watch(ctx context.Context, in *WatchRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[Event], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetSettingsResponse)
-	err := c.cc.Invoke(ctx, ControlService_GetSettings_FullMethodName, in, out, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &ControlService_ServiceDesc.Streams[0], ControlService_Watch_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
-}
-
-func (c *controlServiceClient) ResolveForm(ctx context.Context, in *ResolveFormRequest, opts ...grpc.CallOption) (*ResolveFormResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ResolveFormResponse)
-	err := c.cc.Invoke(ctx, ControlService_ResolveForm_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) ListPresets(ctx context.Context, in *ListPresetsRequest, opts ...grpc.CallOption) (*ListPresetsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListPresetsResponse)
-	err := c.cc.Invoke(ctx, ControlService_ListPresets_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) GetPublishState(ctx context.Context, in *GetPublishStateRequest, opts ...grpc.CallOption) (*PublishState, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(PublishState)
-	err := c.cc.Invoke(ctx, ControlService_GetPublishState_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) GetRelayStatus(ctx context.Context, in *GetRelayStatusRequest, opts ...grpc.CallOption) (*RelayStatus, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(RelayStatus)
-	err := c.cc.Invoke(ctx, ControlService_GetRelayStatus_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) GetViewerState(ctx context.Context, in *GetViewerStateRequest, opts ...grpc.CallOption) (*ViewerState, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ViewerState)
-	err := c.cc.Invoke(ctx, ControlService_GetViewerState_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) GetTestStreamState(ctx context.Context, in *GetTestStreamStateRequest, opts ...grpc.CallOption) (*TestStreamState, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(TestStreamState)
-	err := c.cc.Invoke(ctx, ControlService_GetTestStreamState_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) GetMembersState(ctx context.Context, in *GetMembersStateRequest, opts ...grpc.CallOption) (*MembersState, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MembersState)
-	err := c.cc.Invoke(ctx, ControlService_GetMembersState_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) GetDiscordState(ctx context.Context, in *GetDiscordStateRequest, opts ...grpc.CallOption) (*DiscordState, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DiscordState)
-	err := c.cc.Invoke(ctx, ControlService_GetDiscordState_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) ResolveLink(ctx context.Context, in *ResolveLinkRequest, opts ...grpc.CallOption) (*ResolveLinkResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ResolveLinkResponse)
-	err := c.cc.Invoke(ctx, ControlService_ResolveLink_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) GetReceiveState(ctx context.Context, in *GetReceiveStateRequest, opts ...grpc.CallOption) (*ReceiveState, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ReceiveState)
-	err := c.cc.Invoke(ctx, ControlService_GetReceiveState_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) GetMonitorPreviewState(ctx context.Context, in *GetMonitorPreviewStateRequest, opts ...grpc.CallOption) (*MonitorPreviewState, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MonitorPreviewState)
-	err := c.cc.Invoke(ctx, ControlService_GetMonitorPreviewState_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) ListShareWindows(ctx context.Context, in *ListShareWindowsRequest, opts ...grpc.CallOption) (*ListShareWindowsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListShareWindowsResponse)
-	err := c.cc.Invoke(ctx, ControlService_ListShareWindows_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) GetUpdateState(ctx context.Context, in *GetUpdateStateRequest, opts ...grpc.CallOption) (*UpdateState, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UpdateState)
-	err := c.cc.Invoke(ctx, ControlService_GetUpdateState_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) GetStreamTimeline(ctx context.Context, in *GetStreamTimelineRequest, opts ...grpc.CallOption) (*StreamTimeline, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StreamTimeline)
-	err := c.cc.Invoke(ctx, ControlService_GetStreamTimeline_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) SaveSettings(ctx context.Context, in *SaveSettingsRequest, opts ...grpc.CallOption) (*SaveSettingsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SaveSettingsResponse)
-	err := c.cc.Invoke(ctx, ControlService_SaveSettings_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) SavePreset(ctx context.Context, in *SavePresetRequest, opts ...grpc.CallOption) (*SavePresetResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SavePresetResponse)
-	err := c.cc.Invoke(ctx, ControlService_SavePreset_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) DeletePreset(ctx context.Context, in *DeletePresetRequest, opts ...grpc.CallOption) (*DeletePresetResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DeletePresetResponse)
-	err := c.cc.Invoke(ctx, ControlService_DeletePreset_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) StartPublish(ctx context.Context, in *StartPublishRequest, opts ...grpc.CallOption) (*StartPublishResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StartPublishResponse)
-	err := c.cc.Invoke(ctx, ControlService_StartPublish_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) ApplyToStream(ctx context.Context, in *ApplyToStreamRequest, opts ...grpc.CallOption) (*ApplyToStreamResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApplyToStreamResponse)
-	err := c.cc.Invoke(ctx, ControlService_ApplyToStream_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) StopPublish(ctx context.Context, in *StopPublishRequest, opts ...grpc.CallOption) (*StopPublishResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StopPublishResponse)
-	err := c.cc.Invoke(ctx, ControlService_StopPublish_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) StartWatch(ctx context.Context, in *StartWatchRequest, opts ...grpc.CallOption) (*StartWatchResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StartWatchResponse)
-	err := c.cc.Invoke(ctx, ControlService_StartWatch_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) StopWatch(ctx context.Context, in *StopWatchRequest, opts ...grpc.CallOption) (*StopWatchResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StopWatchResponse)
-	err := c.cc.Invoke(ctx, ControlService_StopWatch_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) OpenInBrowser(ctx context.Context, in *OpenInBrowserRequest, opts ...grpc.CallOption) (*OpenInBrowserResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(OpenInBrowserResponse)
-	err := c.cc.Invoke(ctx, ControlService_OpenInBrowser_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) StartReceive(ctx context.Context, in *StartReceiveRequest, opts ...grpc.CallOption) (*StartReceiveResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StartReceiveResponse)
-	err := c.cc.Invoke(ctx, ControlService_StartReceive_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) StopReceive(ctx context.Context, in *StopReceiveRequest, opts ...grpc.CallOption) (*StopReceiveResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StopReceiveResponse)
-	err := c.cc.Invoke(ctx, ControlService_StopReceive_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) StartMonitorPreview(ctx context.Context, in *StartMonitorPreviewRequest, opts ...grpc.CallOption) (*StartMonitorPreviewResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StartMonitorPreviewResponse)
-	err := c.cc.Invoke(ctx, ControlService_StartMonitorPreview_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) StopMonitorPreview(ctx context.Context, in *StopMonitorPreviewRequest, opts ...grpc.CallOption) (*StopMonitorPreviewResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StopMonitorPreviewResponse)
-	err := c.cc.Invoke(ctx, ControlService_StopMonitorPreview_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) SetReceiveAudio(ctx context.Context, in *SetReceiveAudioRequest, opts ...grpc.CallOption) (*SetReceiveAudioResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SetReceiveAudioResponse)
-	err := c.cc.Invoke(ctx, ControlService_SetReceiveAudio_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) StartTestStreams(ctx context.Context, in *StartTestStreamsRequest, opts ...grpc.CallOption) (*StartTestStreamsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StartTestStreamsResponse)
-	err := c.cc.Invoke(ctx, ControlService_StartTestStreams_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) StopTestStreams(ctx context.Context, in *StopTestStreamsRequest, opts ...grpc.CallOption) (*StopTestStreamsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StopTestStreamsResponse)
-	err := c.cc.Invoke(ctx, ControlService_StopTestStreams_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) ProbeEncoders(ctx context.Context, in *ProbeEncodersRequest, opts ...grpc.CallOption) (*ProbeEncodersResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ProbeEncodersResponse)
-	err := c.cc.Invoke(ctx, ControlService_ProbeEncoders_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) MeasureUplink(ctx context.Context, in *MeasureUplinkRequest, opts ...grpc.CallOption) (*MeasureUplinkResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MeasureUplinkResponse)
-	err := c.cc.Invoke(ctx, ControlService_MeasureUplink_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) MeasureEncodeRate(ctx context.Context, in *MeasureEncodeRateRequest, opts ...grpc.CallOption) (*MeasureEncodeRateResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MeasureEncodeRateResponse)
-	err := c.cc.Invoke(ctx, ControlService_MeasureEncodeRate_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) CheckRelay(ctx context.Context, in *CheckRelayRequest, opts ...grpc.CallOption) (*CheckRelayResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CheckRelayResponse)
-	err := c.cc.Invoke(ctx, ControlService_CheckRelay_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) CheckUpdate(ctx context.Context, in *CheckUpdateRequest, opts ...grpc.CallOption) (*CheckUpdateResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CheckUpdateResponse)
-	err := c.cc.Invoke(ctx, ControlService_CheckUpdate_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) InstallUpdate(ctx context.Context, in *InstallUpdateRequest, opts ...grpc.CallOption) (*InstallUpdateResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(InstallUpdateResponse)
-	err := c.cc.Invoke(ctx, ControlService_InstallUpdate_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) ForgetPortalConsent(ctx context.Context, in *ForgetPortalConsentRequest, opts ...grpc.CallOption) (*ForgetPortalConsentResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ForgetPortalConsentResponse)
-	err := c.cc.Invoke(ctx, ControlService_ForgetPortalConsent_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) CreateGroup(ctx context.Context, in *CreateGroupRequest, opts ...grpc.CallOption) (*CreateGroupResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateGroupResponse)
-	err := c.cc.Invoke(ctx, ControlService_CreateGroup_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) LinkDiscord(ctx context.Context, in *LinkDiscordRequest, opts ...grpc.CallOption) (*LinkDiscordResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(LinkDiscordResponse)
-	err := c.cc.Invoke(ctx, ControlService_LinkDiscord_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) UnlinkDiscord(ctx context.Context, in *UnlinkDiscordRequest, opts ...grpc.CallOption) (*UnlinkDiscordResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UnlinkDiscordResponse)
-	err := c.cc.Invoke(ctx, ControlService_UnlinkDiscord_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) OpenLog(ctx context.Context, in *OpenLogRequest, opts ...grpc.CallOption) (*OpenLogResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(OpenLogResponse)
-	err := c.cc.Invoke(ctx, ControlService_OpenLog_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) OpenLogsFolder(ctx context.Context, in *OpenLogsFolderRequest, opts ...grpc.CallOption) (*OpenLogsFolderResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(OpenLogsFolderResponse)
-	err := c.cc.Invoke(ctx, ControlService_OpenLogsFolder_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) SendReport(ctx context.Context, in *SendReportRequest, opts ...grpc.CallOption) (*SendReportResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SendReportResponse)
-	err := c.cc.Invoke(ctx, ControlService_SendReport_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *controlServiceClient) Subscribe(ctx context.Context, in *SubscribeRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[Event], error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &ControlService_ServiceDesc.Streams[0], ControlService_Subscribe_FullMethodName, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &grpc.GenericClientStream[SubscribeRequest, Event]{ClientStream: stream}
+	x := &grpc.GenericClientStream[WatchRequest, Event]{ClientStream: stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -917,406 +116,79 @@ func (c *controlServiceClient) Subscribe(ctx context.Context, in *SubscribeReque
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ControlService_SubscribeClient = grpc.ServerStreamingClient[Event]
+type ControlService_WatchClient = grpc.ServerStreamingClient[Event]
 
-func (c *controlServiceClient) SubscribeAudioLevels(ctx context.Context, in *SubscribeAudioLevelsRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[AudioLevels], error) {
+func (c *controlServiceClient) Ask(ctx context.Context, in *AskRequest, opts ...grpc.CallOption) (*AskResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &ControlService_ServiceDesc.Streams[1], ControlService_SubscribeAudioLevels_FullMethodName, cOpts...)
+	out := new(AskResponse)
+	err := c.cc.Invoke(ctx, ControlService_Ask_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[SubscribeAudioLevelsRequest, AudioLevels]{ClientStream: stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
+	return out, nil
 }
 
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ControlService_SubscribeAudioLevelsClient = grpc.ServerStreamingClient[AudioLevels]
-
-func (c *controlServiceClient) SubscribePointer(ctx context.Context, in *SubscribePointerRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[PointerPosition], error) {
+func (c *controlServiceClient) Set(ctx context.Context, in *SetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &ControlService_ServiceDesc.Streams[2], ControlService_SubscribePointer_FullMethodName, cOpts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ControlService_Set_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[SubscribePointerRequest, PointerPosition]{ClientStream: stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
+	return out, nil
 }
 
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ControlService_SubscribePointerClient = grpc.ServerStreamingClient[PointerPosition]
+func (c *controlServiceClient) Do(ctx context.Context, in *DoRequest, opts ...grpc.CallOption) (*DoResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DoResponse)
+	err := c.cc.Invoke(ctx, ControlService_Do_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
 
 // ControlServiceServer is the server API for ControlService service.
 // All implementations must embed UnimplementedControlServiceServer
 // for forward compatibility.
 //
 // The whole surface a shell may reach.
-// There is no second way in:
-// no shared file the shell parses, no relay endpoint it calls directly,
+// No shared file the shell parses, no relay endpoint it calls directly,
 // no environment variable it reads to learn a port.
 //
-// The methods divide into three kinds,
-// and the division is the boundary rule (docs/ipc-api.md):
+// Six methods, and the division between them is the boundary rule (docs/ipc-api.md):
 //
-//	Reads    hand the shell something to draw.
-//	         They compute, they change nothing,
-//	         and they are cheap enough to call on a keystroke or a mount.
-//	Effects  do the one thing the user asked for,
-//	         and are the only methods that change the world.
-//	         The measurements are among them:
-//	         probing the uplink, timing the encoder, probing the encoders.
-//	         Each starts real work, takes seconds, and leaves a result a later read sees.
-//	Streams  carry what changed, for as long as the shell holds the call.
+//	Read   hands over every named state, whole, as the backend holds it now.
+//	Watch  hands over every named state, whole, each time it moves.
+//	Ask    computes an answer from its arguments and changes nothing.
+//	Set    makes a state true. A state that already holds is a success.
+//	Do     runs one effect that leaves no state a later Set could name.
 //
-// A method that is neither a read nor one of the listed effects does not belong here,
-// and a shell that wants one is about to hold state the backend owns.
+// Every state is one EventKind, and the same Event message carries it on Read and on Watch,
+// so a state has one shape wherever it crosses.
+// A wish for a method beyond these is a shell about to hold state the backend owns.
 type ControlServiceServer interface {
 	// First call on a connection.
-	// Settles which contract version both sides are on before any other method is reached,
+	// Settles the contract major before any other method is reached,
 	// so a mismatch is stated rather than arriving as a field that is silently empty.
 	Hello(context.Context, *HelloRequest) (*HelloResponse, error)
-	// Every fixed fact about this machine and the encoding model, as the backend holds them.
-	// Probes nothing.
-	// ProbeEncoders does, and what it finds arrives here on the next call
-	// and on the event stream for every shell, including the ones that did not ask.
-	GetCatalog(context.Context, *GetCatalogRequest) (*GetCatalogResponse, error)
-	// The settings the backend holds:
-	// the starting draft for a form, and the values a fresh shell opens on.
-	GetSettings(context.Context, *GetSettingsRequest) (*GetSettingsResponse, error)
-	// Turns a settings draft into the complete description of the screen:
-	// every field, every option, every greying and its reason,
-	// the diagnostics and the derived figures.
-	//
-	// No side effect, and safe to call on every keystroke.
-	// Reads what has been probed rather than probing, and saves nothing:
-	// a resolve that wrote would make every intermediate keystroke a persisted setting.
-	ResolveForm(context.Context, *ResolveFormRequest) (*ResolveFormResponse, error)
-	// The user's saved configurations.
-	// The notice states why the store could not be read,
-	// in which case the empty list means nothing readable remained rather than nothing saved,
-	// and the difference is the user's to see.
-	ListPresets(context.Context, *ListPresetsRequest) (*ListPresetsResponse, error)
-	// Whether a stream is in force, and whether the held settings have moved off it.
-	// A shell reads it when it mounts,
-	// and receives the same message on the event stream thereafter.
-	GetPublishState(context.Context, *GetPublishStateRequest) (*PublishState, error)
-	// The latest relay snapshot.
-	// The backend polls the relay on its own interval,
-	// so several shells reading do not multiply the polling,
-	// and the byte-delta bitrates stay computed against one steady interval.
-	GetRelayStatus(context.Context, *GetRelayStatusRequest) (*RelayStatus, error)
-	GetViewerState(context.Context, *GetViewerStateRequest) (*ViewerState, error)
-	GetTestStreamState(context.Context, *GetTestStreamStateRequest) (*TestStreamState, error)
-	// Who this machine shares a group with, as the presence loop last read it.
-	// A read and no membership call of its own:
-	// the group key and the display name in the settings are what put this machine in a group,
-	// and presence is stated on the loop that already polls the relay.
-	GetMembersState(context.Context, *GetMembersStateRequest) (*MembersState, error)
-	// Discord mode as the backend's last manager pass read it, the event's read twin.
-	// Meaningful while the settings hold the Discord group source.
-	GetDiscordState(context.Context, *GetDiscordStateRequest) (*DiscordState, error)
-	// Reads a link this machine was handed and answers the stream it opens
-	// (backend/internal/applink).
-	// A link names a stream inside a group, so a link into a group this machine is not in is refused
-	// with the move that would put it there: in Discord mode, the voice channel to join.
-	//
-	// Nothing is opened here.
-	// What follows is StartReceive and a tile, both of them the caller's,
-	// so this stays a read and the grid stays the shell's (docs/ipc-api.md, "The rule").
-	ResolveLink(context.Context, *ResolveLinkRequest) (*ResolveLinkResponse, error)
-	GetReceiveState(context.Context, *GetReceiveStateRequest) (*ReceiveState, error)
-	// What a shell that has just connected converges against.
-	// A preview outlives the window that asked for it, exactly as a decode does,
-	// so a shell that crashed with screens being read leaves them running,
-	// and the next one closes what nothing is drawing.
-	GetMonitorPreviewState(context.Context, *GetMonitorPreviewStateRequest) (*MonitorPreviewState, error)
-	// The windows a capture can read, as they stand.
-	//
-	// Off the catalog because a window list has no settled state to announce:
-	// it moves whenever somebody opens or closes something,
-	// so it is asked for when a surface is about to draw it.
-	// The form offers the handles and greys them, as it does monitor indexes,
-	// and this carries the title and the app a reader picks by.
-	//
-	// A session that cannot enumerate windows answers with an empty list
-	// and Catalog.no_window_enumeration says so beforehand.
-	ListShareWindows(context.Context, *ListShareWindowsRequest) (*ListShareWindowsResponse, error)
-	// What this install knows about the release published beside it.
-	// Answers without reaching the network:
-	// CheckUpdate is what asks the release service, and this reads what it last landed.
-	GetUpdateState(context.Context, *GetUpdateStateRequest) (*UpdateState, error)
-	// The publish run as the backend judges it, the same payload stream_timeline pushes.
-	GetStreamTimeline(context.Context, *GetStreamTimelineRequest) (*StreamTimeline, error)
-	// Persists the settings the shell holds.
-	// Touches no running stream:
-	// what reaches a live pipeline is asked for separately, by ApplyToStream,
-	// because both engines run a child built from an argv,
-	// and neither takes a value back afterwards.
-	SaveSettings(context.Context, *SaveSettingsRequest) (*SaveSettingsResponse, error)
-	// Replaces a same-named preset.
-	SavePreset(context.Context, *SavePresetRequest) (*SavePresetResponse, error)
-	DeletePreset(context.Context, *DeletePresetRequest) (*DeletePresetResponse, error)
-	// Persists the settings and starts the encoder on them.
-	// Refused while a stream is already in force, a retry backoff included,
-	// because that is a stream the user asked for and has not stopped.
-	StartPublish(context.Context, *StartPublishRequest) (*StartPublishResponse, error)
-	// Restarts the running stream on new settings, which is how an edit reaches a live pipeline.
-	// A separate method from SaveSettings because the user's two intentions differ:
-	// keep this for next time, and put this on the air now.
-	//
-	// The command is rendered before anything is torn down,
-	// so a combination no engine can build refuses the call,
-	// and the stream goes on running what it has.
-	// A launch that fails after the teardown leaves nothing publishing:
-	// the pipeline carrying the stream is gone by then, and there is no earlier one to return to.
-	ApplyToStream(context.Context, *ApplyToStreamRequest) (*ApplyToStreamResponse, error)
-	// Ends the stream, whether it is running or waiting out a backoff.
-	// A stop is the one answer the retry budget has no say in.
-	StopPublish(context.Context, *StopPublishRequest) (*StopPublishResponse, error)
-	// Opens an external viewer for one stream over one transport.
-	// The transport is per viewer and independent of the publish leg,
-	// so one stream can be watched over any leg the relay serves it on.
-	// A leg that cannot carry the stream's format is refused with the format named,
-	// rather than opening a viewer that connects and receives nothing.
-	StartWatch(context.Context, *StartWatchRequest) (*StartWatchResponse, error)
-	StopWatch(context.Context, *StopWatchRequest) (*StopWatchResponse, error)
-	// Opens the relay's own player page for one stream in the machine's default browser,
-	// over one of the legs the relay serves a page for (Catalog.browser_watch_transports).
-	// A leg that cannot carry the stream's format is refused the way StartWatch refuses one.
-	//
-	// It opens a page and starts no viewer this process owns,
-	// which is the whole difference from StartWatch:
-	// nothing appears in ViewerState, and there is no stop.
-	// A tab belongs to the browser that owns it,
-	// and this backend can neither read whether it is still open nor close it,
-	// so it says nothing about either.
-	//
-	// Repeating the call opens the page again,
-	// a departure from the idempotency elsewhere on this contract
-	// (docs/development-principles.md).
-	// OpenLog and OpenLogsFolder depart the same way for the same reason:
-	// the effect lands in a program this one does not own,
-	// and no state reads back to tell a second call that it had already happened.
-	OpenInBrowser(context.Context, *OpenInBrowserRequest) (*OpenInBrowserResponse, error)
-	// Opens a decode for one stream on one leg, inside the backend.
-	// The tile path's counterpart of StartWatch, and the difference is where the frames end up:
-	// a watch opens a player window the backend does not draw in,
-	// a receive decodes into this process,
-	// from where the frame channel hands the frames to the shell (docs/viewer-architecture.md).
-	//
-	// The shell's whole job is where the frames are drawn:
-	// how large, beside which others, in what order.
-	//
-	// A leg that cannot carry the stream's format is refused with the format named,
-	// rather than opening a pipeline that connects and decodes nothing.
-	StartReceive(context.Context, *StartReceiveRequest) (*StartReceiveResponse, error)
-	// A pair nothing is decoding succeeds and does nothing: the state it names already holds.
-	StopReceive(context.Context, *StopReceiveRequest) (*StopReceiveResponse, error)
-	// Reads one of this machine's monitors into a picture the frame channel can hand over,
-	// so a screen is chosen by looking at it instead of by its number.
-	// Nothing is encoded and nothing is sent anywhere:
-	// the capture element feeds the render chain inside the backend,
-	// and the handles go to the shell.
-	//
-	// An effect, on the test every method here is put to:
-	// it opens a screen capture that goes on running until something closes it,
-	// and what is running reaches every shell as MonitorPreviewState.
-	// The frame channel opens none of it, for the reason it opens no relay decode.
-	//
-	// Idempotent.
-	// A monitor already being previewed is the state this asks for,
-	// so a second call changes nothing and succeeds.
-	// A monitor no output is enumerated under is INVALID_ARGUMENT.
-	// FAILED_PRECONDITION where the session has no way to read one screen apart from another,
-	// which a shell reads off Catalog.no_monitor_preview instead of discovering by asking.
-	StartMonitorPreview(context.Context, *StartMonitorPreviewRequest) (*StartMonitorPreviewResponse, error)
-	// A monitor nothing is previewing succeeds and does nothing: the state it names already holds.
-	StopMonitorPreview(context.Context, *StopMonitorPreviewRequest) (*StopMonitorPreviewResponse, error)
-	// Sets how loud one decode plays, and whether it plays at all.
-	//
-	// An effect on the receiver rather than anything the frame channel carries.
-	// The audio branch ends in a sink of its own inside this process
-	// (docs/viewer-architecture.md).
-	// The backend runs on the machine the shell is on,
-	// so carrying samples across the process boundary would be a longer way to the same device.
-	//
-	// Two windows on one decode share one audio branch,
-	// so a per-window volume would be two controls over one element,
-	// each showing a value the other had overwritten.
-	//
-	// Idempotent in both directions:
-	// a request for the loudness a decode already has succeeds and does nothing,
-	// and a volume set before the decoder has exposed an audio pad is held until it does.
-	// A decode that does not exist is NOT_FOUND with the pair named,
-	// that being a request about something absent rather than a state that already holds.
-	SetReceiveAudio(context.Context, *SetReceiveAudioRequest) (*SetReceiveAudioResponse, error)
-	// Launches synthetic publishers, which exercise the viewing paths without a screen capture.
-	// A running set is replaced.
-	StartTestStreams(context.Context, *StartTestStreamsRequest) (*StartTestStreamsResponse, error)
-	StopTestStreams(context.Context, *StopTestStreamsRequest) (*StopTestStreamsResponse, error)
-	// Test-encodes on every engine and records what this machine can really run,
-	// so a form can grey NVENC on a machine with no NVIDIA GPU.
-	//
-	// An effect, on the test every method here is put to:
-	// it costs seconds on its first call and nothing afterwards,
-	// it replaces the result ResolveForm answers from,
-	// and the answer it lands reaches every shell on the event stream.
-	// A flag on GetCatalog would let one shell's request change another shell's next resolve,
-	// with nothing on the wire to announce it.
-	ProbeEncoders(context.Context, *ProbeEncodersRequest) (*ProbeEncodersResponse, error)
-	// Probes this machine's real upload throughput,
-	// so a shell can replace the user's guessed uplink figure with a measured one.
-	//
-	// It and MeasureEncodeRate both run the real thing, take seconds,
-	// and are refused while a stream is publishing:
-	// one would compete with the stream for the line,
-	// and the other with the encoder for the silicon.
-	// The refusal is FAILED_PRECONDITION with that as the reason.
-	MeasureUplink(context.Context, *MeasureUplinkRequest) (*MeasureUplinkResponse, error)
-	// Times the configured encoder on generated frames of the captured monitor's size,
-	// so a shell can say whether the target frame rate is above what this machine reaches.
-	MeasureEncodeRate(context.Context, *MeasureEncodeRateRequest) (*MeasureEncodeRateResponse, error)
-	// Dials every leg of the relay the draft names and answers what each listener said.
-	//
-	// An effect on the same test the measurements meet:
-	// it reaches the network, it takes seconds against a listener that is not there,
-	// and it reports a reading of the moment rather than a fact a later read answers from.
-	// Unlike them it competes with nothing, so a live stream does not refuse it:
-	// a handshake per leg is no load on the line or on the encoder.
-	//
-	// Each leg is dialled where the transport carrying it says its listener answers,
-	// so a check reaches what a stream reaches,
-	// and it is asked in its own protocol because an open socket proves nothing
-	// (backend/internal/reach, docs/network-architecture.md).
-	CheckRelay(context.Context, *CheckRelayRequest) (*CheckRelayResponse, error)
-	// Reads the published release, and fetches it where this install replaces its own files.
-	//
-	// An effect on the test the measurements meet:
-	// it reaches the network and it leaves a result a later read answers from.
-	// The call returns at once and the work outlives it,
-	// as StartMonitorPreview's does: a download runs for as long as a download runs,
-	// and every step of it reaches every shell on the event stream.
-	//
-	// One call for both steps because they are one thing asked for.
-	// A reader pressing this wants the newer build running,
-	// and a separate fetch would be a second press for a step with no decision in it.
-	// Where UpdateState.uninstallable stands, it stops at UPDATE_STAGE_AVAILABLE
-	// and downloads nothing.
-	//
-	// Idempotent: a check over a staged release checks again,
-	// and a release already on disk and verified is not fetched twice.
-	// Refused with FAILED_PRECONDITION where UpdateState.unchecked stands,
-	// this install asking the service nothing at all.
-	CheckUpdate(context.Context, *CheckUpdateRequest) (*CheckUpdateResponse, error)
-	// Starts the staged release and leaves the running one to close.
-	//
-	// The applier is a process of its own, outliving both halves of the app:
-	// it waits for the control endpoint to go quiet,
-	// puts the staged files in place and starts the app again (docs/updates.md).
-	// So this call answers while the running app is still up,
-	// and the shell that asked closes itself afterwards.
-	//
-	// Refused with FAILED_PRECONDITION below UPDATE_STAGE_READY:
-	// nothing is installed that has not been fetched and verified.
-	InstallUpdate(context.Context, *InstallUpdateRequest) (*InstallUpdateResponse, error)
-	// Drops the stored screen-capture consent,
-	// so the next capture asks the compositor to pick again.
-	// How a share aimed at the wrong window or monitor is corrected.
-	ForgetPortalConsent(context.Context, *ForgetPortalConsentRequest) (*ForgetPortalConsentResponse, error)
-	// Draws a group key at the relay's group service and answers it, without storing it.
-	//
-	// A call of its own, because possession of the key is membership:
-	// a key minted as a side effect of publishing would put a stream in a group nobody reaches,
-	// and say so only afterwards.
-	// The shell shows what came back and writes it to the settings field like any other value,
-	// which keeps the one write that changes a machine's group in the same place as every other.
-	CreateGroup(context.Context, *CreateGroupRequest) (*CreateGroupResponse, error)
-	// Links this install to a Discord account (docs/discord-mode.md).
-	//
-	// An effect that takes as long as a person takes:
-	// the backend opens the browser on the manager's consent flow,
-	// catches the redirect on a loopback port it listens on for the duration,
-	// and stores the link secret it lands with.
-	// The call answers when the link landed, failed or was cancelled,
-	// and the stored settings moving is announced like any other settings write.
-	LinkDiscord(context.Context, *LinkDiscordRequest) (*LinkDiscordResponse, error)
-	// Drops this install's link to a Discord account (docs/discord-mode.md).
-	//
-	// The secret leaving the stored settings is the whole of it:
-	// nothing is revoked at the manager, no browser opens,
-	// and an install holding no link is left holding none.
-	UnlinkDiscord(context.Context, *UnlinkDiscordRequest) (*UnlinkDiscordResponse, error)
-	// OpenLog opens one run log in the machine's default application,
-	// OpenLogsFolder the directory holding them.
-	// Backend methods because the files are the backend's:
-	// it writes them, it rotates them,
-	// and it is the only side that knows which still exist under the name it handed out.
-	OpenLog(context.Context, *OpenLogRequest) (*OpenLogResponse, error)
-	OpenLogsFolder(context.Context, *OpenLogsFolderRequest) (*OpenLogsFolderResponse, error)
-	// Sends one report to the group service beside the stored relay:
-	// what this machine is, the settings with every secret blanked,
-	// and the newest run logs, each capped at its tail (backend/internal/report).
-	//
-	// The press is the consent, so SettingsApp.send_crash_reports leaves this alone.
-	// That setting covers the report a crash sends unasked, on the next start.
-	//
-	// A second call sends a second report and answers a second id,
-	// the departure from idempotency OpenInBrowser states:
-	// what the effect leaves behind is a store this process does not own,
-	// and nothing reads back to tell a second call that it had already happened.
-	//
-	// Refused with FAILED_PRECONDITION where the settings name no relay,
-	// a report going to the group service of the deployment in use.
-	SendReport(context.Context, *SendReportRequest) (*SendReportResponse, error)
-	// Delivers what changed, for as long as the shell holds the call.
-	// events.proto states why every event carries a whole state,
-	// and why a shell that acted still waits for the event.
-	Subscribe(*SubscribeRequest, grpc.ServerStreamingServer[Event]) error
-	// Delivers how loud every decode is, on a fixed cadence,
-	// for as long as the shell holds the call.
-	//
-	// A stream of its own rather than an event kind, and the difference is cadence.
-	// Subscribe carries whole states when something changed, and a level changes continuously:
-	// folding it in would push the receive state at metering rate,
-	// and make every consumer of that state re-render for a number none of them read.
-	//
-	// A read, so it belongs on this service rather than on the frame channel.
-	// That channel carries frames alone, and a level is not one.
-	// Frequency alone is no reason to leave this service.
-	//
-	// One call covers every decode,
-	// so a tile appearing needs no second subscription and a tile leaving needs no cancellation.
-	// Each tick is the whole set:
-	// a decode with no audio track has no entry, and a silent one reads negative infinity.
-	// The backend coalesces to the newest tick,
-	// so a reader that fell behind receives the present rather than a queue of the past.
-	SubscribeAudioLevels(*SubscribeAudioLevelsRequest, grpc.ServerStreamingServer[AudioLevels]) error
-	// Delivers where the publishing machine's pointer is,
-	// for as long as the shell holds the call.
-	//
-	// A stream of its own for the reason the levels are one, and one degree more so:
-	// sending a position instead of drawing it into the picture costs no frame,
-	// so it moves at its own rate rather than the stream's.
-	// A 240 Hz pointer over a 30 fps stream is the win,
-	// and folding it into Subscribe would push the publish state at that rate,
-	// for a figure nothing else reads.
-	//
-	// It carries positions only while a publish whose cursor mode is metadata is running.
-	// Any other mode draws the pointer into the frames or leaves it out,
-	// and the stream stays open and silent rather than being refused,
-	// since a shell subscribes once and the mode may change under it.
-	SubscribePointer(*SubscribePointerRequest, grpc.ServerStreamingServer[PointerPosition]) error
+	Read(context.Context, *ReadRequest) (*ReadResponse, error)
+	// Delivers the named kinds for as long as the shell holds the call.
+	// A shell opens one call per cadence:
+	// state kinds move when something happened,
+	// audio levels on a fixed tick, the pointer at the rate it moves.
+	// Folding them into one call would re-render every state reader at metering rate.
+	Watch(*WatchRequest, grpc.ServerStreamingServer[Event]) error
+	// Cheap enough to call on every keystroke.
+	Ask(context.Context, *AskRequest) (*AskResponse, error)
+	// Answers empty.
+	// What the state became arrives on Watch, which is the one path into the display:
+	// the window that acted and the window that watched learn one fact one way.
+	Set(context.Context, *SetRequest) (*emptypb.Empty, error)
+	// Answers the outcome an effect leaves with its caller, empty where it leaves none.
+	// Each effect here reaches something this process does not own, or takes seconds,
+	// so none of them runs on a keystroke.
+	Do(context.Context, *DoRequest) (*DoResponse, error)
 	mustEmbedUnimplementedControlServiceServer()
 }
 
@@ -1330,149 +202,20 @@ type UnimplementedControlServiceServer struct{}
 func (UnimplementedControlServiceServer) Hello(context.Context, *HelloRequest) (*HelloResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Hello not implemented")
 }
-func (UnimplementedControlServiceServer) GetCatalog(context.Context, *GetCatalogRequest) (*GetCatalogResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetCatalog not implemented")
+func (UnimplementedControlServiceServer) Read(context.Context, *ReadRequest) (*ReadResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Read not implemented")
 }
-func (UnimplementedControlServiceServer) GetSettings(context.Context, *GetSettingsRequest) (*GetSettingsResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetSettings not implemented")
+func (UnimplementedControlServiceServer) Watch(*WatchRequest, grpc.ServerStreamingServer[Event]) error {
+	return status.Error(codes.Unimplemented, "method Watch not implemented")
 }
-func (UnimplementedControlServiceServer) ResolveForm(context.Context, *ResolveFormRequest) (*ResolveFormResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ResolveForm not implemented")
+func (UnimplementedControlServiceServer) Ask(context.Context, *AskRequest) (*AskResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Ask not implemented")
 }
-func (UnimplementedControlServiceServer) ListPresets(context.Context, *ListPresetsRequest) (*ListPresetsResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ListPresets not implemented")
+func (UnimplementedControlServiceServer) Set(context.Context, *SetRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method Set not implemented")
 }
-func (UnimplementedControlServiceServer) GetPublishState(context.Context, *GetPublishStateRequest) (*PublishState, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetPublishState not implemented")
-}
-func (UnimplementedControlServiceServer) GetRelayStatus(context.Context, *GetRelayStatusRequest) (*RelayStatus, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetRelayStatus not implemented")
-}
-func (UnimplementedControlServiceServer) GetViewerState(context.Context, *GetViewerStateRequest) (*ViewerState, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetViewerState not implemented")
-}
-func (UnimplementedControlServiceServer) GetTestStreamState(context.Context, *GetTestStreamStateRequest) (*TestStreamState, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetTestStreamState not implemented")
-}
-func (UnimplementedControlServiceServer) GetMembersState(context.Context, *GetMembersStateRequest) (*MembersState, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetMembersState not implemented")
-}
-func (UnimplementedControlServiceServer) GetDiscordState(context.Context, *GetDiscordStateRequest) (*DiscordState, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetDiscordState not implemented")
-}
-func (UnimplementedControlServiceServer) ResolveLink(context.Context, *ResolveLinkRequest) (*ResolveLinkResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ResolveLink not implemented")
-}
-func (UnimplementedControlServiceServer) GetReceiveState(context.Context, *GetReceiveStateRequest) (*ReceiveState, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetReceiveState not implemented")
-}
-func (UnimplementedControlServiceServer) GetMonitorPreviewState(context.Context, *GetMonitorPreviewStateRequest) (*MonitorPreviewState, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetMonitorPreviewState not implemented")
-}
-func (UnimplementedControlServiceServer) ListShareWindows(context.Context, *ListShareWindowsRequest) (*ListShareWindowsResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ListShareWindows not implemented")
-}
-func (UnimplementedControlServiceServer) GetUpdateState(context.Context, *GetUpdateStateRequest) (*UpdateState, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetUpdateState not implemented")
-}
-func (UnimplementedControlServiceServer) GetStreamTimeline(context.Context, *GetStreamTimelineRequest) (*StreamTimeline, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetStreamTimeline not implemented")
-}
-func (UnimplementedControlServiceServer) SaveSettings(context.Context, *SaveSettingsRequest) (*SaveSettingsResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method SaveSettings not implemented")
-}
-func (UnimplementedControlServiceServer) SavePreset(context.Context, *SavePresetRequest) (*SavePresetResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method SavePreset not implemented")
-}
-func (UnimplementedControlServiceServer) DeletePreset(context.Context, *DeletePresetRequest) (*DeletePresetResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method DeletePreset not implemented")
-}
-func (UnimplementedControlServiceServer) StartPublish(context.Context, *StartPublishRequest) (*StartPublishResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method StartPublish not implemented")
-}
-func (UnimplementedControlServiceServer) ApplyToStream(context.Context, *ApplyToStreamRequest) (*ApplyToStreamResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ApplyToStream not implemented")
-}
-func (UnimplementedControlServiceServer) StopPublish(context.Context, *StopPublishRequest) (*StopPublishResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method StopPublish not implemented")
-}
-func (UnimplementedControlServiceServer) StartWatch(context.Context, *StartWatchRequest) (*StartWatchResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method StartWatch not implemented")
-}
-func (UnimplementedControlServiceServer) StopWatch(context.Context, *StopWatchRequest) (*StopWatchResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method StopWatch not implemented")
-}
-func (UnimplementedControlServiceServer) OpenInBrowser(context.Context, *OpenInBrowserRequest) (*OpenInBrowserResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method OpenInBrowser not implemented")
-}
-func (UnimplementedControlServiceServer) StartReceive(context.Context, *StartReceiveRequest) (*StartReceiveResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method StartReceive not implemented")
-}
-func (UnimplementedControlServiceServer) StopReceive(context.Context, *StopReceiveRequest) (*StopReceiveResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method StopReceive not implemented")
-}
-func (UnimplementedControlServiceServer) StartMonitorPreview(context.Context, *StartMonitorPreviewRequest) (*StartMonitorPreviewResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method StartMonitorPreview not implemented")
-}
-func (UnimplementedControlServiceServer) StopMonitorPreview(context.Context, *StopMonitorPreviewRequest) (*StopMonitorPreviewResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method StopMonitorPreview not implemented")
-}
-func (UnimplementedControlServiceServer) SetReceiveAudio(context.Context, *SetReceiveAudioRequest) (*SetReceiveAudioResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method SetReceiveAudio not implemented")
-}
-func (UnimplementedControlServiceServer) StartTestStreams(context.Context, *StartTestStreamsRequest) (*StartTestStreamsResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method StartTestStreams not implemented")
-}
-func (UnimplementedControlServiceServer) StopTestStreams(context.Context, *StopTestStreamsRequest) (*StopTestStreamsResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method StopTestStreams not implemented")
-}
-func (UnimplementedControlServiceServer) ProbeEncoders(context.Context, *ProbeEncodersRequest) (*ProbeEncodersResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ProbeEncoders not implemented")
-}
-func (UnimplementedControlServiceServer) MeasureUplink(context.Context, *MeasureUplinkRequest) (*MeasureUplinkResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method MeasureUplink not implemented")
-}
-func (UnimplementedControlServiceServer) MeasureEncodeRate(context.Context, *MeasureEncodeRateRequest) (*MeasureEncodeRateResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method MeasureEncodeRate not implemented")
-}
-func (UnimplementedControlServiceServer) CheckRelay(context.Context, *CheckRelayRequest) (*CheckRelayResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method CheckRelay not implemented")
-}
-func (UnimplementedControlServiceServer) CheckUpdate(context.Context, *CheckUpdateRequest) (*CheckUpdateResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method CheckUpdate not implemented")
-}
-func (UnimplementedControlServiceServer) InstallUpdate(context.Context, *InstallUpdateRequest) (*InstallUpdateResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method InstallUpdate not implemented")
-}
-func (UnimplementedControlServiceServer) ForgetPortalConsent(context.Context, *ForgetPortalConsentRequest) (*ForgetPortalConsentResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ForgetPortalConsent not implemented")
-}
-func (UnimplementedControlServiceServer) CreateGroup(context.Context, *CreateGroupRequest) (*CreateGroupResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method CreateGroup not implemented")
-}
-func (UnimplementedControlServiceServer) LinkDiscord(context.Context, *LinkDiscordRequest) (*LinkDiscordResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method LinkDiscord not implemented")
-}
-func (UnimplementedControlServiceServer) UnlinkDiscord(context.Context, *UnlinkDiscordRequest) (*UnlinkDiscordResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method UnlinkDiscord not implemented")
-}
-func (UnimplementedControlServiceServer) OpenLog(context.Context, *OpenLogRequest) (*OpenLogResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method OpenLog not implemented")
-}
-func (UnimplementedControlServiceServer) OpenLogsFolder(context.Context, *OpenLogsFolderRequest) (*OpenLogsFolderResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method OpenLogsFolder not implemented")
-}
-func (UnimplementedControlServiceServer) SendReport(context.Context, *SendReportRequest) (*SendReportResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method SendReport not implemented")
-}
-func (UnimplementedControlServiceServer) Subscribe(*SubscribeRequest, grpc.ServerStreamingServer[Event]) error {
-	return status.Error(codes.Unimplemented, "method Subscribe not implemented")
-}
-func (UnimplementedControlServiceServer) SubscribeAudioLevels(*SubscribeAudioLevelsRequest, grpc.ServerStreamingServer[AudioLevels]) error {
-	return status.Error(codes.Unimplemented, "method SubscribeAudioLevels not implemented")
-}
-func (UnimplementedControlServiceServer) SubscribePointer(*SubscribePointerRequest, grpc.ServerStreamingServer[PointerPosition]) error {
-	return status.Error(codes.Unimplemented, "method SubscribePointer not implemented")
+func (UnimplementedControlServiceServer) Do(context.Context, *DoRequest) (*DoResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Do not implemented")
 }
 func (UnimplementedControlServiceServer) mustEmbedUnimplementedControlServiceServer() {}
 func (UnimplementedControlServiceServer) testEmbeddedByValue()                        {}
@@ -1513,848 +256,88 @@ func _ControlService_Hello_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ControlService_GetCatalog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetCatalogRequest)
+func _ControlService_Read_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReadRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ControlServiceServer).GetCatalog(ctx, in)
+		return srv.(ControlServiceServer).Read(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ControlService_GetCatalog_FullMethodName,
+		FullMethod: ControlService_Read_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).GetCatalog(ctx, req.(*GetCatalogRequest))
+		return srv.(ControlServiceServer).Read(ctx, req.(*ReadRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ControlService_GetSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetSettingsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).GetSettings(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_GetSettings_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).GetSettings(ctx, req.(*GetSettingsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_ResolveForm_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ResolveFormRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).ResolveForm(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_ResolveForm_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).ResolveForm(ctx, req.(*ResolveFormRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_ListPresets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListPresetsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).ListPresets(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_ListPresets_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).ListPresets(ctx, req.(*ListPresetsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_GetPublishState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetPublishStateRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).GetPublishState(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_GetPublishState_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).GetPublishState(ctx, req.(*GetPublishStateRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_GetRelayStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetRelayStatusRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).GetRelayStatus(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_GetRelayStatus_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).GetRelayStatus(ctx, req.(*GetRelayStatusRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_GetViewerState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetViewerStateRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).GetViewerState(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_GetViewerState_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).GetViewerState(ctx, req.(*GetViewerStateRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_GetTestStreamState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetTestStreamStateRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).GetTestStreamState(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_GetTestStreamState_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).GetTestStreamState(ctx, req.(*GetTestStreamStateRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_GetMembersState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetMembersStateRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).GetMembersState(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_GetMembersState_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).GetMembersState(ctx, req.(*GetMembersStateRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_GetDiscordState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetDiscordStateRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).GetDiscordState(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_GetDiscordState_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).GetDiscordState(ctx, req.(*GetDiscordStateRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_ResolveLink_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ResolveLinkRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).ResolveLink(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_ResolveLink_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).ResolveLink(ctx, req.(*ResolveLinkRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_GetReceiveState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetReceiveStateRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).GetReceiveState(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_GetReceiveState_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).GetReceiveState(ctx, req.(*GetReceiveStateRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_GetMonitorPreviewState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetMonitorPreviewStateRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).GetMonitorPreviewState(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_GetMonitorPreviewState_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).GetMonitorPreviewState(ctx, req.(*GetMonitorPreviewStateRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_ListShareWindows_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListShareWindowsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).ListShareWindows(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_ListShareWindows_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).ListShareWindows(ctx, req.(*ListShareWindowsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_GetUpdateState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetUpdateStateRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).GetUpdateState(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_GetUpdateState_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).GetUpdateState(ctx, req.(*GetUpdateStateRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_GetStreamTimeline_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetStreamTimelineRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).GetStreamTimeline(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_GetStreamTimeline_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).GetStreamTimeline(ctx, req.(*GetStreamTimelineRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_SaveSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SaveSettingsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).SaveSettings(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_SaveSettings_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).SaveSettings(ctx, req.(*SaveSettingsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_SavePreset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SavePresetRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).SavePreset(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_SavePreset_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).SavePreset(ctx, req.(*SavePresetRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_DeletePreset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeletePresetRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).DeletePreset(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_DeletePreset_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).DeletePreset(ctx, req.(*DeletePresetRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_StartPublish_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StartPublishRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).StartPublish(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_StartPublish_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).StartPublish(ctx, req.(*StartPublishRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_ApplyToStream_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ApplyToStreamRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).ApplyToStream(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_ApplyToStream_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).ApplyToStream(ctx, req.(*ApplyToStreamRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_StopPublish_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StopPublishRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).StopPublish(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_StopPublish_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).StopPublish(ctx, req.(*StopPublishRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_StartWatch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StartWatchRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).StartWatch(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_StartWatch_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).StartWatch(ctx, req.(*StartWatchRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_StopWatch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StopWatchRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).StopWatch(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_StopWatch_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).StopWatch(ctx, req.(*StopWatchRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_OpenInBrowser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OpenInBrowserRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).OpenInBrowser(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_OpenInBrowser_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).OpenInBrowser(ctx, req.(*OpenInBrowserRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_StartReceive_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StartReceiveRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).StartReceive(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_StartReceive_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).StartReceive(ctx, req.(*StartReceiveRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_StopReceive_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StopReceiveRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).StopReceive(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_StopReceive_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).StopReceive(ctx, req.(*StopReceiveRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_StartMonitorPreview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StartMonitorPreviewRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).StartMonitorPreview(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_StartMonitorPreview_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).StartMonitorPreview(ctx, req.(*StartMonitorPreviewRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_StopMonitorPreview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StopMonitorPreviewRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).StopMonitorPreview(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_StopMonitorPreview_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).StopMonitorPreview(ctx, req.(*StopMonitorPreviewRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_SetReceiveAudio_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SetReceiveAudioRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).SetReceiveAudio(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_SetReceiveAudio_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).SetReceiveAudio(ctx, req.(*SetReceiveAudioRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_StartTestStreams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StartTestStreamsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).StartTestStreams(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_StartTestStreams_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).StartTestStreams(ctx, req.(*StartTestStreamsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_StopTestStreams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StopTestStreamsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).StopTestStreams(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_StopTestStreams_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).StopTestStreams(ctx, req.(*StopTestStreamsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_ProbeEncoders_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ProbeEncodersRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).ProbeEncoders(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_ProbeEncoders_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).ProbeEncoders(ctx, req.(*ProbeEncodersRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_MeasureUplink_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MeasureUplinkRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).MeasureUplink(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_MeasureUplink_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).MeasureUplink(ctx, req.(*MeasureUplinkRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_MeasureEncodeRate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MeasureEncodeRateRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).MeasureEncodeRate(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_MeasureEncodeRate_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).MeasureEncodeRate(ctx, req.(*MeasureEncodeRateRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_CheckRelay_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CheckRelayRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).CheckRelay(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_CheckRelay_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).CheckRelay(ctx, req.(*CheckRelayRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_CheckUpdate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CheckUpdateRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).CheckUpdate(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_CheckUpdate_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).CheckUpdate(ctx, req.(*CheckUpdateRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_InstallUpdate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(InstallUpdateRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).InstallUpdate(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_InstallUpdate_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).InstallUpdate(ctx, req.(*InstallUpdateRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_ForgetPortalConsent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ForgetPortalConsentRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).ForgetPortalConsent(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_ForgetPortalConsent_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).ForgetPortalConsent(ctx, req.(*ForgetPortalConsentRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_CreateGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateGroupRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).CreateGroup(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_CreateGroup_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).CreateGroup(ctx, req.(*CreateGroupRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_LinkDiscord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LinkDiscordRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).LinkDiscord(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_LinkDiscord_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).LinkDiscord(ctx, req.(*LinkDiscordRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_UnlinkDiscord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UnlinkDiscordRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).UnlinkDiscord(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_UnlinkDiscord_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).UnlinkDiscord(ctx, req.(*UnlinkDiscordRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_OpenLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OpenLogRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).OpenLog(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_OpenLog_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).OpenLog(ctx, req.(*OpenLogRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_OpenLogsFolder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OpenLogsFolderRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).OpenLogsFolder(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_OpenLogsFolder_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).OpenLogsFolder(ctx, req.(*OpenLogsFolderRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_SendReport_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SendReportRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ControlServiceServer).SendReport(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ControlService_SendReport_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ControlServiceServer).SendReport(ctx, req.(*SendReportRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ControlService_Subscribe_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(SubscribeRequest)
+func _ControlService_Watch_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(WatchRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(ControlServiceServer).Subscribe(m, &grpc.GenericServerStream[SubscribeRequest, Event]{ServerStream: stream})
+	return srv.(ControlServiceServer).Watch(m, &grpc.GenericServerStream[WatchRequest, Event]{ServerStream: stream})
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ControlService_SubscribeServer = grpc.ServerStreamingServer[Event]
+type ControlService_WatchServer = grpc.ServerStreamingServer[Event]
 
-func _ControlService_SubscribeAudioLevels_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(SubscribeAudioLevelsRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
+func _ControlService_Ask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AskRequest)
+	if err := dec(in); err != nil {
+		return nil, err
 	}
-	return srv.(ControlServiceServer).SubscribeAudioLevels(m, &grpc.GenericServerStream[SubscribeAudioLevelsRequest, AudioLevels]{ServerStream: stream})
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ControlService_SubscribeAudioLevelsServer = grpc.ServerStreamingServer[AudioLevels]
-
-func _ControlService_SubscribePointer_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(SubscribePointerRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
+	if interceptor == nil {
+		return srv.(ControlServiceServer).Ask(ctx, in)
 	}
-	return srv.(ControlServiceServer).SubscribePointer(m, &grpc.GenericServerStream[SubscribePointerRequest, PointerPosition]{ServerStream: stream})
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ControlService_Ask_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ControlServiceServer).Ask(ctx, req.(*AskRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ControlService_SubscribePointerServer = grpc.ServerStreamingServer[PointerPosition]
+func _ControlService_Set_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ControlServiceServer).Set(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ControlService_Set_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ControlServiceServer).Set(ctx, req.(*SetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ControlService_Do_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ControlServiceServer).Do(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ControlService_Do_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ControlServiceServer).Do(ctx, req.(*DoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
 
 // ControlService_ServiceDesc is the grpc.ServiceDesc for ControlService service.
 // It's only intended for direct use with grpc.RegisterService,
@@ -2368,200 +351,26 @@ var ControlService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ControlService_Hello_Handler,
 		},
 		{
-			MethodName: "GetCatalog",
-			Handler:    _ControlService_GetCatalog_Handler,
+			MethodName: "Read",
+			Handler:    _ControlService_Read_Handler,
 		},
 		{
-			MethodName: "GetSettings",
-			Handler:    _ControlService_GetSettings_Handler,
+			MethodName: "Ask",
+			Handler:    _ControlService_Ask_Handler,
 		},
 		{
-			MethodName: "ResolveForm",
-			Handler:    _ControlService_ResolveForm_Handler,
+			MethodName: "Set",
+			Handler:    _ControlService_Set_Handler,
 		},
 		{
-			MethodName: "ListPresets",
-			Handler:    _ControlService_ListPresets_Handler,
-		},
-		{
-			MethodName: "GetPublishState",
-			Handler:    _ControlService_GetPublishState_Handler,
-		},
-		{
-			MethodName: "GetRelayStatus",
-			Handler:    _ControlService_GetRelayStatus_Handler,
-		},
-		{
-			MethodName: "GetViewerState",
-			Handler:    _ControlService_GetViewerState_Handler,
-		},
-		{
-			MethodName: "GetTestStreamState",
-			Handler:    _ControlService_GetTestStreamState_Handler,
-		},
-		{
-			MethodName: "GetMembersState",
-			Handler:    _ControlService_GetMembersState_Handler,
-		},
-		{
-			MethodName: "GetDiscordState",
-			Handler:    _ControlService_GetDiscordState_Handler,
-		},
-		{
-			MethodName: "ResolveLink",
-			Handler:    _ControlService_ResolveLink_Handler,
-		},
-		{
-			MethodName: "GetReceiveState",
-			Handler:    _ControlService_GetReceiveState_Handler,
-		},
-		{
-			MethodName: "GetMonitorPreviewState",
-			Handler:    _ControlService_GetMonitorPreviewState_Handler,
-		},
-		{
-			MethodName: "ListShareWindows",
-			Handler:    _ControlService_ListShareWindows_Handler,
-		},
-		{
-			MethodName: "GetUpdateState",
-			Handler:    _ControlService_GetUpdateState_Handler,
-		},
-		{
-			MethodName: "GetStreamTimeline",
-			Handler:    _ControlService_GetStreamTimeline_Handler,
-		},
-		{
-			MethodName: "SaveSettings",
-			Handler:    _ControlService_SaveSettings_Handler,
-		},
-		{
-			MethodName: "SavePreset",
-			Handler:    _ControlService_SavePreset_Handler,
-		},
-		{
-			MethodName: "DeletePreset",
-			Handler:    _ControlService_DeletePreset_Handler,
-		},
-		{
-			MethodName: "StartPublish",
-			Handler:    _ControlService_StartPublish_Handler,
-		},
-		{
-			MethodName: "ApplyToStream",
-			Handler:    _ControlService_ApplyToStream_Handler,
-		},
-		{
-			MethodName: "StopPublish",
-			Handler:    _ControlService_StopPublish_Handler,
-		},
-		{
-			MethodName: "StartWatch",
-			Handler:    _ControlService_StartWatch_Handler,
-		},
-		{
-			MethodName: "StopWatch",
-			Handler:    _ControlService_StopWatch_Handler,
-		},
-		{
-			MethodName: "OpenInBrowser",
-			Handler:    _ControlService_OpenInBrowser_Handler,
-		},
-		{
-			MethodName: "StartReceive",
-			Handler:    _ControlService_StartReceive_Handler,
-		},
-		{
-			MethodName: "StopReceive",
-			Handler:    _ControlService_StopReceive_Handler,
-		},
-		{
-			MethodName: "StartMonitorPreview",
-			Handler:    _ControlService_StartMonitorPreview_Handler,
-		},
-		{
-			MethodName: "StopMonitorPreview",
-			Handler:    _ControlService_StopMonitorPreview_Handler,
-		},
-		{
-			MethodName: "SetReceiveAudio",
-			Handler:    _ControlService_SetReceiveAudio_Handler,
-		},
-		{
-			MethodName: "StartTestStreams",
-			Handler:    _ControlService_StartTestStreams_Handler,
-		},
-		{
-			MethodName: "StopTestStreams",
-			Handler:    _ControlService_StopTestStreams_Handler,
-		},
-		{
-			MethodName: "ProbeEncoders",
-			Handler:    _ControlService_ProbeEncoders_Handler,
-		},
-		{
-			MethodName: "MeasureUplink",
-			Handler:    _ControlService_MeasureUplink_Handler,
-		},
-		{
-			MethodName: "MeasureEncodeRate",
-			Handler:    _ControlService_MeasureEncodeRate_Handler,
-		},
-		{
-			MethodName: "CheckRelay",
-			Handler:    _ControlService_CheckRelay_Handler,
-		},
-		{
-			MethodName: "CheckUpdate",
-			Handler:    _ControlService_CheckUpdate_Handler,
-		},
-		{
-			MethodName: "InstallUpdate",
-			Handler:    _ControlService_InstallUpdate_Handler,
-		},
-		{
-			MethodName: "ForgetPortalConsent",
-			Handler:    _ControlService_ForgetPortalConsent_Handler,
-		},
-		{
-			MethodName: "CreateGroup",
-			Handler:    _ControlService_CreateGroup_Handler,
-		},
-		{
-			MethodName: "LinkDiscord",
-			Handler:    _ControlService_LinkDiscord_Handler,
-		},
-		{
-			MethodName: "UnlinkDiscord",
-			Handler:    _ControlService_UnlinkDiscord_Handler,
-		},
-		{
-			MethodName: "OpenLog",
-			Handler:    _ControlService_OpenLog_Handler,
-		},
-		{
-			MethodName: "OpenLogsFolder",
-			Handler:    _ControlService_OpenLogsFolder_Handler,
-		},
-		{
-			MethodName: "SendReport",
-			Handler:    _ControlService_SendReport_Handler,
+			MethodName: "Do",
+			Handler:    _ControlService_Do_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "Subscribe",
-			Handler:       _ControlService_Subscribe_Handler,
-			ServerStreams: true,
-		},
-		{
-			StreamName:    "SubscribeAudioLevels",
-			Handler:       _ControlService_SubscribeAudioLevels_Handler,
-			ServerStreams: true,
-		},
-		{
-			StreamName:    "SubscribePointer",
-			Handler:       _ControlService_SubscribePointer_Handler,
+			StreamName:    "Watch",
+			Handler:       _ControlService_Watch_Handler,
 			ServerStreams: true,
 		},
 	},

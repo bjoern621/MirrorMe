@@ -11,7 +11,7 @@ namespace ScreenShare.App.Backend;
 /// </summary>
 /// <param name="Saved">In the order the store holds them.</param>
 /// <param name="Notice">Why the store could not be read, carrying where the unreadable file was kept
-/// (<c>ListPresetsResponse</c>). null when read.</param>
+/// (<c>PresetList</c>). null when read.</param>
 public sealed record PresetStore(IReadOnlyList<Preset> Saved, Text? Notice)
 {
     /// <summary>Store nothing has read, what a screen opens on.</summary>

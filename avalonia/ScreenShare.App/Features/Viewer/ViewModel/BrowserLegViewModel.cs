@@ -16,7 +16,7 @@ namespace ScreenShare.App.Features.Viewer.ViewModel;
 /// </summary>
 public sealed record BrowserLegViewModel
 {
-    /// <summary>Transport as the contract names it, what <c>OpenInBrowser</c> takes.</summary>
+    /// <summary>Transport as the contract names it, what <c>Do open_in_browser</c> takes.</summary>
     public required string Value { get; init; }
 
     public required string Label { get; init; }

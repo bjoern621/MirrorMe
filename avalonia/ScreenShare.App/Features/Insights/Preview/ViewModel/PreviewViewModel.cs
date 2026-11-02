@@ -37,8 +37,8 @@ namespace ScreenShare.App.Features.Insights.Preview.ViewModel;
 /// would be dark when a reader came back, and would pay a pool import and a reconnect to return.
 /// A window closed to the tray draws nothing, so its card holds no decode and no subscription until it is back.
 ///
-/// Only the end-to-end route has an effect to call: <c>StartReceive</c> and <c>StopReceive</c>, as the viewer's
-/// grid calls them (<see cref="Receive"/>).
+/// Only the end-to-end route has an effect to call: <c>Set receive</c>, as the viewer's
+/// grid calls it (<see cref="Receive"/>).
 /// The local pipeline goes up and down with the publish child, so nothing here converges it.
 ///
 /// <see cref="Apply"/> converges rather than sequences, and a second pass over unchanged input asks for nothing,

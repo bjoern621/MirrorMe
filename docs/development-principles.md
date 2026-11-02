@@ -82,9 +82,9 @@ Where an operation is expensive, the guard belongs inside it.
 ## Effects across a process boundary
 
 An effect on the control contract names the state it wants, and a request for a state that already holds succeeds.
-`StartReceive` on a decode that is already open is not a second decode and is not an error.
-`StopReceive` on one that is already closed is not a failure.
-`StartPublish` naming the pipeline that is already publishing is the same case, backoff and all.
+`Set receive` on a decode that is already open is not a second decode and is not an error.
+`Set receive` on one that is already closed is not a failure.
+`Set publish` naming the settings already on the air is the same case, backoff and all.
 Each of them is the state the caller asked for, and it is true.
 
 The state is read before the request is validated.
@@ -97,11 +97,10 @@ A method that refuses a repeat takes that move away and leaves the caller waitin
 a control that never comes back rather than one that failed.
 
 A second, different request is not a repeat.
-`StartPublish` naming a *different* pipeline while one is publishing is still refused, because that would put two encoders on one relay path.
-`ApplyToStream` names a transition on purpose, and a second one is a second restart.
+`Set publish` naming other settings while a stream is on the air restarts it on them, and the restart is the state asked for.
 
-The third departure is the handful of effects that land somewhere this process does not own: `OpenLog`, `OpenLogsFolder` and `OpenInBrowser` hand a path or an address to the desktop,
-and `SendReport` leaves a bundle in a store beside the relay.
+The third departure is the handful of effects that land somewhere this process does not own: `Do open_log`, `Do open_logs_folder` and `Do open_in_browser` hand a path or an address to the desktop,
+and `Do send_report` leaves a bundle in a store beside the relay.
 A second call opens a second window or stores a second report, because there is no state to read back that would say the first one is there:
 the browser owns the tab, the file manager owns its window, the service owns what it stored, and none of them reports.
 An effect of this kind states no state and is offered as an action rather than as something with a tick beside it,

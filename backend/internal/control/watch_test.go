@@ -18,7 +18,7 @@ import (
 
 // fakeStream stands in for the client's half of a server-streaming call.
 //
-// grpc.ServerStream is embedded and left nil: Subscribe uses Context and Send,
+// grpc.ServerStream is embedded and left nil: Watch uses Context and Send,
 // and a call to any other method surfaces as a panic rather than being quietly satisfied.
 // The buffer on sent keeps Send from blocking once a test has stopped reading,
 // so a failing test still lets the call under test return instead of deadlocking on its way out.
@@ -53,8 +53,8 @@ const unknownKind = screensharev1.EventKind(9999)
 func TestAnUnknownEventKindIsRefusedRatherThanIgnored(t *testing.T) {
 	server := New(&fakeBackend{}, events.New(), "test")
 
-	err := server.Subscribe(
-		&screensharev1.SubscribeRequest{Kinds: []screensharev1.EventKind{screensharev1.EventKind_EVENT_KIND_PUBLISH_STATE, unknownKind}},
+	err := server.Watch(
+		&screensharev1.WatchRequest{Kinds: []screensharev1.EventKind{screensharev1.EventKind_EVENT_KIND_PUBLISH_STATE, unknownKind}},
 		newFakeStream(context.Background()))
 	if err == nil {
 		t.Fatal("a kind this build has none of was accepted, want it refused")
@@ -69,7 +69,7 @@ func TestAnUnknownEventKindIsRefusedRatherThanIgnored(t *testing.T) {
 
 // Narrowing exists for a surface that wants the state changes without the per-second statistics,
 // so a filter that leaked would hand that surface the traffic it asked not to have.
-func TestANarrowedSubscriptionReceivesOnlyItsKinds(t *testing.T) {
+func TestANarrowedWatchReceivesOnlyItsKinds(t *testing.T) {
 	broker := events.New()
 	server := New(&fakeBackend{}, broker, "test")
 
@@ -79,7 +79,7 @@ func TestANarrowedSubscriptionReceivesOnlyItsKinds(t *testing.T) {
 
 	go func() {
 		// What the call returns is the next test's subject; here it only has to be open.
-		_ = server.Subscribe(&screensharev1.SubscribeRequest{Kinds: []screensharev1.EventKind{screensharev1.EventKind_EVENT_KIND_VIEWER_STATE}}, out)
+		_ = server.Watch(&screensharev1.WatchRequest{Kinds: []screensharev1.EventKind{screensharev1.EventKind_EVENT_KIND_VIEWER_STATE}}, out)
 	}()
 
 	wanted := &screensharev1.Event{
@@ -126,7 +126,7 @@ func TestANarrowedSubscriptionReceivesOnlyItsKinds(t *testing.T) {
 // The call returning is the observable half of that release,
 // the only way out of the loop being the deferred cancel,
 // and it is what a shell closing its window produces.
-func TestASubscriptionEndsWithTheClientThatOpenedIt(t *testing.T) {
+func TestAWatchEndsWithTheClientThatOpenedIt(t *testing.T) {
 	server := New(&fakeBackend{}, events.New(), "test")
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -134,7 +134,7 @@ func TestASubscriptionEndsWithTheClientThatOpenedIt(t *testing.T) {
 
 	ended := make(chan error, 1)
 	go func() {
-		ended <- server.Subscribe(&screensharev1.SubscribeRequest{}, out)
+		ended <- server.Watch(&screensharev1.WatchRequest{}, out)
 	}()
 
 	cancel()
