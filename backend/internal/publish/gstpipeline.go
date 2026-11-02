@@ -304,10 +304,13 @@ const gstAudioVolumeElement = "gain"
 //
 // self is empty where the element opens its own default and takes no handle for it, which is what
 // separates a sound server addressing devices by name from an API that has a default of its own.
+// named marks a kind with no default at all: an entry naming no handle is refused,
+// the element opening whatever the session links it to otherwise.
 type gstAudioOpen struct {
 	element    string
 	handle     string
 	self       string
+	named      bool
 	properties []string
 }
 
@@ -332,7 +335,7 @@ type gstAudioOpen struct {
 var gstAudioElements = map[string]map[string]gstAudioOpen{
 	"linux": {
 		platform.AudioSourceDesktop:     {element: "pulsesrc", handle: "device", self: platform.AudioMonitorDevice},
-		platform.AudioSourceApplication: {element: "pipewiresrc", handle: "target-object"},
+		platform.AudioSourceApplication: {element: "pipewiresrc", handle: "target-object", named: true},
 	},
 	"windows": {
 		platform.AudioSourceDesktop: {element: "wasapi2src", handle: "device", properties: []string{"loopback=true"}},
@@ -361,10 +364,13 @@ func gstAudioSource(s settings.Settings, a settings.AudioSource, i int) ([]strin
 		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_NO_ELEMENT_RECORDS_AUDIO, text.Audio(a.Source), text.Os(need.os))
 	}
 	source := append([]string{open.element}, open.properties...)
-	if handle := a.Device; handle != "" {
-		source = append(source, open.handle+"="+handle)
-	} else if open.self != "" {
+	switch {
+	case a.Device != "":
+		source = append(source, open.handle+"="+a.Device)
+	case open.self != "":
 		source = append(source, open.handle+"="+open.self)
+	case open.named:
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_AUDIO_DEVICE_UNNAMED, text.Audio(a.Source))
 	}
 	return append(source, []string{
 		"!", "queue",

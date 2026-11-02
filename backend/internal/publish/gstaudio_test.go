@@ -5,9 +5,12 @@ import (
 	"strings"
 	"testing"
 
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+
 	"bjoernblessin.de/screenshare/internal/capabilities"
 	"bjoernblessin.de/screenshare/internal/platform"
 	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/screenshare/internal/text/texttest"
 )
 
 // The second track is mixed from a list, and that list decides the branch's shape: one chain per
@@ -64,7 +67,7 @@ func TestEverySourceIsAChainIntoOneMixer(t *testing.T) {
 func TestTheGainAndTheMuteReachTheSourcesOwnVolume(t *testing.T) {
 	s := audioStream(
 		settings.AudioSource{Source: platform.AudioSourceDesktop, Gain: 50},
-		settings.AudioSource{Source: platform.AudioSourceApplication, Gain: 150, Mute: true},
+		settings.AudioSource{Source: platform.AudioSourceApplication, Device: "Firefox", Gain: 150, Mute: true},
 	)
 
 	branch, err := gstAudioBranch(s)
@@ -202,6 +205,21 @@ func TestAnApplicationIsOpenedThroughPipeWire(t *testing.T) {
 	}
 	if slices.Contains(branch, "pulsesrc") {
 		t.Errorf("an application is opened through PulseAudio, which cannot record one: %s", line)
+	}
+}
+
+// An application has no default to open: pipewiresrc with no target records whatever node
+// the session manager links it to.
+// The entry is refused with the reason ffmpeg's engine gives for it.
+func TestAnApplicationNamingNoProgramIsRefused(t *testing.T) {
+	s := audioStream(settings.AudioSource{Source: platform.AudioSourceApplication, Gain: settings.GainUnity})
+
+	branch, err := gstAudioBranch(s)
+	if err == nil {
+		t.Fatalf("an application naming no program built %v, want AUDIO_DEVICE_UNNAMED", branch)
+	}
+	if got := texttest.Code(err); got != screensharev1.TextCode_TEXT_CODE_AUDIO_DEVICE_UNNAMED {
+		t.Errorf("an application naming no program answered %v, want AUDIO_DEVICE_UNNAMED", got)
 	}
 }
 
