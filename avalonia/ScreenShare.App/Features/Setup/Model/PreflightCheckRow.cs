@@ -32,9 +32,8 @@ public sealed record PreflightCheckRow
 public static class PreflightChecks
 {
     /// <summary>
-    /// The form's diagnostics a publish answers to: those about the combination,
-    /// and those about a control of a group the wizard or the share picker draws.
-    /// A line about a control the viewer draws belongs beside the tiles it governs.
+    /// The form's diagnostics that a publish answers to.
+    /// A line about a control that the viewer draws stands beside the tiles it governs.
     /// </summary>
     public static IReadOnlyList<Diagnostic> About(Form? form)
     {
