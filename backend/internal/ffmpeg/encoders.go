@@ -6,6 +6,9 @@ import (
 	"strconv"
 	"strings"
 
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
+
 	"bjoernblessin.de/go-utils/util/assert"
 
 	"bjoernblessin.de/screenshare/internal/capabilities"
@@ -113,7 +116,7 @@ var familyMappings = map[string]encoderArgsFunc{
 func encoderArgs(s settings.Settings, gop int) ([]string, error) {
 	c, ok := capabilities.Get(s.Publish.Codec())
 	if !ok {
-		return nil, fmt.Errorf("unknown codec %q", s.Publish.Codec())
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(s.Publish.Codec()))
 	}
 
 	l, err := c.ResolveSteps(s.Publish.Mode, s.Publish.Effort, s.Publish.Tune)
@@ -128,7 +131,8 @@ func encoderArgs(s settings.Settings, gop int) ([]string, error) {
 	if build, ok := familyMappings[c.Family]; ok {
 		return build(s, r, l), nil
 	}
-	return nil, fmt.Errorf("codec %q has no ffmpeg encoder mapping", s.Publish.Codec())
+	return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM,
+		text.Engine(capabilities.EngineFfmpeg), text.Codec(s.Publish.Codec()))
 }
 
 // softwareArgs is the rate-control mapping the CPU H.26x encoders libx264 and libx265 share,

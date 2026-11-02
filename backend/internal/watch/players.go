@@ -1,9 +1,12 @@
 package watch
 
 import (
-	"fmt"
 	"runtime"
 	"strings"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/capabilities"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
@@ -17,7 +20,7 @@ func watchURL(s settings.Settings, streamName, transportName string) (string, er
 
 	url, ok := transport.WatchURL(transportName, s, streamName)
 	if !ok {
-		return "", fmt.Errorf("transport %q has no watch form", transportName)
+		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(capabilities.EngineFfmpeg), text.Transport(transportName))
 	}
 
 	assert.Assert(url != "", "a transport with a watch form yields a URL", transportName, streamName)

@@ -1,16 +1,19 @@
 package transport
 
 import (
-	"fmt"
+	"errors"
 	"io"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
 
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+
 	"bjoernblessin.de/go-utils/util/assert"
 
 	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/screenshare/internal/text"
 )
 
 // Resolving what a receive pipeline opens for HLS, the one watch leg whose address settings do not
@@ -61,7 +64,7 @@ func hlsMediaSource(s settings.Settings, masterURL string) (string, error) {
 	}
 	variant, ok := hlsVariantURI(master)
 	if !ok {
-		return "", fmt.Errorf("the relay's playlist at %s names no video rendition", masterURL)
+		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_PLAYLIST_NO_VIDEO, text.Address(Redact(s, masterURL)))
 	}
 	mediaURL, err := hlsResolveRef(masterURL, variant)
 	if err != nil {
@@ -78,7 +81,8 @@ func hlsMediaSource(s settings.Settings, masterURL string) (string, error) {
 			return hlsWithCredential(s, mediaURL)
 		}
 		if time.Now().After(deadline) {
-			return "", fmt.Errorf("the relay's playlist at %s carried no segment within %s", mediaURL, hlsResolveTimeout)
+			return "", text.Fail(screensharev1.TextCode_TEXT_CODE_PLAYLIST_NO_SEGMENT, text.Address(Redact(s, mediaURL)),
+				text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_TIMEOUT_MS, hlsResolveTimeout.Milliseconds()))
 		}
 		time.Sleep(hlsResolvePoll)
 	}
@@ -91,23 +95,25 @@ func hlsFetch(client *http.Client, s settings.Settings, addr string) (string, er
 
 	req, err := http.NewRequest(http.MethodGet, addr, nil)
 	if err != nil {
-		return "", fmt.Errorf("the relay address %s is not one that can be read: %w", addr, err)
+		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(Redact(s, addr)))
 	}
 	if name, value, ok := CredentialHeader(s); ok {
 		req.Header.Set(name, value)
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("the relay did not answer %s: %s", addr, Redact(s, err.Error()))
+		return "", text.Because(errors.New(Redact(s, err.Error())), screensharev1.TextCode_TEXT_CODE_ADDRESS_UNANSWERED,
+			text.Address(Redact(s, addr)))
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("the relay answered %s with %s", addr, resp.Status)
+		return "", text.Because(errors.New(resp.Status), screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWERED,
+			text.Address(Redact(s, addr)))
 	}
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", fmt.Errorf("the relay's answer at %s broke off: %w", addr, err)
+		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(Redact(s, addr)))
 	}
 	return string(body), nil
 }
@@ -156,11 +162,11 @@ func hlsHasSegment(playlist string) bool {
 func hlsResolveRef(base, ref string) (string, error) {
 	b, err := url.Parse(base)
 	if err != nil {
-		return "", fmt.Errorf("the relay address %s is not one that can be read: %w", base, err)
+		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(base))
 	}
 	r, err := url.Parse(ref)
 	if err != nil {
-		return "", fmt.Errorf("the relay's playlist at %s names the rendition %q, which is not an address: %w", base, ref, err)
+		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(ref))
 	}
 	return b.ResolveReference(r).String(), nil
 }
@@ -177,7 +183,7 @@ func hlsWithCredential(s settings.Settings, addr string) (string, error) {
 	}
 	u, err := url.Parse(addr)
 	if err != nil {
-		return "", fmt.Errorf("the relay address %s is not one that can be read: %w", addr, err)
+		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(Redact(s, addr)))
 	}
 	u.User = url.UserPassword(browserAuthUser, token)
 	return u.String(), nil

@@ -24,7 +24,6 @@ package encoders
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/exec"
 	"slices"
@@ -79,7 +78,7 @@ func ffmpegAvailable() error {
 // greyed the whole engine on an install that shipped the inspector.
 func gstAvailable() error {
 	if _, err := publish.FindGstInspect(); err != nil {
-		return fmt.Errorf("%w: this install carries no GStreamer command-line tools, so no encoder element can be located", err)
+		return err
 	}
 	return nil
 }

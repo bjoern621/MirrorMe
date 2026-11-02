@@ -2,6 +2,8 @@ package capabilities
 
 import (
 	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/rules"
+	"bjoernblessin.de/screenshare/internal/text/texttest"
 
 	"slices"
 	"testing"
@@ -100,17 +102,23 @@ func perCodecValues(c Codec, option string) []string {
 	}
 }
 
-// An option with no refusal phrase is a gap Validate can match and cannot report.
-func TestEveryOptionStatesItsRefusal(t *testing.T) {
+// A refused publish states the reason the form greys the same value with,
+// so the greyed entry and the refusal read one evaluation.
+func TestAValidateRefusalIsTheRuleThatGreysTheValue(t *testing.T) {
+	opts := options("yuv420p", ModeLossless, ColorRangeLimited)
+	err := Validate(EngineFfmpeg, "h264_vaapi", opts, 0, 10, 0, Device{})
+	if err == nil {
+		t.Fatal("VAAPI codes no lossless mode, so a lossless h264_vaapi publish is refused")
+	}
+	v := rules.EvaluateRules(validationFacts(mustGet(t, "h264_vaapi"), EngineFfmpeg, opts, 0, 10, 0, Device{}), codecRules())
+	var greyed []screensharev1.TextCode
 	for _, option := range Options {
-		if _, ok := optionRefusals[option]; !ok {
-			t.Errorf("option %q has no refusal phrase", option)
+		for _, reason := range v.ValueReasons(optionAxes[option], opts[option]) {
+			greyed = append(greyed, reason.GetCode())
 		}
 	}
-	for option := range optionRefusals {
-		if !slices.Contains(Options, option) {
-			t.Errorf("refusal phrase for %q, which is not a gappable option", option)
-		}
+	if !slices.Contains(greyed, texttest.Code(err)) {
+		t.Errorf("the refusal states %v, and the form greys with %v", texttest.Code(err), greyed)
 	}
 }
 

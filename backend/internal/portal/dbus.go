@@ -6,6 +6,9 @@ import (
 	"strings"
 	"sync/atomic"
 
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
+
 	"github.com/godbus/dbus/v5"
 
 	"bjoernblessin.de/go-utils/util/assert"
@@ -56,7 +59,13 @@ func (c *client) requestStart(session dbus.ObjectPath) (options, error) {
 // await installs the Response match for the Request path a token makes predictable,
 // invokes the method, and answers the results map the Response carries.
 // The match goes in before the invocation, so a Response arriving immediately is still caught.
-// A non-zero response code is a cancelled picker or a portal-side failure, and leaves as an error.
+// A non-zero response code is a dismissed picker or a portal-side failure, and leaves as an error.
+// Response codes of org.freedesktop.portal.Request; 2 ends the interaction any other way.
+const (
+	responseSuccess   = 0
+	responseCancelled = 1
+)
+
 func (c *client) await(method string, invoke func(reqToken string) *dbus.Call) (options, error) {
 	assert.Assert(method != "", "an awaited call names the portal method it blocks for")
 	assert.IsNotNil(invoke, "an awaited call has a method to invoke", method)
@@ -89,12 +98,17 @@ func (c *client) await(method string, invoke func(reqToken string) *dbus.Call) (
 		if err := dbus.Store(sig.Body, &code, &results); err != nil {
 			return nil, err
 		}
-		if code != 0 {
-			return nil, fmt.Errorf("%s returned response code %d", method, code)
+		switch code {
+		case responseSuccess:
+			return results, nil
+		case responseCancelled:
+			return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_PORTAL_DISMISSED)
+		default:
+			return nil, text.Because(fmt.Errorf("response %d", code),
+				screensharev1.TextCode_TEXT_CODE_PORTAL_CALL_FAILED, text.Value(method))
 		}
-		return results, nil
 	}
-	return nil, fmt.Errorf("%s: signal channel closed before Response", method)
+	return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_PORTAL_CALL_FAILED, text.Value(method))
 }
 
 // openPipeWireRemote answers the session's PipeWire remote fd as an *os.File the caller owns.
@@ -113,7 +127,8 @@ func (c *client) openPipeWireRemote(session dbus.ObjectPath) (*os.File, error) {
 	// so a closed slot is refused before it travels that far.
 	f := os.NewFile(uintptr(fd), "pipewire-remote")
 	if f == nil {
-		return nil, fmt.Errorf("invalid file descriptor %d", int(fd))
+		return nil, text.Because(fmt.Errorf("fd %d", int(fd)),
+			screensharev1.TextCode_TEXT_CODE_PORTAL_CALL_FAILED, text.Value("OpenPipeWireRemote"))
 	}
 	return f, nil
 }
@@ -128,17 +143,17 @@ func (c *client) closeSession(session dbus.ObjectPath) {
 func firstNode(results options) (uint32, error) {
 	raw, ok := results["streams"]
 	if !ok {
-		return 0, fmt.Errorf("Start returned no streams")
+		return 0, text.Fail(screensharev1.TextCode_TEXT_CODE_PORTAL_CALL_FAILED, text.Value("Start"))
 	}
 	var streams []struct {
 		Node  uint32
 		Props map[string]dbus.Variant
 	}
 	if err := dbus.Store([]interface{}{raw.Value()}, &streams); err != nil {
-		return 0, fmt.Errorf("decode streams: %w", err)
+		return 0, text.Because(err, screensharev1.TextCode_TEXT_CODE_PORTAL_CALL_FAILED, text.Value("Start"))
 	}
 	if len(streams) == 0 {
-		return 0, fmt.Errorf("Start returned an empty stream list")
+		return 0, text.Fail(screensharev1.TextCode_TEXT_CODE_PORTAL_CALL_FAILED, text.Value("Start"))
 	}
 	return streams[0].Node, nil
 }

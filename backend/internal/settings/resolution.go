@@ -1,9 +1,11 @@
 package settings
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 )
@@ -43,29 +45,28 @@ func FormatSize(width, height int) string {
 // Strict on the shape and on both figures, and refusing with an error rather than asserting:
 // the value travels through a file the user owns and can edit,
 // so a malformed one is an Umgebungsfehler on the way back in.
-// Each refusal names which part failed, for whoever has to repair the value.
 func ParseSize(value string) (Size, error) {
 	width, height, found := strings.Cut(value, resolutionSeparator)
 	if !found {
-		return Size{}, fmt.Errorf("output resolution %q is not WIDTH%sHEIGHT", value, resolutionSeparator)
+		return Size{}, text.Fail(screensharev1.TextCode_TEXT_CODE_OUTPUT_SIZE_UNREADABLE, text.Value(value))
 	}
 
 	w, err := strconv.Atoi(width)
 	if err != nil {
-		return Size{}, fmt.Errorf("output resolution %q has no width: %w", value, err)
+		return Size{}, text.Because(err, screensharev1.TextCode_TEXT_CODE_OUTPUT_SIZE_UNREADABLE, text.Value(value))
 	}
 	h, err := strconv.Atoi(height)
 	if err != nil {
-		return Size{}, fmt.Errorf("output resolution %q has no height: %w", value, err)
+		return Size{}, text.Because(err, screensharev1.TextCode_TEXT_CODE_OUTPUT_SIZE_UNREADABLE, text.Value(value))
 	}
 
 	if w < minOutputDimension || h < minOutputDimension {
-		return Size{}, fmt.Errorf("output resolution %q is below the %d px floor either side", value, minOutputDimension)
+		return Size{}, text.Fail(screensharev1.TextCode_TEXT_CODE_OUTPUT_SIZE_BELOW_FLOOR,
+			text.Value(value), text.CountLimit(minOutputDimension))
 	}
-	// Every chroma subsampling here needs an even picture.
 	// Refused rather than rounded: a size the run changed on its own is one no form can show back.
 	if w%2 != 0 || h%2 != 0 {
-		return Size{}, fmt.Errorf("output resolution %q is odd on one side, and every chroma subsampling here needs an even picture", value)
+		return Size{}, text.Fail(screensharev1.TextCode_TEXT_CODE_OUTPUT_SIZE_ODD, text.Value(value))
 	}
 
 	size := Size{Width: w, Height: h}

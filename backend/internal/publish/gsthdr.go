@@ -2,9 +2,11 @@ package publish
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"strings"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/screenshare/internal/colour"
 	"bjoernblessin.de/screenshare/internal/gstrun"
@@ -119,13 +121,12 @@ func hdrCapture(caps string) bool {
 // An HDR capture cannot ride in eight bits, and continuing anyway is silent either way:
 // tone-mapping down changes a picture nobody asked to change, and coding the surface as 8-bit
 // with the tag dropped sends wrong colour with nothing saying so.
-// The message names both ends, what the capture carries and what the settings asked to code it as,
+// The statement names both ends, what the capture carries and what the settings asked to code it as,
 // either one being a way out and the choice the user's.
 func hdrRefusal(s settings.Settings, caps string) error {
 	if !hdrCapture(caps) || s.Publish.Chroma == tenBitChroma {
 		return nil
 	}
-	return fmt.Errorf(
-		"the capture is HDR (transfer %s) and %s carries eight bits per component: encode it as %s, or capture a standard-range surface",
-		captureTransfer(caps), s.Publish.Chroma, tenBitChroma)
+	return text.Fail(screensharev1.TextCode_TEXT_CODE_HDR_CAPTURE_EIGHT_BIT,
+		text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_TRANSFER, captureTransfer(caps)), text.Chroma(s.Publish.Chroma), text.Value(tenBitChroma))
 }

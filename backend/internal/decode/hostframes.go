@@ -1,8 +1,6 @@
 package decode
 
 import (
-	"fmt"
-
 	"bjoernblessin.de/go-utils/util/logger"
 )
 
@@ -60,7 +58,7 @@ func (h *Host) serveFrames(c *conn) {
 	h.mu.Unlock()
 
 	if !present || entry.ended {
-		c.send(frameEvent{Err: fmt.Sprintf("nothing is decoding %s", req.ID)})
+		c.send(frameEvent{Fail: failureOf(nothingDecoding(req.ID))})
 		return
 	}
 
@@ -77,7 +75,7 @@ func (h *Host) serveFrames(c *conn) {
 	// The producer ended the subscription, so the consumer is told on the call it is reading,
 	// as receive.Receiver.endSubs does in one process.
 	if err := sub.Err(); err != nil {
-		c.send(frameEvent{Err: err.Error()})
+		c.send(frameEvent{Fail: failureOf(err)})
 	}
 }
 

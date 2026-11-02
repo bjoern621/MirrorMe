@@ -1,7 +1,8 @@
 package capabilities
 
 import (
-	"fmt"
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 )
@@ -311,7 +312,7 @@ type Decode struct {
 func DecodeOf(codec, chroma string) (Decode, error) {
 	c, ok := Get(codec)
 	if !ok {
-		return Decode{}, fmt.Errorf("unknown codec %q", codec)
+		return Decode{}, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(codec))
 	}
 	software, ok := SoftwareDecoder(c.Format)
 	// A published format with no software decoder is a row added to one table and not the other,

@@ -8,6 +8,9 @@ import (
 	"strings"
 	"time"
 
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
+
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 )
@@ -60,7 +63,7 @@ func openRunLog(dir, tag string, keep int, spare string) (*os.File, string, erro
 
 	file, err := os.Create(path)
 	if err != nil {
-		return nil, "", fmt.Errorf("cannot create run log: %w", err)
+		return nil, "", text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNWRITABLE, text.Path(path))
 	}
 	return file, path, nil
 }
@@ -78,7 +81,7 @@ func pruneRunLogs(dir string, keep int, spare string) error {
 
 	entries, err := os.ReadDir(dir)
 	if err != nil {
-		return fmt.Errorf("cannot read the run logs in %s: %w", dir, err)
+		return text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNREADABLE, text.Path(dir))
 	}
 
 	type log struct {
@@ -104,7 +107,7 @@ func pruneRunLogs(dir string, keep int, spare string) error {
 	sort.Slice(logs, func(i, j int) bool { return logs[i].at.After(logs[j].at) })
 	for _, old := range logs[keep:] {
 		if err := os.Remove(filepath.Join(dir, old.name)); err != nil && !os.IsNotExist(err) {
-			return fmt.Errorf("cannot remove the run log %s: %w", old.name, err)
+			return text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNWRITABLE, text.Path(filepath.Join(dir, old.name)))
 		}
 	}
 	return nil

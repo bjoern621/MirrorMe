@@ -1,7 +1,8 @@
 package ffmpeg
 
 import (
-	"fmt"
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
@@ -69,7 +70,7 @@ func HwSurfaceDevice(codec string) ([]string, bool, error) {
 
 	c, ok := capabilities.Get(codec)
 	if !ok {
-		return nil, false, fmt.Errorf("unknown codec %q", codec)
+		return nil, false, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(codec))
 	}
 	surface, ok := hwSurfaces[c.Family]
 	if !ok {
@@ -93,7 +94,7 @@ func HwSurfaceFilters(codec, chroma string) ([]string, error) {
 
 	c, ok := capabilities.Get(codec)
 	if !ok {
-		return nil, fmt.Errorf("unknown codec %q", codec)
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(codec))
 	}
 	surface, ok := hwSurfaces[c.Family]
 	// Only the callers HwSurfaceDevice answered "surface" reach here,
@@ -102,7 +103,8 @@ func HwSurfaceFilters(codec, chroma string) ([]string, error) {
 
 	format, ok := hwSurfaceFormats[chroma]
 	if !ok {
-		return nil, fmt.Errorf("chroma %q has no hardware surface layout", chroma)
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM,
+			text.Engine(capabilities.EngineFfmpeg), text.Chroma(chroma))
 	}
 	return []string{"format=" + format, surface.upload}, nil
 }

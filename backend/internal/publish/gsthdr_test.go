@@ -2,8 +2,11 @@ package publish
 
 import (
 	"bytes"
+	"slices"
 	"strings"
 	"testing"
+
+	"bjoernblessin.de/screenshare/internal/text/texttest"
 
 	"bjoernblessin.de/screenshare/internal/gstrun"
 )
@@ -95,7 +98,7 @@ func TestAnHdrCaptureRefusesTheEightBitFormats(t *testing.T) {
 			continue
 		}
 		for _, end := range []string{"smpte2084", chroma, tenBitChroma} {
-			if !strings.Contains(err.Error(), end) {
+			if !slices.Contains(texttest.IDs(err), end) {
 				t.Errorf("the refusal for %s does not name %s: %v", chroma, end, err)
 			}
 		}

@@ -2,13 +2,14 @@ package transport
 
 import (
 	"bjoernblessin.de/go-utils/util/assert"
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
 
 	"fmt"
 	"slices"
-	"strings"
 
 	"bjoernblessin.de/screenshare/internal/capabilities"
 	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/screenshare/internal/text"
 )
 
 // RTSP streams through the relay's RTSP listener, one RTP stream per track inside the session, so
@@ -135,10 +136,6 @@ func (RTSP) GstSource(s settings.Settings, path string) []string {
 // One list for both legs: which transports carry RTP is a fact of RTSP and not of a direction.
 var RtspProtocols = []string{"tcp", "udp"}
 
-// rtspWatchProtocolKey is the watch knob naming the RTP lower transport, spelled once because both
-// the knob table and the rule guarding it name it.
-const rtspWatchProtocolKey = "rtspWatchProtocol"
-
 // EncryptedRtspProtocol is the one lower transport an RTSPS session carries media on, and every
 // session this app opens is RTSPS.
 //
@@ -162,46 +159,13 @@ const EncryptedRtspProtocol = "tcp"
 // the stream did something else.
 func (RTSP) ValidatePublishSettings(s settings.Settings) error {
 	if !slices.Contains(RtspProtocols, s.Publish.RtspPublishProtocol) {
-		return fmt.Errorf("rtsp publish protocol %q is not one of %s",
-			s.Publish.RtspPublishProtocol, strings.Join(RtspProtocols, ", "))
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN,
+			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_RTSP_PROTOCOL, s.Publish.RtspPublishProtocol))
 	}
 	if s.Publish.RtspPublishProtocol != EncryptedRtspProtocol {
-		return fmt.Errorf("cannot publish over %q: an encrypted relay carries RTP inside the RTSP connection, so the publish leg runs over %s",
-			s.Publish.RtspPublishProtocol, EncryptedRtspProtocol)
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_ENCRYPTED_RTSP_INTERLEAVES_RTP)
 	}
 	return nil
-}
-
-// rtspWatchKnobs are the knobs a viewer changes per stream, the settings fields GstSource reads.
-// The publish leg's counterpart is a settings-form field, chosen once for the stream this machine
-// sends rather than per stream it receives.
-var rtspWatchKnobs = []watchKnob{
-	intKnob("rtspWatchLatencyMs", "RTSP jitter buffer (ms)",
-		"How long the receiver holds RTP packets before decoding, to reorder them and absorb network jitter. "+
-			"It is display delay, so it belongs just above the link's jitter: 200 ms suits a LAN, a lossy remote link wants more.",
-		minWatchLatencyMs,
-		func(s *settings.Settings) *int { return &s.Viewer.RtspWatchLatencyMs }),
-	choiceKnob(rtspWatchProtocolKey, "RTSP transport",
-		"How RTP reaches the viewer inside the RTSP session. An encrypted session interleaves both tracks "+
-			"on the RTSP connection, which needs no second port and passes a filtering network.",
-		RtspProtocols,
-		func(s *settings.Settings) *string { return &s.Viewer.RtspWatchProtocol }),
-}
-
-func (RTSP) WatchOptions(s settings.Settings) []WatchOption { return knobOptions(rtspWatchKnobs, s) }
-
-func (t RTSP) SetWatchOption(s *settings.Settings, key, value string) error {
-	// The rule EncryptedRtspProtocol states holds on both legs, and this is the watch leg's half.
-	// RTSPS encrypts the control connection alone, so a session that negotiates its RTP over UDP puts
-	// the picture on the wire in the clear whatever the scheme in the address says.
-	// Refused rather than corrected, for the reason ValidatePublishSettings refuses the same value:
-	// interleaving a session the reader asked to carry over UDP answers a question nobody asked, and
-	// the control would go on reading "udp" while the stream did something else.
-	if key == rtspWatchProtocolKey && value != EncryptedRtspProtocol {
-		return fmt.Errorf("cannot set %s to %q: an encrypted relay carries RTP inside the RTSP connection, so the watch leg runs over %s",
-			rtspWatchProtocolKey, value, EncryptedRtspProtocol)
-	}
-	return knobSet(t.Name(), rtspWatchKnobs, s, key, value)
 }
 
 // ListenerURL is the relay's RTSPS listener, "rtsps://relay:8322".

@@ -11,8 +11,11 @@
 package watch
 
 import (
-	"fmt"
 	"os"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/capabilities"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
@@ -41,10 +44,10 @@ const EnvViewer = "MIRRORME_VIEWER"
 func Select(transportName string) (Engine, error) {
 	t, ok := transport.Get(transportName)
 	if !ok {
-		return nil, fmt.Errorf("unknown transport %q", transportName)
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Transport(transportName))
 	}
 	if _, ok := t.(transport.Watcher); !ok {
-		return nil, fmt.Errorf("no viewer implements transport %q", transportName)
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(capabilities.EngineFfmpeg), text.Transport(transportName))
 	}
 	if os.Getenv(EnvViewer) == "mpv" {
 		return mpv{}, nil

@@ -2,11 +2,13 @@ package app
 
 import (
 	"context"
-	"fmt"
 	"math"
 	"os/exec"
 	goruntime "runtime"
 	"time"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
@@ -237,7 +239,7 @@ func (a *App) cachedEncoders() encoders.Availability {
 // (docs/development-principles.md, "Effects across a process boundary").
 func (a *App) OpenLog(path string) error {
 	if path == "" {
-		return fmt.Errorf("no log file for this run")
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_RUN_KEEPS_NO_LOG)
 	}
 	return openInShell(path)
 }

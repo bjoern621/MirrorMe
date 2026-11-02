@@ -1,10 +1,12 @@
 package publish
 
 import (
-	"fmt"
 	"io"
 	"strings"
 	"sync"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/logger"
 
@@ -115,7 +117,7 @@ func (g gstEngine) Start(s settings.Settings, tag string, preview PreviewLeg, cb
 	if cb.OnStats != nil {
 		meter, err = newGstMeter(cb.OnStats)
 		if err != nil {
-			return nil, fmt.Errorf("progress meter: %w", err)
+			return nil, text.Because(err, screensharev1.TextCode_TEXT_CODE_LOOPBACK_PORT_UNAVAILABLE)
 		}
 		meterArg = meter.port()
 		opts.RateProbe = gstCaptureProbe

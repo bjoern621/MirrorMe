@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using ScreenShare.Api.V1;
 using ScreenShare.App.Backend;
 using ScreenShare.App.Contracts;
+using ScreenShare.App.Copy;
 using ScreenShare.App.Features.Fields.Model;
 using ScreenShare.App.Features.Fields.ViewModel;
 using ScreenShare.App.Features.Setup.AudioStep.ViewModel;
@@ -491,7 +492,7 @@ public sealed class SetupViewModel : Observable
 
         var checks = PreflightChecks.Of(diagnostics, AnchorIn(_steps, form));
         Cost.Apply(form?.Summary?.Estimate);
-        Checks.Apply(checks, key => DrawnOn(current, key), form?.Summary?.CommandError ?? "");
+        Checks.Apply(checks, key => DrawnOn(current, key), form?.Summary?.CommandRefusal is { } refusal ? Refusals.Of(refusal) : "");
 
         IsPublishable = form?.Publishable ?? false;
 

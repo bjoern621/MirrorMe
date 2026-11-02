@@ -2,8 +2,10 @@ package app
 
 import (
 	"bytes"
-	"errors"
 	"path/filepath"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
@@ -19,7 +21,7 @@ func (a *App) sendReport(kind string, include ...string) (string, error) {
 	s := a.GetSettings()
 	base, ok := s.Relay.GroupService()
 	if !ok {
-		return "", errors.New("the settings name no relay, and a report goes to the group service beside one. Name a relay first")
+		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
 	}
 	dir, err := ffmpeg.LogDir()
 	if err != nil {

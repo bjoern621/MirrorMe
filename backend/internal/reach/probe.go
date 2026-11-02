@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -68,7 +69,7 @@ func probeHTTP(ctx context.Context, t target) (answer, error) {
 	defer response.Body.Close()
 
 	if t.wantOK && response.StatusCode/100 != 2 {
-		return answer{}, fmt.Errorf("answered %q, so the service is missing or older than this check", response.Status)
+		return answer{}, errors.New(response.Status)
 	}
 	return answer{detail: response.Status, version: versionOf(response.Header.Get("Server"))}, nil
 }
@@ -129,7 +130,7 @@ func probeRTSP(ctx context.Context, t target) (answer, error) {
 	}
 	line = strings.TrimSpace(line)
 	if !strings.HasPrefix(line, "RTSP/") {
-		return answer{}, fmt.Errorf("answered %q, which is no RTSP listener", line)
+		return answer{}, errors.New(line)
 	}
 	return answer{detail: line}, nil
 }

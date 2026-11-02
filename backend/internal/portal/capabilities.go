@@ -2,10 +2,12 @@ package portal
 
 import (
 	"context"
-	"fmt"
 	"runtime"
 	"sync"
 	"time"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"github.com/godbus/dbus/v5"
 
@@ -66,7 +68,7 @@ func Detect(ctx context.Context) (Capabilities, error) {
 
 	conn, err := dbus.ConnectSessionBus()
 	if err != nil {
-		return Capabilities{}, fmt.Errorf("connect session bus: %w", err)
+		return Capabilities{}, text.Because(err, screensharev1.TextCode_TEXT_CODE_SESSION_BUS_UNREACHABLE)
 	}
 	defer conn.Close()
 
@@ -82,7 +84,7 @@ func readCapabilities(ctx context.Context, conn *dbus.Conn) (Capabilities, error
 	var props map[string]dbus.Variant
 	call := conn.Object(service, objectDir).CallWithContext(ctx, propsIface+".GetAll", 0, scIface)
 	if err := call.Store(&props); err != nil {
-		return Capabilities{}, fmt.Errorf("read %s properties: %w", scIface, err)
+		return Capabilities{}, text.Because(err, screensharev1.TextCode_TEXT_CODE_PORTAL_CALL_FAILED, text.Value("GetAll"))
 	}
 	cursors, _ := props["AvailableCursorModes"].Value().(uint32)
 	sources, _ := props["AvailableSourceTypes"].Value().(uint32)

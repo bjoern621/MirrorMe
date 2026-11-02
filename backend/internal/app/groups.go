@@ -1,10 +1,11 @@
 package app
 
 import (
-	"errors"
-	"fmt"
 	"io"
 	"strings"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/screenshare/internal/group"
 	"bjoernblessin.de/screenshare/internal/groupclient"
@@ -67,7 +68,7 @@ func (a *App) settingsForCommand(s settings.Settings) (settings.Settings, error)
 
 	token, err := a.groups.Token(base, s.Relay.GroupKey, a.memberSecret(s.Relay))
 	if err != nil {
-		return s, fmt.Errorf("no relay token for this group: %w", err)
+		return s, text.Because(err, screensharev1.TextCode_TEXT_CODE_RELAY_TOKEN_UNDRAWN)
 	}
 	s.Relay.Token = token
 	return s, nil
@@ -75,9 +76,9 @@ func (a *App) settingsForCommand(s settings.Settings) (settings.Settings, error)
 
 // errNoGroup refuses everything this machine would publish while it is in no group.
 //
-// One sentence for the publish and for the synthetic set, both being streams on the relay,
+// One statement for the publish and for the synthetic set, both being streams on the relay,
 // and both refused on settings.Relay.InGroup.
-var errNoGroup = errors.New("this computer is in no group, so there is nowhere to publish: set a group key and a name under Relay")
+var errNoGroup = text.Fail(screensharev1.TextCode_TEXT_CODE_GROUP_REQUIRED)
 
 // forgetRelayToken drops the held credential, so the next command trades the group key again.
 // Called where the relay refused a connection this app built, the one sign a held token is spent:
@@ -96,7 +97,9 @@ func (a *App) forgetRelayToken() {
 func (a *App) groupIndexStatus(s settings.Settings, base string) relay.Status {
 	streams, err := a.groups.Streams(base, s.Relay.GroupKey)
 	if err != nil {
-		return relay.Status{Reachable: false, FromIndex: true, Error: err.Error()}
+		status := relay.Unreachable(err)
+		status.FromIndex = true
+		return status
 	}
 
 	return relay.Status{Reachable: true, FromIndex: true, Paths: indexPaths(streams)}
@@ -174,12 +177,11 @@ func insidePrefix(status relay.Status, prefix string) relay.Status {
 // The caller writes it to the group key field,
 // the one write that changes a machine's group and a settings write like any other.
 //
-// A relay nobody named has no service to draw at,
-// and the message says so rather than naming one that would be asked.
+// A relay naming no group service is refused, never sent to a service guessed at.
 func (a *App) CreateGroup(relay settings.Relay) (groupKey, groupID string, err error) {
 	base, ok := relay.GroupService()
 	if !ok {
-		return "", "", fmt.Errorf("a group key is drawn by a group service, and this relay names none")
+		return "", "", text.Fail(screensharev1.TextCode_TEXT_CODE_GROUP_SERVICE_UNNAMED)
 	}
 	return a.groups.CreateGroup(base)
 }

@@ -22,8 +22,11 @@ package portal
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"os"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"github.com/godbus/dbus/v5"
 
@@ -109,12 +112,12 @@ func Open(opts Options) (*Session, error) {
 	// for a kind that is not there takes the ones that are down with it.
 	types := Cached(context.Background()).SourcesServed(opts.Types)
 	if types == 0 {
-		return nil, fmt.Errorf("the portal serves none of the source kinds this capture asks for")
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_PORTAL_NO_SOURCE_KIND)
 	}
 
 	conn, err := dbus.ConnectSessionBus()
 	if err != nil {
-		return nil, fmt.Errorf("connect session bus: %w", err)
+		return nil, text.Because(err, screensharev1.TextCode_TEXT_CODE_SESSION_BUS_UNREACHABLE)
 	}
 	c := &client{conn: conn, sender: senderToken(conn)}
 
@@ -123,12 +126,12 @@ func Open(opts Options) (*Session, error) {
 	})
 	if err != nil {
 		conn.Close()
-		return nil, fmt.Errorf("CreateSession: %w", err)
+		return nil, portalFailed("CreateSession", err)
 	}
 	handle, ok := created["session_handle"].Value().(string)
 	if !ok {
 		conn.Close()
-		return nil, fmt.Errorf("CreateSession returned no session_handle")
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_PORTAL_CALL_FAILED, text.Value("CreateSession"))
 	}
 	session := dbus.ObjectPath(handle)
 
@@ -143,13 +146,13 @@ func Open(opts Options) (*Session, error) {
 	}
 	if _, err := c.requestOn(scIface+".SelectSources", session, selectOpts); err != nil {
 		c.closeSession(session)
-		return nil, fmt.Errorf("SelectSources: %w", err)
+		return nil, portalFailed("SelectSources", err)
 	}
 
 	started, err := c.requestStart(session)
 	if err != nil {
 		c.closeSession(session)
-		return nil, fmt.Errorf("Start: %w", err)
+		return nil, portalFailed("Start", err)
 	}
 	node, err := firstNode(started)
 	if err != nil {
@@ -181,7 +184,7 @@ func (s *Session) Remote() (*os.File, error) {
 
 	f, err := s.client.openPipeWireRemote(s.handle)
 	if err != nil {
-		return nil, fmt.Errorf("OpenPipeWireRemote: %w", err)
+		return nil, portalFailed("OpenPipeWireRemote", err)
 	}
 	return f, nil
 }
@@ -197,4 +200,13 @@ func (s *Session) Close() {
 	}
 	s.client.closeSession(s.handle)
 	s.client = nil
+}
+
+// portalFailed states a failed call, leaving one the portal's answer already stated as it is.
+func portalFailed(method string, err error) error {
+	var stated *text.Error
+	if errors.As(err, &stated) {
+		return err
+	}
+	return text.Because(err, screensharev1.TextCode_TEXT_CODE_PORTAL_CALL_FAILED, text.Value(method))
 }

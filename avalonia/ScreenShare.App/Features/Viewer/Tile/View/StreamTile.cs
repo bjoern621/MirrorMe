@@ -4,6 +4,7 @@ using Avalonia.Threading;
 using ScreenShare.Api.V1;
 using ScreenShare.App.Backend;
 using ScreenShare.App.Contracts;
+using ScreenShare.App.Copy;
 using ScreenShare.App.Features.Viewer.Tile.Model;
 
 namespace ScreenShare.App.Features.Viewer.Tile.View;
@@ -256,7 +257,7 @@ public sealed class StreamTile : Decorator
                         await DrawAsync(surface, channel, message.Ready, cancellation).ConfigureAwait(true);
                         break;
                     case FrameEvent.EventOneofCase.End:
-                        Report(_reported with { Notice = message.End.Message });
+                        Report(_reported with { Notice = Failures.Of(message.End.Cause, message.End.Message) });
                         return;
                 }
             }

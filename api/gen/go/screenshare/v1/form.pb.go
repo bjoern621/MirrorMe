@@ -977,16 +977,14 @@ type Summary struct {
 	// Displayed for transparency.
 	// Reading a value back out of it would create a second definition of that value.
 	Command string `protobuf:"bytes,2,opt,name=command,proto3" json:"command,omitempty"`
-	// Why no command rendered, empty once one did.
-	// The publish builder's own refusal, crossing as a raw string and not as a Text (text.proto):
-	// the identical text arrives as a gRPC status once a publish is attempted,
-	// making it an operational failure instead of a statement about the domain.
+	// Why no command rendered, absent once one did.
+	// The publish builder's own refusal, the one a start of these settings is refused with.
 	// TEXT_CODE_PUBLISH_REFUSED rides the matching diagnostic,
 	// and a shell places this alongside it.
-	CommandError  string    `protobuf:"bytes,3,opt,name=command_error,json=commandError,proto3" json:"command_error,omitempty"`
-	Estimate      *Estimate `protobuf:"bytes,4,opt,name=estimate,proto3" json:"estimate,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	CommandRefusal *Refusal  `protobuf:"bytes,5,opt,name=command_refusal,json=commandRefusal,proto3" json:"command_refusal,omitempty"`
+	Estimate       *Estimate `protobuf:"bytes,4,opt,name=estimate,proto3" json:"estimate,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *Summary) Reset() {
@@ -1026,11 +1024,11 @@ func (x *Summary) GetCommand() string {
 	return ""
 }
 
-func (x *Summary) GetCommandError() string {
+func (x *Summary) GetCommandRefusal() *Refusal {
 	if x != nil {
-		return x.CommandError
+		return x.CommandRefusal
 	}
-	return ""
+	return nil
 }
 
 func (x *Summary) GetEstimate() *Estimate {
@@ -1354,11 +1352,11 @@ const file_screenshare_v1_form_proto_rawDesc = "" +
 	"\bEstimate\x12!\n" +
 	"\fbitrate_mbps\x18\x01 \x01(\x01R\vbitrateMbps\x12\x19\n" +
 	"\braw_mbps\x18\x02 \x01(\x01R\arawMbps\x12#\n" +
-	"\rheadroom_mbps\x18\x03 \x01(\x01R\fheadroomMbps\"\x8e\x01\n" +
+	"\rheadroom_mbps\x18\x03 \x01(\x01R\fheadroomMbps\"\xc0\x01\n" +
 	"\aSummary\x12\x18\n" +
-	"\acommand\x18\x02 \x01(\tR\acommand\x12#\n" +
-	"\rcommand_error\x18\x03 \x01(\tR\fcommandError\x124\n" +
-	"\bestimate\x18\x04 \x01(\v2\x18.screenshare.v1.EstimateR\bestimateJ\x04\b\x01\x10\x02R\bheadline\"\xde\x03\n" +
+	"\acommand\x18\x02 \x01(\tR\acommand\x12@\n" +
+	"\x0fcommand_refusal\x18\x05 \x01(\v2\x17.screenshare.v1.RefusalR\x0ecommandRefusal\x124\n" +
+	"\bestimate\x18\x04 \x01(\v2\x18.screenshare.v1.EstimateR\bestimateJ\x04\b\x01\x10\x02J\x04\b\x03\x10\x04R\bheadlineR\rcommand_error\"\xde\x03\n" +
 	"\x04Form\x124\n" +
 	"\bsettings\x18\x01 \x01(\v2\x18.screenshare.v1.SettingsR\bsettings\x12.\n" +
 	"\x13repaired_field_keys\x18\a \x03(\tR\x11repairedFieldKeys\x122\n" +
@@ -1428,8 +1426,9 @@ var file_screenshare_v1_form_proto_goTypes = []any{
 	(*Form)(nil),            // 11: screenshare.v1.Form
 	(*BuiltinPreset)(nil),   // 12: screenshare.v1.BuiltinPreset
 	(*Text)(nil),            // 13: screenshare.v1.Text
-	(*Settings)(nil),        // 14: screenshare.v1.Settings
-	(*PublishSettings)(nil), // 15: screenshare.v1.PublishSettings
+	(*Refusal)(nil),         // 14: screenshare.v1.Refusal
+	(*Settings)(nil),        // 15: screenshare.v1.Settings
+	(*PublishSettings)(nil), // 16: screenshare.v1.PublishSettings
 }
 var file_screenshare_v1_form_proto_depIdxs = []int32{
 	13, // 0: screenshare.v1.FieldOption.note:type_name -> screenshare.v1.Text
@@ -1447,20 +1446,21 @@ var file_screenshare_v1_form_proto_depIdxs = []int32{
 	6,  // 12: screenshare.v1.FieldGroup.fields:type_name -> screenshare.v1.Field
 	2,  // 13: screenshare.v1.Diagnostic.severity:type_name -> screenshare.v1.Severity
 	13, // 14: screenshare.v1.Diagnostic.text:type_name -> screenshare.v1.Text
-	9,  // 15: screenshare.v1.Summary.estimate:type_name -> screenshare.v1.Estimate
-	14, // 16: screenshare.v1.Form.settings:type_name -> screenshare.v1.Settings
-	7,  // 17: screenshare.v1.Form.groups:type_name -> screenshare.v1.FieldGroup
-	8,  // 18: screenshare.v1.Form.diagnostics:type_name -> screenshare.v1.Diagnostic
-	10, // 19: screenshare.v1.Form.summary:type_name -> screenshare.v1.Summary
-	12, // 20: screenshare.v1.Form.presets:type_name -> screenshare.v1.BuiltinPreset
-	15, // 21: screenshare.v1.BuiltinPreset.settings:type_name -> screenshare.v1.PublishSettings
-	13, // 22: screenshare.v1.BuiltinPreset.reason:type_name -> screenshare.v1.Text
-	9,  // 23: screenshare.v1.BuiltinPreset.estimate:type_name -> screenshare.v1.Estimate
-	24, // [24:24] is the sub-list for method output_type
-	24, // [24:24] is the sub-list for method input_type
-	24, // [24:24] is the sub-list for extension type_name
-	24, // [24:24] is the sub-list for extension extendee
-	0,  // [0:24] is the sub-list for field type_name
+	14, // 15: screenshare.v1.Summary.command_refusal:type_name -> screenshare.v1.Refusal
+	9,  // 16: screenshare.v1.Summary.estimate:type_name -> screenshare.v1.Estimate
+	15, // 17: screenshare.v1.Form.settings:type_name -> screenshare.v1.Settings
+	7,  // 18: screenshare.v1.Form.groups:type_name -> screenshare.v1.FieldGroup
+	8,  // 19: screenshare.v1.Form.diagnostics:type_name -> screenshare.v1.Diagnostic
+	10, // 20: screenshare.v1.Form.summary:type_name -> screenshare.v1.Summary
+	12, // 21: screenshare.v1.Form.presets:type_name -> screenshare.v1.BuiltinPreset
+	16, // 22: screenshare.v1.BuiltinPreset.settings:type_name -> screenshare.v1.PublishSettings
+	13, // 23: screenshare.v1.BuiltinPreset.reason:type_name -> screenshare.v1.Text
+	9,  // 24: screenshare.v1.BuiltinPreset.estimate:type_name -> screenshare.v1.Estimate
+	25, // [25:25] is the sub-list for method output_type
+	25, // [25:25] is the sub-list for method input_type
+	25, // [25:25] is the sub-list for extension type_name
+	25, // [25:25] is the sub-list for extension extendee
+	0,  // [0:25] is the sub-list for field type_name
 }
 
 func init() { file_screenshare_v1_form_proto_init() }

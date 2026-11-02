@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
+
+	"bjoernblessin.de/screenshare/internal/text/texttest"
 
 	"bjoernblessin.de/screenshare/internal/group"
 )
@@ -221,7 +224,7 @@ func TestADamagedIdentityIsReported(t *testing.T) {
 		if drawn {
 			t.Errorf("%s read back as an identity this machine holds", what)
 		}
-		if err != nil && !strings.Contains(err.Error(), path) {
+		if err != nil && !slices.Contains(texttest.IDs(err), path) {
 			t.Errorf("%s is reported as %q, which does not name the file", what, err)
 		}
 	}

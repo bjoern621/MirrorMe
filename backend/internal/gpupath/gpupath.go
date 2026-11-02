@@ -19,8 +19,7 @@
 package gpupath
 
 import (
-	"fmt"
-	"strings"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
@@ -215,12 +214,10 @@ func Resolve(engine, capture, family, memory string) (string, error) {
 			return "", noPath(engine, capture, family)
 		}
 		if path.Colour.TradesColour() {
-			// The refusal names the pair and the two values that get the user publishing again.
 			// What the path costs is the row's Cost code, which the form states on the greyed control:
 			// an operational error is read once, a greyed control is read where the choice is made.
-			return "", fmt.Errorf(
-				"%s capture into a %s encoder on the %s engine reaches the encoder on the GPU but converts nothing on the way. Pick %q to publish on the GPU at that cost, or %q to convert on the CPU and keep the colour selected",
-				capture, family, engine, MemoryGpuEncoderColor, MemorySystem)
+			return "", text.Fail(screensharev1.TextCode_TEXT_CODE_FRAME_MEMORY_TRADES_COLOUR,
+				text.Capture(capture), text.Family(family), text.Engine(engine))
 		}
 		return MemoryGpu, nil
 	case MemoryGpuEncoderColor:
@@ -234,17 +231,16 @@ func Resolve(engine, capture, family, memory string) (string, error) {
 	case MemorySystem:
 		return MemorySystem, nil
 	default:
-		return "", fmt.Errorf("frame memory %q is not one of %s", memory, strings.Join(Memories, ", "))
+		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN,
+			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_MEMORY, memory))
 	}
 }
 
-// noPath is what both device demands answer for a pair the table has no row for.
-// The pair is why either fails, so they fail with one sentence:
+// noPath is what both device demands answer for a pair the table has no row for:
 // the colour the caller was willing to pay changes nothing for frames with no way onto the device.
 func noPath(engine, capture, family string) error {
-	return fmt.Errorf(
-		"%s capture into a %s encoder has no GPU path on the %s engine: its frames reach the encoder through system memory, so pick %q",
-		capture, family, engine, MemorySystem)
+	return text.Fail(screensharev1.TextCode_TEXT_CODE_FRAME_MEMORY_NO_DEVICE_PATH,
+		text.Capture(capture), text.Family(family), text.Engine(engine))
 }
 
 // OnDevice reports whether a resolved frame memory keeps the frames on the GPU,
@@ -267,11 +263,10 @@ func OnDevice(memory string) bool {
 	}
 }
 
-// Undetermined is the refusal for a machine where which GPU captures can be read off nothing.
-// The import is correct on one device only,
-// so a machine offering several is refused with the candidates named, rather than guessed at.
-func Undetermined(what string, candidates []string) error {
-	return fmt.Errorf(
-		"%s, and this machine carries several: %s. Frames can only be imported within one GPU, so pick frame memory %q to download them",
-		what, strings.Join(candidates, ", "), MemorySystem)
+// Undetermined refuses a machine where nothing tells which of its render nodes captures.
+// Frames import within one GPU, so a machine offering several is refused with them named.
+func Undetermined(devices []string) error {
+	assert.Assert(len(devices) > 1, "an undetermined GPU leaves several candidates", devices)
+	return text.Fail(screensharev1.TextCode_TEXT_CODE_GPU_UNDETERMINED,
+		text.IDs(screensharev1.TextArgName_TEXT_ARG_NAME_DEVICES, devices))
 }

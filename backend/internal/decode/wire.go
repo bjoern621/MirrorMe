@@ -56,9 +56,9 @@ type request struct {
 }
 
 // response answers one control call.
-// Err is an Umgebungsfehler the backend surfaces, and empty on success.
+// Fail is an Umgebungsfehler the backend surfaces, and nil on success.
 type response struct {
-	Err string
+	Fail *failure
 	// ToneMap is what an open built with, which on a machine with no rung is not what was asked
 	// for (receive.Receiver.ToneMap).
 	ToneMap bool
@@ -103,12 +103,12 @@ type frameRequest struct {
 
 // frameEvent is one message of a subscription, with exactly one of the three set.
 //
-// Err ends the subscription and is the last message on the connection, carrying what the consumer
+// Fail ends the subscription and is the last message on the connection, carrying what the consumer
 // is told: a pipeline that stopped, or a frame the host could not export.
 type frameEvent struct {
 	Pool  *receive.Pool
 	Frame *receive.Frame
-	Err   string
+	Fail  *failure
 }
 
 // conn is one gob connection, sends serialized.

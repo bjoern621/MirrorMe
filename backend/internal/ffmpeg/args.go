@@ -14,6 +14,9 @@ import (
 	"strconv"
 	"strings"
 
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
+
 	"bjoernblessin.de/go-utils/util/assert"
 
 	"bjoernblessin.de/screenshare/internal/capabilities"
@@ -52,7 +55,7 @@ type Tap struct {
 // and the transport's own output arguments render as a slave of it beside every tap.
 func BuildPublishArgs(s settings.Settings, taps []Tap) ([]string, error) {
 	if _, ok := transport.Get(s.Publish.Transport); !ok {
-		return nil, fmt.Errorf("unknown transport %q", s.Publish.Transport)
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Transport(s.Publish.Transport))
 	}
 
 	if err := capabilities.Validate(capabilities.EngineFfmpeg, s.Publish.Codec(), s.Publish.CapabilityOptions(), s.Publish.Cq, s.Publish.BitrateM, s.Publish.Gop, gpu.Device()); err != nil {
@@ -74,7 +77,7 @@ func BuildPublishArgs(s settings.Settings, taps []Tap) ([]string, error) {
 	// from it, so a non-positive rate reaches the command as "-framerate 0" and "-g 0".
 	// The GStreamer engine refuses the same value.
 	if s.Publish.Fps <= 0 {
-		return nil, fmt.Errorf("the ffmpeg publish engine needs a positive fps, got %d", s.Publish.Fps)
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_FPS_NOT_POSITIVE, text.Fps(s.Publish.Fps))
 	}
 
 	memory, err := frameMemory(s)
@@ -228,7 +231,8 @@ func BuildPublishArgs(s settings.Settings, taps []Tap) ([]string, error) {
 
 	pub, ok := transport.PublishArgs(s)
 	if !ok {
-		return nil, fmt.Errorf("transport %q has no ffmpeg publish form", s.Publish.Transport)
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM,
+			text.Engine(capabilities.EngineFfmpeg), text.Transport(s.Publish.Transport))
 	}
 	if len(taps) == 0 {
 		return append(args, pub...), nil
@@ -283,23 +287,19 @@ func teeSlaveOf(args []string) (string, error) {
 
 	url := args[len(args)-1]
 	pairs := args[:len(args)-1]
-	if len(pairs)%2 != 0 {
-		return "", fmt.Errorf("output arguments %q are not option pairs and a destination", strings.Join(args, " "))
-	}
+	assert.Assert(len(pairs)%2 == 0, "an output yields option pairs and a destination", strings.Join(args, " "))
 
 	options := make([]string, 0, len(pairs)/2)
 	for i := 0; i < len(pairs); i += 2 {
 		name, value := strings.TrimPrefix(pairs[i], "-"), pairs[i+1]
-		if name == pairs[i] {
-			return "", fmt.Errorf("output argument %q is not an option, so it cannot be teed", pairs[i])
-		}
+		assert.Assert(name != pairs[i], "an output option starts with a dash", pairs[i])
 		if strings.ContainsAny(name+value, ":|][") {
-			return "", fmt.Errorf("output option %s=%s cannot be written as a tee slave", name, value)
+			return "", text.Fail(screensharev1.TextCode_TEXT_CODE_TEE_SLAVE_UNSPELLABLE, text.Option(name))
 		}
 		options = append(options, name+"="+value)
 	}
 	if strings.Contains(url, "|") {
-		return "", fmt.Errorf("destination %q cannot be written as a tee slave", url)
+		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_TEE_SLAVE_UNSPELLABLE)
 	}
 	return teeSlave(options, url), nil
 }
@@ -414,7 +414,7 @@ var captureBackends = map[string]func(s settings.Settings, fps, memory string) (
 func captureArgs(s settings.Settings, memory string) (captureSource, error) {
 	build, ok := captureBackends[s.Publish.Capture]
 	if !ok {
-		return captureSource{}, fmt.Errorf("unknown capture backend %q", s.Publish.Capture)
+		return captureSource{}, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Capture(s.Publish.Capture))
 	}
 	src, err := build(s, strconv.Itoa(s.Publish.Fps), memory)
 	if err != nil {
@@ -435,7 +435,7 @@ func captureArgs(s settings.Settings, memory string) (captureSource, error) {
 func frameMemory(s settings.Settings) (string, error) {
 	c, ok := capabilities.Get(s.Publish.Codec())
 	if !ok {
-		return "", fmt.Errorf("unknown codec %q", s.Publish.Codec())
+		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(s.Publish.Codec()))
 	}
 	return gpupath.Resolve(capabilities.EngineFfmpeg, s.Publish.Capture, c.Family, s.Publish.CaptureMemory)
 }
@@ -461,7 +461,8 @@ func ddagrabArgs(s settings.Settings, fps, memory string) (captureSource, error)
 		r := target.Region
 		m, ok := display.Containing(r.X, r.Y, r.Width, r.Height)
 		if !ok {
-			return captureSource{}, fmt.Errorf("the rectangle %s is not inside one of this machine's outputs", r)
+			return captureSource{}, text.Fail(screensharev1.TextCode_TEXT_CODE_REGION_OFF_SCREEN,
+				text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_REGION, s.Publish.ShareRegion))
 		}
 		local := r.Offset(m.OffsetX, m.OffsetY)
 		source = fmt.Sprintf("ddagrab=output_idx=%d:framerate=%s:draw_mouse=%s:offset_x=%d:offset_y=%d:video_size=%dx%d",
@@ -495,7 +496,8 @@ func gdigrabArgs(s settings.Settings, fps, _ string) (captureSource, error) {
 	case share.Window:
 		w, ok := window.At(target.Window)
 		if !ok {
-			return captureSource{}, fmt.Errorf("window %d is no longer open", target.Window)
+			return captureSource{}, text.Fail(screensharev1.TextCode_TEXT_CODE_WINDOW_GONE,
+				text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_WINDOW, s.Publish.ShareWindow))
 		}
 		return captureSource{args: append(args, "-i", "title="+w.Title)}, nil
 	case share.Region:
@@ -536,7 +538,7 @@ func drawMouse(s settings.Settings) string {
 func x11grabArgs(s settings.Settings, fps, _ string) (captureSource, error) {
 	disp := os.Getenv("DISPLAY")
 	if disp == "" {
-		return captureSource{}, fmt.Errorf("x11grab captures an X screen and DISPLAY names none")
+		return captureSource{}, text.Fail(screensharev1.TextCode_TEXT_CODE_DISPLAY_UNSET, text.Capture(s.Publish.Capture))
 	}
 	target, err := s.Publish.Target()
 	if err != nil {
@@ -554,7 +556,7 @@ func x11grabArgs(s settings.Settings, fps, _ string) (captureSource, error) {
 
 	m, ok := display.At(target.Monitor)
 	if !ok {
-		return captureSource{}, fmt.Errorf("monitor %d is not one of this machine's outputs", target.Monitor)
+		return captureSource{}, text.Fail(screensharev1.TextCode_TEXT_CODE_MONITOR_NOT_ENUMERATED, text.Monitor(target.Monitor))
 	}
 	if m.Width <= 0 || m.Height <= 0 {
 		return captureSource{args: append(args, "-i", disp)}, nil
@@ -629,7 +631,7 @@ func audioDevice(a settings.AudioSource) (string, error) {
 	if device := platform.AudioSourceDevice(a.Source); device != "" {
 		return device, nil
 	}
-	return "", fmt.Errorf("audio source %q names no device to open", a.Source)
+	return "", text.Fail(screensharev1.TextCode_TEXT_CODE_AUDIO_DEVICE_UNNAMED, text.Audio(a.Source))
 }
 
 // audioMixFilters is the graph mixing every recorded source into one track,
@@ -685,11 +687,12 @@ const (
 func audioEncodeArgs(s settings.Settings) ([]string, error) {
 	a, ok := capabilities.GetAudio(s.Publish.AudioTrack())
 	if !ok {
-		return nil, fmt.Errorf("unknown audio codec %q", s.Publish.AudioTrack())
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.AudioCodec(s.Publish.AudioTrack()))
 	}
 	enc, ok := a.EncoderOn(capabilities.EngineFfmpeg)
 	if !ok {
-		return nil, fmt.Errorf("audio codec %s has no ffmpeg encoder", a.Name)
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_AUDIO_ENCODER,
+			text.Engine(capabilities.EngineFfmpeg), text.AudioCodec(a.Name))
 	}
 	return []string{
 		"-c:a", enc.Element,

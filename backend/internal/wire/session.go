@@ -198,6 +198,7 @@ func RelayStatus(s relay.Status) *screensharev1.RelayStatus {
 	assert.Assert(len(paths) == len(s.Paths), "a snapshot carries a path per path the relay reported", len(paths), len(s.Paths))
 	return &screensharev1.RelayStatus{
 		Reachable: s.Reachable,
+		Failure:   s.Failure,
 		Error:     s.Error,
 		Paths:     paths,
 	}

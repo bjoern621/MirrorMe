@@ -16,11 +16,14 @@ package release
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 )
@@ -97,7 +100,7 @@ func latestFrom(ctx context.Context, url string) (Latest, error) {
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		return Latest{}, err
+		return Latest{}, text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(url))
 	}
 	// The forge serves a stable shape under this media type and reserves the right to change
 	// what it answers without one.
@@ -105,20 +108,21 @@ func latestFrom(ctx context.Context, url string) (Latest, error) {
 
 	response, err := http.DefaultClient.Do(request)
 	if err != nil {
-		return Latest{}, err
+		return Latest{}, text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNANSWERED, text.Address(url))
 	}
 	defer func() { _ = response.Body.Close() }()
 
 	if response.StatusCode != http.StatusOK {
-		return Latest{}, fmt.Errorf("the release service answered %s", response.Status)
+		return Latest{}, text.Because(errors.New(response.Status), screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWERED,
+			text.Address(url))
 	}
 
 	var latest Latest
 	if err := json.NewDecoder(response.Body).Decode(&latest); err != nil {
-		return Latest{}, fmt.Errorf("the release answer did not decode: %w", err)
+		return Latest{}, text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(url))
 	}
 	if latest.Tag == "" {
-		return Latest{}, fmt.Errorf("the release answer names no tag")
+		return Latest{}, text.Fail(screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(url))
 	}
 	return latest, nil
 }

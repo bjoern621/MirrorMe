@@ -5,13 +5,15 @@ import (
 	"crypto/rand"
 	"crypto/subtle"
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"net"
 	"net/http"
 	"net/url"
 	"strconv"
 	"time"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
@@ -43,7 +45,7 @@ const linkNonceBytes = 32
 func (a *App) LinkDiscord(ctx context.Context, relay settings.Relay) error {
 	base, ok := relay.DiscordService()
 	if !ok {
-		return errors.New("Discord is linked through the relay's manager, and no relay is named to reach one at")
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
 	}
 
 	nonce, err := drawLinkNonce()
@@ -53,7 +55,7 @@ func (a *App) LinkDiscord(ctx context.Context, relay settings.Relay) error {
 
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
-		return fmt.Errorf("no loopback port for the link to land on: %v", err)
+		return text.Because(err, screensharev1.TextCode_TEXT_CODE_LOOPBACK_PORT_UNAVAILABLE)
 	}
 	defer listener.Close()
 	port := listener.Addr().(*net.TCPAddr).Port
@@ -67,14 +69,14 @@ func (a *App) LinkDiscord(ctx context.Context, relay settings.Relay) error {
 
 	start := base + "/link?port=" + strconv.Itoa(port) + "&nonce=" + url.QueryEscape(nonce)
 	if err := openInShell(start); err != nil {
-		return fmt.Errorf("the browser did not open for the link: %v", err)
+		return text.Because(err, screensharev1.TextCode_TEXT_CODE_BROWSER_UNOPENED)
 	}
 
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
 	case <-time.After(linkWindow):
-		return errors.New("nothing came back from the browser within five minutes: start the link again")
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_DISCORD_LINK_TIMED_OUT, text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_TIMEOUT_MS, linkWindow.Milliseconds()))
 	case link := <-landed:
 		a.storeDiscordLink(link)
 		logger.Infof("Discord is linked as %s", link.account)
@@ -99,7 +101,7 @@ type landedLink struct {
 func drawLinkNonce() (string, error) {
 	raw := make([]byte, linkNonceBytes)
 	if _, err := rand.Read(raw); err != nil {
-		return "", fmt.Errorf("no nonce could be drawn for the link: %v", err)
+		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_RANDOM_UNAVAILABLE)
 	}
 	// URL-safe alphabet, the nonce travelling as a query parameter in both directions.
 	return base64.RawURLEncoding.EncodeToString(raw), nil
@@ -157,7 +159,7 @@ func (a *App) storeDiscordLink(link landedLink) {
 func (a *App) UnlinkDiscord() error {
 	// The zero link is the unlinked state: no secret, and no account to label one.
 	if err := a.writeDiscordLink(landedLink{}); err != nil {
-		return fmt.Errorf("the settings file keeps the link, so it returns on the next start: %v", err)
+		return err
 	}
 	return nil
 }

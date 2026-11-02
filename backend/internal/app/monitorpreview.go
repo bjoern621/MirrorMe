@@ -167,7 +167,7 @@ func (a *App) SubscribeMonitorFrames(monitor int) (decode.Subscription, error) {
 	a.procMu.Unlock()
 
 	if !present {
-		return nil, fmt.Errorf("nothing is previewing monitor %d", monitor)
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_MONITOR_NOT_PREVIEWING, text.Monitor(monitor))
 	}
 	return receiver.Subscribe()
 }

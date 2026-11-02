@@ -5,6 +5,9 @@ import (
 	"net"
 	"strconv"
 
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
+
 	"bjoernblessin.de/go-utils/util/assert"
 
 	"bjoernblessin.de/screenshare/internal/capabilities"
@@ -129,7 +132,7 @@ func PreviewCarried(codec string) (format string, carried bool) {
 func AllocatePreviewPort() (int, error) {
 	conn, err := net.ListenUDP("udp", &net.UDPAddr{IP: net.ParseIP(previewHost), Port: 0})
 	if err != nil {
-		return 0, fmt.Errorf("cannot allocate a loopback port for the local preview: %w", err)
+		return 0, text.Because(err, screensharev1.TextCode_TEXT_CODE_LOOPBACK_PORT_UNAVAILABLE)
 	}
 	defer conn.Close()
 
@@ -160,11 +163,11 @@ func PreviewSource(codec string, port int) (string, error) {
 
 	c, ok := capabilities.Get(codec)
 	if !ok {
-		return "", fmt.Errorf("unknown codec %q", codec)
+		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(codec))
 	}
 	carriage, ok := previewCarriages[c.Format]
 	if !ok {
-		return "", fmt.Errorf("%s produces %s, which has no local preview leg", codec, c.Format)
+		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_PREVIEW_HAS_NO_LEG, text.Codec(codec), text.Format(c.Format))
 	}
 
 	caps := fmt.Sprintf("application/x-rtp,media=video,clock-rate=%d,encoding-name=%s,payload=%d",
@@ -189,11 +192,11 @@ func gstPreviewTap(codec string, preview PreviewLeg) ([]string, error) {
 
 	c, ok := capabilities.Get(codec)
 	if !ok {
-		return nil, fmt.Errorf("unknown codec %q", codec)
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(codec))
 	}
 	carriage, ok := previewCarriages[c.Format]
 	if !ok {
-		return nil, fmt.Errorf("%s produces %s, which has no local preview leg", codec, c.Format)
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_PREVIEW_HAS_NO_LEG, text.Codec(codec), text.Format(c.Format))
 	}
 
 	tap := []string{"queue", "max-size-buffers=8", "leaky=downstream", "!"}

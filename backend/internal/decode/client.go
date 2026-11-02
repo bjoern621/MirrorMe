@@ -1,8 +1,10 @@
 package decode
 
 import (
-	"errors"
 	"sync"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
@@ -19,10 +21,10 @@ const Subcommand = "decode-host"
 // errNoHost is every call that names a decode while no host runs.
 // A host that is not running holds no decode, so a stop and a read both answer through it rather
 // than starting one.
-var errNoHost = errors.New("no decode host is running")
+var errNoHost = text.Fail(screensharev1.TextCode_TEXT_CODE_DECODE_HOST_DOWN)
 
 // errShutDown is every call after Close, which the process exiting is the ordinary cause of.
-var errShutDown = errors.New("the decode host is shut down")
+var errShutDown = text.Fail(screensharev1.TextCode_TEXT_CODE_DECODE_HOST_DOWN)
 
 // Client runs the decode host and addresses the decodes on it.
 //
@@ -102,9 +104,9 @@ func (c *Client) Open(id ID, st receive.Stream, open receive.Open, ev Events) (*
 		c.forget(id)
 		return nil, err
 	}
-	if res.Err != "" {
+	if res.Fail != nil {
 		c.forget(id)
-		return nil, errors.New(res.Err)
+		return nil, res.Fail.err()
 	}
 	return &Handle{client: c, id: id, toneMap: res.ToneMap}, nil
 }
@@ -124,8 +126,8 @@ func (c *Client) SetAudio(id ID, volume float64, muted bool) error {
 	if err != nil {
 		return err
 	}
-	if res.Err != "" {
-		return errors.New(res.Err)
+	if res.Fail != nil {
+		return res.Fail.err()
 	}
 	return nil
 }

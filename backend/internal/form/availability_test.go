@@ -876,7 +876,7 @@ func TestAWatchKnobAReceiverReadsIsShown(t *testing.T) {
 
 // RTSPS wraps the control connection alone, so RTP over UDP travels beside it in the clear
 // whichever end negotiated the session.
-// Both legs refuse it once asked (transport.RTSP, ValidatePublishSettings and SetWatchOption),
+// Both legs refuse it once asked (transport.RTSP, ValidatePublishSettings),
 // so a control offering the value on either leg offers a refusal.
 //
 // The defect this locks out was the watch field carrying no option rule:

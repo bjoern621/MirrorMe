@@ -63,13 +63,9 @@ func (a *App) testStreamEnded(i int, slot *testStream, err error, stderrTail str
 	message := ""
 	var cause *screensharev1.Text
 	if err != nil {
-		message = err.Error()
-		if stderrTail != "" {
-			message += "\n" + stderrTail
-		}
 		// Read before the lock, the membership snapshot being written by the poll,
 		// rather than by anything holding procMu.
-		cause = a.membership().failure()
+		cause, message = exitFailure(err, stderrTail, a.membership().failure())
 	}
 
 	a.procMu.Lock()
@@ -164,8 +160,12 @@ func (a *App) fireTestStreamRetry(i int, slot *testStream) {
 			line = logger.Warnf
 		}
 		line("relaunch %d of test stream %s did not start: %v", slot.attempts, testStreamName(i), err)
-		// The child never started, so its own words are the launch failure and no run log carries them.
-		a.armTestStreamLocked(i, slot.attempts, slot.cause, err.Error(), "")
+		// The child never started, so the launch failure stands in for its words and no run log carries them.
+		cause, words := exitFailure(err, "", nil)
+		if cause == nil {
+			cause = slot.cause
+		}
+		a.armTestStreamLocked(i, slot.attempts, cause, words, "")
 	}
 	a.procMu.Unlock()
 

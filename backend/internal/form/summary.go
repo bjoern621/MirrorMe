@@ -2,6 +2,7 @@ package form
 
 import (
 	"bjoernblessin.de/go-utils/util/assert"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
 
@@ -21,16 +22,16 @@ import (
 // in is laid out, and the values are on Form.settings for a surface to compose
 // its own at its own width (api/proto/screenshare/v1/form.proto).
 func summarize(_ Deps, s settings.Settings, est *screensharev1.Estimate) *screensharev1.Summary {
-	command, reason := formCommand(s)
+	command, refusal := formCommand(s)
 
 	sum := &screensharev1.Summary{
-		Command:      command,
-		CommandError: reason,
-		Estimate:     est,
+		Command:        command,
+		CommandRefusal: refusal,
+		Estimate:       est,
 	}
 
-	assert.Assert((sum.GetCommand() == "") != (sum.GetCommandError() == ""),
-		"a summary carries a command or the reason there is none", sum.GetCommand(), sum.GetCommandError())
+	assert.Assert((sum.GetCommand() == "") != (sum.GetCommandRefusal() == nil),
+		"a summary carries a command or the reason there is none", sum.GetCommand())
 	return sum
 }
 
@@ -44,15 +45,12 @@ func summarize(_ Deps, s settings.Settings, est *screensharev1.Estimate) *screen
 // It does read this machine, the X display, the monitor list and the render nodes,
 // since those reads are what refuse a command the button beside it would refuse.
 //
-// The reason crosses as prose, one of the few places
-// on this contract where a sentence rather than a code does.
-// An operational failure rather than a fact about the domain:
-// the same text crosses as a gRPC status once the publish is attempted, it is shown verbatim,
-// and nothing matches against it (docs/ipc-api.md, "Errors").
-func formCommand(s settings.Settings) (command string, reason string) {
+// The refusal is the one a start of these settings meets (docs/ipc-api.md, "Errors").
+func formCommand(s settings.Settings) (command string, refusal *screensharev1.Refusal) {
 	cmd, err := publish.Command(s)
 	if err != nil {
-		return "", err.Error()
+		statement, words := text.Statement(err)
+		return "", &screensharev1.Refusal{Text: statement, Message: words}
 	}
-	return cmd, ""
+	return cmd, nil
 }

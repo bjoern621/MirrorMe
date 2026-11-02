@@ -15,6 +15,9 @@ import (
 	"runtime"
 	"unsafe"
 
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
+
 	"github.com/go-gst/go-gst/pkg/gst"
 
 	"bjoernblessin.de/go-utils/util/assert"
@@ -93,7 +96,7 @@ func onSample(sample *gst.Sample, run func(sample unsafe.Pointer, fault *C.char,
 	runtime.KeepAlive(sample)
 
 	if ok == 0 {
-		return errors.New(reason(fault))
+		return text.Because(errors.New(reason(fault)), screensharev1.TextCode_TEXT_CODE_FRAMES_UNSHARED)
 	}
 	return nil
 }
@@ -128,7 +131,7 @@ func (s *dmabufSharer) open(sample *gst.Sample, slots int) (Pool, error) {
 		fd := int(s.pool.fds[i])
 		if fd < 0 {
 			s.close()
-			return Pool{}, fmt.Errorf("this machine exports no dmabuf for slot %d of a GL frame", i)
+			return Pool{}, text.Fail(screensharev1.TextCode_TEXT_CODE_FRAMES_NO_DMABUF)
 		}
 		descriptors = append(descriptors, fd)
 	}
@@ -169,7 +172,7 @@ func (s *dmabufSharer) open(sample *gst.Sample, slots int) (Pool, error) {
 
 func (s *dmabufSharer) write(slot int, sample *gst.Sample) error {
 	if !s.opened {
-		return errors.New("no pool has been opened for these frames")
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_FRAMES_UNSHARED)
 	}
 
 	return onSample(sample, func(frame unsafe.Pointer, fault *C.char, size C.int) C.int {
@@ -204,8 +207,7 @@ func shareFormat(fourcc uint32) (ShareFormat, error) {
 	case drmFormatARGB8888:
 		return ShareFormatBGRA, nil
 	default:
-		return "", fmt.Errorf("the frames arrived in %s, which is a pixel format no window here imports",
-			fourccName(fourcc))
+		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_FRAMES_FORMAT_UNIMPORTABLE, text.Format(fourccName(fourcc)))
 	}
 }
 

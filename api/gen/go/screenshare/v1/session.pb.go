@@ -593,8 +593,11 @@ type RelayStatus struct {
 	// Whether the relay answered.
 	// An unreachable relay is an environment condition:
 	// the snapshot arrives, says so, and carries the reason.
-	Reachable     bool         `protobuf:"varint,1,opt,name=reachable,proto3" json:"reachable,omitempty"`
-	Error         string       `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	Reachable bool `protobuf:"varint,1,opt,name=reachable,proto3" json:"reachable,omitempty"`
+	// The network's or the relay's own words behind failure, raw (text.proto).
+	Error string `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	// Why the relay is unreachable, absent while it answers.
+	Failure       *Text        `protobuf:"bytes,4,opt,name=failure,proto3" json:"failure,omitempty"`
 	Paths         []*RelayPath `protobuf:"bytes,3,rep,name=paths,proto3" json:"paths,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -642,6 +645,13 @@ func (x *RelayStatus) GetError() string {
 		return x.Error
 	}
 	return ""
+}
+
+func (x *RelayStatus) GetFailure() *Text {
+	if x != nil {
+		return x.Failure
+	}
+	return nil
 }
 
 func (x *RelayStatus) GetPaths() []*RelayPath {
@@ -1511,10 +1521,11 @@ const file_screenshare_v1_session_proto_rawDesc = "" +
 	"\x06format\x18\x04 \x01(\tR\x06format\x12\x18\n" +
 	"\areaders\x18\x05 \x01(\x05R\areaders\x12\x17\n" +
 	"\ain_mbps\x18\x06 \x01(\x01R\x06inMbps\x12@\n" +
-	"\rreader_roster\x18\a \x03(\v2\x1b.screenshare.v1.RelayReaderR\freaderRosterJ\x04\b\b\x10\tR\bown_name\"r\n" +
+	"\rreader_roster\x18\a \x03(\v2\x1b.screenshare.v1.RelayReaderR\freaderRosterJ\x04\b\b\x10\tR\bown_name\"\xa2\x01\n" +
 	"\vRelayStatus\x12\x1c\n" +
 	"\treachable\x18\x01 \x01(\bR\treachable\x12\x14\n" +
-	"\x05error\x18\x02 \x01(\tR\x05error\x12/\n" +
+	"\x05error\x18\x02 \x01(\tR\x05error\x12.\n" +
+	"\afailure\x18\x04 \x01(\v2\x14.screenshare.v1.TextR\afailure\x12/\n" +
 	"\x05paths\x18\x03 \x03(\v2\x19.screenshare.v1.RelayPathR\x05paths\"V\n" +
 	"\tStreamRef\x12\x1f\n" +
 	"\vstream_name\x18\x03 \x01(\tR\n" +
@@ -1597,23 +1608,24 @@ var file_screenshare_v1_session_proto_goTypes = []any{
 var file_screenshare_v1_session_proto_depIdxs = []int32{
 	14, // 0: screenshare.v1.PublishState.live:type_name -> screenshare.v1.PublishState.Live
 	3,  // 1: screenshare.v1.RelayPath.reader_roster:type_name -> screenshare.v1.RelayReader
-	4,  // 2: screenshare.v1.RelayStatus.paths:type_name -> screenshare.v1.RelayPath
-	6,  // 3: screenshare.v1.AudioLevel.stream:type_name -> screenshare.v1.StreamRef
-	7,  // 4: screenshare.v1.AudioLevels.levels:type_name -> screenshare.v1.AudioLevel
-	0,  // 5: screenshare.v1.UpdateState.stage:type_name -> screenshare.v1.UpdateStage
-	15, // 6: screenshare.v1.UpdateState.unchecked:type_name -> screenshare.v1.Text
-	15, // 7: screenshare.v1.UpdateState.uninstallable:type_name -> screenshare.v1.Text
-	15, // 8: screenshare.v1.UpdateState.failure:type_name -> screenshare.v1.Text
-	15, // 9: screenshare.v1.PublishState.Retry.cause:type_name -> screenshare.v1.Text
-	16, // 10: screenshare.v1.PublishState.Live.publish:type_name -> screenshare.v1.PublishSettings
-	17, // 11: screenshare.v1.PublishState.Live.relay:type_name -> screenshare.v1.RelaySettings
-	12, // 12: screenshare.v1.PublishState.Live.retry:type_name -> screenshare.v1.PublishState.Retry
-	13, // 13: screenshare.v1.PublishState.Live.preview:type_name -> screenshare.v1.PublishState.Preview
-	14, // [14:14] is the sub-list for method output_type
-	14, // [14:14] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	15, // 2: screenshare.v1.RelayStatus.failure:type_name -> screenshare.v1.Text
+	4,  // 3: screenshare.v1.RelayStatus.paths:type_name -> screenshare.v1.RelayPath
+	6,  // 4: screenshare.v1.AudioLevel.stream:type_name -> screenshare.v1.StreamRef
+	7,  // 5: screenshare.v1.AudioLevels.levels:type_name -> screenshare.v1.AudioLevel
+	0,  // 6: screenshare.v1.UpdateState.stage:type_name -> screenshare.v1.UpdateStage
+	15, // 7: screenshare.v1.UpdateState.unchecked:type_name -> screenshare.v1.Text
+	15, // 8: screenshare.v1.UpdateState.uninstallable:type_name -> screenshare.v1.Text
+	15, // 9: screenshare.v1.UpdateState.failure:type_name -> screenshare.v1.Text
+	15, // 10: screenshare.v1.PublishState.Retry.cause:type_name -> screenshare.v1.Text
+	16, // 11: screenshare.v1.PublishState.Live.publish:type_name -> screenshare.v1.PublishSettings
+	17, // 12: screenshare.v1.PublishState.Live.relay:type_name -> screenshare.v1.RelaySettings
+	12, // 13: screenshare.v1.PublishState.Live.retry:type_name -> screenshare.v1.PublishState.Retry
+	13, // 14: screenshare.v1.PublishState.Live.preview:type_name -> screenshare.v1.PublishState.Preview
+	15, // [15:15] is the sub-list for method output_type
+	15, // [15:15] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_screenshare_v1_session_proto_init() }

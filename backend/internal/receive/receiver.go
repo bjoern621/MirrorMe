@@ -2,10 +2,12 @@ package receive
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"github.com/go-gst/go-glib/pkg/gobject/v2"
 	"github.com/go-gst/go-gst/pkg/gst"
@@ -190,18 +192,14 @@ func New(st Stream, open Open, ev Events) (*Receiver, error) {
 
 	el, err := gst.ParseLaunch(desc)
 	if err != nil {
-		return nil, fmt.Errorf("stream %q: %w", st.Name, err)
+		return nil, text.Because(err, screensharev1.TextCode_TEXT_CODE_RECEIVE_PIPELINE_UNBUILT, text.Stream(st.Name))
 	}
 	pipeline, ok := el.(gst.Pipeline)
-	if !ok {
-		return nil, fmt.Errorf("stream %q: parse did not yield a pipeline", st.Name)
-	}
+	assert.Assert(ok, "a receive description parses to a pipeline", st.Name)
 	// One type assertion for two failures: a pipeline that grew no sink at all yields
 	// a nil element, which is not an appsink either.
 	sink, ok := pipeline.GetByName(sinkName).(gstapp.AppSink)
-	if !ok {
-		return nil, fmt.Errorf("stream %q: no appsink named %s in the pipeline", st.Name, sinkName)
-	}
+	assert.Assert(ok, "a receive description names its appsink", st.Name, sinkName)
 	// A shader holds the newlines its preprocessor directives need and quotes the launch
 	// parser reads as syntax, so a rung's own conversion is set as a property rather than
 	// written into the line.

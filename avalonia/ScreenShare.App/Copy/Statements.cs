@@ -719,7 +719,7 @@ public static class Statements
 
             // A refusal, or a backend newer than this build.
             // An unknown code is printed so it can be searched for and reported.
-            _ => Refusals.Of(text) ?? text.Code.ToString(),
+            _ => Refusals.Of(text) ?? Failures.Of(text) ?? text.Code.ToString(),
         };
     }
 
@@ -898,6 +898,22 @@ public static class Statements
         public IReadOnlyList<string> Transports => Ids(TextArgName.Transports);
 
         public IReadOnlyList<string> AudioCodecs => Ids(TextArgName.AudioCodecs);
+
+        /// <summary>Render nodes a machine carries: "/dev/dri/renderD128".</summary>
+        public IReadOnlyList<string> Devices => Ids(TextArgName.Devices);
+
+        /// <summary>Executable as the app looks it up: "ffmpeg", "gst-launch-1.0".</summary>
+        public string Program => Id(TextArgName.Program);
+
+        /// <summary>Address the app dialled, any secret in it already redacted.</summary>
+        public string Address => Id(TextArgName.Address);
+
+        /// <summary>Encoder element property, as GStreamer names it: "bitrate".</summary>
+        public string Property => Id(TextArgName.Property);
+
+        public string Transfer => Id(TextArgName.Transfer);
+
+        public long TimeoutMs => Num(TextArgName.TimeoutMs);
 
         public IReadOnlyList<string> DecodeFamilies => Ids(TextArgName.DecodeFamilies);
 

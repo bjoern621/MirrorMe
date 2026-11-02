@@ -1018,8 +1018,11 @@ func (x *FrameReady) GetDropped() uint64 {
 // repeated on the call that was consuming the frames,
 // because a consumer blocked on this read learns nothing from an event it is not the one reading.
 type FrameEnd struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The pipeline's or the host's own words, raw (text.proto).
+	Message string `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	// Why the subscription ended, absent where the words are all there is.
+	Cause         *Text `protobuf:"bytes,2,opt,name=cause,proto3" json:"cause,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1061,11 +1064,18 @@ func (x *FrameEnd) GetMessage() string {
 	return ""
 }
 
+func (x *FrameEnd) GetCause() *Text {
+	if x != nil {
+		return x.Cause
+	}
+	return nil
+}
+
 var File_screenshare_v1_frame_proto protoreflect.FileDescriptor
 
 const file_screenshare_v1_frame_proto_rawDesc = "" +
 	"\n" +
-	"\x1ascreenshare/v1/frame.proto\x12\x0escreenshare.v1\x1a\x1cscreenshare/v1/session.proto\"\xd8\x01\n" +
+	"\x1ascreenshare/v1/frame.proto\x12\x0escreenshare.v1\x1a\x1cscreenshare/v1/session.proto\x1a\x19screenshare/v1/text.proto\"\xd8\x01\n" +
 	"\rFramesRequest\x12>\n" +
 	"\tsubscribe\x18\x01 \x01(\v2\x1e.screenshare.v1.FrameSubscribeH\x00R\tsubscribe\x128\n" +
 	"\arelease\x18\x02 \x01(\v2\x1c.screenshare.v1.FrameReleaseH\x00R\arelease\x12B\n" +
@@ -1128,9 +1138,10 @@ const file_screenshare_v1_frame_proto_rawDesc = "" +
 	"generation\x12\x12\n" +
 	"\x04slot\x18\x02 \x01(\rR\x04slot\x12\x16\n" +
 	"\x06serial\x18\x03 \x01(\x04R\x06serial\x12\x18\n" +
-	"\adropped\x18\x04 \x01(\x04R\adropped\"$\n" +
+	"\adropped\x18\x04 \x01(\x04R\adropped\"P\n" +
 	"\bFrameEnd\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage*\x80\x01\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage\x12*\n" +
+	"\x05cause\x18\x02 \x01(\v2\x14.screenshare.v1.TextR\x05cause*\x80\x01\n" +
 	"\x0fFrameHandleType\x12!\n" +
 	"\x1dFRAME_HANDLE_TYPE_UNSPECIFIED\x10\x00\x12)\n" +
 	"%FRAME_HANDLE_TYPE_D3D11_GLOBAL_SHARED\x10\x01\x12\x1f\n" +
@@ -1172,6 +1183,7 @@ var file_screenshare_v1_frame_proto_goTypes = []any{
 	(*FrameReady)(nil),      // 12: screenshare.v1.FrameReady
 	(*FrameEnd)(nil),        // 13: screenshare.v1.FrameEnd
 	(*StreamRef)(nil),       // 14: screenshare.v1.StreamRef
+	(*Text)(nil),            // 15: screenshare.v1.Text
 }
 var file_screenshare_v1_frame_proto_depIdxs = []int32{
 	3,  // 0: screenshare.v1.FramesRequest.subscribe:type_name -> screenshare.v1.FrameSubscribe
@@ -1187,13 +1199,14 @@ var file_screenshare_v1_frame_proto_depIdxs = []int32{
 	1,  // 10: screenshare.v1.FramePool.format:type_name -> screenshare.v1.FrameFormat
 	10, // 11: screenshare.v1.FramePool.slots:type_name -> screenshare.v1.FrameSlot
 	11, // 12: screenshare.v1.FrameSlot.planes:type_name -> screenshare.v1.FramePlane
-	2,  // 13: screenshare.v1.FrameService.Frames:input_type -> screenshare.v1.FramesRequest
-	8,  // 14: screenshare.v1.FrameService.Frames:output_type -> screenshare.v1.FrameEvent
-	14, // [14:15] is the sub-list for method output_type
-	13, // [13:14] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	15, // 13: screenshare.v1.FrameEnd.cause:type_name -> screenshare.v1.Text
+	2,  // 14: screenshare.v1.FrameService.Frames:input_type -> screenshare.v1.FramesRequest
+	8,  // 15: screenshare.v1.FrameService.Frames:output_type -> screenshare.v1.FrameEvent
+	15, // [15:16] is the sub-list for method output_type
+	14, // [14:15] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_screenshare_v1_frame_proto_init() }
@@ -1202,6 +1215,7 @@ func file_screenshare_v1_frame_proto_init() {
 		return
 	}
 	file_screenshare_v1_session_proto_init()
+	file_screenshare_v1_text_proto_init()
 	file_screenshare_v1_frame_proto_msgTypes[0].OneofWrappers = []any{
 		(*FramesRequest_Subscribe)(nil),
 		(*FramesRequest_Release)(nil),

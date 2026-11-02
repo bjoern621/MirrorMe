@@ -4,6 +4,9 @@ import (
 	"strings"
 	"testing"
 
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
+
 	"bjoernblessin.de/screenshare/internal/capabilities"
 	"bjoernblessin.de/screenshare/internal/gpupath"
 	"bjoernblessin.de/screenshare/internal/settings"
@@ -151,7 +154,17 @@ func TestAPathWithNoConversionRefusesAScaledRun(t *testing.T) {
 	if err == nil {
 		t.Fatal("a scaled run was accepted on a device path with no filter on it")
 	}
-	if !strings.Contains(err.Error(), "1280x720") {
-		t.Errorf("the refusal reads %q, which does not name the size that was asked for", err)
+	statement, _ := text.Statement(err)
+	var width, height int64
+	for _, arg := range statement.GetArgs() {
+		switch arg.GetName() {
+		case screensharev1.TextArgName_TEXT_ARG_NAME_WIDTH:
+			width = arg.GetNumber()
+		case screensharev1.TextArgName_TEXT_ARG_NAME_HEIGHT:
+			height = arg.GetNumber()
+		}
+	}
+	if width != 1280 || height != 720 {
+		t.Errorf("the refusal names %dx%d, want the size that was asked for", width, height)
 	}
 }

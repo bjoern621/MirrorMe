@@ -5,9 +5,9 @@
 // Wording, clause order and the short form against the long one are the shell's,
 // so a rule that greys a control states what is true and nothing about how it reads.
 //
-// A string outside this app's vocabulary stays raw rather than crossing as a statement:
-// Summary.command, Summary.command_error, ExitInfo.message, RelayStatus.error.
-// Each is shown verbatim and never matched against.
+// A failure crosses as a statement with a third party's words beside it, raw:
+// Refusal.message, ExitInfo.message, RelayStatus.error.
+// Those words and Summary.command are shown verbatim and never matched against.
 //
 // Every constructor asserts what the value it carries has to be.
 // An empty identifier or a placeholder figure renders as a sentence with a hole in it,

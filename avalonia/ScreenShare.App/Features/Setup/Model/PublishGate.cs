@@ -1,5 +1,6 @@
 using ScreenShare.Api.V1;
 using ScreenShare.App.Contracts;
+using ScreenShare.App.Copy;
 
 namespace ScreenShare.App.Features.Setup.Model;
 
@@ -152,10 +153,10 @@ public sealed record PublishGate
 
         if (!relay.Reachable)
         {
-            // Relay's own words where it gave any.
-            // Zero snapshot the backend opens on carries none: a relay nothing reached, not one that refused.
-            return relay.Error.Length > 0
-                ? relay.Error
+            // Zero snapshot that the backend opens on carries no failure: a relay that nothing reached yet.
+            var why = Failures.Of(relay.Failure, relay.Error);
+            return why.Length > 0
+                ? why
                 : "The relay could not be reached, so there is nothing to publish to.";
         }
 

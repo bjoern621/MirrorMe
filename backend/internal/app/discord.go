@@ -2,9 +2,11 @@ package app
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/logger"
 
@@ -284,14 +286,14 @@ func (a *App) withBrokered(s settings.Settings) settings.Settings {
 }
 
 // errDiscordUnlinked refuses a command while no link secret is set.
-var errDiscordUnlinked = errors.New("Discord mode is on but this computer is not linked: link Discord in Settings")
+var errDiscordUnlinked = text.Fail(screensharev1.TextCode_TEXT_CODE_DISCORD_NOT_LINKED)
 
 // errNoVoiceChannel refuses a command while the linked account stands in no voice channel.
-var errNoVoiceChannel = errors.New("not in a voice channel: join one in Discord to get a group")
+var errNoVoiceChannel = text.Fail(screensharev1.TextCode_TEXT_CODE_DISCORD_NO_VOICE_CHANNEL)
 
 // errLinkRefused refuses a command while the manager declines the link the settings hold.
 // A channel clears nothing here, so the refusal names the link instead.
-var errLinkRefused = errors.New("the Discord manager does not recognize this computer's link: link Discord again in Settings")
+var errLinkRefused = text.Fail(screensharev1.TextCode_TEXT_CODE_DISCORD_LINK_REFUSED)
 
 // discordSettingsForCommand is settingsForCommand's Discord half:
 // the token is brokered by the manager, and the brokered facts ride the same copy.
@@ -303,7 +305,7 @@ var errLinkRefused = errors.New("the Discord manager does not recognize this com
 func (a *App) discordSettingsForCommand(s settings.Settings) (settings.Settings, error) {
 	base, ok := s.Relay.DiscordService()
 	if !ok {
-		return s, errors.New("Discord mode is served by a manager, and no relay is named to reach one at")
+		return s, text.Fail(screensharev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
 	}
 	if s.Relay.DiscordLink == "" {
 		return s, errDiscordUnlinked
@@ -318,10 +320,10 @@ func (a *App) discordSettingsForCommand(s settings.Settings) (settings.Settings,
 
 	token, prefix, err := a.discord.Token(base, s.Relay.DiscordLink)
 	if err != nil {
-		return s, fmt.Errorf("no relay token for this channel's group: %w", err)
+		return s, text.Because(err, screensharev1.TextCode_TEXT_CODE_RELAY_TOKEN_UNDRAWN)
 	}
 	if prefix != d.Prefix {
-		return s, fmt.Errorf("the channel's group moved between two reads: try again in a moment")
+		return s, text.Fail(screensharev1.TextCode_TEXT_CODE_GROUP_MOVED)
 	}
 
 	s.Relay = s.Relay.WithBrokeredGroup(d.Prefix, d.SrtPassphrase, d.DisplayName)

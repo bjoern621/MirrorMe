@@ -25,10 +25,15 @@ package encoderate
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"strings"
 	"time"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
@@ -132,7 +137,7 @@ func Measure(ctx context.Context, s settings.Settings, width, height int) (Rate,
 	assert.IsNotNil(ctx, "a measurement runs under a context")
 
 	if width <= 0 || height <= 0 {
-		return Rate{}, fmt.Errorf("the encode rate is measured at the captured picture size, and this machine reports none for monitor %d", s.Publish.Monitor)
+		return Rate{}, text.Fail(screensharev1.TextCode_TEXT_CODE_MONITOR_NOT_ENUMERATED, text.Monitor(s.Publish.Monitor))
 	}
 
 	engine, err := publish.EngineFor(s.Publish.Capture)
@@ -144,7 +149,7 @@ func Measure(ctx context.Context, s settings.Settings, width, height int) (Rate,
 
 	exe, err := probe.exe()
 	if err != nil {
-		return Rate{}, fmt.Errorf("the %s publish engine cannot be timed here: %w", engine, err)
+		return Rate{}, err
 	}
 
 	ctx, cancel := context.WithTimeout(ctx, measureTimeout)
@@ -282,9 +287,9 @@ func run(ctx context.Context, exe string, env []string, args []string) (time.Dur
 	elapsed := time.Since(start)
 	if err != nil {
 		if ctx.Err() != nil {
-			return 0, fmt.Errorf("the encode probe did not finish within %s: these settings encode slower than the measurement allows for", measureTimeout)
+			return 0, text.Fail(screensharev1.TextCode_TEXT_CODE_ENCODE_PROBE_TIMED_OUT, text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_TIMEOUT_MS, measureTimeout.Milliseconds()))
 		}
-		return 0, fmt.Errorf("the encode probe failed: %w: %s", err, out)
+		return 0, text.Because(probeWords(err, out), screensharev1.TextCode_TEXT_CODE_PROGRAM_EXITED, text.Program(filepath.Base(cmd.Path)))
 	}
 	return elapsed, nil
 }
@@ -298,10 +303,18 @@ func rate(frames int, elapsed time.Duration) (float64, error) {
 	assert.Assert(frames > 0, "a rate counts at least one frame", frames)
 
 	if elapsed <= 0 {
-		return 0, fmt.Errorf("the encode probe finished with no measurable time in it")
+		return 0, text.Fail(screensharev1.TextCode_TEXT_CODE_MEASURE_HAS_NO_TIME)
 	}
 
 	fps := float64(frames) / elapsed.Seconds()
 	assert.Assert(fps > 0, "a rate over measurable time is positive", fps, frames, elapsed)
 	return fps, nil
+}
+
+// probeWords is what a failed probe said, its own output where it wrote any.
+func probeWords(err error, out []byte) error {
+	if said := strings.TrimSpace(string(out)); said != "" {
+		return errors.New(said)
+	}
+	return err
 }

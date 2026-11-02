@@ -3,10 +3,12 @@ package settings
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 )
@@ -57,7 +59,7 @@ func writeStore(path string, data []byte) error {
 	// a file the mode could not be taken off is a secret readable by every local user,
 	// so it is not renamed into place at all.
 	if err := os.Chmod(tmp.Name(), storeFileMode); err != nil {
-		return fmt.Errorf("cannot restrict %s to its owner: %w", path, err)
+		return text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNWRITABLE, text.Path(path))
 	}
 	return os.Rename(tmp.Name(), path)
 }
@@ -73,12 +75,12 @@ func writeStore(path string, data []byte) error {
 func configDir() (string, error) {
 	base, err := os.UserConfigDir()
 	if err != nil {
-		return "", fmt.Errorf("cannot determine user config directory: %w", err)
+		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_CONFIG_DIR_UNKNOWN)
 	}
 
 	dir := filepath.Join(base, configDirName)
 	if err := os.MkdirAll(dir, configDirMode); err != nil {
-		return "", fmt.Errorf("cannot create config directory %s: %w", dir, err)
+		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNWRITABLE, text.Path(dir))
 	}
 
 	assert.Assert(dir != "", "a resolved config directory is a path", base)
@@ -113,12 +115,12 @@ func setAside(path string, cause error) error {
 
 	kept := path + corruptSuffix
 	if _, err := os.Stat(kept); err == nil {
-		return &StoreUnreadable{Kept: kept, cause: fmt.Errorf("%w - %s holds an earlier unreadable copy and is left untouched", cause, kept)}
+		return &StoreUnreadable{Kept: kept, cause: cause}
 	}
 	if err := os.Rename(path, kept); err != nil {
-		return &StoreUnreadable{cause: fmt.Errorf("%w - moving it to %s failed: %v", cause, kept, err)}
+		return &StoreUnreadable{cause: errors.Join(cause, err)}
 	}
-	return &StoreUnreadable{Kept: kept, cause: fmt.Errorf("%w - it was moved to %s, so the values in it survive the next write", cause, kept)}
+	return &StoreUnreadable{Kept: kept, cause: cause}
 }
 
 // StoreUnreadable is a store file that could not be used, and where the values in it went.
@@ -157,12 +159,12 @@ func Load() (Settings, error) {
 		return Defaults(), nil
 	}
 	if err != nil {
-		return Defaults(), setAside(path, fmt.Errorf("cannot read settings file %s: %w", path, err))
+		return Defaults(), setAside(path, text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNREADABLE, text.Path(path)))
 	}
 
 	s := Defaults()
 	if err := json.Unmarshal(data, &s); err != nil {
-		return Defaults(), setAside(path, fmt.Errorf("settings file %s is corrupt: %w", path, err))
+		return Defaults(), setAside(path, text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_CORRUPT, text.Path(path)))
 	}
 	// A file written before the three groups carries none of them,
 	// so the decode above left every group at its default.

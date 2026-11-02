@@ -62,12 +62,8 @@ func diagnostics(
 	// A refusal that names the control to open, so it leads.
 	out = append(out, diagnosticsAboutStrandedControls(groups)...)
 
-	// The refusal itself is prose and rides on Summary.command_error;
-	// the diagnostic states only that there is one.
-	// It is an operational failure rather than a fact about the domain,
-	// and the same text crosses as a gRPC status once
-	// the publish is attempted (docs/ipc-api.md, "Errors").
-	if _, reason := formCommand(s); reason != "" {
+	// The refusal itself rides on Summary.command_refusal; the diagnostic states that there is one.
+	if _, refusal := formCommand(s); refusal != nil {
 		out = append(out, diagnosticFor(screensharev1.Severity_SEVERITY_ERROR, "", say(publishRefused)))
 	}
 	out = append(out, diagnosticsOfTheSettings(d, s, est)...)

@@ -1051,7 +1051,14 @@ internal sealed class SeededBackend : IBackend
         form.Summary = new Summary
         {
             Command = "",
-            CommandError = "no backend behind this shell yet, so no command was rendered",
+            CommandRefusal = new Refusal
+            {
+                Text = new Text
+                {
+                    Code = TextCode.ProgramMissing,
+                    Args = { new TextArg { Name = TextArgName.Program, Id = "ffmpeg" } },
+                },
+            },
             Estimate = Priced(settings),
         };
 

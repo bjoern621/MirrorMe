@@ -1,7 +1,6 @@
 package transport
 
 import (
-	"fmt"
 	"net/http"
 
 	"bjoernblessin.de/go-utils/util/assert"
@@ -96,7 +95,7 @@ func (HLS) ResolveGstSource(s settings.Settings, path string) ([]string, error) 
 
 	media, err := hlsMediaSource(s, HLS{}.WatchURL(s, path))
 	if err != nil {
-		return nil, fmt.Errorf("no hls source for %q: %w", path, err)
+		return nil, err
 	}
 	return []string{"urisourcebin", "uri=" + media}, nil
 }

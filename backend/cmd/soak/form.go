@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+
 	"google.golang.org/protobuf/proto"
 
 	v1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
@@ -187,7 +189,7 @@ func applyPreset(ctx context.Context, run *session, rng *rand.Rand, form *v1.For
 	}
 	if !next.GetPublishable() {
 		fields["refusal"] = blockingText(next)
-		fields["command_error"] = next.GetSummary().GetCommandError()
+		fields["command_refusal"] = refusalLine(next.GetSummary().GetCommandRefusal())
 		run.report.report("form.preset_not_publishable", "form/preset-unpublishable/"+preset.GetKey()+"/"+fields["refusal"],
 			fmt.Sprintf("%s states a configuration for this machine and the draft it makes cannot publish: %s",
 				preset.GetKey(), fields["refusal"]), fields, draft)
@@ -311,9 +313,9 @@ func checkForm(run *session, form *v1.Form, settings *v1.Settings) {
 			run.report.report("form.publishable_without_command", "form/no-command",
 				"the form says the draft can publish and renders no command", nil, settings)
 		}
-		if summary.GetCommandError() != "" {
-			run.report.report("form.publishable_with_command_error", "form/command-error/"+summary.GetCommandError(),
-				summary.GetCommandError(), nil, settings)
+		if refusal := summary.GetCommandRefusal(); refusal != nil {
+			run.report.report("form.publishable_with_command_refusal", "form/command-refusal/"+refusal.GetText().GetCode().String(),
+				refusalLine(refusal), nil, settings)
 		}
 	}
 
@@ -394,4 +396,12 @@ func formDiff(a, b *v1.Form) string {
 		}
 	}
 	return "elsewhere"
+}
+
+// refusalLine spells a refusal for the report: its code, then the words beside it.
+func refusalLine(refusal *screensharev1.Refusal) string {
+	if refusal == nil {
+		return ""
+	}
+	return refusal.GetText().GetCode().String() + ": " + refusal.GetMessage()
 }

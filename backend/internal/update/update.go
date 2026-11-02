@@ -204,7 +204,7 @@ func (m *Manager) Check() error {
 	m.mu.Lock()
 	if m.offer.Unchecked != nil {
 		m.mu.Unlock()
-		return fmt.Errorf("this install does not check for updates")
+		return text.Fail(m.offer.Unchecked.GetCode(), m.offer.Unchecked.GetArgs()...)
 	}
 	if m.checking {
 		m.mu.Unlock()
@@ -235,7 +235,7 @@ func (m *Manager) run() {
 	latest, err := release.Fetch(ctx)
 	if err != nil {
 		logger.Warnf("the published release could not be read: %v", err)
-		m.fail(screensharev1.TextCode_TEXT_CODE_UPDATE_SERVICE_UNREADABLE, err.Error())
+		m.fail(screensharev1.TextCode_TEXT_CODE_UPDATE_SERVICE_UNREADABLE, err)
 		return
 	}
 
@@ -287,11 +287,11 @@ func (m *Manager) fetch(ctx context.Context, latest release.Latest) {
 
 	dir, err := StageDir()
 	if err != nil {
-		m.fail(screensharev1.TextCode_TEXT_CODE_UPDATE_DOWNLOAD_FAILED, err.Error())
+		m.fail(screensharev1.TextCode_TEXT_CODE_UPDATE_DOWNLOAD_FAILED, err)
 		return
 	}
 	if err := ClearStage(dir); err != nil {
-		m.fail(screensharev1.TextCode_TEXT_CODE_UPDATE_DOWNLOAD_FAILED, err.Error())
+		m.fail(screensharev1.TextCode_TEXT_CODE_UPDATE_DOWNLOAD_FAILED, err)
 		return
 	}
 
@@ -303,7 +303,7 @@ func (m *Manager) fetch(ctx context.Context, latest release.Latest) {
 		if errors.Is(err, ErrCorrupt) {
 			code = screensharev1.TextCode_TEXT_CODE_UPDATE_DOWNLOAD_CORRUPT
 		}
-		m.fail(code, err.Error())
+		m.fail(code, err)
 		return
 	}
 
@@ -315,7 +315,7 @@ func (m *Manager) fetch(ctx context.Context, latest release.Latest) {
 		Launch: m.launch,
 	}
 	if err := WritePending(dir, pending); err != nil {
-		m.fail(screensharev1.TextCode_TEXT_CODE_UPDATE_DOWNLOAD_FAILED, err.Error())
+		m.fail(screensharev1.TextCode_TEXT_CODE_UPDATE_DOWNLOAD_FAILED, err)
 		return
 	}
 
@@ -345,12 +345,12 @@ func (m *Manager) Install() error {
 	m.mu.Unlock()
 
 	if !ready || pending.File == "" {
-		return fmt.Errorf("no release is staged")
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_UPDATE_NOT_STAGED)
 	}
 
 	applier, err := applierCopy(filepath.Dir(pending.File))
 	if err != nil {
-		m.fail(screensharev1.TextCode_TEXT_CODE_UPDATE_INSTALL_FAILED, err.Error())
+		m.fail(screensharev1.TextCode_TEXT_CODE_UPDATE_INSTALL_FAILED, err)
 		return err
 	}
 
@@ -363,12 +363,13 @@ func (m *Manager) Install() error {
 	detach(command)
 
 	if err := command.Run(); err != nil {
-		detail := err.Error()
+		// The launcher's own last line names why where it wrote one.
 		if reason := strings.TrimSpace(said.String()); reason != "" {
-			detail = reason
+			err = errors.New(reason)
 		}
-		m.fail(screensharev1.TextCode_TEXT_CODE_UPDATE_INSTALL_FAILED, detail)
-		return fmt.Errorf("starting the update applier: %s", detail)
+		err = text.Because(err, screensharev1.TextCode_TEXT_CODE_PROGRAM_EXITED, text.Program(filepath.Base(applier)))
+		m.fail(screensharev1.TextCode_TEXT_CODE_UPDATE_INSTALL_FAILED, err)
+		return err
 	}
 
 	logger.Infof("release %s installs once this run exits", pending.Tag)
@@ -424,8 +425,8 @@ func (m *Manager) step(stage Stage, percent int) {
 	m.announce(state)
 }
 
-func (m *Manager) fail(code screensharev1.TextCode, detail string) {
-	m.failText(text.Of(code), detail)
+func (m *Manager) fail(code screensharev1.TextCode, err error) {
+	m.failText(text.Statement(text.Because(err, code)))
 }
 
 func (m *Manager) failText(statement *screensharev1.Text, detail string) {

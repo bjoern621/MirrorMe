@@ -3,6 +3,9 @@ package publish
 import (
 	"fmt"
 
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
+
 	"bjoernblessin.de/go-utils/util/assert"
 
 	"bjoernblessin.de/screenshare/internal/capabilities"
@@ -134,7 +137,7 @@ func BuildTestStreamArgs(s settings.Settings, name string, surface TestSurface) 
 	}
 	sink, ok := transport.GstSink(s)
 	if !ok {
-		return nil, fmt.Errorf("the rtsp transport has no GStreamer sink")
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(EngineGst), text.Transport(s.Publish.Transport))
 	}
 
 	args := []string{

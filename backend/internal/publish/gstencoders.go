@@ -1,10 +1,12 @@
 package publish
 
 import (
-	"fmt"
 	"slices"
 	"strconv"
 	"strings"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
@@ -135,11 +137,11 @@ func EncoderRefusal(s settings.Settings) error {
 	}
 	c, known := capabilities.Get(s.Publish.Codec())
 	if !known {
-		return fmt.Errorf("unknown codec %q", s.Publish.Codec())
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(s.Publish.Codec()))
 	}
 	gst, mapped := gstCodecs[s.Publish.Codec()]
 	if !mapped {
-		return fmt.Errorf("codec %q has no GStreamer encoder mapping", s.Publish.Codec())
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(EngineGst), text.Codec(s.Publish.Codec()))
 	}
 	return gstEncoderRefusal(s, c, gst)
 }
@@ -266,11 +268,11 @@ var gstLiveDelay = map[string][]string{
 func gstEncoder(s settings.Settings, gop int, memory string) (encoder []string, link []string, err error) {
 	gst, ok := gstCodecs[s.Publish.Codec()]
 	if !ok {
-		return nil, nil, fmt.Errorf("codec %q has no GStreamer encoder mapping", s.Publish.Codec())
+		return nil, nil, text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(EngineGst), text.Codec(s.Publish.Codec()))
 	}
 	c, ok := capabilities.Get(s.Publish.Codec())
 	if !ok {
-		return nil, nil, fmt.Errorf("unknown codec %q", s.Publish.Codec())
+		return nil, nil, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(s.Publish.Codec()))
 	}
 	if err := gstEncoderRefusal(s, c, gst); err != nil {
 		return nil, nil, err
@@ -505,7 +507,7 @@ func vpxRateLimits(s settings.Settings) error {
 	if s.Publish.Mode != capabilities.ModeCrf || s.Publish.MaxrateM > 0 {
 		return nil
 	}
-	return fmt.Errorf("the vpx elements code constant quality against a ceiling, and these settings state none: set a burst ceiling or pick a bitrate mode")
+	return text.Fail(screensharev1.TextCode_TEXT_CODE_QUALITY_CEILING_REQUIRED, text.Codec(s.Publish.Codec()))
 }
 
 // tuneProperty is one tune step on an element spelling the knob "tune", and nothing where
@@ -732,8 +734,9 @@ func vaLimits(s settings.Settings) error {
 		rateM = s.Publish.BitrateM * vaAbrPeak
 	case "vbr":
 		if s.Publish.MaxrateM > 0 && s.Publish.BitrateM*100/s.Publish.MaxrateM < vaMinTargetPercentage {
-			return fmt.Errorf("the va encoder elements state a VBR target as a percentage of the ceiling and take %d%% at the lowest, so a %d Mbit/s target under a %d Mbit/s ceiling has no form here: the ceiling can be at most twice the target",
-				vaMinTargetPercentage, s.Publish.BitrateM, s.Publish.MaxrateM)
+			return text.Fail(screensharev1.TextCode_TEXT_CODE_VA_VBR_TARGET_BELOW_FLOOR, text.CountLimit(vaMinTargetPercentage),
+				text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_BITRATE_MBPS, int64(s.Publish.BitrateM)),
+				text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_MAXRATE_MBPS, int64(s.Publish.MaxrateM)))
 		}
 		rateM = s.Publish.MaxrateM
 	case "crf", "lossless":
@@ -744,23 +747,20 @@ func vaLimits(s settings.Settings) error {
 		return nil
 	}
 	if rateM*1000 > vaMaxBitrateKbps {
-		return fmt.Errorf("the va encoder elements' bitrate property stops at %d kbit/s, and %s mode drives it at %d Mbit/s from these settings",
-			vaMaxBitrateKbps, s.Publish.Mode, rateM)
+		return propertyBound(capabilities.FamilyVaapi, "bitrate", vaMaxBitrateKbps, rateM*1000)
 	}
 	// cpb-size is the rate times the window, in the same kilobits the bitrate property counts, and
 	// stops at the same figure.
 	// Refused here rather than left to the element, which takes the property as a GLib value and
 	// answers an out-of-range one with a warning and a pipeline that never runs.
 	if buffer := bufferKb(s); buffer > vaMaxBitrateKbps {
-		return fmt.Errorf("the va encoder elements' cpb-size property stops at %d Kb, and a %d ms window on a %d Mbit/s rate is %d Kb",
-			vaMaxBitrateKbps, s.Publish.VbvMs, rateOfBuffer(s), buffer)
+		return propertyBound(capabilities.FamilyVaapi, "cpb-size", vaMaxBitrateKbps, buffer)
 	}
 	// The interval the elements are handed rather than the field a reader sets: an unset interval
 	// is twice the frame rate (gstGop), so a rate past half the property's range overflows it while
 	// the control beside it reads zero.
 	if gop := gstGop(s); gop > capabilities.VaGopFrames() {
-		return fmt.Errorf("the va encoder elements' key-int-max property stops at %d frames, and these settings code a keyframe every %d",
-			capabilities.VaGopFrames(), gop)
+		return propertyBound(capabilities.FamilyVaapi, "key-int-max", capabilities.VaGopFrames(), gop)
 	}
 	return nil
 }
@@ -829,10 +829,17 @@ func qsvShortRateLimits(s settings.Settings) error {
 		return nil
 	}
 	if rateM*1000 > qsvShortBitrateKbps {
-		return fmt.Errorf("the AV1 and VP9 qsv elements' bitrate property stops at %d kbit/s, and %s mode drives it at %d Mbit/s from these settings",
-			qsvShortBitrateKbps, s.Publish.Mode, rateM)
+		return propertyBound(capabilities.FamilyQsv, "bitrate", qsvShortBitrateKbps, rateM*1000)
 	}
 	return nil
+}
+
+// propertyBound refuses a value past where an element property stops, both in the property's unit.
+func propertyBound(family, property string, limit, asked int) error {
+	assert.Assert(asked > limit, "a bound refusal names a value past the bound", property, limit, asked)
+	return text.Fail(screensharev1.TextCode_TEXT_CODE_ENCODER_PROPERTY_BOUND,
+		text.Family(family), text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_PROPERTY, property),
+		text.CountLimit(limit), text.Count(asked))
 }
 
 // qsvEncoder maps the rate-control mode onto one qsv element's properties, the counterpart

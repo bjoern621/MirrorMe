@@ -5,10 +5,14 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"sync"
 	"sync/atomic"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
@@ -104,7 +108,7 @@ func supervise(cfg superviseConfig) (Handle, error) {
 
 	if err := cmd.Start(); err != nil {
 		logFile.Close()
-		return nil, fmt.Errorf("cannot start %s: %w", cfg.exe, err)
+		return nil, text.Because(err, screensharev1.TextCode_TEXT_CODE_PROGRAM_UNSTARTED, text.Program(filepath.Base(cfg.exe)))
 	}
 	// Registered before the goroutine that waits on the child, for the reason KillOnAppExit documents.
 	// A GStreamer pipeline orphans exactly like an ffmpeg one.
@@ -147,7 +151,7 @@ func supervise(cfg superviseConfig) (Handle, error) {
 
 		var reportErr error
 		if !proc.stopped.Load() && waitErr != nil {
-			reportErr = fmt.Errorf("%s exited: %w", cfg.tag, waitErr)
+			reportErr = text.Because(waitErr, screensharev1.TextCode_TEXT_CODE_PROGRAM_EXITED, text.Program(filepath.Base(cfg.exe)))
 		}
 		if cfg.onExit != nil {
 			cfg.onExit(reportErr, strings.TrimSpace(tail.String()), logPath)

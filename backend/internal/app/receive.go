@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"strings"
 
 	"bjoernblessin.de/go-utils/util/assert"
@@ -222,7 +221,7 @@ func (a *App) SetReceiveAudio(streamName, transportName string, volume float64, 
 	a.procMu.Unlock()
 
 	if !present {
-		return fmt.Errorf("nothing is receiving '%s' over %s", streamName, transportName)
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_NOTHING_DECODING, text.Stream(streamName), text.Transport(transportName))
 	}
 
 	// Bounded rather than refused,

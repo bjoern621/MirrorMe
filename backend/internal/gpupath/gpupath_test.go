@@ -1,9 +1,13 @@
 package gpupath
 
 import (
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"slices"
 
-	"strings"
+	"bjoernblessin.de/screenshare/internal/text/texttest"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
+
 	"testing"
 
 	"bjoernblessin.de/screenshare/internal/capabilities"
@@ -81,10 +85,10 @@ func TestGpuIsRefusedForAPairWithoutAPath(t *testing.T) {
 	if err == nil {
 		t.Fatalf("a pair with no GPU path must refuse the gpu setting, got %q", memory)
 	}
-	// The message names the way out:
-	// a settings file that skipped the form reaches this with no control to read.
-	if !strings.Contains(err.Error(), MemorySystem) {
-		t.Errorf("the refusal must name the memory that always works: %v", err)
+	// A settings file that skipped the form reaches this with no control to read,
+	// so the statement names the pair and the shell words the way out.
+	if got := texttest.Code(err); got != screensharev1.TextCode_TEXT_CODE_FRAME_MEMORY_NO_DEVICE_PATH {
+		t.Errorf("a pair with no GPU path refuses with %v", got)
 	}
 }
 
@@ -188,19 +192,15 @@ func TestAnEncoderColourRowResolvesByWhatEachDemandWillPay(t *testing.T) {
 		}
 	}
 
-	// The demand for the device and the colour is refused,
-	// and the refusal leaves the user somewhere to go:
-	// the value that takes the cost knowingly, and the value that keeps the colour instead.
-	// What the path takes is the row's Cost statement,
-	// shown by the form on the greyed control rather than inside this string.
+	// The demand for the device and the colour is refused with a statement of its own,
+	// which the shell words with the value that takes the cost and the one that keeps the colour.
+	// What the path takes is the row's Cost statement, shown by the form on the greyed control.
 	_, err := Resolve(row.Engine, row.Capture, row.Family, MemoryGpu)
 	if err == nil {
 		t.Fatalf("a row that trades the colour must refuse the gpu setting")
 	}
-	for _, want := range []string{MemoryGpuEncoderColor, MemorySystem} {
-		if !strings.Contains(err.Error(), want) {
-			t.Errorf("the refusal must name %q: %v", want, err)
-		}
+	if got := texttest.Code(err); got != screensharev1.TextCode_TEXT_CODE_FRAME_MEMORY_TRADES_COLOUR {
+		t.Errorf("a row that trades the colour refuses with %v", got)
 	}
 }
 
@@ -225,19 +225,21 @@ func TestAnUnknownMemoryIsRefused(t *testing.T) {
 	}
 }
 
-// A device refusal names the memory that gets the user publishing again,
-// the machine's GPU count not being something it can be talked out of.
-func TestTheDeviceRefusalsNameTheWayOut(t *testing.T) {
-	for _, err := range []error{
-		Undetermined("the portal does not name the GPU it captures on",
-			[]string{"/dev/dri/renderD128", "/dev/dri/renderD129"}),
-	} {
-		if !strings.Contains(err.Error(), MemorySystem) {
-			t.Errorf("a device refusal must name the memory that always works: %v", err)
+// A machine with several GPUs is refused with every render node named.
+func TestUndeterminedNamesTheDevicesItRead(t *testing.T) {
+	err := Undetermined([]string{"/dev/dri/renderD128", "/dev/dri/renderD129"})
+	statement, _ := text.Statement(err)
+	if statement.GetCode() != screensharev1.TextCode_TEXT_CODE_GPU_UNDETERMINED {
+		t.Fatalf("a machine with several GPUs refuses with %v", statement.GetCode())
+	}
+	var devices []string
+	for _, arg := range statement.GetArgs() {
+		if arg.GetName() == screensharev1.TextArgName_TEXT_ARG_NAME_DEVICES {
+			devices = arg.GetIds().GetIds()
 		}
-		if !strings.Contains(err.Error(), "renderD129") {
-			t.Errorf("a device refusal must name the devices it read: %v", err)
-		}
+	}
+	if !slices.Contains(devices, "/dev/dri/renderD129") {
+		t.Errorf("the refusal names devices %v, missing renderD129", devices)
 	}
 }
 

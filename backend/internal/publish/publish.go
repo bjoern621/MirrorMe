@@ -10,9 +10,11 @@
 package publish
 
 import (
-	"fmt"
 	"reflect"
 	"slices"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/screenshare/internal/capabilities"
 	"bjoernblessin.de/screenshare/internal/ffmpeg"
@@ -151,7 +153,7 @@ func ReleaseSourcesExcept(capture string) {
 func For(capture string) (Publisher, error) {
 	p, ok := captureBackends[capture]
 	if !ok {
-		return nil, fmt.Errorf("unknown capture backend %q", capture)
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Capture(capture))
 	}
 	return p, nil
 }

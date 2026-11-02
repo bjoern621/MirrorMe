@@ -1,8 +1,8 @@
 package app
 
 import (
-	"errors"
-	"fmt"
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/screenshare/internal/applink"
 	"bjoernblessin.de/screenshare/internal/settings"
@@ -15,7 +15,7 @@ import (
 // errLinkNotOnRelay refuses a link naming a stream the relay is not carrying.
 // Its own refusal because the reader can act on it:
 // a link outlives the share it names, and what is wrong is the moment rather than the link.
-var errLinkNotOnRelay = errors.New("nothing is publishing that stream right now: ask whoever shared the link to start sharing again")
+var errLinkNotOnRelay = text.Fail(screensharev1.TextCode_TEXT_CODE_STREAM_NOT_ON_RELAY)
 
 // ResolveLink reads a link and answers the stream it names.
 //
@@ -56,13 +56,11 @@ func (a *App) ResolveLink(raw string) (string, error) {
 }
 
 // errOtherGroup refuses a link into a group this machine is not in,
-// naming what would put it there in the mode it is in.
-//
-// Two sentences of one shape: what is wrong, and the one move that fixes it.
+// with one code per mode, the move that fixes it differing.
 // In Discord mode that move is a voice channel, membership following it (docs/discord-mode.md).
 func errOtherGroup(s settings.Settings) error {
 	if s.Relay.FollowsDiscord() {
-		return errors.New("this stream is shared in another voice channel: join that channel in Discord to watch it")
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_LINK_OTHER_VOICE_CHANNEL)
 	}
-	return fmt.Errorf("this stream is in another group: paste that group's key under Relay to watch it")
+	return text.Fail(screensharev1.TextCode_TEXT_CODE_LINK_OTHER_GROUP)
 }

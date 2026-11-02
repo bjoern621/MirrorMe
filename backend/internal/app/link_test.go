@@ -2,8 +2,10 @@ package app
 
 import (
 	"errors"
-	"strings"
 	"testing"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text/texttest"
 
 	"bjoernblessin.de/screenshare/internal/applink"
 	"bjoernblessin.de/screenshare/internal/discordclient"
@@ -44,7 +46,7 @@ func TestALinkIntoAnotherChannelNamesTheChannelToJoin(t *testing.T) {
 	if err == nil {
 		t.Fatal("a link into a group this machine is not in is refused")
 	}
-	if !strings.Contains(err.Error(), "voice channel") {
+	if texttest.Code(err) != screensharev1.TextCode_TEXT_CODE_LINK_OTHER_VOICE_CHANNEL {
 		t.Errorf("the refusal names the voice channel to join, said %v", err)
 	}
 }

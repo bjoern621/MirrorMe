@@ -1,10 +1,10 @@
 package app
 
 import (
-	"fmt"
 	"slices"
-	"strings"
 	"time"
+
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
@@ -228,8 +228,8 @@ func (a *App) carriesStream(streamName, transportName, engine string) error {
 	if slices.Contains(carried, transportName) {
 		return nil
 	}
-	return fmt.Errorf("%s is %s, which %s cannot carry: watch it over %s",
-		streamName, format, transportName, strings.Join(carried, " or "))
+	return text.Fail(screensharev1.TextCode_TEXT_CODE_TRANSPORT_CARRIES_NO_FORMAT, text.Transport(transportName), text.Format(format),
+		text.Engine(engine), text.Transports(carried))
 }
 
 // StartWatch opens a viewer window for streamName over transportName.
@@ -307,13 +307,9 @@ func (a *App) StartWatch(streamName, transportName string) error {
 			message := ""
 			var cause *screensharev1.Text
 			if err != nil {
-				message = err.Error()
-				if stderrTail != "" {
-					message += "\n" + stderrTail
-				}
 				// A player states no reason for the connection that went,
-				// so the statement beside its own words is made only where membership stopped it (members.go).
-				cause = a.membership().failure()
+				// so membership stopping it outranks the exit's own statement (members.go).
+				cause, message = exitFailure(err, stderrTail, a.membership().failure())
 				logger.Warnf("viewer for '%s' over %s failed: %v\n%s\nfull log: %s", streamName, transportName, err, stderrTail, logPath)
 			} else {
 				logger.Infof("viewer for '%s' over %s closed (log: %s)", streamName, transportName, logPath)
@@ -374,8 +370,8 @@ func (a *App) OpenInBrowser(streamName, transportName string) error {
 
 	url, ok := transport.BrowserURL(transportName, s, streamName)
 	if !ok {
-		return fmt.Errorf("the relay serves no player page over %s: open %s over %s",
-			transportName, streamName, strings.Join(transport.WatchNames(transport.EngineBrowser), " or "))
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_NO_VIEWER_RECEIVES_OVER, text.Engine(transport.EngineBrowser), text.Transport(transportName),
+			text.Transports(transport.WatchNames(transport.EngineBrowser)))
 	}
 
 	// The address carries the relay token as its userinfo,

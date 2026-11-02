@@ -1,11 +1,13 @@
 package ffmpeg
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 )
@@ -32,7 +34,7 @@ func FindExe(name string) (string, error) {
 		// this resolves the GStreamer launcher as well as the ffmpeg pair,
 		// and a missing GStreamer binary reported under an instruction to install ffmpeg sends the reader
 		// after the wrong package.
-		return "", fmt.Errorf("%s not found: put it on PATH or place %s next to the app", name, name)
+		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_PROGRAM_MISSING, text.Program(name))
 	}
 	return path, nil
 }
@@ -81,13 +83,13 @@ const logDirMode = 0o755
 func LogDir() (string, error) {
 	base, err := os.UserConfigDir()
 	if err != nil {
-		return "", fmt.Errorf("cannot determine user config directory: %w", err)
+		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_CONFIG_DIR_UNKNOWN)
 	}
 
 	dir := filepath.Join(base, "mirrorme", "logs")
 	err = os.MkdirAll(dir, logDirMode)
 	if err != nil {
-		return "", fmt.Errorf("cannot create log directory %s: %w", dir, err)
+		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNWRITABLE, text.Path(dir))
 	}
 
 	assert.Assert(dir != "", "a resolved log directory is a path", base)

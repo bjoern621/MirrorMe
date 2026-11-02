@@ -4,7 +4,6 @@ import (
 	"archive/tar"
 	"compress/gzip"
 	"encoding/json"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -57,7 +56,7 @@ func Build(w io.Writer, facts Facts, s settings.Settings, logDir string, include
 	}
 
 	if err := archive.Close(); err != nil {
-		return fmt.Errorf("closing the bundle: %w", err)
+		return err
 	}
 	return zipped.Close()
 }
@@ -73,10 +72,10 @@ func writeJSON(archive *tar.Writer, name string, value any) error {
 func writeEntry(archive *tar.Writer, name string, content []byte) error {
 	header := &tar.Header{Name: name, Mode: 0o600, Size: int64(len(content)), ModTime: time.Now()}
 	if err := archive.WriteHeader(header); err != nil {
-		return fmt.Errorf("writing %s: %w", name, err)
+		return err
 	}
 	if _, err := archive.Write(content); err != nil {
-		return fmt.Errorf("writing %s: %w", name, err)
+		return err
 	}
 	return nil
 }

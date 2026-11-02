@@ -23,14 +23,16 @@
 package transport
 
 import (
-	"fmt"
 	"slices"
 	"strings"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
 	"bjoernblessin.de/screenshare/internal/capabilities"
 	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/screenshare/internal/text"
 )
 
 // Carriage is one engine's set for one leg of one protocol: the video bitstream formats and
@@ -356,11 +358,12 @@ func ReceiveSource(name string, s settings.Settings, streamName string) ([]strin
 	}
 	t, ok := Get(name)
 	if !ok {
-		return nil, fmt.Errorf("transport %q is not one this build carries, so no pipeline can receive over it", name)
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Transport(name))
 	}
 	r, ok := t.(GstWatchResolver)
 	if !ok {
-		return nil, fmt.Errorf("transport %q has no GStreamer watch form, so no pipeline can receive over it", name)
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM,
+			text.Engine(capabilities.EngineGst), text.Transport(name))
 	}
 	src, err := r.ResolveGstSource(s, path)
 	if err != nil {
@@ -555,20 +558,17 @@ func ValidatePublish(name, engine, codec string) error {
 	assert.Assert(knownEngine(engine), "publish validation names an engine", engine)
 
 	if _, ok := Get(name); !ok {
-		return fmt.Errorf("unknown transport %q", name)
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Transport(name))
 	}
 	c, ok := capabilities.Get(codec)
 	if !ok {
-		return fmt.Errorf("unknown codec %q", codec)
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(codec))
 	}
 	carriage, ok := PublishCarriage(name, engine)
-	if !ok {
-		return fmt.Errorf("transport %s has no %s publish form, so it cannot carry codec %s: publish it over %s",
-			name, engine, codec, orNone(PublishNamesFor(engine, c.Format)))
-	}
-	if !slices.Contains(carriage.Video, c.Format) {
-		return fmt.Errorf("transport %s cannot carry codec %s on the %s engine: publish it over %s",
-			name, codec, engine, orNone(PublishNamesFor(engine, c.Format)))
+	if !ok || !slices.Contains(carriage.Video, c.Format) {
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_TRANSPORT_CARRIES_NO_FORMAT,
+			text.Transport(name), text.Format(c.Format), text.Engine(engine),
+			text.Transports(PublishNamesFor(engine, c.Format)))
 	}
 	return nil
 }
@@ -587,15 +587,13 @@ func ValidatePublishAudio(name, engine, audioCodec string) error {
 	}
 	a, ok := capabilities.GetAudio(audioCodec)
 	if !ok {
-		return fmt.Errorf("unknown audio codec %q", audioCodec)
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.AudioCodec(audioCodec))
 	}
 	carriage, ok := PublishCarriage(name, engine)
-	if !ok {
-		return fmt.Errorf("transport %s has no %s publish form, so it cannot carry audio codec %s", name, engine, audioCodec)
-	}
-	if !slices.Contains(carriage.Audio, a.Format) {
-		return fmt.Errorf("transport %s cannot carry audio codec %s on the %s engine: use %s, or publish without audio",
-			name, audioCodec, engine, orNone(capabilities.AudioNamesFor(engine, carriage.Audio)))
+	if !ok || !slices.Contains(carriage.Audio, a.Format) {
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_LEG_CARRIES_NO_AUDIO_CODEC,
+			text.Transport(name), text.AudioCodec(audioCodec), text.Engine(engine),
+			text.AudioCodecs(capabilities.AudioNamesFor(engine, carriage.Audio)))
 	}
 	return nil
 }
@@ -614,13 +612,4 @@ func ValidatePublishSettings(s settings.Settings) error {
 		return nil
 	}
 	return v.ValidatePublishSettings(s)
-}
-
-// orNone renders the alternatives a refusal points at, and names the empty case rather than letting
-// a sentence trail off after "use".
-func orNone(names []string) string {
-	if len(names) == 0 {
-		return "nothing this engine carries"
-	}
-	return strings.Join(names, " or ")
 }

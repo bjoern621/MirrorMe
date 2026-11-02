@@ -6,6 +6,8 @@ import (
 	"strings"
 	"testing"
 
+	"bjoernblessin.de/screenshare/internal/text/texttest"
+
 	"bjoernblessin.de/screenshare/internal/capabilities"
 	"bjoernblessin.de/screenshare/internal/gpupath"
 	"bjoernblessin.de/screenshare/internal/gstrun"
@@ -167,9 +169,8 @@ func TestGstRejectsAGappedChromaBeforeAnythingIsAcquired(t *testing.T) {
 	if err == nil {
 		t.Fatal("a chroma gapped on this engine must not yield encoder input caps")
 	}
-	// A settings file that skipped the form's repair surfaces this message, so it names the format and
-	// the engine that codes it.
-	if !strings.Contains(err.Error(), "gbrp") || !strings.Contains(err.Error(), "ffmpeg") {
+	// A settings file that skipped the form's repair surfaces this refusal, so it names the engine that codes the format.
+	if !slices.Contains(texttest.IDs(err), capabilities.EngineFfmpeg) {
 		t.Errorf("the rejection must name the format and the engine that codes it: %v", err)
 	}
 	if _, err := buildPipeline(s, []string{"videotestsrc"}, "", PreviewLeg{}); err == nil {

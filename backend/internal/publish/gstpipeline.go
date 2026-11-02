@@ -5,6 +5,9 @@ import (
 	"strconv"
 	"strings"
 
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
+
 	"bjoernblessin.de/go-utils/util/assert"
 
 	"bjoernblessin.de/screenshare/internal/capabilities"
@@ -47,11 +50,11 @@ func buildPipeline(s settings.Settings, capture []string, meterPort string, prev
 
 	sink, ok := transport.GstSink(s)
 	if !ok {
-		return nil, fmt.Errorf("transport %q has no GStreamer publish sink", s.Publish.Transport)
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(EngineGst), text.Transport(s.Publish.Transport))
 	}
 
 	if s.Publish.Fps <= 0 {
-		return nil, fmt.Errorf("the GStreamer publish engine needs a positive fps, got %d", s.Publish.Fps)
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_FPS_NOT_POSITIVE, text.Fps(s.Publish.Fps))
 	}
 	// Resolved again here rather than carried over from the source, the memory deciding the encoder
 	// element too: a family whose plugin ships one element per memory kind is encoded by a different
@@ -179,7 +182,7 @@ func gstInputCaps(s settings.Settings, mem gstFrameMemory) (string, error) {
 		return "", err
 	}
 	if s.Publish.Fps <= 0 {
-		return "", fmt.Errorf("the GStreamer publish engine needs a positive fps, got %d", s.Publish.Fps)
+		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_FPS_NOT_POSITIVE, text.Fps(s.Publish.Fps))
 	}
 	return gstEncoderCaps(s, mem)
 }
@@ -246,11 +249,11 @@ func gstAudioBranch(s settings.Settings) ([]string, error) {
 	}
 	a, ok := capabilities.GetAudio(s.Publish.AudioTrack())
 	if !ok {
-		return nil, fmt.Errorf("unknown audio codec %q", s.Publish.AudioTrack())
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.AudioCodec(s.Publish.AudioTrack()))
 	}
 	enc, ok := a.EncoderOn(EngineGst)
 	if !ok {
-		return nil, fmt.Errorf("audio codec %s has no GStreamer encoder", a.Name)
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_AUDIO_ENCODER, text.Engine(EngineGst), text.AudioCodec(a.Name))
 	}
 	assert.Assert(enc.Parser != "", "a GStreamer audio encoder states its parser", a.Name)
 
@@ -348,14 +351,14 @@ var gstAudioElements = map[string]map[string]gstAudioOpen{
 // the muxer's audio pad never starves.
 func gstAudioSource(s settings.Settings, a settings.AudioSource, i int) ([]string, error) {
 	if available, _ := AudioAvailable(s.Publish.Capture, a.Source); !available {
-		return nil, fmt.Errorf("the %s backend cannot record %s audio", s.Publish.Capture, a.Source)
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_CAPTURE_RECORDS_NO_AUDIO, text.Capture(s.Publish.Capture), text.Audio(a.Source))
 	}
 	need, gated := needsOf(s.Publish.Capture)
 	assert.Assert(gated, "a capture backend building an audio branch is a registered one", s.Publish.Capture)
 
 	open, mapped := gstAudioElements[need.os][a.Source]
 	if !mapped {
-		return nil, fmt.Errorf("no GStreamer element records %s audio on %s", a.Source, need.os)
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_NO_ELEMENT_RECORDS_AUDIO, text.Audio(a.Source), text.Os(need.os))
 	}
 	source := append([]string{open.element}, open.properties...)
 	if handle := a.Device; handle != "" {
@@ -449,15 +452,15 @@ var gstFamilyChromaFormats = map[string]map[string]string{
 func gstChromaFormat(codec, chroma, memory string) (string, error) {
 	c, ok := capabilities.Get(codec)
 	if !ok {
-		return "", fmt.Errorf("unknown codec %q", codec)
+		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(codec))
 	}
 	formats, ok := gstRawFormats(c.Family, memory)
 	if !ok {
-		return "", fmt.Errorf("the %s encoder family has no GStreamer raw-format mapping", c.Family)
+		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(EngineGst), text.Family(c.Family))
 	}
 	format, ok := formats[chroma]
 	if !ok {
-		return "", fmt.Errorf("chroma %q has no GStreamer format mapping for codec %s", chroma, codec)
+		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(EngineGst), text.Chroma(chroma))
 	}
 	return format, nil
 }
@@ -541,7 +544,7 @@ var gstColorRanges = map[string]string{
 func gstColorRange(s settings.Settings) (string, error) {
 	r, ok := gstColorRanges[s.Publish.ColorRange]
 	if !ok {
-		return "", fmt.Errorf("colour range %q has no GStreamer mapping, expected pc or tv", s.Publish.ColorRange)
+		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(EngineGst), text.ColorRange(s.Publish.ColorRange))
 	}
 	return r, nil
 }

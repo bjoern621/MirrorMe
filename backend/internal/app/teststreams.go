@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 	"time"
@@ -90,9 +89,7 @@ func testStreamName(i int) string {
 // a publisher that dies on its own is relaunched into the slot it held (teststreams_retry.go),
 // which makes the set survive a relay that comes up after this process does.
 func (a *App) StartTestStreams(count int) error {
-	if count <= 0 || count > maxTestStreams {
-		return fmt.Errorf("test stream count must be 1..%d, got %d", maxTestStreams, count)
-	}
+	assert.Assert(count > 0 && count <= maxTestStreams, "a test stream set holds 1 to maxTestStreams streams", count)
 	if !a.settingsInGroup() {
 		return errNoGroup
 	}

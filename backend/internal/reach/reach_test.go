@@ -270,7 +270,7 @@ func TestAnSrtListenerAnsweringInductionIsReachable(t *testing.T) {
 	if r.Verdict != Reachable {
 		t.Fatalf("an answering SRT listener reads %v: %s", r.Verdict, r.Detail)
 	}
-	if !strings.Contains(r.Detail, "version 5") {
+	if r.Detail != "HSv5" {
 		t.Errorf("the row says %q, want the version the listener answered with", r.Detail)
 	}
 }

@@ -986,8 +986,8 @@ func (av availability) outputResolutionReason(value string) *screensharev1.Text 
 // Every relay serves RTSPS alone, so the answer does not follow the address
 // (deploy/mediamtx-groups.yml).
 // Serves both legs, the session being encrypted the same way whichever end negotiates it.
-// The publish leg refuses the same value in transport.RTSP ValidatePublishSettings
-// and the watch leg in SetWatchOption, so a draft reaching either with "udp" was greyed here first.
+// The publish leg refuses the same value in transport.RTSP ValidatePublishSettings,
+// so a draft reaching it with "udp" was greyed here first.
 func (av availability) rtspProtocolReason(value string) *screensharev1.Text {
 	if value == transport.EncryptedRtspProtocol {
 		return nil

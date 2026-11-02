@@ -9,12 +9,15 @@
 package avatars
 
 import (
-	"fmt"
+	"errors"
 	"io"
 	"net/http"
 	"net/url"
 	"sync"
 	"time"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
@@ -154,7 +157,7 @@ func (c *Cache) fetch(address string) ([]byte, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= 400 {
-		return nil, fmt.Errorf("the CDN answered %s", resp.Status)
+		return nil, text.Because(errors.New(resp.Status), screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWERED, text.Address(address))
 	}
 	return io.ReadAll(io.LimitReader(resp.Body, maxBytes))
 }

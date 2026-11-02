@@ -55,3 +55,13 @@ func Statement(err error) (*screensharev1.Text, string) {
 	}
 	return nil, err.Error()
 }
+
+// Restated rebuilds a failure that crossed a process boundary as its statement and its words.
+// A nil statement is a failure that was all words.
+func Restated(statement *screensharev1.Text, words string) error {
+	if statement == nil {
+		assert.Assert(words != "", "a failure that names no statement carries words")
+		return errors.New(words)
+	}
+	return &Error{Text: statement, Words: words}
+}

@@ -4,6 +4,9 @@ import (
 	"errors"
 	"sync"
 
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
+
 	"github.com/go-gst/go-gst/pkg/gst"
 
 	"bjoernblessin.de/go-utils/util/assert"
@@ -254,7 +257,7 @@ func (s *Subscription) poolFor(sample *gst.Sample) error {
 	select {
 	case s.events <- Event{Pool: &pool}:
 	default:
-		return errors.New("the consumer stopped reading before it was told where the frames are")
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_FRAMES_CONSUMER_GONE)
 	}
 	return nil
 }

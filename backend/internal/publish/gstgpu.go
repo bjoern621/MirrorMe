@@ -1,7 +1,8 @@
 package publish
 
 import (
-	"fmt"
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
@@ -126,7 +127,7 @@ type gstFrameMemory struct {
 func gstMemory(s settings.Settings) (gstFrameMemory, error) {
 	c, ok := capabilities.Get(s.Publish.Codec())
 	if !ok {
-		return gstFrameMemory{}, fmt.Errorf("unknown codec %q", s.Publish.Codec())
+		return gstFrameMemory{}, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(s.Publish.Codec()))
 	}
 	memory, err := gpupath.Resolve(EngineGst, s.Publish.Capture, c.Family, s.Publish.CaptureMemory)
 	if err != nil {

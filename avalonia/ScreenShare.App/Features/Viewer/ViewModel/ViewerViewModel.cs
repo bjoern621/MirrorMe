@@ -683,7 +683,7 @@ public sealed class ViewerViewModel : Observable
 
     /// <summary>
     /// Why the relay lists nothing, for every reason but an absent backend, which the render pass answers first.
-    /// An unreachable relay says why in its own words.
+    /// An unreachable relay says why, with the relay's own words under it.
     /// Empty for a relay that answered: an idle group is the empty stage's line (<see cref="GridEmpty"/>).
     /// </summary>
     private static string NoticeFor(RelayStatus? relay)
@@ -695,7 +695,8 @@ public sealed class ViewerViewModel : Observable
 
         if (!relay.Reachable)
         {
-            return relay.Error.Length > 0 ? relay.Error : "The relay could not be reached.";
+            var why = Failures.Of(relay.Failure, relay.Error);
+            return why.Length > 0 ? why : "The relay could not be reached.";
         }
 
         return "";

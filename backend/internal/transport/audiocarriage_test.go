@@ -2,8 +2,9 @@ package transport
 
 import (
 	"slices"
-	"strings"
 	"testing"
+
+	"bjoernblessin.de/screenshare/internal/text/texttest"
 
 	"bjoernblessin.de/screenshare/internal/capabilities"
 )
@@ -67,8 +68,8 @@ func TestValidatePublishAudioHoldsWebRTCToOpus(t *testing.T) {
 			continue
 		}
 		// The fix is another audio codec on the same leg, so the refusal names the one that carries.
-		if !strings.Contains(err.Error(), "opus") {
-			t.Errorf("refusal %q must name the audio codec webrtc does carry", err)
+		if !slices.Contains(texttest.IDs(err), "opus") {
+			t.Errorf("refusal %v must name the audio codec webrtc does carry", err)
 		}
 	}
 	// No track, no mapping to find, whatever the settings carry.

@@ -21,13 +21,15 @@ package groupclient
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
 	"time"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 )
@@ -101,7 +103,7 @@ type Member struct {
 
 // Refusal is the group service's own answer to a request it would not take.
 //
-// The sentence passes through rather than being restated here,
+// The service's words pass through rather than being restated here,
 // the service knowing what it refused where this side does not.
 // The status is what a caller acts on,
 // a name another member holds being a request to make again under another name,
@@ -112,7 +114,7 @@ type Refusal struct {
 }
 
 func (r *Refusal) Error() string {
-	return "the group service refused: " + r.Reason
+	return r.Reason
 }
 
 // NameTaken reports whether a display name another member holds is what this refusal names.
@@ -166,13 +168,13 @@ func (c *Client) SendReport(base string, bundle io.Reader) (string, error) {
 	assert.IsNotNil(bundle, "a report carries a bundle")
 
 	if base == "" {
-		return "", errors.New("a report is taken by a group service, and no relay is named to send it to")
+		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
 	}
 
 	address := base + "/reports"
 	request, err := http.NewRequest(http.MethodPost, address, bundle)
 	if err != nil {
-		return "", fmt.Errorf("addressing %s: %v", spoken(address), err)
+		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(spoken(address)))
 	}
 	request.Header.Set("Content-Type", "application/gzip")
 
@@ -189,7 +191,7 @@ func (c *Client) SendReport(base string, bundle io.Reader) (string, error) {
 		return "", err
 	}
 	if answer.ReportID == "" {
-		return "", fmt.Errorf("the group service at %s stored the report under no name", base)
+		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(base))
 	}
 	return answer.ReportID, nil
 }
@@ -208,7 +210,7 @@ func (c *Client) Token(base, groupKey, memberSecret string) (string, error) {
 	assert.IsNotNil(c.http, "a client calls through a transport")
 
 	if base == "" {
-		return "", errors.New("a relay token is issued by a group service, and no relay is named to ask one of")
+		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
 	}
 
 	now := time.Now()
@@ -232,11 +234,11 @@ func (c *Client) Token(base, groupKey, memberSecret string) (string, error) {
 		return "", err
 	}
 	if answer.Token == "" {
-		return "", fmt.Errorf("the group service at %s answered with no relay access token", base)
+		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(base))
 	}
 	expiry, err := time.Parse(time.RFC3339, answer.Expires)
 	if err != nil {
-		return "", fmt.Errorf("the group service at %s dated its token %q, which is not a time: %v", base, answer.Expires, err)
+		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(base))
 	}
 
 	c.mu.Lock()
@@ -260,7 +262,7 @@ func (c *Client) Streams(base, groupKey string) ([]Stream, error) {
 	assert.IsNotNil(c.http, "a client calls through a transport")
 
 	if base == "" {
-		return nil, errors.New("a stream index is answered by a group service, and no relay is named to ask one of")
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
 	}
 
 	var answer struct {
@@ -279,7 +281,7 @@ func (c *Client) CreateGroup(base string) (groupKey, groupID string, err error) 
 	assert.IsNotNil(c.http, "a client calls through a transport")
 
 	if base == "" {
-		return "", "", errors.New("a group key is drawn by a group service, and no relay is named to ask one of")
+		return "", "", text.Fail(screensharev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
 	}
 
 	var answer struct {
@@ -290,7 +292,7 @@ func (c *Client) CreateGroup(base string) (groupKey, groupID string, err error) 
 		return "", "", err
 	}
 	if answer.GroupKey == "" {
-		return "", "", fmt.Errorf("the group service at %s answered with no group key", base)
+		return "", "", text.Fail(screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(base))
 	}
 	return answer.GroupKey, answer.GroupID, nil
 }
@@ -308,7 +310,7 @@ func (c *Client) State(base, groupKey, memberSecret, displayName string) (Member
 	assert.IsNotNil(c.http, "a client calls through a transport")
 
 	if base == "" {
-		return Membership{}, errors.New("membership is held by a group service, and no relay is named to state it to")
+		return Membership{}, text.Fail(screensharev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
 	}
 
 	var answer Membership
@@ -321,7 +323,7 @@ func (c *Client) State(base, groupKey, memberSecret, displayName string) (Member
 		return Membership{}, err
 	}
 	if answer.MemberID == "" {
-		return Membership{}, fmt.Errorf("the group service at %s stated no member for this secret", base)
+		return Membership{}, text.Fail(screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(base))
 	}
 	return answer, nil
 }
@@ -334,7 +336,7 @@ func (c *Client) Release(base, groupKey, memberSecret string) error {
 	assert.IsNotNil(c.http, "a client calls through a transport")
 
 	if base == "" {
-		return errors.New("membership is held by a group service, and no relay is named to release it at")
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
 	}
 
 	// The answer names whether there was a lease to release, and nothing here reads it:
@@ -358,15 +360,13 @@ func (c *Client) send(method, address, groupKey string, body any, into any) erro
 	var payload io.Reader
 	if body != nil {
 		encoded, err := json.Marshal(body)
-		if err != nil {
-			return fmt.Errorf("rendering a request to %s: %v", spoken(address), err)
-		}
+		assert.IsNil(err, "a request body is plain data that always encodes", method, spoken(address))
 		payload = strings.NewReader(string(encoded))
 	}
 
 	request, err := http.NewRequest(method, address, payload)
 	if err != nil {
-		return fmt.Errorf("addressing %s: %v", spoken(address), err)
+		return text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(spoken(address)))
 	}
 	if payload != nil {
 		request.Header.Set("Content-Type", "application/json")
@@ -383,7 +383,7 @@ func (c *Client) send(method, address, groupKey string, body any, into any) erro
 	return read(address, resp, into)
 }
 
-// spoken is address with its query dropped, for a sentence a reader sees.
+// spoken is address with its query dropped, for an address a reader sees.
 //
 // The group key rides the index read as a query parameter, and holding it is what lets anybody join.
 // Every error text this app shows is selectable so a reader can carry it into a bug report,
@@ -399,25 +399,23 @@ func spoken(address string) string {
 
 // read decodes one answer into a value, or into the reason there is none.
 //
-// A refusal leaves as a *Refusal carrying what the service said and the status it said it under.
-// Where the service named no reason, the status line and the route stand in for one:
-// something answered and would not take the request,
-// and which route it was is what a reader needs next.
+// A refusal leaves as a *Refusal carrying what the service said and the status it said it under,
+// stated as the route that answered.
+// Where the service named no reason, the status line stands in for one.
 func read(address string, resp *http.Response, into any) error {
 	if resp.StatusCode >= 400 {
 		var refusal struct {
 			Error string `json:"error"`
 		}
+		reason := resp.Status
 		if json.NewDecoder(resp.Body).Decode(&refusal) == nil && refusal.Error != "" {
-			return &Refusal{Status: resp.StatusCode, Reason: refusal.Error}
+			reason = refusal.Error
 		}
-		return &Refusal{
-			Status: resp.StatusCode,
-			Reason: fmt.Sprintf("%s answered %s", spoken(address), resp.Status),
-		}
+		return text.Because(&Refusal{Status: resp.StatusCode, Reason: reason},
+			screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWERED, text.Address(spoken(address)))
 	}
 	if err := json.NewDecoder(resp.Body).Decode(into); err != nil {
-		return fmt.Errorf("the group service at %s answered something this app cannot read: %v", spoken(address), err)
+		return text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(spoken(address)))
 	}
 	return nil
 }
@@ -425,7 +423,7 @@ func read(address string, resp *http.Response, into any) error {
 // unreachable names the route and the cause, and never the address the transport failed on.
 //
 // net/http wraps every failure in a *url.Error carrying the whole address, query and all,
-// so the group key would ride out of the app inside a sentence spoken() had already cut it from.
+// so the group key would ride out of the app in the words that spoken() had already cut it from.
 // What is left of that wrapper is the cause itself,
 // which says whether the service refused the connection, timed out or resolved to nothing.
 func unreachable(address string, err error) error {
@@ -433,5 +431,5 @@ func unreachable(address string, err error) error {
 	if errors.As(err, &addressed) {
 		err = addressed.Err
 	}
-	return fmt.Errorf("the group service at %s cannot be reached: %v", spoken(address), err)
+	return text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNANSWERED, text.Address(spoken(address)))
 }

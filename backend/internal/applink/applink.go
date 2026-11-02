@@ -8,10 +8,11 @@
 package applink
 
 import (
-	"errors"
-	"fmt"
 	"net/url"
 	"strings"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 )
@@ -67,18 +68,18 @@ func FormatWatch(group, stream string) string {
 // or handed over by another program.
 func Parse(raw string) (Watch, error) {
 	if raw == "" {
-		return Watch{}, errors.New("a link names a stream to open, and this one is empty")
+		return Watch{}, text.Fail(screensharev1.TextCode_TEXT_CODE_LINK_EMPTY)
 	}
 
 	parsed, err := url.Parse(raw)
 	if err != nil {
-		return Watch{}, fmt.Errorf("this is not a link this app opens: %w", err)
+		return Watch{}, text.Because(err, screensharev1.TextCode_TEXT_CODE_LINK_UNREADABLE)
 	}
 	if parsed.Scheme != Scheme {
-		return Watch{}, fmt.Errorf("this app opens %s:// links, and this one is %q", Scheme, parsed.Scheme)
+		return Watch{}, text.Fail(screensharev1.TextCode_TEXT_CODE_LINK_NOT_OURS, text.Value(parsed.Scheme))
 	}
 	if parsed.Host != watchHost {
-		return Watch{}, fmt.Errorf("this app opens %s://%s links, and this one names %q", Scheme, watchHost, parsed.Host)
+		return Watch{}, text.Fail(screensharev1.TextCode_TEXT_CODE_LINK_NOT_OURS, text.Value(parsed.Host))
 	}
 
 	// Split before unescaping, so a segment carrying an escaped separator stays one segment.
@@ -86,7 +87,7 @@ func Parse(raw string) (Watch, error) {
 	trimmed := strings.Trim(parsed.EscapedPath(), "/")
 	group, stream, found := strings.Cut(trimmed, "/")
 	if !found || group == "" || stream == "" {
-		return Watch{}, errors.New("a link names a group and a stream inside it")
+		return Watch{}, text.Fail(screensharev1.TextCode_TEXT_CODE_LINK_INCOMPLETE)
 	}
 
 	return unescapeWatch(group, stream)
@@ -96,13 +97,13 @@ func Parse(raw string) (Watch, error) {
 func unescapeWatch(group, stream string) (Watch, error) {
 	read, err := url.PathUnescape(group)
 	if err != nil {
-		return Watch{}, fmt.Errorf("the group this link names does not decode: %w", err)
+		return Watch{}, text.Because(err, screensharev1.TextCode_TEXT_CODE_LINK_UNREADABLE)
 	}
 
 	parts := strings.Split(stream, "/")
 	for i, part := range parts {
 		if parts[i], err = url.PathUnescape(part); err != nil {
-			return Watch{}, fmt.Errorf("the stream this link names does not decode: %w", err)
+			return Watch{}, text.Because(err, screensharev1.TextCode_TEXT_CODE_LINK_UNREADABLE)
 		}
 	}
 

@@ -99,10 +99,10 @@ func inductionRequest() []byte {
 // as the leg answering.
 func inductionAnswer(p []byte) (string, error) {
 	if len(p) < srtPacketBytes {
-		return "", fmt.Errorf("answered %d bytes, which is no SRT handshake", len(p))
+		return "", fmt.Errorf("%d bytes", len(p))
 	}
 	if leading := binary.BigEndian.Uint32(p); leading != srtControlHandshake {
-		return "", fmt.Errorf("answered %#08x, which is no SRT handshake", leading)
+		return "", fmt.Errorf("%#08x", leading)
 	}
-	return fmt.Sprintf("handshake answered, version %d", binary.BigEndian.Uint32(p[16:])), nil
+	return fmt.Sprintf("HSv%d", binary.BigEndian.Uint32(p[16:])), nil
 }

@@ -1,4 +1,5 @@
 using ScreenShare.App.Controls;
+using ScreenShare.App.Copy;
 using ScreenShare.App.Features.Fields.ViewModel;
 using ScreenShare.App.Features.Setup.Model;
 using ScreenShare.App.Features.Setup.ViewModel;
@@ -101,14 +102,15 @@ public sealed class ChecksCardTests
         var form = await backend.ResolveFormAsync(await backend.SettingsAsync());
         var flow = await FlowAsync(backend);
 
-        Assert.NotEqual("", form.Summary.CommandError);
+        var refusal = Refusals.Of(form.Summary.CommandRefusal);
+        Assert.Contains("ffmpeg", refusal);
 
         foreach (var step in flow.Steps.ToList())
         {
             flow.CurrentStep = step.Key;
 
             Assert.True(flow.Checks.IsShown);
-            Assert.Equal(form.Summary.CommandError, flow.Checks.Refusal);
+            Assert.Equal(refusal, flow.Checks.Refusal);
         }
     }
 

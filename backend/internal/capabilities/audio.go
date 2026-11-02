@@ -1,7 +1,7 @@
 package capabilities
 
 import (
-	"fmt"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
@@ -179,7 +179,7 @@ func ValidateAudio(engine, audioCodec string) error {
 	}
 	a, ok := GetAudio(audioCodec)
 	if !ok {
-		return fmt.Errorf("unknown audio codec %q", audioCodec)
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.AudioCodec(audioCodec))
 	}
 	if _, ok := a.EncoderOn(engine); ok {
 		return nil
@@ -187,9 +187,8 @@ func ValidateAudio(engine, audioCodec string) error {
 	gap, ok := a.EngineGap(engine)
 	// A row an engine cannot code states why,
 	// so a surface greying it names the missing element rather than reporting a short table.
-	// The refusal here names identifiers alone, for the reason Validate's do.
 	assert.Assert(ok, "an audio codec an engine cannot code states why", audioCodec, engine)
 	assert.Assert(gap.Reason != screensharev1.TextCode_TEXT_CODE_UNSPECIFIED,
 		"an audio codec gap names which fact it is", audioCodec, engine)
-	return fmt.Errorf("audio codec %s has no %s encoder", audioCodec, engine)
+	return text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_AUDIO_ENCODER, text.Engine(engine), text.AudioCodec(audioCodec))
 }

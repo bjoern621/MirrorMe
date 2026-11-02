@@ -10,11 +10,12 @@ package discordclient
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
@@ -74,7 +75,7 @@ func (c *Client) Presence(base, linkSecret string) (Answer, error) {
 	assert.IsNotNil(c.http, "a client calls through a transport")
 
 	if base == "" {
-		return Answer{}, errors.New("Discord mode is served by a manager, and no relay is named to reach one at")
+		return Answer{}, text.Fail(screensharev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
 	}
 
 	var answer Answer
@@ -93,7 +94,7 @@ func (c *Client) Token(base, linkSecret string) (token, prefix string, err error
 	assert.IsNotNil(c.http, "a client calls through a transport")
 
 	if base == "" {
-		return "", "", errors.New("a relay token is brokered by the manager, and no relay is named to reach one at")
+		return "", "", text.Fail(screensharev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
 	}
 
 	var answer struct {
@@ -104,7 +105,7 @@ func (c *Client) Token(base, linkSecret string) (token, prefix string, err error
 		return "", "", err
 	}
 	if answer.Token == "" {
-		return "", "", fmt.Errorf("the manager at %s answered with no relay access token", base)
+		return "", "", text.Fail(screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(base))
 	}
 	return answer.Token, answer.Prefix, nil
 }
@@ -116,18 +117,16 @@ func (c *Client) send(method, address, linkSecret string, into any) error {
 	assert.IsNotNil(into, "a call names where its answer is read into", method, address)
 
 	encoded, err := json.Marshal(map[string]string{"linkSecret": linkSecret})
-	if err != nil {
-		return fmt.Errorf("rendering a request to %s: %v", address, err)
-	}
+	assert.IsNil(err, "a request body is plain data that always encodes", method, address)
 	request, err := http.NewRequest(method, address, strings.NewReader(string(encoded)))
 	if err != nil {
-		return fmt.Errorf("addressing %s: %v", address, err)
+		return text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(address))
 	}
 	request.Header.Set("Content-Type", "application/json")
 
 	resp, err := c.http.Do(request)
 	if err != nil {
-		return fmt.Errorf("the manager at %s cannot be reached: %v", address, err)
+		return text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNANSWERED, text.Address(address))
 	}
 	defer resp.Body.Close()
 
@@ -135,16 +134,15 @@ func (c *Client) send(method, address, linkSecret string, into any) error {
 		var refusal struct {
 			Error string `json:"error"`
 		}
+		reason := resp.Status
 		if json.NewDecoder(resp.Body).Decode(&refusal) == nil && refusal.Error != "" {
-			return &groupclient.Refusal{Status: resp.StatusCode, Reason: refusal.Error}
+			reason = refusal.Error
 		}
-		return &groupclient.Refusal{
-			Status: resp.StatusCode,
-			Reason: fmt.Sprintf("%s answered %s", address, resp.Status),
-		}
+		return text.Because(&groupclient.Refusal{Status: resp.StatusCode, Reason: reason},
+			screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWERED, text.Address(address))
 	}
 	if err := json.NewDecoder(resp.Body).Decode(into); err != nil {
-		return fmt.Errorf("the manager at %s answered something this app cannot read: %v", address, err)
+		return text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(address))
 	}
 	return nil
 }

@@ -38,8 +38,7 @@
 package capabilities
 
 import (
-	"fmt"
-	"strings"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
@@ -133,18 +132,6 @@ const (
 // is the whole of declaring another kind of gap:
 // the lookup, the validator and every surface read this list rather than a field per axis.
 var Options = []string{OptionChroma, OptionMode, OptionColorRange, OptionTune}
-
-// optionRefusals is how a gap on each option reads when it refuses a publish,
-// with the refused value substituted.
-// A phrase per option, "has no cbr rate-control mode" and "cannot encode pixel format yuv444p"
-// being what the message says.
-// An option with no phrase is one Validate asserts on rather than refuses generically.
-var optionRefusals = map[string]string{
-	OptionChroma:     "cannot encode pixel format %s",
-	OptionMode:       "has no %s rate-control mode",
-	OptionColorRange: "cannot encode at colour range %s",
-	OptionTune:       "does not tune for %s",
-}
 
 func knownOption(option string) bool {
 	return contains(Options, option)
@@ -294,13 +281,13 @@ type Steps struct {
 func (c Codec) ResolveSteps(mode, effort, tune string) (Steps, error) {
 	e, ok := c.Effort.Resolve(mode, effort)
 	if !ok {
-		return Steps{}, fmt.Errorf("codec %s takes no effort step %q, only %s",
-			c.Name, effort, strings.Join(c.Effort.Steps, ", "))
+		return Steps{}, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN,
+			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_EFFORT, effort))
 	}
 	t, ok := c.Tune.Resolve(mode, tune)
 	if !ok {
-		return Steps{}, fmt.Errorf("codec %s takes no tune step %q, only %s",
-			c.Name, tune, strings.Join(c.Tune.Steps, ", "))
+		return Steps{}, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN,
+			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_TUNE, tune))
 	}
 	return Steps{Effort: e, Tune: t}, nil
 }
@@ -569,32 +556,27 @@ func Validate(engine, codec string, options map[string]string, cq, bitrateM, gop
 
 	c, ok := Get(codec)
 	if !ok {
-		return fmt.Errorf("unknown codec %q", codec)
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(codec))
 	}
 	if !c.Implemented {
-		return fmt.Errorf("codec %s is listed without an implementation", c.Name)
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_CODEC_NOT_IMPLEMENTED, text.Codec(codec))
 	}
 	// A mode outside the set matches no gap and would reach the builders,
 	// whose rate-control switches end in the cbr branch,
 	// so the encode would run at a rate control the settings never asked for.
 	if !contains(Modes, mode) {
-		return fmt.Errorf("unknown rate-control mode %q", mode)
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN,
+			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_MODE, mode))
 	}
-	// Every refusal below is the rules' answer rather than a second reading of the columns they were
-	// built from, which is what keeps a greyed control and a refused publish in step:
-	// the offered range, the greyed entry and the error here read one evaluation.
-	//
-	// The refusals name identifiers and nothing else.
-	// They are Umgebungsfehler and the same text crosses as a gRPC status,
-	// so why a limit exists is a statement a surface makes from the rule,
-	// rather than a sentence quoted into an error string (docs/ipc-api.md).
+	// Every refusal below is the rules' own reason, the statement the form greys the value with,
+	// so a greyed control and a refused publish read one evaluation.
 	v := rules.EvaluateRules(validationFacts(c, engine, options, cq, bitrateM, gop, device), codecRules())
 
 	if !v.ValueEnabled(rules.AxisCodec, c.Name) {
-		return fmt.Errorf("codec %s has no %s encoder", c.Name, engine)
+		return refusal(v.ValueReasons(rules.AxisCodec, c.Name))
 	}
 	if !contains(c.Chromas, chroma) {
-		return fmt.Errorf("codec %s cannot encode pixel format %s", c.Name, chroma)
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_CODEC_CANNOT_ENCODE_CHROMA, text.Codec(c.Name), text.Chroma(chroma))
 	}
 	// Every option is read the same way and in table order,
 	// so a codec refused on two of them names the first,
@@ -602,40 +584,53 @@ func Validate(engine, codec string, options map[string]string, cq, bitrateM, gop
 	for _, option := range Options {
 		axis, ok := optionAxes[option]
 		assert.Assert(ok, "a gappable option names the axis a rule matches it on", option)
-		if v.ValueEnabled(axis, options[option]) {
-			continue
+		if !v.ValueEnabled(axis, options[option]) {
+			return refusal(v.ValueReasons(axis, options[option]), otherReach(c.Name, engine, option, options[option])...)
 		}
-		// A driver defect is worded as one.
-		// The encoder does implement the value,
-		// so the phrase for a capability it lacks would name the wrong culprit,
-		// and the other engine drives the same driver and is no way out of it.
-		if refusedByDriver(v, axis, options[option]) {
-			return fmt.Errorf("codec %s cannot be published with %s=%s on this machine's %s driver, which miscodes it",
-				c.Name, option, options[option], device.Driver)
-		}
-		refusal, ok := optionRefusals[option]
-		assert.Assert(ok, "a gappable option states how its refusal reads", option)
-		return fmt.Errorf("codec %s %s on the %s engine%s",
-			c.Name, fmt.Sprintf(refusal, options[option]), engine,
-			reachedElsewhere(c.Name, engine, option, options[option]))
+	}
+	// A negative target is refused apart from the rules,
+	// no rule stating a floor and a scale starting at zero being one no band below it can express.
+	if cq < 0 {
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_CQ_ABOVE_CODEC_SCALE, text.Codec(c.Name), text.Engine(engine),
+			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_MODE, mode),
+			text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_CQ_MAX, int64(c.CqMaxOn(engine))))
 	}
 	// The quantizer target reaches the encoder in crf mode alone,
 	// and each encoder's knob has its own scale: 60 is a valid libvpx CQ and an error on x264.
 	// Which modes read the knob is the rule's own gate, so this asks about the value and nothing else.
-	// A negative target is refused separately,
-	// no rule stating a floor and a scale starting at zero being one no band below it can express.
-	if cq < 0 || !v.NumberAllowed(rules.AxisCq, cq) {
-		return fmt.Errorf("quantizer target %d is outside codec %s's 0-%d range on the %s engine",
-			cq, c.Name, c.CqMaxOn(engine), engine)
+	for _, number := range []struct {
+		axis  string
+		value int
+	}{{rules.AxisCq, cq}, {rules.AxisBitrateM, bitrateM}, {rules.AxisGop, gop}} {
+		if !v.NumberAllowed(number.axis, number.value) {
+			return refusal(v.NumberReasons(number.axis, number.value))
+		}
 	}
-	if !v.NumberAllowed(rules.AxisBitrateM, bitrateM) {
-		return fmt.Errorf("bitrate target %d Mbit/s is above codec %s's %d Mbit/s ceiling on the %s engine",
-			bitrateM, c.Name, c.BitrateLimitOn(engine), engine)
+	return nil
+}
+
+// refusal states a refused value as the first reason the rules give for it, with extra appended.
+// A driver defect leads: the encoder implements the value,
+// so any other reason would name the wrong culprit, and the other engine drives the same driver.
+func refusal(reasons []*screensharev1.Text, extra ...*screensharev1.TextArg) error {
+	assert.Assert(len(reasons) > 0, "a refused value carries the reason the rules refused it with")
+
+	for _, reason := range reasons {
+		if reason.GetCode() == screensharev1.TextCode_TEXT_CODE_DRIVER_DEFECT_WITHHOLDS_OPTION {
+			return text.Fail(reason.GetCode(), reason.GetArgs()...)
+		}
 	}
-	// Every mode sends the keyframe interval, so this asks about the value alone.
-	if !v.NumberAllowed(rules.AxisGop, gop) {
-		return fmt.Errorf("keyframe interval %d frames is above codec %s's %d frame ceiling on the %s engine",
-			gop, c.Name, c.GopLimitOn(engine), engine)
+	return text.Fail(reasons[0].GetCode(), append(reasons[0].GetArgs(), extra...)...)
+}
+
+// otherReach names the engine that does reach one value of one option, none where no other does.
+// A refusal naming the attempted engine alone states half the fact,
+// and the half it withholds is the one a settings file that skipped the form can act on.
+func otherReach(codec, engine, option, value string) []*screensharev1.TextArg {
+	for _, e := range Engines {
+		if e != engine && Reaches(codec, e, option, value) {
+			return []*screensharev1.TextArg{text.OtherEngine(e)}
+		}
 	}
 	return nil
 }
@@ -652,28 +647,6 @@ func refusedByDriver(v rules.Verdicts, axis, value string) bool {
 		}
 	}
 	return false
-}
-
-// reachedElsewhere names the engines that do reach one value of one option,
-// as a clause to hang off the refusal naming the engine that does not.
-// Empty where no engine reaches it, which is a fact about the format rather than about one wrapper.
-//
-// The clause exists because the engine is a setting.
-// A refusal naming only the engine the publish was attempted on states half the fact,
-// and the half it withholds is the one that can be acted on:
-// a chroma one builder cannot reach is often one the other does,
-// and a settings file that skipped the repair is the case where nothing greyed the option to say so.
-func reachedElsewhere(codec, engine, option, value string) string {
-	var others []string
-	for _, e := range Engines {
-		if e != engine && Reaches(codec, e, option, value) {
-			others = append(others, e)
-		}
-	}
-	if len(others) == 0 {
-		return ""
-	}
-	return ", only on " + strings.Join(others, " and ")
 }
 
 // validationFacts is the configuration a validation is about, as the axes read it.

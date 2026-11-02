@@ -193,7 +193,7 @@ func endOf(stream screensharev1.FrameService_FramesServer, err error) error {
 	if err == nil {
 		return nil
 	}
-	if sendErr := stream.Send(wire.FrameEndOf(err.Error())); sendErr != nil {
+	if sendErr := stream.Send(wire.FrameEndOf(err)); sendErr != nil {
 		return sendErr
 	}
 	return nil

@@ -4,10 +4,12 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"slices"
 	"strconv"
-	"strings"
 	"testing"
 	"time"
+
+	"bjoernblessin.de/screenshare/internal/text/texttest"
 
 	"bjoernblessin.de/screenshare/internal/events"
 	"bjoernblessin.de/screenshare/internal/groupclient"
@@ -171,7 +173,7 @@ func TestABrowserPageIsRefusedOnALegTheFormatDoesNotCross(t *testing.T) {
 	if err == nil {
 		t.Fatal("a WHEP page was opened for an H.265 stream, want it refused")
 	}
-	if !strings.Contains(err.Error(), "hls") {
+	if !slices.Contains(texttest.IDs(err), "hls") {
 		t.Errorf("refusal %q names no leg that would have carried the stream", err)
 	}
 }

@@ -1,8 +1,10 @@
 package capabilities
 
 import (
-	"strings"
+	"slices"
 	"testing"
+
+	"bjoernblessin.de/screenshare/internal/text/texttest"
 
 	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
 
@@ -147,11 +149,11 @@ func TestValidateRefusesADriverDefectAndNamesTheDriver(t *testing.T) {
 		if err == nil {
 			t.Fatalf("on %s: a rate control this driver miscodes must be refused", engine)
 		}
-		if !strings.Contains(err.Error(), "radeonsi") {
-			t.Errorf("on %s: the refusal names no driver: %v", engine, err)
+		if texttest.Code(err) != screensharev1.TextCode_TEXT_CODE_DRIVER_DEFECT_WITHHOLDS_OPTION {
+			t.Errorf("on %s: a driver defect refuses as one, got %v", engine, err)
 		}
-		if strings.Contains(err.Error(), "only on") {
-			t.Errorf("on %s: the refusal points at the other engine, which drives the same driver: %v", engine, err)
+		if !slices.Contains(texttest.IDs(err), "radeonsi") {
+			t.Errorf("on %s: the refusal names no driver: %v", engine, err)
 		}
 	}
 

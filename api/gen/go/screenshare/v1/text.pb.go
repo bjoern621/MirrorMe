@@ -195,6 +195,18 @@ const (
 	// Control protocol major the backend implements, and the one the shell asked for.
 	TextArgName_TEXT_ARG_NAME_PROTOCOL_MAJOR       TextArgName = 80
 	TextArgName_TEXT_ARG_NAME_ASKED_PROTOCOL_MAJOR TextArgName = 81
+	// Executable as the app looks it up: "ffmpeg", "gst-launch-1.0", "mpv".
+	TextArgName_TEXT_ARG_NAME_PROGRAM TextArgName = 82
+	// Address the app dialled, a URL or host:port, with any secret in it redacted.
+	TextArgName_TEXT_ARG_NAME_ADDRESS TextArgName = 83
+	// Encoder element property, as GStreamer names it: "bitrate", "cpb-size", "key-int-max".
+	TextArgName_TEXT_ARG_NAME_PROPERTY TextArgName = 84
+	// How long the app waited, ms.
+	TextArgName_TEXT_ARG_NAME_TIMEOUT_MS TextArgName = 85
+	// Transfer characteristic a capture carries, as the caps spell it: "smpte2084".
+	TextArgName_TEXT_ARG_NAME_TRANSFER TextArgName = 86
+	// Render nodes a machine carries: "/dev/dri/renderD128".
+	TextArgName_TEXT_ARG_NAME_DEVICES TextArgName = 87
 )
 
 // Enum value maps for TextArgName.
@@ -277,6 +289,12 @@ var (
 		79: "TEXT_ARG_NAME_KINDS",
 		80: "TEXT_ARG_NAME_PROTOCOL_MAJOR",
 		81: "TEXT_ARG_NAME_ASKED_PROTOCOL_MAJOR",
+		82: "TEXT_ARG_NAME_PROGRAM",
+		83: "TEXT_ARG_NAME_ADDRESS",
+		84: "TEXT_ARG_NAME_PROPERTY",
+		85: "TEXT_ARG_NAME_TIMEOUT_MS",
+		86: "TEXT_ARG_NAME_TRANSFER",
+		87: "TEXT_ARG_NAME_DEVICES",
 	}
 	TextArgName_value = map[string]int32{
 		"TEXT_ARG_NAME_UNSPECIFIED":          0,
@@ -356,6 +374,12 @@ var (
 		"TEXT_ARG_NAME_KINDS":                79,
 		"TEXT_ARG_NAME_PROTOCOL_MAJOR":       80,
 		"TEXT_ARG_NAME_ASKED_PROTOCOL_MAJOR": 81,
+		"TEXT_ARG_NAME_PROGRAM":              82,
+		"TEXT_ARG_NAME_ADDRESS":              83,
+		"TEXT_ARG_NAME_PROPERTY":             84,
+		"TEXT_ARG_NAME_TIMEOUT_MS":           85,
+		"TEXT_ARG_NAME_TRANSFER":             86,
+		"TEXT_ARG_NAME_DEVICES":              87,
 	}
 )
 
@@ -585,6 +609,7 @@ const (
 	// A device path with no conversion on it has nothing that can resize,
 	// so a scaled picture is out of reach there.
 	// TEXT_ARG_NAME_CAPTURE, TEXT_ARG_NAME_CODEC, TEXT_ARG_NAME_MEMORY for the way across.
+	// A refused run carries TEXT_ARG_NAME_WIDTH and TEXT_ARG_NAME_HEIGHT for the size asked for.
 	TextCode_TEXT_CODE_DEVICE_PATH_HAS_NO_SCALER TextCode = 44
 	// Frames stay on the GPU, so nothing is downloaded and no mapping device is chosen.
 	// No arguments.
@@ -705,8 +730,6 @@ const (
 	TextCode_TEXT_CODE_GST_RAV1ENC_NO_KEYFRAME_INTERVAL   TextCode = 82
 	TextCode_TEXT_CODE_GST_NVENC_NO_RATE_BUFFER           TextCode = 83
 	TextCode_TEXT_CODE_GST_QSV_NO_RATE_BUFFER             TextCode = 84
-	TextCode_TEXT_CODE_NVENC_CQ_BITRATE_CAPS_BURSTS       TextCode = 85
-	TextCode_TEXT_CODE_GST_VPX_CQ_BITRATE_IS_CAP          TextCode = 86
 	TextCode_TEXT_CODE_FIXED_FUNCTION_ABR_DERIVES_CEILING TextCode = 87
 	TextCode_TEXT_CODE_AMF_CODES_NO_BFRAMES               TextCode = 88
 	// The VA elements count effort over a fixed 1 to 7,
@@ -770,11 +793,7 @@ const (
 	// TEXT_ARG_NAME_AUDIO names the source, TEXT_ARG_NAME_ENGINE the engine that cannot,
 	// and TEXT_ARG_NAME_OTHER_ENGINE the one that can.
 	TextCode_TEXT_CODE_AUDIO_SOURCE_UNSERVED_BY_ENGINE TextCode = 128
-	// No engine can build these settings,
-	// and Summary.command_error carries the builder's own refusal.
-	// The one statement that quotes a raw string,
-	// because what refused is an operational failure rather than a fact about the domain:
-	// the same text crosses as a gRPC status when the publish is attempted.
+	// No command renders from these settings; Summary.command_refusal says why.
 	// No arguments.
 	TextCode_TEXT_CODE_PUBLISH_REFUSED TextCode = 130
 	// No uplink capacity is stated, so there is nothing to hold the prediction against.
@@ -989,6 +1008,170 @@ const (
 	TextCode_TEXT_CODE_LOGS_FOLDER_UNOPENED   TextCode = 250
 	TextCode_TEXT_CODE_UPLINK_UNMEASURED      TextCode = 251
 	TextCode_TEXT_CODE_ENCODE_RATE_UNMEASURED TextCode = 252
+	// An identifier no table of this build holds.
+	// Exactly one identifier argument, its name the axis: TEXT_ARG_NAME_CODEC, TEXT_ARG_NAME_TRANSPORT,
+	// TEXT_ARG_NAME_CAPTURE, TEXT_ARG_NAME_AUDIO_CODEC, TEXT_ARG_NAME_RTSP_PROTOCOL, TEXT_ARG_NAME_VALUE.
+	TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN TextCode = 260
+	// An engine with no form for one identifier.
+	// TEXT_ARG_NAME_ENGINE, and one identifier argument as above,
+	// or TEXT_ARG_NAME_FAMILY, TEXT_ARG_NAME_CHROMA, TEXT_ARG_NAME_COLOR_RANGE, TEXT_ARG_NAME_FORMAT.
+	TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM TextCode = 261
+	// TEXT_ARG_NAME_FPS, at zero or below.
+	TextCode_TEXT_CODE_FPS_NOT_POSITIVE TextCode = 262
+	// TEXT_ARG_NAME_PROGRAM, found neither on PATH nor beside the app.
+	TextCode_TEXT_CODE_PROGRAM_MISSING TextCode = 263
+	// TEXT_ARG_NAME_PROGRAM, which the OS would not start.
+	TextCode_TEXT_CODE_PROGRAM_UNSTARTED TextCode = 264
+	// TEXT_ARG_NAME_PROGRAM, which ended with a failure; Refusal.message or the state's raw string
+	// carries its exit status.
+	TextCode_TEXT_CODE_PROGRAM_EXITED TextCode = 265
+	// TEXT_ARG_NAME_PATH.
+	TextCode_TEXT_CODE_FILE_UNWRITABLE TextCode = 266
+	TextCode_TEXT_CODE_FILE_UNREADABLE TextCode = 267
+	// An X capture with DISPLAY unset. TEXT_ARG_NAME_CAPTURE.
+	TextCode_TEXT_CODE_DISPLAY_UNSET TextCode = 268
+	// No render node under /dev/dri. No arguments.
+	TextCode_TEXT_CODE_NO_RENDER_NODE TextCode = 269
+	// No DRM card under /dev/dri drives a display, so kmsgrab has nothing to read. No arguments.
+	TextCode_TEXT_CODE_NO_SCANOUT_CARD TextCode = 270
+	// No loopback port for the local preview. No arguments.
+	TextCode_TEXT_CODE_LOOPBACK_PORT_UNAVAILABLE TextCode = 271
+	// The service at TEXT_ARG_NAME_ADDRESS did not answer.
+	TextCode_TEXT_CODE_ADDRESS_UNANSWERED TextCode = 272
+	// The service at TEXT_ARG_NAME_ADDRESS answered with a failure, whose status line rides as words.
+	TextCode_TEXT_CODE_ADDRESS_ANSWERED TextCode = 273
+	// The answer from TEXT_ARG_NAME_ADDRESS broke off, does not parse or lacks what was asked for.
+	TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE TextCode = 274
+	// TEXT_ARG_NAME_ADDRESS does not parse as an address.
+	TextCode_TEXT_CODE_ADDRESS_UNREADABLE TextCode = 275
+	// The HLS playlist at TEXT_ARG_NAME_ADDRESS names no video rendition.
+	TextCode_TEXT_CODE_PLAYLIST_NO_VIDEO TextCode = 276
+	// The HLS playlist at TEXT_ARG_NAME_ADDRESS carried no segment within TEXT_ARG_NAME_TIMEOUT_MS.
+	TextCode_TEXT_CODE_PLAYLIST_NO_SEGMENT TextCode = 277
+	// An encoder element property stops short of what the settings drive it at.
+	// TEXT_ARG_NAME_FAMILY, TEXT_ARG_NAME_PROPERTY, TEXT_ARG_NAME_COUNT_LIMIT for where it stops,
+	// TEXT_ARG_NAME_COUNT for what the settings ask, both in the property's own unit.
+	TextCode_TEXT_CODE_ENCODER_PROPERTY_BOUND TextCode = 278
+	// The va elements take a VBR target as a percentage of the ceiling,
+	// TEXT_ARG_NAME_COUNT_LIMIT at the lowest.
+	// TEXT_ARG_NAME_BITRATE_MBPS and TEXT_ARG_NAME_MAXRATE_MBPS.
+	TextCode_TEXT_CODE_VA_VBR_TARGET_BELOW_FLOOR TextCode = 279
+	// SRT stream id of TEXT_ARG_NAME_COUNT bytes, the protocol carrying TEXT_ARG_NAME_COUNT_LIMIT.
+	TextCode_TEXT_CODE_STREAM_ID_TOO_LONG TextCode = 280
+	// The ScreenCast portal did not hand over a stream. No arguments.
+	TextCode_TEXT_CODE_PORTAL_UNANSWERED TextCode = 281
+	// An HDR capture coded at eight bits.
+	// TEXT_ARG_NAME_TRANSFER, TEXT_ARG_NAME_CHROMA asked for, TEXT_ARG_NAME_VALUE the chroma that keeps ten.
+	TextCode_TEXT_CODE_HDR_CAPTURE_EIGHT_BIT TextCode = 282
+	// KMSGRAB_DRM_MAP names no download strategy. TEXT_ARG_NAME_VALUE.
+	TextCode_TEXT_CODE_DRM_MAP_UNKNOWN TextCode = 284
+	// Audio source TEXT_ARG_NAME_AUDIO names no device to open.
+	TextCode_TEXT_CODE_AUDIO_DEVICE_UNNAMED TextCode = 285
+	// The running pipeline's control channel could not be reached. No arguments.
+	TextCode_TEXT_CODE_PIPELINE_UNREACHABLE TextCode = 286
+	// TEXT_ARG_NAME_CODEC produces TEXT_ARG_NAME_FORMAT, which has no local preview leg.
+	TextCode_TEXT_CODE_PREVIEW_HAS_NO_LEG TextCode = 287
+	// The user's config directory is not known on this system. No arguments.
+	TextCode_TEXT_CODE_CONFIG_DIR_UNKNOWN TextCode = 288
+	// Capture backend TEXT_ARG_NAME_CAPTURE records no TEXT_ARG_NAME_AUDIO audio.
+	TextCode_TEXT_CODE_CAPTURE_RECORDS_NO_AUDIO TextCode = 290
+	// No GStreamer element records TEXT_ARG_NAME_AUDIO audio on TEXT_ARG_NAME_OS.
+	TextCode_TEXT_CODE_NO_ELEMENT_RECORDS_AUDIO TextCode = 291
+	// An output option or destination holding a character the tee muxer splits on.
+	// TEXT_ARG_NAME_OPTION names the option, absent where the destination holds it.
+	TextCode_TEXT_CODE_TEE_SLAVE_UNSPELLABLE TextCode = 292
+	// Frame memory on the GPU asked for a pair with no GPU path on this engine.
+	// TEXT_ARG_NAME_CAPTURE, TEXT_ARG_NAME_FAMILY, TEXT_ARG_NAME_ENGINE.
+	TextCode_TEXT_CODE_FRAME_MEMORY_NO_DEVICE_PATH TextCode = 293
+	// Frame memory on the GPU asked for a pair that reaches the GPU only with the encoder converting.
+	// TEXT_ARG_NAME_CAPTURE, TEXT_ARG_NAME_FAMILY, TEXT_ARG_NAME_ENGINE.
+	TextCode_TEXT_CODE_FRAME_MEMORY_TRADES_COLOUR TextCode = 294
+	// The capture names no GPU and the machine carries several, TEXT_ARG_NAME_DEVICES.
+	TextCode_TEXT_CODE_GPU_UNDETERMINED TextCode = 295
+	// The settings name no relay, so there is no group service or Discord manager to ask.
+	// No arguments.
+	TextCode_TEXT_CODE_RELAY_UNNAMED TextCode = 296
+	// The named relay names no group service to draw a group key at. No arguments.
+	TextCode_TEXT_CODE_GROUP_SERVICE_UNNAMED TextCode = 297
+	// No relay token came back for this machine's group. No arguments.
+	TextCode_TEXT_CODE_RELAY_TOKEN_UNDRAWN TextCode = 298
+	// The file at TEXT_ARG_NAME_PATH does not parse.
+	TextCode_TEXT_CODE_FILE_CORRUPT TextCode = 299
+	// The operating system's random source answered nothing. No arguments.
+	TextCode_TEXT_CODE_RANDOM_UNAVAILABLE TextCode = 300
+	// The ScreenCast portal answered a call with a failure.
+	// TEXT_ARG_NAME_VALUE names the call: "CreateSession", "SelectSources", "Start".
+	TextCode_TEXT_CODE_PORTAL_CALL_FAILED TextCode = 301
+	// The ScreenCast portal serves none of the source kinds a capture asks for. No arguments.
+	TextCode_TEXT_CODE_PORTAL_NO_SOURCE_KIND TextCode = 302
+	// The D-Bus session bus could not be reached. No arguments.
+	TextCode_TEXT_CODE_SESSION_BUS_UNREACHABLE TextCode = 303
+	// The decode process did not answer. No arguments.
+	TextCode_TEXT_CODE_DECODE_HOST_UNANSWERED TextCode = 304
+	// No decode process is running. No arguments.
+	TextCode_TEXT_CODE_DECODE_HOST_DOWN TextCode = 305
+	// The receive pipeline for TEXT_ARG_NAME_STREAM could not be built.
+	TextCode_TEXT_CODE_RECEIVE_PIPELINE_UNBUILT TextCode = 306
+	// Frames reach no window on TEXT_ARG_NAME_OS.
+	TextCode_TEXT_CODE_FRAMES_NEED_PLAYER TextCode = 307
+	// Frames arrived in TEXT_ARG_NAME_FORMAT, a pixel format no window here imports.
+	TextCode_TEXT_CODE_FRAMES_FORMAT_UNIMPORTABLE TextCode = 308
+	// This machine exports no dmabuf for the decoded frames. No arguments.
+	TextCode_TEXT_CODE_FRAMES_NO_DMABUF TextCode = 309
+	// The window reading the frames stopped before it was told where they are. No arguments.
+	TextCode_TEXT_CODE_FRAMES_CONSUMER_GONE TextCode = 310
+	// The frame pool could not be shared with the window. Words carry the system's reason.
+	TextCode_TEXT_CODE_FRAMES_UNSHARED TextCode = 311
+	// The link does not parse as a link. No arguments.
+	TextCode_TEXT_CODE_LINK_UNREADABLE TextCode = 312
+	// The link opens with a scheme or host this app does not open. TEXT_ARG_NAME_VALUE.
+	TextCode_TEXT_CODE_LINK_NOT_OURS TextCode = 313
+	// The link names no group or no stream. No arguments.
+	TextCode_TEXT_CODE_LINK_INCOMPLETE TextCode = 314
+	// Stream name TEXT_ARG_NAME_STREAM has more than two path segments.
+	TextCode_TEXT_CODE_STREAM_NAME_TOO_DEEP TextCode = 315
+	// A group key does not decode. No arguments.
+	TextCode_TEXT_CODE_GROUP_KEY_UNREADABLE TextCode = 316
+	// A member secret does not decode. No arguments.
+	TextCode_TEXT_CODE_MEMBER_SECRET_UNREADABLE TextCode = 317
+	// No downloaded release waits to be installed. No arguments.
+	TextCode_TEXT_CODE_UPDATE_NOT_STAGED TextCode = 318
+	// The archive at TEXT_ARG_NAME_PATH is not one this app unpacks.
+	TextCode_TEXT_CODE_ARCHIVE_UNREADABLE TextCode = 319
+	// The encode probe ran past TEXT_ARG_NAME_TIMEOUT_MS.
+	TextCode_TEXT_CODE_ENCODE_PROBE_TIMED_OUT TextCode = 320
+	// A measurement finished with no time to divide by. No arguments.
+	TextCode_TEXT_CODE_MEASURE_HAS_NO_TIME TextCode = 321
+	// The channel's group changed between two reads. No arguments.
+	TextCode_TEXT_CODE_GROUP_MOVED TextCode = 322
+	// Nothing came back from the browser within TEXT_ARG_NAME_TIMEOUT_MS.
+	TextCode_TEXT_CODE_DISCORD_LINK_TIMED_OUT TextCode = 323
+	// The browser did not open. No arguments.
+	TextCode_TEXT_CODE_BROWSER_UNOPENED TextCode = 324
+	// A publish runs already. No arguments.
+	TextCode_TEXT_CODE_ALREADY_PUBLISHING TextCode = 325
+	// Nothing publishes. No arguments.
+	TextCode_TEXT_CODE_NOTHING_PUBLISHING TextCode = 326
+	// Nothing decodes TEXT_ARG_NAME_STREAM over TEXT_ARG_NAME_TRANSPORT.
+	TextCode_TEXT_CODE_NOTHING_DECODING TextCode = 327
+	// Nothing previews monitor TEXT_ARG_NAME_MONITOR.
+	TextCode_TEXT_CODE_MONITOR_NOT_PREVIEWING TextCode = 328
+	// The running publish has no local preview. No arguments.
+	TextCode_TEXT_CODE_PREVIEW_NOT_RUNNING TextCode = 329
+	// The linked stream is shared in another voice channel. No arguments.
+	TextCode_TEXT_CODE_LINK_OTHER_VOICE_CHANNEL TextCode = 330
+	// The linked stream is in another group. No arguments.
+	TextCode_TEXT_CODE_LINK_OTHER_GROUP TextCode = 331
+	// Nothing publishes the linked stream on the relay. No arguments.
+	TextCode_TEXT_CODE_STREAM_NOT_ON_RELAY TextCode = 332
+	// Output resolution TEXT_ARG_NAME_VALUE does not read as WIDTHxHEIGHT.
+	TextCode_TEXT_CODE_OUTPUT_SIZE_UNREADABLE TextCode = 333
+	// Output resolution TEXT_ARG_NAME_VALUE is below TEXT_ARG_NAME_COUNT_LIMIT pixels on a side.
+	TextCode_TEXT_CODE_OUTPUT_SIZE_BELOW_FLOOR TextCode = 334
+	// Output resolution TEXT_ARG_NAME_VALUE is odd on a side, and every chroma subsampling needs it even.
+	TextCode_TEXT_CODE_OUTPUT_SIZE_ODD TextCode = 335
+	// The screen picker was closed without a pick. No arguments.
+	TextCode_TEXT_CODE_PORTAL_DISMISSED TextCode = 336
 )
 
 // Enum value maps for TextCode.
@@ -1079,8 +1262,6 @@ var (
 		82:  "TEXT_CODE_GST_RAV1ENC_NO_KEYFRAME_INTERVAL",
 		83:  "TEXT_CODE_GST_NVENC_NO_RATE_BUFFER",
 		84:  "TEXT_CODE_GST_QSV_NO_RATE_BUFFER",
-		85:  "TEXT_CODE_NVENC_CQ_BITRATE_CAPS_BURSTS",
-		86:  "TEXT_CODE_GST_VPX_CQ_BITRATE_IS_CAP",
 		87:  "TEXT_CODE_FIXED_FUNCTION_ABR_DERIVES_CEILING",
 		88:  "TEXT_CODE_AMF_CODES_NO_BFRAMES",
 		158: "TEXT_CODE_FFMPEG_VAAPI_QUALITY_IS_THE_DRIVERS_SCALE",
@@ -1197,6 +1378,81 @@ var (
 		250: "TEXT_CODE_LOGS_FOLDER_UNOPENED",
 		251: "TEXT_CODE_UPLINK_UNMEASURED",
 		252: "TEXT_CODE_ENCODE_RATE_UNMEASURED",
+		260: "TEXT_CODE_IDENTIFIER_UNKNOWN",
+		261: "TEXT_CODE_ENGINE_HAS_NO_FORM",
+		262: "TEXT_CODE_FPS_NOT_POSITIVE",
+		263: "TEXT_CODE_PROGRAM_MISSING",
+		264: "TEXT_CODE_PROGRAM_UNSTARTED",
+		265: "TEXT_CODE_PROGRAM_EXITED",
+		266: "TEXT_CODE_FILE_UNWRITABLE",
+		267: "TEXT_CODE_FILE_UNREADABLE",
+		268: "TEXT_CODE_DISPLAY_UNSET",
+		269: "TEXT_CODE_NO_RENDER_NODE",
+		270: "TEXT_CODE_NO_SCANOUT_CARD",
+		271: "TEXT_CODE_LOOPBACK_PORT_UNAVAILABLE",
+		272: "TEXT_CODE_ADDRESS_UNANSWERED",
+		273: "TEXT_CODE_ADDRESS_ANSWERED",
+		274: "TEXT_CODE_ADDRESS_ANSWER_UNREADABLE",
+		275: "TEXT_CODE_ADDRESS_UNREADABLE",
+		276: "TEXT_CODE_PLAYLIST_NO_VIDEO",
+		277: "TEXT_CODE_PLAYLIST_NO_SEGMENT",
+		278: "TEXT_CODE_ENCODER_PROPERTY_BOUND",
+		279: "TEXT_CODE_VA_VBR_TARGET_BELOW_FLOOR",
+		280: "TEXT_CODE_STREAM_ID_TOO_LONG",
+		281: "TEXT_CODE_PORTAL_UNANSWERED",
+		282: "TEXT_CODE_HDR_CAPTURE_EIGHT_BIT",
+		284: "TEXT_CODE_DRM_MAP_UNKNOWN",
+		285: "TEXT_CODE_AUDIO_DEVICE_UNNAMED",
+		286: "TEXT_CODE_PIPELINE_UNREACHABLE",
+		287: "TEXT_CODE_PREVIEW_HAS_NO_LEG",
+		288: "TEXT_CODE_CONFIG_DIR_UNKNOWN",
+		290: "TEXT_CODE_CAPTURE_RECORDS_NO_AUDIO",
+		291: "TEXT_CODE_NO_ELEMENT_RECORDS_AUDIO",
+		292: "TEXT_CODE_TEE_SLAVE_UNSPELLABLE",
+		293: "TEXT_CODE_FRAME_MEMORY_NO_DEVICE_PATH",
+		294: "TEXT_CODE_FRAME_MEMORY_TRADES_COLOUR",
+		295: "TEXT_CODE_GPU_UNDETERMINED",
+		296: "TEXT_CODE_RELAY_UNNAMED",
+		297: "TEXT_CODE_GROUP_SERVICE_UNNAMED",
+		298: "TEXT_CODE_RELAY_TOKEN_UNDRAWN",
+		299: "TEXT_CODE_FILE_CORRUPT",
+		300: "TEXT_CODE_RANDOM_UNAVAILABLE",
+		301: "TEXT_CODE_PORTAL_CALL_FAILED",
+		302: "TEXT_CODE_PORTAL_NO_SOURCE_KIND",
+		303: "TEXT_CODE_SESSION_BUS_UNREACHABLE",
+		304: "TEXT_CODE_DECODE_HOST_UNANSWERED",
+		305: "TEXT_CODE_DECODE_HOST_DOWN",
+		306: "TEXT_CODE_RECEIVE_PIPELINE_UNBUILT",
+		307: "TEXT_CODE_FRAMES_NEED_PLAYER",
+		308: "TEXT_CODE_FRAMES_FORMAT_UNIMPORTABLE",
+		309: "TEXT_CODE_FRAMES_NO_DMABUF",
+		310: "TEXT_CODE_FRAMES_CONSUMER_GONE",
+		311: "TEXT_CODE_FRAMES_UNSHARED",
+		312: "TEXT_CODE_LINK_UNREADABLE",
+		313: "TEXT_CODE_LINK_NOT_OURS",
+		314: "TEXT_CODE_LINK_INCOMPLETE",
+		315: "TEXT_CODE_STREAM_NAME_TOO_DEEP",
+		316: "TEXT_CODE_GROUP_KEY_UNREADABLE",
+		317: "TEXT_CODE_MEMBER_SECRET_UNREADABLE",
+		318: "TEXT_CODE_UPDATE_NOT_STAGED",
+		319: "TEXT_CODE_ARCHIVE_UNREADABLE",
+		320: "TEXT_CODE_ENCODE_PROBE_TIMED_OUT",
+		321: "TEXT_CODE_MEASURE_HAS_NO_TIME",
+		322: "TEXT_CODE_GROUP_MOVED",
+		323: "TEXT_CODE_DISCORD_LINK_TIMED_OUT",
+		324: "TEXT_CODE_BROWSER_UNOPENED",
+		325: "TEXT_CODE_ALREADY_PUBLISHING",
+		326: "TEXT_CODE_NOTHING_PUBLISHING",
+		327: "TEXT_CODE_NOTHING_DECODING",
+		328: "TEXT_CODE_MONITOR_NOT_PREVIEWING",
+		329: "TEXT_CODE_PREVIEW_NOT_RUNNING",
+		330: "TEXT_CODE_LINK_OTHER_VOICE_CHANNEL",
+		331: "TEXT_CODE_LINK_OTHER_GROUP",
+		332: "TEXT_CODE_STREAM_NOT_ON_RELAY",
+		333: "TEXT_CODE_OUTPUT_SIZE_UNREADABLE",
+		334: "TEXT_CODE_OUTPUT_SIZE_BELOW_FLOOR",
+		335: "TEXT_CODE_OUTPUT_SIZE_ODD",
+		336: "TEXT_CODE_PORTAL_DISMISSED",
 	}
 	TextCode_value = map[string]int32{
 		"TEXT_CODE_UNSPECIFIED":                               0,
@@ -1284,8 +1540,6 @@ var (
 		"TEXT_CODE_GST_RAV1ENC_NO_KEYFRAME_INTERVAL":          82,
 		"TEXT_CODE_GST_NVENC_NO_RATE_BUFFER":                  83,
 		"TEXT_CODE_GST_QSV_NO_RATE_BUFFER":                    84,
-		"TEXT_CODE_NVENC_CQ_BITRATE_CAPS_BURSTS":              85,
-		"TEXT_CODE_GST_VPX_CQ_BITRATE_IS_CAP":                 86,
 		"TEXT_CODE_FIXED_FUNCTION_ABR_DERIVES_CEILING":        87,
 		"TEXT_CODE_AMF_CODES_NO_BFRAMES":                      88,
 		"TEXT_CODE_FFMPEG_VAAPI_QUALITY_IS_THE_DRIVERS_SCALE": 158,
@@ -1402,6 +1656,81 @@ var (
 		"TEXT_CODE_LOGS_FOLDER_UNOPENED":                      250,
 		"TEXT_CODE_UPLINK_UNMEASURED":                         251,
 		"TEXT_CODE_ENCODE_RATE_UNMEASURED":                    252,
+		"TEXT_CODE_IDENTIFIER_UNKNOWN":                        260,
+		"TEXT_CODE_ENGINE_HAS_NO_FORM":                        261,
+		"TEXT_CODE_FPS_NOT_POSITIVE":                          262,
+		"TEXT_CODE_PROGRAM_MISSING":                           263,
+		"TEXT_CODE_PROGRAM_UNSTARTED":                         264,
+		"TEXT_CODE_PROGRAM_EXITED":                            265,
+		"TEXT_CODE_FILE_UNWRITABLE":                           266,
+		"TEXT_CODE_FILE_UNREADABLE":                           267,
+		"TEXT_CODE_DISPLAY_UNSET":                             268,
+		"TEXT_CODE_NO_RENDER_NODE":                            269,
+		"TEXT_CODE_NO_SCANOUT_CARD":                           270,
+		"TEXT_CODE_LOOPBACK_PORT_UNAVAILABLE":                 271,
+		"TEXT_CODE_ADDRESS_UNANSWERED":                        272,
+		"TEXT_CODE_ADDRESS_ANSWERED":                          273,
+		"TEXT_CODE_ADDRESS_ANSWER_UNREADABLE":                 274,
+		"TEXT_CODE_ADDRESS_UNREADABLE":                        275,
+		"TEXT_CODE_PLAYLIST_NO_VIDEO":                         276,
+		"TEXT_CODE_PLAYLIST_NO_SEGMENT":                       277,
+		"TEXT_CODE_ENCODER_PROPERTY_BOUND":                    278,
+		"TEXT_CODE_VA_VBR_TARGET_BELOW_FLOOR":                 279,
+		"TEXT_CODE_STREAM_ID_TOO_LONG":                        280,
+		"TEXT_CODE_PORTAL_UNANSWERED":                         281,
+		"TEXT_CODE_HDR_CAPTURE_EIGHT_BIT":                     282,
+		"TEXT_CODE_DRM_MAP_UNKNOWN":                           284,
+		"TEXT_CODE_AUDIO_DEVICE_UNNAMED":                      285,
+		"TEXT_CODE_PIPELINE_UNREACHABLE":                      286,
+		"TEXT_CODE_PREVIEW_HAS_NO_LEG":                        287,
+		"TEXT_CODE_CONFIG_DIR_UNKNOWN":                        288,
+		"TEXT_CODE_CAPTURE_RECORDS_NO_AUDIO":                  290,
+		"TEXT_CODE_NO_ELEMENT_RECORDS_AUDIO":                  291,
+		"TEXT_CODE_TEE_SLAVE_UNSPELLABLE":                     292,
+		"TEXT_CODE_FRAME_MEMORY_NO_DEVICE_PATH":               293,
+		"TEXT_CODE_FRAME_MEMORY_TRADES_COLOUR":                294,
+		"TEXT_CODE_GPU_UNDETERMINED":                          295,
+		"TEXT_CODE_RELAY_UNNAMED":                             296,
+		"TEXT_CODE_GROUP_SERVICE_UNNAMED":                     297,
+		"TEXT_CODE_RELAY_TOKEN_UNDRAWN":                       298,
+		"TEXT_CODE_FILE_CORRUPT":                              299,
+		"TEXT_CODE_RANDOM_UNAVAILABLE":                        300,
+		"TEXT_CODE_PORTAL_CALL_FAILED":                        301,
+		"TEXT_CODE_PORTAL_NO_SOURCE_KIND":                     302,
+		"TEXT_CODE_SESSION_BUS_UNREACHABLE":                   303,
+		"TEXT_CODE_DECODE_HOST_UNANSWERED":                    304,
+		"TEXT_CODE_DECODE_HOST_DOWN":                          305,
+		"TEXT_CODE_RECEIVE_PIPELINE_UNBUILT":                  306,
+		"TEXT_CODE_FRAMES_NEED_PLAYER":                        307,
+		"TEXT_CODE_FRAMES_FORMAT_UNIMPORTABLE":                308,
+		"TEXT_CODE_FRAMES_NO_DMABUF":                          309,
+		"TEXT_CODE_FRAMES_CONSUMER_GONE":                      310,
+		"TEXT_CODE_FRAMES_UNSHARED":                           311,
+		"TEXT_CODE_LINK_UNREADABLE":                           312,
+		"TEXT_CODE_LINK_NOT_OURS":                             313,
+		"TEXT_CODE_LINK_INCOMPLETE":                           314,
+		"TEXT_CODE_STREAM_NAME_TOO_DEEP":                      315,
+		"TEXT_CODE_GROUP_KEY_UNREADABLE":                      316,
+		"TEXT_CODE_MEMBER_SECRET_UNREADABLE":                  317,
+		"TEXT_CODE_UPDATE_NOT_STAGED":                         318,
+		"TEXT_CODE_ARCHIVE_UNREADABLE":                        319,
+		"TEXT_CODE_ENCODE_PROBE_TIMED_OUT":                    320,
+		"TEXT_CODE_MEASURE_HAS_NO_TIME":                       321,
+		"TEXT_CODE_GROUP_MOVED":                               322,
+		"TEXT_CODE_DISCORD_LINK_TIMED_OUT":                    323,
+		"TEXT_CODE_BROWSER_UNOPENED":                          324,
+		"TEXT_CODE_ALREADY_PUBLISHING":                        325,
+		"TEXT_CODE_NOTHING_PUBLISHING":                        326,
+		"TEXT_CODE_NOTHING_DECODING":                          327,
+		"TEXT_CODE_MONITOR_NOT_PREVIEWING":                    328,
+		"TEXT_CODE_PREVIEW_NOT_RUNNING":                       329,
+		"TEXT_CODE_LINK_OTHER_VOICE_CHANNEL":                  330,
+		"TEXT_CODE_LINK_OTHER_GROUP":                          331,
+		"TEXT_CODE_STREAM_NOT_ON_RELAY":                       332,
+		"TEXT_CODE_OUTPUT_SIZE_UNREADABLE":                    333,
+		"TEXT_CODE_OUTPUT_SIZE_BELOW_FLOOR":                   334,
+		"TEXT_CODE_OUTPUT_SIZE_ODD":                           335,
+		"TEXT_CODE_PORTAL_DISMISSED":                          336,
 	}
 )
 
@@ -1677,7 +2006,8 @@ func (x *Text) GetArgs() []*TextArg {
 }
 
 // Refusal rides as the one detail on every status the backend serves (docs/ipc-api.md, "Errors"),
-// whose message carries the code's name and nothing a shell renders.
+// whose message carries the code's name and nothing a shell renders,
+// and on Summary.command_refusal for the start that the draft would meet.
 type Refusal struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// What was refused, with the coded reason behind it under TEXT_ARG_NAME_CAUSE.
@@ -1754,7 +2084,7 @@ const file_screenshare_v1_text_proto_rawDesc = "" +
 	"\x04args\x18\x02 \x03(\v2\x17.screenshare.v1.TextArgR\x04args\"M\n" +
 	"\aRefusal\x12(\n" +
 	"\x04text\x18\x01 \x01(\v2\x14.screenshare.v1.TextR\x04text\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage*\xcf\x11\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage*\xf6\x12\n" +
 	"\vTextArgName\x12\x1d\n" +
 	"\x19TEXT_ARG_NAME_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15TEXT_ARG_NAME_CAPTURE\x10\x01\x12\x18\n" +
@@ -1833,7 +2163,13 @@ const file_screenshare_v1_text_proto_rawDesc = "" +
 	"\x12TEXT_ARG_NAME_KIND\x10N\x12\x17\n" +
 	"\x13TEXT_ARG_NAME_KINDS\x10O\x12 \n" +
 	"\x1cTEXT_ARG_NAME_PROTOCOL_MAJOR\x10P\x12&\n" +
-	"\"TEXT_ARG_NAME_ASKED_PROTOCOL_MAJOR\x10Q\"\x04\b3\x103*\x18TEXT_ARG_NAME_ENC_PRESET*\x16TEXT_ARG_NAME_RAW_MBPS*\xfc?\n" +
+	"\"TEXT_ARG_NAME_ASKED_PROTOCOL_MAJOR\x10Q\x12\x19\n" +
+	"\x15TEXT_ARG_NAME_PROGRAM\x10R\x12\x19\n" +
+	"\x15TEXT_ARG_NAME_ADDRESS\x10S\x12\x1a\n" +
+	"\x16TEXT_ARG_NAME_PROPERTY\x10T\x12\x1c\n" +
+	"\x18TEXT_ARG_NAME_TIMEOUT_MS\x10U\x12\x1a\n" +
+	"\x16TEXT_ARG_NAME_TRANSFER\x10V\x12\x19\n" +
+	"\x15TEXT_ARG_NAME_DEVICES\x10W\"\x04\b3\x103*\x18TEXT_ARG_NAME_ENC_PRESET*\x16TEXT_ARG_NAME_RAW_MBPS*\xf5T\n" +
 	"\bTextCode\x12\x19\n" +
 	"\x15TEXT_CODE_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aTEXT_CODE_CAPTURE_WRONG_OS\x10\x01\x12#\n" +
@@ -1920,9 +2256,7 @@ const file_screenshare_v1_text_proto_rawDesc = "" +
 	"$TEXT_CODE_RAV1E_SIZES_NO_RATE_BUFFER\x10Q\x12.\n" +
 	"*TEXT_CODE_GST_RAV1ENC_NO_KEYFRAME_INTERVAL\x10R\x12&\n" +
 	"\"TEXT_CODE_GST_NVENC_NO_RATE_BUFFER\x10S\x12$\n" +
-	" TEXT_CODE_GST_QSV_NO_RATE_BUFFER\x10T\x12*\n" +
-	"&TEXT_CODE_NVENC_CQ_BITRATE_CAPS_BURSTS\x10U\x12'\n" +
-	"#TEXT_CODE_GST_VPX_CQ_BITRATE_IS_CAP\x10V\x120\n" +
+	" TEXT_CODE_GST_QSV_NO_RATE_BUFFER\x10T\x120\n" +
 	",TEXT_CODE_FIXED_FUNCTION_ABR_DERIVES_CEILING\x10W\x12\"\n" +
 	"\x1eTEXT_CODE_AMF_CODES_NO_BFRAMES\x10X\x128\n" +
 	"3TEXT_CODE_FFMPEG_VAAPI_QUALITY_IS_THE_DRIVERS_SCALE\x10\x9e\x01\x12!\n" +
@@ -2038,7 +2372,82 @@ const file_screenshare_v1_text_proto_rawDesc = "" +
 	"\x16TEXT_CODE_LOG_UNOPENED\x10\xf9\x01\x12#\n" +
 	"\x1eTEXT_CODE_LOGS_FOLDER_UNOPENED\x10\xfa\x01\x12 \n" +
 	"\x1bTEXT_CODE_UPLINK_UNMEASURED\x10\xfb\x01\x12%\n" +
-	" TEXT_CODE_ENCODE_RATE_UNMEASURED\x10\xfc\x01\"\x04\bL\x10L\"\x04\b\x7f\x10\x7f\"\x06\b\x89\x01\x10\x89\x01\"\x06\b\x8a\x01\x10\x8a\x01\"\x06\b\x8e\x01\x10\x8e\x01\"\x04\bB\x10B\"\x04\bP\x10P\"\x06\b\xa7\x01\x10\xa7\x01*%TEXT_CODE_CURSOR_METADATA_NOT_CARRIED*$TEXT_CODE_CURSOR_METADATA_LOCAL_ONLY*\x1bTEXT_CODE_COMPRESSION_RATIO*\x1aTEXT_CODE_STREAM_IS_PUBLIC**TEXT_CODE_SRT_PASSPHRASE_IS_THE_ENCRYPTION*!TEXT_CODE_PRESET_ONLY_ON_FAMILIES*\x1fTEXT_CODE_PRESET_PINNED_BY_MODE*\x1eTEXT_CODE_GST_NO_PRESET_LADDER*!TEXT_CODE_RELAY_LEG_LOOPBACK_ONLYB[ZDbjoernblessin.de/screenshare/api/gen/go/screenshare/v1;screensharev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
+	" TEXT_CODE_ENCODE_RATE_UNMEASURED\x10\xfc\x01\x12!\n" +
+	"\x1cTEXT_CODE_IDENTIFIER_UNKNOWN\x10\x84\x02\x12!\n" +
+	"\x1cTEXT_CODE_ENGINE_HAS_NO_FORM\x10\x85\x02\x12\x1f\n" +
+	"\x1aTEXT_CODE_FPS_NOT_POSITIVE\x10\x86\x02\x12\x1e\n" +
+	"\x19TEXT_CODE_PROGRAM_MISSING\x10\x87\x02\x12 \n" +
+	"\x1bTEXT_CODE_PROGRAM_UNSTARTED\x10\x88\x02\x12\x1d\n" +
+	"\x18TEXT_CODE_PROGRAM_EXITED\x10\x89\x02\x12\x1e\n" +
+	"\x19TEXT_CODE_FILE_UNWRITABLE\x10\x8a\x02\x12\x1e\n" +
+	"\x19TEXT_CODE_FILE_UNREADABLE\x10\x8b\x02\x12\x1c\n" +
+	"\x17TEXT_CODE_DISPLAY_UNSET\x10\x8c\x02\x12\x1d\n" +
+	"\x18TEXT_CODE_NO_RENDER_NODE\x10\x8d\x02\x12\x1e\n" +
+	"\x19TEXT_CODE_NO_SCANOUT_CARD\x10\x8e\x02\x12(\n" +
+	"#TEXT_CODE_LOOPBACK_PORT_UNAVAILABLE\x10\x8f\x02\x12!\n" +
+	"\x1cTEXT_CODE_ADDRESS_UNANSWERED\x10\x90\x02\x12\x1f\n" +
+	"\x1aTEXT_CODE_ADDRESS_ANSWERED\x10\x91\x02\x12(\n" +
+	"#TEXT_CODE_ADDRESS_ANSWER_UNREADABLE\x10\x92\x02\x12!\n" +
+	"\x1cTEXT_CODE_ADDRESS_UNREADABLE\x10\x93\x02\x12 \n" +
+	"\x1bTEXT_CODE_PLAYLIST_NO_VIDEO\x10\x94\x02\x12\"\n" +
+	"\x1dTEXT_CODE_PLAYLIST_NO_SEGMENT\x10\x95\x02\x12%\n" +
+	" TEXT_CODE_ENCODER_PROPERTY_BOUND\x10\x96\x02\x12(\n" +
+	"#TEXT_CODE_VA_VBR_TARGET_BELOW_FLOOR\x10\x97\x02\x12!\n" +
+	"\x1cTEXT_CODE_STREAM_ID_TOO_LONG\x10\x98\x02\x12 \n" +
+	"\x1bTEXT_CODE_PORTAL_UNANSWERED\x10\x99\x02\x12$\n" +
+	"\x1fTEXT_CODE_HDR_CAPTURE_EIGHT_BIT\x10\x9a\x02\x12\x1e\n" +
+	"\x19TEXT_CODE_DRM_MAP_UNKNOWN\x10\x9c\x02\x12#\n" +
+	"\x1eTEXT_CODE_AUDIO_DEVICE_UNNAMED\x10\x9d\x02\x12#\n" +
+	"\x1eTEXT_CODE_PIPELINE_UNREACHABLE\x10\x9e\x02\x12!\n" +
+	"\x1cTEXT_CODE_PREVIEW_HAS_NO_LEG\x10\x9f\x02\x12!\n" +
+	"\x1cTEXT_CODE_CONFIG_DIR_UNKNOWN\x10\xa0\x02\x12'\n" +
+	"\"TEXT_CODE_CAPTURE_RECORDS_NO_AUDIO\x10\xa2\x02\x12'\n" +
+	"\"TEXT_CODE_NO_ELEMENT_RECORDS_AUDIO\x10\xa3\x02\x12$\n" +
+	"\x1fTEXT_CODE_TEE_SLAVE_UNSPELLABLE\x10\xa4\x02\x12*\n" +
+	"%TEXT_CODE_FRAME_MEMORY_NO_DEVICE_PATH\x10\xa5\x02\x12)\n" +
+	"$TEXT_CODE_FRAME_MEMORY_TRADES_COLOUR\x10\xa6\x02\x12\x1f\n" +
+	"\x1aTEXT_CODE_GPU_UNDETERMINED\x10\xa7\x02\x12\x1c\n" +
+	"\x17TEXT_CODE_RELAY_UNNAMED\x10\xa8\x02\x12$\n" +
+	"\x1fTEXT_CODE_GROUP_SERVICE_UNNAMED\x10\xa9\x02\x12\"\n" +
+	"\x1dTEXT_CODE_RELAY_TOKEN_UNDRAWN\x10\xaa\x02\x12\x1b\n" +
+	"\x16TEXT_CODE_FILE_CORRUPT\x10\xab\x02\x12!\n" +
+	"\x1cTEXT_CODE_RANDOM_UNAVAILABLE\x10\xac\x02\x12!\n" +
+	"\x1cTEXT_CODE_PORTAL_CALL_FAILED\x10\xad\x02\x12$\n" +
+	"\x1fTEXT_CODE_PORTAL_NO_SOURCE_KIND\x10\xae\x02\x12&\n" +
+	"!TEXT_CODE_SESSION_BUS_UNREACHABLE\x10\xaf\x02\x12%\n" +
+	" TEXT_CODE_DECODE_HOST_UNANSWERED\x10\xb0\x02\x12\x1f\n" +
+	"\x1aTEXT_CODE_DECODE_HOST_DOWN\x10\xb1\x02\x12'\n" +
+	"\"TEXT_CODE_RECEIVE_PIPELINE_UNBUILT\x10\xb2\x02\x12!\n" +
+	"\x1cTEXT_CODE_FRAMES_NEED_PLAYER\x10\xb3\x02\x12)\n" +
+	"$TEXT_CODE_FRAMES_FORMAT_UNIMPORTABLE\x10\xb4\x02\x12\x1f\n" +
+	"\x1aTEXT_CODE_FRAMES_NO_DMABUF\x10\xb5\x02\x12#\n" +
+	"\x1eTEXT_CODE_FRAMES_CONSUMER_GONE\x10\xb6\x02\x12\x1e\n" +
+	"\x19TEXT_CODE_FRAMES_UNSHARED\x10\xb7\x02\x12\x1e\n" +
+	"\x19TEXT_CODE_LINK_UNREADABLE\x10\xb8\x02\x12\x1c\n" +
+	"\x17TEXT_CODE_LINK_NOT_OURS\x10\xb9\x02\x12\x1e\n" +
+	"\x19TEXT_CODE_LINK_INCOMPLETE\x10\xba\x02\x12#\n" +
+	"\x1eTEXT_CODE_STREAM_NAME_TOO_DEEP\x10\xbb\x02\x12#\n" +
+	"\x1eTEXT_CODE_GROUP_KEY_UNREADABLE\x10\xbc\x02\x12'\n" +
+	"\"TEXT_CODE_MEMBER_SECRET_UNREADABLE\x10\xbd\x02\x12 \n" +
+	"\x1bTEXT_CODE_UPDATE_NOT_STAGED\x10\xbe\x02\x12!\n" +
+	"\x1cTEXT_CODE_ARCHIVE_UNREADABLE\x10\xbf\x02\x12%\n" +
+	" TEXT_CODE_ENCODE_PROBE_TIMED_OUT\x10\xc0\x02\x12\"\n" +
+	"\x1dTEXT_CODE_MEASURE_HAS_NO_TIME\x10\xc1\x02\x12\x1a\n" +
+	"\x15TEXT_CODE_GROUP_MOVED\x10\xc2\x02\x12%\n" +
+	" TEXT_CODE_DISCORD_LINK_TIMED_OUT\x10\xc3\x02\x12\x1f\n" +
+	"\x1aTEXT_CODE_BROWSER_UNOPENED\x10\xc4\x02\x12!\n" +
+	"\x1cTEXT_CODE_ALREADY_PUBLISHING\x10\xc5\x02\x12!\n" +
+	"\x1cTEXT_CODE_NOTHING_PUBLISHING\x10\xc6\x02\x12\x1f\n" +
+	"\x1aTEXT_CODE_NOTHING_DECODING\x10\xc7\x02\x12%\n" +
+	" TEXT_CODE_MONITOR_NOT_PREVIEWING\x10\xc8\x02\x12\"\n" +
+	"\x1dTEXT_CODE_PREVIEW_NOT_RUNNING\x10\xc9\x02\x12'\n" +
+	"\"TEXT_CODE_LINK_OTHER_VOICE_CHANNEL\x10\xca\x02\x12\x1f\n" +
+	"\x1aTEXT_CODE_LINK_OTHER_GROUP\x10\xcb\x02\x12\"\n" +
+	"\x1dTEXT_CODE_STREAM_NOT_ON_RELAY\x10\xcc\x02\x12%\n" +
+	" TEXT_CODE_OUTPUT_SIZE_UNREADABLE\x10\xcd\x02\x12&\n" +
+	"!TEXT_CODE_OUTPUT_SIZE_BELOW_FLOOR\x10\xce\x02\x12\x1e\n" +
+	"\x19TEXT_CODE_OUTPUT_SIZE_ODD\x10\xcf\x02\x12\x1f\n" +
+	"\x1aTEXT_CODE_PORTAL_DISMISSED\x10\xd0\x02\"\x04\bL\x10L\"\x04\bU\x10U\"\x04\bV\x10V\"\x04\b\x7f\x10\x7f\"\x06\b\x89\x01\x10\x89\x01\"\x06\b\x8a\x01\x10\x8a\x01\"\x06\b\x8e\x01\x10\x8e\x01\"\x04\bB\x10B\"\x04\bP\x10P\"\x06\b\xa7\x01\x10\xa7\x01*%TEXT_CODE_CURSOR_METADATA_NOT_CARRIED*&TEXT_CODE_NVENC_CQ_BITRATE_CAPS_BURSTS*#TEXT_CODE_GST_VPX_CQ_BITRATE_IS_CAP*$TEXT_CODE_CURSOR_METADATA_LOCAL_ONLY*\x1bTEXT_CODE_COMPRESSION_RATIO*\x1aTEXT_CODE_STREAM_IS_PUBLIC**TEXT_CODE_SRT_PASSPHRASE_IS_THE_ENCRYPTION*!TEXT_CODE_PRESET_ONLY_ON_FAMILIES*\x1fTEXT_CODE_PRESET_PINNED_BY_MODE*\x1eTEXT_CODE_GST_NO_PRESET_LADDER*!TEXT_CODE_RELAY_LEG_LOOPBACK_ONLYB[ZDbjoernblessin.de/screenshare/api/gen/go/screenshare/v1;screensharev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
 
 var (
 	file_screenshare_v1_text_proto_rawDescOnce sync.Once

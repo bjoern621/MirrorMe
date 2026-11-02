@@ -1,8 +1,6 @@
 package decode
 
 import (
-	"fmt"
-
 	"bjoernblessin.de/go-utils/util/assert"
 
 	"bjoernblessin.de/screenshare/internal/receive"
@@ -67,7 +65,7 @@ func (h *Host) applyOpen(req request) response {
 		OnEnd:  func(message string) { h.decodeEnded(id, message) },
 	})
 	if err != nil {
-		return response{Err: err.Error()}
+		return response{Fail: failureOf(err)}
 	}
 
 	h.mu.Lock()
@@ -105,7 +103,7 @@ func (h *Host) applySetAudio(req request) response {
 	h.mu.Unlock()
 
 	if !present || entry.ended {
-		return response{Err: fmt.Sprintf("nothing is decoding %s", req.ID)}
+		return response{Fail: failureOf(nothingDecoding(req.ID))}
 	}
 	entry.decoder.SetAudio(req.Volume, req.Muted)
 	return response{}

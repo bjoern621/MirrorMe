@@ -2,6 +2,7 @@ package wire
 
 import (
 	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/screenshare/internal/receive"
 )
@@ -83,10 +84,11 @@ func FrameEventOf(event receive.Event) *screensharev1.FrameEvent {
 	}
 }
 
-// FrameEndOf is the sentence a subscription ended on.
-func FrameEndOf(message string) *screensharev1.FrameEvent {
+// FrameEndOf is why a subscription ended: its statement and the words beside it.
+func FrameEndOf(err error) *screensharev1.FrameEvent {
+	statement, words := text.Statement(err)
 	return &screensharev1.FrameEvent{
-		Event: &screensharev1.FrameEvent_End{End: &screensharev1.FrameEnd{Message: message}},
+		Event: &screensharev1.FrameEvent_End{End: &screensharev1.FrameEnd{Message: words, Cause: statement}},
 	}
 }
 

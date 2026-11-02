@@ -3,8 +3,11 @@ package publish
 import (
 	"reflect"
 	"slices"
-	"strings"
 	"testing"
+
+	"bjoernblessin.de/screenshare/internal/text/texttest"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
 
 	"bjoernblessin.de/screenshare/internal/platform"
 	"bjoernblessin.de/screenshare/internal/settings"
@@ -176,7 +179,7 @@ func TestABackendWhosePlatformServesNoMonitorSourceRefusesDesktopAudio(t *testin
 		if available {
 			// A backend on a serving platform is left to fail, or not, on everything else a pipeline needs.
 			// What is asserted is that the audio source was not what refused it.
-			if err != nil && strings.Contains(err.Error(), "desktop audio") {
+			if err != nil && texttest.Code(err) == screensharev1.TextCode_TEXT_CODE_CAPTURE_RECORDS_NO_AUDIO {
 				t.Errorf("%s runs on a platform serving desktop audio and must not refuse it: %v", capture, err)
 			}
 			continue
@@ -186,7 +189,7 @@ func TestABackendWhosePlatformServesNoMonitorSourceRefusesDesktopAudio(t *testin
 			t.Errorf("the %s backend reaches no desktop audio and must refuse it", capture)
 			continue
 		}
-		if !strings.Contains(err.Error(), capture) || !strings.Contains(err.Error(), platform.AudioSourceDesktop) {
+		if ids := texttest.IDs(err); !slices.Contains(ids, capture) || !slices.Contains(ids, platform.AudioSourceDesktop) {
 			t.Errorf("%s: refusal %q must name the backend and the source it cannot record", capture, err)
 		}
 	}

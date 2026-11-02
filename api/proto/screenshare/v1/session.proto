@@ -264,7 +264,10 @@ message RelayStatus {
   // An unreachable relay is an environment condition:
   // the snapshot arrives, says so, and carries the reason.
   bool reachable = 1;
+  // The network's or the relay's own words behind failure, raw (text.proto).
   string error = 2;
+  // Why the relay is unreachable, absent while it answers.
+  Text failure = 4;
   repeated RelayPath paths = 3;
 }
 

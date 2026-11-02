@@ -13,6 +13,9 @@ import (
 	"path/filepath"
 	"strings"
 
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
+
 	"bjoernblessin.de/go-utils/util/assert"
 
 	"bjoernblessin.de/screenshare/internal/release"
@@ -27,7 +30,7 @@ import (
 
 // ErrCorrupt is a download whose bytes are not what the release names.
 // Its own error so the statement a reader sees separates it from a transfer that stopped.
-var ErrCorrupt = errors.New("the download is not the file the release names")
+var ErrCorrupt = errors.New("corrupt")
 
 // digestPrefix is how the forge spells the hash it records.
 const digestPrefix = "sha256:"
@@ -69,17 +72,18 @@ func Fetch(ctx context.Context, asset release.Asset, dir string, progress func(i
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, asset.URL, nil)
 	if err != nil {
-		return "", err
+		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(asset.URL))
 	}
 
 	response, err := http.DefaultClient.Do(request)
 	if err != nil {
-		return "", err
+		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNANSWERED, text.Address(asset.URL))
 	}
 	defer func() { _ = response.Body.Close() }()
 
 	if response.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("the download answered %s", response.Status)
+		return "", text.Because(errors.New(response.Status), screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWERED,
+			text.Address(asset.URL))
 	}
 
 	path := filepath.Join(dir, asset.Name)
@@ -120,12 +124,12 @@ func Fetch(ctx context.Context, asset release.Asset, dir string, progress func(i
 // Both the length and the hash, so a transfer that stopped short is told from one that changed.
 func check(sum hash.Hash, written int64, asset release.Asset) error {
 	if asset.Size > 0 && written != asset.Size {
-		return fmt.Errorf("%w: %d bytes arrived of %d", ErrCorrupt, written, asset.Size)
+		return fmt.Errorf("%w: %d/%d bytes", ErrCorrupt, written, asset.Size)
 	}
 
 	want := strings.TrimPrefix(asset.Digest, digestPrefix)
 	if got := hex.EncodeToString(sum.Sum(nil)); !strings.EqualFold(got, want) {
-		return fmt.Errorf("%w: %s against %s", ErrCorrupt, got, want)
+		return fmt.Errorf("%w: sha256 %s, want %s", ErrCorrupt, got, want)
 	}
 	return nil
 }

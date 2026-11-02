@@ -1,7 +1,8 @@
 package app
 
 import (
-	"fmt"
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
@@ -33,7 +34,7 @@ func (a *App) SubscribeFrames(streamName, transportName string) (decode.Subscrip
 	a.procMu.Unlock()
 
 	if !present {
-		return nil, fmt.Errorf("nothing is decoding %s over %s", streamName, transportName)
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_NOTHING_DECODING, text.Stream(streamName), text.Transport(transportName))
 	}
 	return receiver.Subscribe()
 }

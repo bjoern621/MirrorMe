@@ -125,7 +125,7 @@ const (
 func PreviewSource(p platform.Info, index int) (string, error) {
 	element, gap := Session(p)
 	if gap != nil {
-		return "", fmt.Errorf("this session cannot read one monitor apart from another")
+		return "", text.Fail(gap.GetCode(), gap.GetArgs()...)
 	}
 
 	head, err := Head(element, share.MonitorTarget(index))

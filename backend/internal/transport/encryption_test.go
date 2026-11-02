@@ -130,18 +130,6 @@ func TestRtspRefusesUdpOnEveryRelay(t *testing.T) {
 	}
 }
 
-// The watch leg is the same session from the other end, so it takes the same lower transport.
-func TestTheRtspWatchLegRefusesUdpOnEveryRelay(t *testing.T) {
-	for deployment, s := range relays() {
-		if err := (RTSP{}).SetWatchOption(&s, rtspWatchProtocolKey, "udp"); err == nil {
-			t.Errorf("%s accepted a viewer receiving RTP over UDP, which arrives unencrypted", deployment)
-		}
-		if err := (RTSP{}).SetWatchOption(&s, rtspWatchProtocolKey, EncryptedRtspProtocol); err != nil {
-			t.Errorf("%s refused a viewer receiving interleaved RTP: %v", deployment, err)
-		}
-	}
-}
-
 // SRT is UDP with no TLS, so the passphrase is not one credential among several: it is the whole
 // of what makes the leg unreadable.
 // It derives from the group key, so a machine holding none derives none,

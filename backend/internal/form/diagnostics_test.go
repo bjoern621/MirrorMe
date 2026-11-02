@@ -188,14 +188,13 @@ func TestAnUnbuildableCombinationRefusesAndSaysWhy(t *testing.T) {
 		t.Error("an error diagnostic is what turns publishable false")
 	}
 
-	// The refusal itself is prose on Summary.command_error,
-	// which the diagnostic points at rather than repeats.
+	// The refusal itself rides on Summary.command_refusal, which the diagnostic points at rather than repeats.
 	sum := summarize(d, s, est)
 	if codeOf(errors[0].GetText()) != publishRefused {
 		t.Errorf("the error diagnostic reads %v, want the statement that the publish was refused",
 			codeOf(errors[0].GetText()))
 	}
-	if sum.GetCommandError() == "" {
+	if sum.GetCommandRefusal() == nil {
 		t.Error("the diagnostic says the publish was refused and the summary carries no refusal")
 	}
 	if sum.GetCommand() != "" {
@@ -209,8 +208,8 @@ func TestAHealthyConfigurationRefusesNothing(t *testing.T) {
 	est := estimate(d, s)
 
 	sum := summarize(d, s, est)
-	if sum.GetCommandError() != "" {
-		t.Fatalf("these settings are meant to build a command, and the engine refused them: %s", sum.GetCommandError())
+	if sum.GetCommandRefusal() != nil {
+		t.Fatalf("these settings are meant to build a command, and the engine refused them: %v", sum.GetCommandRefusal())
 	}
 	if sum.GetCommand() == "" {
 		t.Error("a summary that refuses nothing carries the command it would run")
@@ -363,9 +362,9 @@ func TestTheSummaryCarriesACommandOrTheReasonThereIsNone(t *testing.T) {
 	s := diagnosticTestStream()
 
 	sum := summarize(d, s, estimate(d, s))
-	if (sum.GetCommand() == "") == (sum.GetCommandError() == "") {
-		t.Errorf("the summary carries command %q and refusal %q, and it states exactly one",
-			sum.GetCommand(), sum.GetCommandError())
+	if (sum.GetCommand() == "") == (sum.GetCommandRefusal() == nil) {
+		t.Errorf("the summary carries command %q and refusal %v, and it states exactly one",
+			sum.GetCommand(), sum.GetCommandRefusal())
 	}
 }
 

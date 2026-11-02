@@ -102,13 +102,9 @@ func (a *App) publishEnded(run *publishRun, err error, stderrTail string, logPat
 	message := ""
 	var cause *screensharev1.Text
 	if err != nil {
-		message = err.Error()
-		if stderrTail != "" {
-			message += "\n" + stderrTail
-		}
 		// Read before the lock: the membership snapshot is written by the poll,
 		// not by anything holding procMu.
-		cause = a.membership().failure()
+		cause, message = exitFailure(err, stderrTail, a.membership().failure())
 	}
 
 	a.procMu.Lock()
@@ -217,11 +213,10 @@ func (a *App) firePublishRetry(r *publishRetry) {
 	if err != nil {
 		logger.Warnf("retry %d of the publish of '%s' has no relay token: %v", r.attempts, r.settings.Publish.Name(), err)
 		// No connection was opened, so nothing here is the relay closing one:
-		// the trade's own sentence says what happened,
-		// and the statement beside it is made only where membership stopped the trade.
-		cause := a.membership().failure()
-		a.timeline.Stop(time.Now(), cause, err.Error(), "")
-		a.emit(wire.PublishExitEvent(err.Error(), "", cause))
+		// the trade's own statement says what happened, outranked where membership stopped the trade.
+		cause, words := exitFailure(err, "", a.membership().failure())
+		a.timeline.Stop(time.Now(), cause, words, "")
+		a.emit(wire.PublishExitEvent(words, "", cause))
 		a.emitPublishState()
 		return
 	}
@@ -242,9 +237,9 @@ func (a *App) firePublishRetry(r *publishRetry) {
 		// The child never started, so no exit is coming to carry the chain further,
 		// and it ends here rather than on a budget nothing is spending.
 		logger.Warnf("retry %d of the publish of '%s' did not start: %v", r.attempts, r.settings.Publish.Name(), err)
-		cause := a.membership().failure()
-		a.timeline.Stop(time.Now(), cause, err.Error(), "")
-		a.emit(wire.PublishExitEvent(err.Error(), "", cause))
+		cause, words := exitFailure(err, "", a.membership().failure())
+		a.timeline.Stop(time.Now(), cause, words, "")
+		a.emit(wire.PublishExitEvent(words, "", cause))
 	}
 	a.emitPublishState()
 }

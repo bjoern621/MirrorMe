@@ -20,6 +20,9 @@ import (
 	"strconv"
 	"strings"
 
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
+
 	"bjoernblessin.de/go-utils/util/assert"
 
 	"bjoernblessin.de/screenshare/internal/capabilities"
@@ -797,17 +800,17 @@ func (p Publish) Target() (share.Target, error) {
 	case share.Window:
 		handle, err := strconv.ParseUint(p.ShareWindow, 10, 64)
 		if err != nil || handle == 0 {
-			return share.Target{}, fmt.Errorf("no window is picked to capture")
+			return share.Target{}, text.Fail(screensharev1.TextCode_TEXT_CODE_NO_WINDOW_PICKED)
 		}
 		t.Window = handle
 		return t, nil
 	case share.Region:
 		r, ok := share.ParseRect(p.ShareRegion)
 		if !ok {
-			return share.Target{}, fmt.Errorf("no screen region is drawn to capture")
+			return share.Target{}, text.Fail(screensharev1.TextCode_TEXT_CODE_NO_REGION_PICKED)
 		}
 		t.Region = r
 		return t, nil
 	}
-	return share.Target{}, fmt.Errorf("%q is not something this app can capture", p.ShareKind)
+	return share.Target{}, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_SHARE_KIND, p.ShareKind))
 }

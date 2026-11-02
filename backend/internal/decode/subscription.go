@@ -1,8 +1,10 @@
 package decode
 
 import (
-	"errors"
 	"sync"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/screenshare/internal/receive"
 )
@@ -90,11 +92,11 @@ func (s *remoteSub) read() {
 	for {
 		var ev frameEvent
 		if err := s.conn.recv(&ev); err != nil {
-			s.finish(errors.New("the decoding process stopped"))
+			s.finish(text.Because(err, screensharev1.TextCode_TEXT_CODE_DECODE_HOST_DOWN))
 			return
 		}
-		if ev.Err != "" {
-			s.finish(errors.New(ev.Err))
+		if ev.Fail != nil {
+			s.finish(ev.Fail.err())
 			return
 		}
 		select {

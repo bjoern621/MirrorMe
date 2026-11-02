@@ -2,13 +2,14 @@ package transport
 
 import (
 	"bjoernblessin.de/go-utils/util/assert"
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
 
-	"errors"
 	"fmt"
 	"net/url"
 
 	"bjoernblessin.de/screenshare/internal/capabilities"
 	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/screenshare/internal/text"
 )
 
 // SRT streams through the relay's SRT listener, MPEG-TS inside a retransmit window.
@@ -115,19 +116,6 @@ func (SRT) GstSource(s settings.Settings, path string) []string {
 	}, srtPassphraseProperty(s)...)
 }
 
-// srtWatchKnobs are the knobs a viewer changes per stream, the settings fields GstSource and
-// WatchURL read.
-var srtWatchKnobs = []watchKnob{
-	intKnob("srtWatchLatencyMs", "SRT latency (ms)",
-		"Retransmit window of the watch leg (relay to viewer), where internet loss usually lives. "+
-			"It is display delay: a lossy remote link wants more, a LAN less. "+
-			"SRT negotiates the larger of the two ends' windows, and MediaMTX asks for 120 ms, so anything below that is raised to it.",
-		minWatchLatencyMs,
-		func(s *settings.Settings) *int { return &s.Viewer.SrtWatchLatencyMs }),
-}
-
-func (SRT) WatchOptions(s settings.Settings) []WatchOption { return knobOptions(srtWatchKnobs, s) }
-
 // ValidatePublishSettings refuses a stream id that would not survive the wire, and a stream
 // that would leave this machine unencrypted.
 //
@@ -143,17 +131,13 @@ func (SRT) WatchOptions(s settings.Settings) []WatchOption { return knobOptions(
 func (SRT) ValidatePublishSettings(s settings.Settings) error {
 	id := srtStreamID(s, "publish", s.PublishPath())
 	if !srtStreamIDFits(id) {
-		return fmt.Errorf("the SRT stream id is %d bytes and the protocol carries %d: shorten the stream name by %d characters",
-			len(id), srtStreamIDBytes, len(id)-srtStreamIDBytes)
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_STREAM_ID_TOO_LONG,
+			text.Count(len(id)), text.CountLimit(srtStreamIDBytes))
 	}
 	if s.Relay.Tls() && s.Relay.SrtPassphrase() == "" {
-		return errors.New("Sharing needs a group, and this computer is in none. Set a group key under Relay to join one.")
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_GROUP_REQUIRED)
 	}
 	return nil
-}
-
-func (t SRT) SetWatchOption(s *settings.Settings, key, value string) error {
-	return knobSet(t.Name(), srtWatchKnobs, s, key, value)
 }
 
 // srtPassphraseQuery is the passphrase as ffmpeg's srt protocol takes it, empty where the path

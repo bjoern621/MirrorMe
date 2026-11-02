@@ -24,10 +24,12 @@ package member
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
@@ -68,18 +70,18 @@ func Load(groupID string) (Identity, bool, error) {
 		return Identity{}, false, nil
 	}
 	if err != nil {
-		return Identity{}, false, fmt.Errorf("cannot read the identity file %s: %w", path, err)
+		return Identity{}, false, text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNREADABLE, text.Path(path))
 	}
 
 	var held Identity
 	if err := json.Unmarshal(data, &held); err != nil {
-		return Identity{}, false, fmt.Errorf("the identity file %s is corrupt: %w", path, err)
+		return Identity{}, false, text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_CORRUPT, text.Path(path))
 	}
 	// Read through the service's own parser,
 	// so a secret deriving a member id nobody knows is caught here
 	// rather than at a relay refusing a connection.
 	if _, err := group.ParseMemberSecret(held.Secret); err != nil {
-		return Identity{}, false, fmt.Errorf("the identity file %s holds no member secret: %w", path, err)
+		return Identity{}, false, text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_CORRUPT, text.Path(path))
 	}
 
 	assert.Assert(held.Secret != "", "a held identity carries the secret it is known by", path)
@@ -107,7 +109,7 @@ func Draw(groupID string) (Identity, error) {
 	}
 	secret, err := group.NewMemberSecret()
 	if err != nil {
-		return Identity{}, fmt.Errorf("drawing this machine's identity in group %s: %w", groupID, err)
+		return Identity{}, text.Because(err, screensharev1.TextCode_TEXT_CODE_RANDOM_UNAVAILABLE)
 	}
 	held.Secret = secret.String()
 
@@ -131,7 +133,7 @@ func Forget(groupID string) error {
 		return err
 	}
 	if err := os.Remove(path); err != nil && !errors.Is(err, fs.ErrNotExist) {
-		return fmt.Errorf("cannot drop the identity file %s: %w", path, err)
+		return text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNWRITABLE, text.Path(path))
 	}
 	return nil
 }
@@ -146,11 +148,11 @@ func identityPath(groupID string) (string, error) {
 
 	base, err := os.UserConfigDir()
 	if err != nil {
-		return "", fmt.Errorf("cannot determine user config directory: %w", err)
+		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_CONFIG_DIR_UNKNOWN)
 	}
 	dir := filepath.Join(base, configDirName, membersDirName)
 	if err := os.MkdirAll(dir, identityDirMode); err != nil {
-		return "", fmt.Errorf("cannot create identity directory %s: %w", dir, err)
+		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNWRITABLE, text.Path(dir))
 	}
 	return filepath.Join(dir, groupID+".json"), nil
 }
@@ -172,20 +174,20 @@ func writeIdentity(path string, data []byte) error {
 
 	tmp, err := os.CreateTemp(filepath.Dir(path), filepath.Base(path)+".*")
 	if err != nil {
-		return fmt.Errorf("cannot write the identity file %s: %w", path, err)
+		return text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNWRITABLE, text.Path(path))
 	}
 	// Cleans up every path that did not reach the rename, and finds nothing on the one that did.
 	defer os.Remove(tmp.Name())
 
 	if _, err := tmp.Write(data); err != nil {
 		tmp.Close()
-		return fmt.Errorf("cannot write the identity file %s: %w", path, err)
+		return text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNWRITABLE, text.Path(path))
 	}
 	if err := tmp.Close(); err != nil {
-		return fmt.Errorf("cannot write the identity file %s: %w", path, err)
+		return text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNWRITABLE, text.Path(path))
 	}
 	if err := os.Chmod(tmp.Name(), identityFileMode); err != nil {
-		return fmt.Errorf("cannot restrict %s to its owner: %w", path, err)
+		return text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNWRITABLE, text.Path(path))
 	}
 	return os.Rename(tmp.Name(), path)
 }

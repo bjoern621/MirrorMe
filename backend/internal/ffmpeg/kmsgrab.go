@@ -1,10 +1,11 @@
 package ffmpeg
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
@@ -59,7 +60,7 @@ func drmMapFor(name string) (DrmMap, error) {
 			return m, nil
 		}
 	}
-	return DrmMap{}, fmt.Errorf("DRM download strategy %q is not one of %s", name, strings.Join(drmMapNames(), ", "))
+	return DrmMap{}, text.Fail(screensharev1.TextCode_TEXT_CODE_DRM_MAP_UNKNOWN, text.Value(name))
 }
 
 // drmMapNames lists the strategy names a refusal ends in,
@@ -144,7 +145,7 @@ func drmCaptureDevice() (string, error) {
 	// filepath.Glob returns matches in lexical order, so the lowest-numbered real GPU wins.
 	cards, err := filepath.Glob("/dev/dri/card[0-9]*")
 	if err != nil {
-		return "", fmt.Errorf("cannot list the DRM card nodes under /dev/dri: %w", err)
+		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNREADABLE, text.Path("/dev/dri"))
 	}
 	for _, dev := range cards {
 		switch captureDriver(dev) {
@@ -154,7 +155,7 @@ func drmCaptureDevice() (string, error) {
 			return dev, nil
 		}
 	}
-	return "", fmt.Errorf("no DRM card node under /dev/dri carries a display driver: kmsgrab has no scanout to capture")
+	return "", text.Fail(screensharev1.TextCode_TEXT_CODE_NO_SCANOUT_CARD)
 }
 
 // captureDriver is the base name of the kernel driver bound to a /dev/dri card node: i915, amdgpu,

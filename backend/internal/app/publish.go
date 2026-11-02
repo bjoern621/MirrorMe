@@ -1,8 +1,10 @@
 package app
 
 import (
-	"fmt"
 	"time"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
@@ -137,10 +139,10 @@ func (a *App) startPublishLocked(s settings.Settings) error {
 		// so whether this start is a repeat is unanswerable.
 		// Refusing is the answer that cannot start a second encoder.
 		logger.Warnf("cannot tell whether the running publish carries the settings this start asks for: %v", err)
-		return fmt.Errorf("already publishing")
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_ALREADY_PUBLISHING)
 	}
 	if !same {
-		return fmt.Errorf("already publishing")
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_ALREADY_PUBLISHING)
 	}
 
 	logger.Debugf("'%s' is already publishing on these settings", s.Publish.Name())
@@ -283,7 +285,7 @@ func (a *App) restartPublish(s settings.Settings) error {
 
 	running := a.run != nil && a.run.handle.Running()
 	if !running && a.retry == nil {
-		return fmt.Errorf("nothing is publishing, so there is no pipeline to apply the settings to")
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_NOTHING_PUBLISHING)
 	}
 	if running && a.applyLiveLocked(s) {
 		return nil

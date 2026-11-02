@@ -270,7 +270,7 @@ func standing(held membership, id string) membership {
 
 // errNameMissing is the pass over a group key with no name beside it,
 // the one state a pass meets that the settings and not the service decide.
-var errNameMissing = errors.New("a member of a group is listed under a name, and none is set")
+var errNameMissing = text.Fail(screensharev1.TextCode_TEXT_CODE_GROUP_NAME_MISSING)
 
 // presenceTaken is the group as the service answered it.
 // Self is decided here against the member id the answer names for this machine,

@@ -350,19 +350,20 @@ message Summary {
   // Displayed for transparency.
   // Reading a value back out of it would create a second definition of that value.
   string command = 2;
-  // Why no command rendered, empty once one did.
-  // The publish builder's own refusal, crossing as a raw string and not as a Text (text.proto):
-  // the identical text arrives as a gRPC status once a publish is attempted,
-  // making it an operational failure instead of a statement about the domain.
+  // Why no command rendered, absent once one did.
+  // The publish builder's own refusal, the one a start of these settings is refused with.
   // TEXT_CODE_PUBLISH_REFUSED rides the matching diagnostic,
   // and a shell places this alongside it.
-  string command_error = 3;
+  Refusal command_refusal = 5;
   Estimate estimate = 4;
 
   // 1 was headline, shorthand for the entire configuration assembled in Go.
   // FieldGroup records why a shell assembles its own.
   reserved 1;
   reserved "headline";
+  // 3 was command_error, the same refusal as a string.
+  reserved 3;
+  reserved "command_error";
 }
 
 // The resolved answer.

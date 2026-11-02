@@ -1,7 +1,8 @@
 package app
 
 import (
-	"fmt"
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
@@ -193,7 +194,7 @@ func (a *App) SubscribePreviewFrames() (decode.Subscription, error) {
 	a.procMu.Unlock()
 
 	if run == nil {
-		return nil, fmt.Errorf("nothing is publishing with a local preview")
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_PREVIEW_NOT_RUNNING)
 	}
 	return run.receiver.Subscribe()
 }

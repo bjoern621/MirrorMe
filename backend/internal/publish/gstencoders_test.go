@@ -4,10 +4,13 @@ import (
 	"context"
 	"errors"
 	"os/exec"
+	"slices"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
+
+	"bjoernblessin.de/screenshare/internal/text/texttest"
 
 	"bjoernblessin.de/screenshare/internal/capabilities"
 	"bjoernblessin.de/screenshare/internal/ffmpeg"
@@ -189,9 +192,9 @@ func TestGstVaVbrRefusesATargetUnderHalfTheCeiling(t *testing.T) {
 	if err == nil {
 		t.Fatalf("h264_vaapi vbr at %d/%d Mbit/s must be refused, not encoded at another rate", s.Publish.BitrateM, s.Publish.MaxrateM)
 	}
-	for _, want := range []string{"20 Mbit/s", "200 Mbit/s"} {
-		if !strings.Contains(err.Error(), want) {
-			t.Errorf("the refusal %q names neither number, want %s in it", err, want)
+	for _, want := range []int64{20, 200} {
+		if !slices.Contains(texttest.Nums(err), want) {
+			t.Errorf("the refusal %v does not name %d Mbit/s", err, want)
 		}
 	}
 
@@ -231,7 +234,7 @@ func TestGstVaRefusesARateAboveTheBitrateBound(t *testing.T) {
 			if err == nil {
 				t.Fatalf("h264_vaapi %s at %d Mbit/s must be refused, not clamped", tc.mode, tc.bitrateM)
 			}
-			if !strings.Contains(err.Error(), strconv.Itoa(vaMaxBitrateKbps)) {
+			if !slices.Contains(texttest.Nums(err), vaMaxBitrateKbps) {
 				t.Errorf("the refusal %q does not name the %d kbit/s limit", err, vaMaxBitrateKbps)
 			}
 		})
@@ -271,7 +274,7 @@ func TestGstVaRefusesARateBufferAboveTheFieldItIsReadInto(t *testing.T) {
 				t.Fatalf("hevc_vaapi %s with a %d ms window on %d Mbit/s must be refused, not launched",
 					tc.mode, s.Publish.VbvMs, max(tc.bitrateM, tc.maxrateM))
 			}
-			if !strings.Contains(err.Error(), "cpb-size") {
+			if !slices.Contains(texttest.IDs(err), "cpb-size") {
 				t.Errorf("the refusal %q does not name the property it is about", err)
 			}
 		})
@@ -311,7 +314,7 @@ func TestGstQsvRefusesARateAboveTheShortBitrateBound(t *testing.T) {
 			if err == nil {
 				t.Fatalf("av1_qsv %s at %d Mbit/s must be refused, not clamped", tc.mode, tc.bitrateM)
 			}
-			if !strings.Contains(err.Error(), strconv.Itoa(qsvShortBitrateKbps)) {
+			if !slices.Contains(texttest.Nums(err), qsvShortBitrateKbps) {
 				t.Errorf("the refusal %q does not name the %d kbit/s limit", err, qsvShortBitrateKbps)
 			}
 
@@ -614,7 +617,7 @@ func TestGstVaRefusesAKeyframeIntervalAboveTheProperty(t *testing.T) {
 		t.Errorf("%d fps with no interval set codes a keyframe every %d frames, which must be refused",
 			s.Publish.Fps, gstGop(s))
 	}
-	if err != nil && !strings.Contains(err.Error(), "key-int-max") {
+	if err != nil && !slices.Contains(texttest.IDs(err), "key-int-max") {
 		t.Errorf("the refusal %q does not name the property it is about", err)
 	}
 

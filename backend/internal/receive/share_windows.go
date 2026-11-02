@@ -11,8 +11,12 @@ import "C"
 
 import (
 	"errors"
+	"fmt"
 	"runtime"
 	"unsafe"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"github.com/go-gst/go-gst/pkg/gst"
 
@@ -66,7 +70,7 @@ func onSample(sample *gst.Sample, run func(sample unsafe.Pointer, fault *C.char,
 	runtime.KeepAlive(sample)
 
 	if ok == 0 {
-		return errors.New(reason(fault))
+		return text.Because(errors.New(reason(fault)), screensharev1.TextCode_TEXT_CODE_FRAMES_UNSHARED)
 	}
 	return nil
 }
@@ -113,7 +117,7 @@ func (s *d3d11Sharer) open(sample *gst.Sample, slots int) (Pool, error) {
 
 func (s *d3d11Sharer) write(slot int, sample *gst.Sample) error {
 	if !s.opened {
-		return errors.New("no pool has been opened for these frames")
+		return text.Fail(screensharev1.TextCode_TEXT_CODE_FRAMES_UNSHARED)
 	}
 
 	return onSample(sample, func(frame unsafe.Pointer, fault *C.char, size C.int) C.int {
@@ -142,7 +146,7 @@ func shareFormat(format uint32) (ShareFormat, error) {
 	case dxgiFormatBGRA:
 		return ShareFormatBGRA, nil
 	default:
-		return "", errors.New("the frames arrived in a pixel format no window here imports")
+		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_FRAMES_FORMAT_UNIMPORTABLE, text.Format(fmt.Sprintf("dxgi-%d", format)))
 	}
 }
 

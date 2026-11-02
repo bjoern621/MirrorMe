@@ -747,16 +747,11 @@ func TestEveryGappedColourRangeIsOffered(t *testing.T) {
 	}
 }
 
-// The RTP lower transports are the same case, and the transport package declares them as the watch
-// leg's knob choices, the one place they cross a package boundary.
+// The RTP lower transports are the same case, and the transport package declares them
+// (transport.RtspProtocols), the one place they cross a package boundary.
 // Neither leg's list is built from that declaration, so both are held against it here.
 func TestEveryRtspProtocolTheTransportDeclaresIsOffered(t *testing.T) {
-	var declared []string
-	for _, o := range transport.WatchOptions("rtsp", settings.Defaults()) {
-		if o.Kind == transport.OptionChoice {
-			declared = append(declared, o.Choices...)
-		}
-	}
+	declared := transport.RtspProtocols
 	if len(declared) == 0 {
 		t.Fatal("the RTSP transport declares a lower-transport choice for its watch leg")
 	}

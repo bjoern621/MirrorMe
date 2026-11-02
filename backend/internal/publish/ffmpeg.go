@@ -1,8 +1,10 @@
 package publish
 
 import (
-	"fmt"
 	"strings"
+
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 
 	"bjoernblessin.de/go-utils/util/logger"
 
@@ -35,7 +37,7 @@ type ffmpegEngine struct{}
 func buildArgs(s settings.Settings, preview PreviewLeg, meterPort string) ([]string, error) {
 	for _, a := range s.Publish.Recorded() {
 		if available, _ := AudioAvailable(s.Publish.Capture, a.Source); !available {
-			return nil, fmt.Errorf("the %s backend cannot record %s audio", s.Publish.Capture, a.Source)
+			return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_CAPTURE_RECORDS_NO_AUDIO, text.Capture(s.Publish.Capture), text.Audio(a.Source))
 		}
 	}
 

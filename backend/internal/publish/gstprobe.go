@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"strconv"
 
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
+
 	"bjoernblessin.de/go-utils/util/assert"
 
 	"bjoernblessin.de/screenshare/internal/capabilities"
@@ -69,7 +72,7 @@ func GstEncodeProbe(s settings.Settings, width, height, frames int, heavy bool) 
 		return nil, err
 	}
 	if s.Publish.Fps <= 0 {
-		return nil, fmt.Errorf("the GStreamer publish engine needs a positive fps, got %d", s.Publish.Fps)
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_FPS_NOT_POSITIVE, text.Fps(s.Publish.Fps))
 	}
 	mem, err := gstMemory(s)
 	if err != nil {

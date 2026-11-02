@@ -8,6 +8,9 @@ import (
 	"path/filepath"
 	"sync"
 
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
+
 	"bjoernblessin.de/screenshare/internal/cursor"
 	"bjoernblessin.de/screenshare/internal/gstrun"
 	"bjoernblessin.de/screenshare/internal/settings"
@@ -50,7 +53,7 @@ func (h *gstHandle) ApplyLive(s settings.Settings) error {
 	if h.conn == nil {
 		conn, err := net.Dial("unix", h.socket)
 		if err != nil {
-			return fmt.Errorf("reaching the pipeline: %w", err)
+			return text.Because(err, screensharev1.TextCode_TEXT_CODE_PIPELINE_UNREACHABLE)
 		}
 		h.conn = conn
 	}
@@ -63,7 +66,7 @@ func (h *gstHandle) ApplyLive(s settings.Settings) error {
 		// the next apply dials again rather than reporting this one forever.
 		h.conn.Close()
 		h.conn = nil
-		return fmt.Errorf("writing to the pipeline: %w", err)
+		return text.Because(err, screensharev1.TextCode_TEXT_CODE_PIPELINE_UNREACHABLE)
 	}
 	return nil
 }

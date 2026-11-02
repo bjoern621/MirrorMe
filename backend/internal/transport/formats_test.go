@@ -8,6 +8,8 @@ import (
 	"strings"
 	"testing"
 
+	"bjoernblessin.de/screenshare/internal/text/texttest"
+
 	"bjoernblessin.de/screenshare/internal/capabilities"
 	"bjoernblessin.de/screenshare/internal/settings"
 )
@@ -275,7 +277,7 @@ func TestValidatePublish(t *testing.T) {
 	if err == nil {
 		t.Fatal("srt/MPEG-TS has no VP9 mapping and must be refused")
 	}
-	if !strings.Contains(err.Error(), "rtsp") {
-		t.Errorf("refusal %q must name the transports that carry VP9", err)
+	if !slices.Contains(texttest.IDs(err), "rtsp") {
+		t.Errorf("refusal %v must name the transports that carry VP9", err)
 	}
 }

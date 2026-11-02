@@ -268,7 +268,7 @@ A shell that could receive a bug as a status would start handling bugs, and a ha
 
 **A failure that is a state is not a status.**
 A call that succeeded and left something not working reports it on the state it belongs to, as a `Text` beside the raw words behind it.
-`ExitInfo.cause` and `ReceiveExit.cause` on a run that ended, `ReceiveStream.failure` on a decode carrying no picture, `PublishState.Retry.cause` on each attempt of a backoff, `TestStreamSlot.cause` per slot, `MembersState.refusal` on presence the group service would not take.
+`ExitInfo.cause` and `ReceiveExit.cause` on a run that ended, `ReceiveStream.failure` on a decode carrying no picture, `PublishState.Retry.cause` on each attempt of a backoff, `TestStreamSlot.cause` per slot, `MembersState.refusal` on presence the group service would not take, `RelayStatus.failure` on a relay out of reach, `FrameEnd.cause` on a frame stream that ended, `Summary.command_refusal` on settings that render no command.
 The code is what a shell writes a sentence for, and the string beside it stays raw so a child's own words reach the reader unedited (`text.proto`).
 On the status instead, the reason would belong to the one call that asked, and a shell reading the state afterwards would find a tile that is dark and nothing saying why.
 
@@ -278,7 +278,7 @@ Which code that wears is the platform's business, an absent named pipe being `IN
 Reading `UNAVAILABLE` as absence turns a relay that refused a publish into a sentence about the endpoint, on a connection the same shell had just resolved a form through.
 
 **An unreachable relay is not a call failure.**
-`Read relay_status` succeeds and returns a snapshot whose `reachable` is false, carrying the reason.
+`Read relay_status` succeeds and returns a snapshot whose `reachable` is false, with the reason in `failure`.
 The screen renders that reason as "The relay is down."
 
 The same holds one level down.
