@@ -38,8 +38,10 @@ import (
 // that hangs.
 const hlsResolveTimeout = 15 * time.Second
 
-// hlsFetchTimeout is one playlist read.
+// hlsFetchTimeout is one read of the media playlist.
 // Several fit inside hlsResolveTimeout.
+// The master read takes the whole of hlsResolveTimeout instead:
+// MediaMTX holds it until a cold muxer has cut a segment.
 const hlsFetchTimeout = 3 * time.Second
 
 // hlsResolvePoll is the wait between reads of a playlist carrying no segment.
@@ -56,9 +58,7 @@ const (
 func hlsMediaSource(s settings.Settings, masterURL string) (string, error) {
 	assert.Assert(masterURL != "", "a playlist resolve names the master it reads")
 
-	client := &http.Client{Timeout: hlsFetchTimeout}
-
-	master, err := hlsFetch(client, s, masterURL)
+	master, err := hlsFetch(&http.Client{Timeout: hlsResolveTimeout}, s, masterURL)
 	if err != nil {
 		return "", err
 	}
@@ -71,6 +71,7 @@ func hlsMediaSource(s settings.Settings, masterURL string) (string, error) {
 		return "", err
 	}
 
+	client := &http.Client{Timeout: hlsFetchTimeout}
 	deadline := time.Now().Add(hlsResolveTimeout)
 	for {
 		media, err := hlsFetch(client, s, mediaURL)

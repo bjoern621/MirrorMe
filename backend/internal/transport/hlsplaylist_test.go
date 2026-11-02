@@ -8,6 +8,7 @@ import (
 	"strings"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	"bjoernblessin.de/screenshare/internal/settings"
 )
@@ -149,6 +150,24 @@ func TestHLSResolveWaitsForASegment(t *testing.T) {
 	}
 	if got := reads.Load(); got < 2 {
 		t.Errorf("the media playlist was read %d times, want the gap one read again", got)
+	}
+}
+
+// MediaMTX holds the first master request until a cold muxer has cut a segment,
+// which takes longer than one playlist poll is given.
+func TestHLSResolveWaitsOutAColdMuxer(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, "/index.m3u8") {
+			time.Sleep(hlsFetchTimeout + 500*time.Millisecond)
+			_, _ = w.Write([]byte(masterWithAudio))
+			return
+		}
+		_, _ = w.Write([]byte(segmentPlaylist))
+	}))
+	t.Cleanup(server.Close)
+
+	if _, err := (HLS{}).ResolveGstSource(relayAt(t, server), "bob"); err != nil {
+		t.Fatalf("a master answered after %v was given up on: %v", hlsFetchTimeout, err)
 	}
 }
 
