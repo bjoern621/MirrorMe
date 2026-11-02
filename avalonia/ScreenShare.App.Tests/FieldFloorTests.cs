@@ -82,7 +82,7 @@ public sealed class FieldFloorTests
         Assert.Equal(["relay.tls"], group.Folded.Select(field => field.Key));
         Assert.Equal(3, group.Fields.Count);
         Assert.True(group.Fold.HasAny);
-        Assert.Equal("1 option", group.Fold.Count);
+        Assert.Equal("1", group.Fold.Count);
     }
 
     /// <summary>The watch panel and every other caller without a floor keeps drawing everything.</summary>
@@ -132,7 +132,7 @@ public sealed class FieldFloorTests
 
         Assert.False(step.Expert.Fold.Shown);
         Assert.True(step.Expert.Fold.HasAny);
-        Assert.Equal("2 options", step.Expert.Fold.Count);
+        Assert.Equal("2", step.Expert.Fold.Count);
     }
 
     /// <summary>The source rows stay on the floor; the format under the list is what folds.</summary>
@@ -146,7 +146,7 @@ public sealed class FieldFloorTests
 
         Assert.False(step.Fold.Shown);
         Assert.True(step.Fold.HasAny);
-        Assert.Equal("1 option", step.Fold.Count);
+        Assert.Equal("1", step.Fold.Count);
         Assert.Equal(["publish.audio_codec"], step.UnderList.Select(field => field.Key));
     }
 }

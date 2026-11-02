@@ -171,9 +171,9 @@ public static class Words
     /// <summary>What a capture is pointed at, named by the thing rather than by the mechanism.</summary>
     private static readonly Dictionary<string, string> ShareKinds = new()
     {
-        ["monitor"] = "A whole screen",
-        ["window"] = "One window",
-        ["region"] = "Part of a screen",
+        ["monitor"] = "A screen",
+        ["window"] = "A window",
+        ["region"] = "A region",
     };
 
     /// <summary>What picking one costs and gives, at the width of a radio card.</summary>
@@ -210,8 +210,8 @@ public static class Words
     private static readonly Dictionary<string, string> AudioSources = new()
     {
         ["none"] = "No audio",
-        ["desktop"] = "What this computer plays",
-        ["application"] = "One application",
+        ["desktop"] = "Everything this computer plays",
+        ["application"] = "One program",
     };
 
     private static readonly Dictionary<string, string> AudioCodecs = new()

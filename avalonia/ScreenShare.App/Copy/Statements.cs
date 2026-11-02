@@ -562,7 +562,7 @@ public static class Statements
                 + "Press Link Discord in Settings to link again.",
 
             TextCode.DiscordNoVoiceChannel =>
-                "Not in a voice channel. Join one in Discord to get a group.",
+                "Not in a voice channel. Join one in Discord to share.",
 
             TextCode.EncryptionFollowsTheAddress =>
                 "Encryption follows the relay address above. This box shows the result rather than setting it. "

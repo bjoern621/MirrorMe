@@ -93,7 +93,7 @@ public sealed class FoldViewModel : Observable
         Assert.NotNull(folded, "a fold counts the controls behind it");
 
         HasAny = folded.Count > 0;
-        Count = folded.Count > 0 ? Copy.Fields.OptionCount(folded.Count) : "";
+        Count = folded.Count > 0 ? folded.Count.ToString(System.Globalization.CultureInfo.InvariantCulture) : "";
         Impacts = Model.Impacts.Ranked(folded.SelectMany(field => field.Diagnostics));
 
         Assert.That(HasAny == (Count.Length > 0), "the disclosure and its figure agree", HasAny, Count);

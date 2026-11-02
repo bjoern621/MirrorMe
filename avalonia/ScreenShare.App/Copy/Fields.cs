@@ -290,7 +290,8 @@ public static class Fields
     {
         ["share"] = new(
             "What to share",
-            "The screen, window, or region viewers see. Everything outside it stays off the stream. On Wayland the desktop asks instead, with its own picker, so nothing here decides it."),
+            "The screen, window, or region viewers see. Everything outside it stays off the stream. On Wayland the desktop asks instead, with its own picker, so nothing here decides it.",
+            "What should viewers see?"),
 
         ["source"] = new(
             "Capture",
@@ -303,7 +304,7 @@ public static class Fields
 
         ["audio"] = new(
             "Audio",
-            "Every source below is mixed into the one track viewers hear.",
+            "Every source below is mixed into one track.",
             "What should viewers hear?"),
 
         ["transport"] = new(
