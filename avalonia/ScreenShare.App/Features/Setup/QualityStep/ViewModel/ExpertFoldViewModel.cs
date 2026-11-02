@@ -14,6 +14,17 @@ public sealed record ExpertRow
 
     /// <summary>Opens this row and closes the one open before it, or closes this one where it is open.</summary>
     public required DelegateCommand Toggle { get; init; }
+
+    /// <summary>One per control that opens, true at this row's own place. Empty on a greyed row.</summary>
+    public required ValueList<bool> Pips { get; init; }
+
+    /// <summary>"Next: Color range", empty on the last control that opens.</summary>
+    public required string NextLabel { get; init; }
+
+    public bool HasNext => NextLabel.Length > 0;
+
+    /// <summary>Opens the control <see cref="NextLabel"/> names.</summary>
+    public required DelegateCommand Next { get; init; }
 }
 
 /// <summary>
@@ -26,6 +37,7 @@ public sealed record ExpertRow
 public sealed class ExpertFoldViewModel : Observable
 {
     private readonly Dictionary<string, DelegateCommand> _toggles = [];
+    private readonly Dictionary<string, DelegateCommand> _nexts = [];
     private IReadOnlyList<FieldViewModel> _fields = [];
     private string _open = "";
 
@@ -43,31 +55,44 @@ public sealed class ExpertFoldViewModel : Observable
         foreach (var gone in _toggles.Keys.Where(key => !keys.Contains(key)).ToList())
         {
             _toggles.Remove(gone);
+            _nexts.Remove(gone);
         }
         if (!keys.Contains(_open))
         {
             _open = "";
         }
 
-        Reconcile.Onto(Rows, fields.Select(field => new ExpertRow
-        {
-            Field = field,
-            IsOpen = field.Key == _open && field.IsEnabled,
-            Toggle = ToggleOf(field.Key),
-        }).ToList());
+        var openable = fields.Where(field => field.IsEnabled).ToList();
+        Reconcile.Onto(Rows, fields.Select(field => RowOf(field, openable)).ToList());
         Fold.Apply(fields);
 
         Assert.That(Rows.Count(row => row.IsOpen) <= 1, "the fold holds one control open at most", Rows.Count);
     }
 
-    private DelegateCommand ToggleOf(string key)
+    private ExpertRow RowOf(FieldViewModel field, List<FieldViewModel> openable)
     {
-        if (!_toggles.TryGetValue(key, out var toggle))
+        var place = openable.IndexOf(field);
+        var next = place >= 0 && place + 1 < openable.Count ? openable[place + 1] : null;
+        return new ExpertRow
         {
-            toggle = new DelegateCommand(() => Toggle(key));
-            _toggles[key] = toggle;
+            Field = field,
+            IsOpen = field.Key == _open && field.IsEnabled,
+            Toggle = CommandOf(_toggles, field.Key, () => Toggle(field.Key)),
+            Pips = place < 0 ? ValueList<bool>.Empty : new ValueList<bool>(openable.Select((_, index) => index == place)),
+            NextLabel = next is null ? "" : Copy.Fields.NextControl(next.Label),
+            Next = CommandOf(_nexts, field.Key, () => OpenAfter(field.Key)),
+        };
+    }
+
+    /// <summary>One command per key across passes, so an unchanged row compares equal.</summary>
+    private static DelegateCommand CommandOf(Dictionary<string, DelegateCommand> commands, string key, Action run)
+    {
+        if (!commands.TryGetValue(key, out var command))
+        {
+            command = new DelegateCommand(run);
+            commands[key] = command;
         }
-        return toggle;
+        return command;
     }
 
     /// <summary>
@@ -78,6 +103,19 @@ public sealed class ExpertFoldViewModel : Observable
     {
         var enabled = _fields.Any(field => field.Key == key && field.IsEnabled);
         _open = _open == key || !enabled ? "" : key;
+        Apply(_fields);
+    }
+
+    /// <summary>Opens the control after <paramref name="key"/> among those that open, a no-op past the last.</summary>
+    private void OpenAfter(string key)
+    {
+        var openable = _fields.Where(field => field.IsEnabled).Select(field => field.Key).ToList();
+        var place = openable.IndexOf(key);
+        if (place < 0 || place + 1 >= openable.Count)
+        {
+            return;
+        }
+        _open = openable[place + 1];
         Apply(_fields);
     }
 }

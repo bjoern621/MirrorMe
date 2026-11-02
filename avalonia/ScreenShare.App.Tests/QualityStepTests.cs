@@ -284,4 +284,48 @@ public sealed class ExpertFoldTests
         Assert.False(Row(flow, greyed.Field.Key).IsOpen);
         Assert.NotEmpty(greyed.Field.Reason);
     }
+
+    private static IReadOnlyList<ExpertRow> Openable(SetupViewModel flow)
+        => flow.Quality.Expert.Rows.Where(row => row.Field.IsEnabled).ToList();
+
+    /// <summary>The open row names the next control that opens, and its press moves the open row there.</summary>
+    [Fact]
+    public async Task TheOpenRowLeadsOnToTheNextControlThatOpens()
+    {
+        var flow = await FlowAsync();
+        var openable = Openable(flow);
+        Assert.True(openable.Count >= 2);
+
+        openable[0].Toggle.Execute(null);
+        var open = Row(flow, openable[0].Field.Key);
+        Assert.Equal($"Next: {openable[1].Field.Label}", open.NextLabel);
+
+        open.Next.Execute(null);
+
+        Assert.Equal([openable[1].Field.Key], flow.Quality.Expert.Rows.Where(row => row.IsOpen).Select(row => row.Field.Key));
+    }
+
+    [Fact]
+    public async Task TheLastControlThatOpensLeadsNowhere()
+    {
+        var flow = await FlowAsync();
+        var last = Openable(flow)[^1];
+
+        last.Toggle.Execute(null);
+
+        Assert.False(Row(flow, last.Field.Key).HasNext);
+    }
+
+    /// <summary>One pip per control that opens, the open row's pip marked.</summary>
+    [Fact]
+    public async Task ThePipsMarkWhereTheOpenRowSitsAmongTheControlsThatOpen()
+    {
+        var flow = await FlowAsync();
+        var openable = Openable(flow);
+
+        openable[1].Toggle.Execute(null);
+
+        var expected = openable.Select((_, index) => index == 1);
+        Assert.Equal(expected, Row(flow, openable[1].Field.Key).Pips);
+    }
 }

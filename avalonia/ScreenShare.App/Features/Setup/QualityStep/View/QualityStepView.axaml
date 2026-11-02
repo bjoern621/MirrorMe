@@ -167,6 +167,29 @@
                                 IsVisible="{Binding IsOpen}"
                                 Content="{Binding Field}"
                                 ContentTemplate="{StaticResource FieldRow}" />
+                <Grid ColumnDefinitions="*,Auto" Margin="7,8,0,8" IsVisible="{Binding IsOpen}">
+                  <ItemsControl Grid.Column="0" VerticalAlignment="Center" ItemsSource="{Binding Pips}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="4" />
+                      </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="x:Boolean">
+                        <Border Classes="pip" Classes.current="{Binding}" />
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                  <Button Grid.Column="1"
+                          Theme="{StaticResource LinkButton}"
+                          IsVisible="{Binding HasNext}"
+                          Command="{Binding Next}">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                      <TextBlock Classes="secondary" VerticalAlignment="Center" Text="{Binding NextLabel}" />
+                      <ti:TablerIcon Icon="IconArrowRight" Brush="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                    </StackPanel>
+                  </Button>
+                </Grid>
               </StackPanel>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
