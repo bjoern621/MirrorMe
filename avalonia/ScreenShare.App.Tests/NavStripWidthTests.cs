@@ -44,7 +44,7 @@ public sealed class NavStripWidthTests
     [Fact]
     public void TheWatchSettingsOpenFromTheStripOnTheViewer()
     {
-        var watch = new SideColumnViewModel(SideColumns.ViewerWatch, "open", "close");
+        var watch = new OverPanelViewModel("open", "close");
         var strip = new NavStripViewModel(_ => { }, watch: watch);
 
         strip.Show(Destination.Setup);

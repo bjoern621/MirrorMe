@@ -76,7 +76,7 @@ Four layers, dependency running one way: a feature reads the design system and t
 | `Mvvm/` | `Observable` and `DelegateCommand`: the change notification a compiled binding reads, and nothing else |
 | `Design/` | the design system as tokens and styles: `Palette`, `Typography`, `Metrics`, `Text`, `Surfaces`, `Buttons`, `Inputs`, `Menus`, `Tooltips`, `Icons` |
 | `Assets/Fonts/` | the mono family `Design/Typography.axaml` names, as files: Avalonia packages Inter and no mono, so this one is carried rather than resolved off the platform |
-| `Controls/` | the primitives more than one feature needs: `Chip`, `StatusPill`, `CheckItem`, the segmented control, the switch, and `SideColumnPanel`, which puts a screen's side column beside its body or over it |
+| `Controls/` | the primitives more than one feature needs: `Chip`, `StatusPill`, `CheckItem`, the segmented control, and the switch |
 | `Copy/` | every word on screen: what each identifier is called, the paragraph behind each choice, each control's heading and help, the sentence for each statement the backend makes |
 | `Features/Shell/` | the window, title bar, shared nav strip, status band, the settings dialog and the crash report question over all of them, and which destination is showing |
 | `Features/Tray/` | the tray icon: its menu model, the view model pressing the destinations' own commands, and the host drawing the platform icon |
@@ -129,7 +129,7 @@ What it contributes is layout, typography, colour, motion, input handling and ac
 
 `docs/ipc-api.md` states the rule.
 `api/proto/screenshare/v1` is the contract.
-Read `Form` first: `ResolveForm` takes a settings draft and returns the whole screen, and a view model renders it rather than evaluating it.
+Read `Form` first: `Ask form` takes a settings draft and returns the whole screen, and a view model renders it rather than evaluating it.
 
 So a `switch` over a codec name, a list of rate-control modes, a hardcoded resolution ladder or a hand-written tooltip is a defect, in the way a view field mirroring a model field is.
 
@@ -168,14 +168,14 @@ A draft per screen would be two copies of one message, and the publish commit pe
 
 Two things keep the rest honest.
 A field's key is a settings group and a field in it, so a write goes through the message descriptor (`Backend/SettingsDraft.cs`) and a field added to the contract is a control that appears with nothing here to edit.
-And the form's answer is adopted whole: `FormSession` replaces its draft with the one `ResolveForm` returned rather than merging, which keeps a greyed option and its replacement from disagreeing.
+And the form's answer is adopted whole: `FormSession` replaces its draft with the one `Ask form` returned rather than merging, which keeps a greyed option and its replacement from disagreeing.
 
 `Backend/ControlBackend.cs` answers `IBackend`: a gRPC client over the named pipe on Windows and the Unix socket elsewhere (`Backend/ControlEndpoint.cs`).
 It names no codec, no encoder family and no rule.
 A greyed option arrives greyed, carrying the sentence that says why.
 
 **The encoder probe is asked for once, in the background.**
-`ResolveForm` reads what has been probed rather than probing, a resolve running on every keystroke and the probe test-encoding on every engine.
+`Ask form` reads what has been probed rather than probing, a resolve running on every keystroke and the probe test-encoding on every engine.
 So the first forms of a session grey no codec for missing hardware, the honest reading of a fact nobody established.
 The client asks for the probe behind the handshake and raises `IBackend.Changed` when it lands.
 The setup flow re-reads, and the codecs this machine cannot run come back greyed with what is missing.
@@ -207,14 +207,14 @@ Reading that code as absence would answer a press of Start sharing with a senten
 What says the backend is absent is `Status.DebugException`, which the client library sets on a status it made from a local failure and leaves null on one that arrived.
 
 **The commit is real, and it reads four states rather than one.**
-It sends the draft to `StartPublish`, which persists it and starts the encoder on it.
+It sends the draft to `Set publish`, which persists it and starts the encoder on it.
 The reply says nothing and the stream arrives on the event stream, so the window that pressed the button and the window that did not learn it the same way.
 `Features/Setup/Model/PublishGate.cs` decides, and every condition in it is a whole state some other side stated: `Form.publishable`, the backend's own sentence when it cannot describe the settings at all, `RelayStatus.reachable`, and the presence of `PublishState.live`.
 None is ranked or re-decided here, and only one sentence is shown.
 A settings problem gets no sentence of its own: each one stands under its control or on the checks card, in the backend's words.
 
 **The fourth decides what the commit does, and that decision is the whole shape of that file.**
-`ApplyToStream` is the effect for a stream already on the air, so a live stream decides *what the commit does* rather than whether it can be done.
+`Set publish` restarts a stream already on the air on the settings it names, so a live stream decides *what the commit does* rather than whether it can be done.
 The gate says which of the two as data (`PublishGate.Commit`) instead of leaving the label, the sentence and the call to each reach their own answer.
 The press reads that state once more on its own pass rather than trusting the gate the last render composed.
 A stream can start or end in between, and the backend refuses each effect in precisely the state the other one is for.
@@ -226,7 +226,7 @@ Both engines run a child built from an argv, so new settings tear the pipeline d
 A button promising an uninterrupted change would be the one place in the app that lied.
 
 The relay half is the one state the shell reads from a poll it does not run.
-The backend polls for as long as it is up, records each snapshot and answers `GetRelayStatus` from it, its opening value being unreachable with no reason, the honest reading of a relay nobody has asked.
+The backend polls for as long as it is up, records each snapshot and answers `Read relay_status` from it, its opening value being unreachable with no reason, the honest reading of a relay nobody has asked.
 The side the contract names as owner has to do the owning, and the honest opening value is what makes a gap visible rather than plausible.
 
 Where the window goes afterwards is the window's.
@@ -299,7 +299,7 @@ Neither is a stored selection, so there is nothing to reconcile after a restart.
 
 **The viewer is a grid over a roster.**
 The grid draws the streams the reader asked to see, from the GPU memory the backend decoded them into.
-A row's `show` toggle opens a decode through `StartReceive` and the tile subscribes to its frames, each frame arriving as a slot of a lent pool that goes back only once the compositor has taken it (`docs/viewer-architecture.md`, "The buffer-ownership protocol").
+A row's `show` toggle opens a decode through `Set receive` and the tile subscribes to its frames, each frame arriving as a slot of a lent pool that goes back only once the compositor has taken it (`docs/viewer-architecture.md`, "The buffer-ownership protocol").
 Nothing about the arrangement crosses the contract and nothing could: the backend describes decodes, and a decode is not a tile.
 
 **Nothing is measured over the picture.**
@@ -321,7 +321,7 @@ Which protocol a tile receives on is `viewer.tile_watch_transport`, a setting th
 Offering it per row would be this screen deciding something the settings screen already decides.
 
 **The roster underneath.**
-Every row comes off `GetRelayStatus` and `GetViewerState`: which streams the relay carries, whether each is being served, what it says they carry, how many readers each has, what each is ingesting, and which legs this machine already has a viewer open on.
+Every row comes off `Read relay_status` and `Read viewer_state`: which streams the relay carries, whether each is being served, what it says they carry, how many readers each has, what each is ingesting, and which legs this machine already has a viewer open on.
 The legs a row offers are the options of the form's watch-leg field, so this module holds no list of protocols, and each arrives carrying whether it is reachable and the sentence that says why not.
 A leg the availability pass ruled out keeps its place in the menu, greys and draws its reason under its name.
 That treatment is the roster's own: elsewhere a choice control lists what can be picked and folds the refused entries behind a disclosure (`docs/field-availability.md`).

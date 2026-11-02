@@ -7,7 +7,7 @@ using ScreenShare.App.Features.Viewer.ViewModel;
 namespace ScreenShare.App.Features.Viewer.View;
 
 /// <summary>
-/// Markup, and the one thing markup cannot do: open a window.
+/// Markup, and the two things markup cannot do: open a window, and close a panel from a press on its scrim.
 ///
 /// Everything a binding can express is bound, a handler that set a widget directly leaving
 /// <see cref="ViewerViewModel.Apply"/> unable to restore a correct view on its own.
@@ -50,6 +50,13 @@ public sealed partial class ViewerView : UserControl
             CloseAll();
             Release();
         };
+    }
+
+    /// <summary>A press on the dimmed stage under the sheet closes the watch settings.</summary>
+    private void ScrimPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+    {
+        _viewer?.Watch.CloseCommand.Execute(null);
+        e.Handled = true;
     }
 
     /// <summary>Follows the view model the windows are reconciled against, and reconciles once.</summary>

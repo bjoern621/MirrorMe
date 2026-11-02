@@ -178,13 +178,9 @@ A window narrower than 520 px keeps Back's arrow alone.
 A window is the width the desktop gives it.
 A tiling session hands one a quarter of the screen and offers no frame to drag, so every screen is drawn against the width it has.
 
-**A window too narrow for two columns draws one, and the side column becomes a panel over the body.**
-The body keeps the whole width, and the panel opens from a control on the surface it belongs to.
-One column works this way: the viewer's watch settings.
-It states its own width and the body it needs beside it, and the threshold is those two added (`Features/Shell/Model/SideColumns.cs`).
-
-A column that draws unasked carries its control only while it is a panel, a press that changes nothing reading as broken.
-One that opens on request carries its control at every width.
+**A panel opens over the surface, which keeps its whole width.**
+The viewer's watch settings open this way, from the sliders button in the nav strip.
+The panel floats at the window's right edge, and below 520 px it rises as a sheet from the foot over a dimmed surface, a tap on which closes it.
 
 The settings dialog shows one section at a time, its list beside the section, and each section opens on the question it answers.
 Below 520 px the dialog fills the window and shows the list first, a picked section taking its place and an arrow leading back.

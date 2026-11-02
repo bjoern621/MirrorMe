@@ -23,15 +23,30 @@
     <Style Selector="Button:pointerover Border.cell">
       <Setter Property="Background" Value="{StaticResource ControlHoverBrush}" />
     </Style>
+    <Style Selector="Border.overpanel">
+      <Setter Property="Width" Value="300" />
+      <Setter Property="Margin" Value="{StaticResource InsetPanel}" />
+      <Setter Property="Padding" Value="{StaticResource InsetPanel}" />
+      <Setter Property="HorizontalAlignment" Value="Right" />
+      <Setter Property="VerticalAlignment" Value="Stretch" />
+      <Setter Property="Background" Value="{StaticResource ChromeBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource ControlBorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="{StaticResource RadiusPanel}" />
+      <Setter Property="BoxShadow" Value="{StaticResource MenuShadow}" />
+    </Style>
+    <Style Selector="Border.overpanel.sheet">
+      <Setter Property="Width" Value="NaN" />
+      <Setter Property="Margin" Value="0" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="VerticalAlignment" Value="Bottom" />
+      <Setter Property="BorderThickness" Value="1,1,1,0" />
+      <Setter Property="CornerRadius" Value="8,8,0,0" />
+    </Style>
   </UserControl.Styles>
 
   <!-- No title bar, no nav strip and no status band, the shell owning all three. -->
   <Grid>
-
-    <!-- The stage, and the settings panel beside it or over it (docs/design-language.md, "Narrow windows"). -->
-    <controls:SideColumnPanel Beside="{Binding WatchColumn.IsBeside}"
-                              SideOnLeft="{Binding WatchColumn.IsOnLeft}"
-                              SideWidth="{Binding WatchColumn.Width}">
 
     <DockPanel Margin="{StaticResource InsetPanel}">
 
@@ -303,19 +318,17 @@
     </DockPanel>
 
     <!--
-      A fixed width beside the stage: a column that reflowed would move the controls under the reader's hand.
-      A column, never a flyout: a leg is changed while the next tile is watched,
-      and a flyout would close on every click.
+      The watch settings over the stage, which keeps its whole width (docs/design-language.md, "Narrow windows").
+      A panel, never a flyout: a flyout would close on every click.
     -->
-    <Border Padding="{StaticResource InsetPanel}"
-            Background="{StaticResource PanelBrush}"
-            BorderBrush="{StaticResource DividerBrush}"
-            BorderThickness="1,0,0,0"
-            IsVisible="{Binding WatchColumn.IsShowing}">
-      <watch:WatchSettingsView DataContext="{Binding Watch}" />
-    </Border>
-
-    </controls:SideColumnPanel>
+    <Panel IsVisible="{Binding WatchPanel.IsOpen}">
+      <Border Background="{StaticResource ScrimBrush}"
+              IsVisible="{Binding WatchPanel.IsSheet}"
+              PointerPressed="ScrimPressed" />
+      <Border Classes="overpanel" Classes.sheet="{Binding WatchPanel.IsSheet}">
+        <watch:WatchSettingsView DataContext="{Binding Watch}" />
+      </Border>
+    </Panel>
 
     <!--
       The stream filling this window, over every column: fullscreen is a property of the window and not an

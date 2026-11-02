@@ -43,16 +43,16 @@ public sealed class NarrowWindowTests
     }
 
     [Fact]
-    public void ANarrowWindowTakesTheWatchPanelOverTheGrid()
+    public void ANarrowWindowRaisesTheWatchPanelAsASheet()
     {
         var backend = new SeededBackend("linux");
         var viewer = Flows.Viewer(backend, new Session(backend, Inline));
 
-        viewer.SetWindowWidth(Quarter);
-        viewer.WatchColumn.Toggle.Execute(null);
+        viewer.SetWindowWidth(360);
+        viewer.WatchPanel.Toggle.Execute(null);
 
-        Assert.True(viewer.WatchColumn.IsShowing);
-        Assert.False(viewer.WatchColumn.IsBeside);
+        Assert.True(viewer.WatchPanel.IsOpen);
+        Assert.True(viewer.WatchPanel.IsSheet);
     }
 
     /// <summary>A width the window states twice changes nothing the second time.</summary>

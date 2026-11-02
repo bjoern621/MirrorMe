@@ -36,7 +36,7 @@ public sealed class NavStripViewModel : Observable
         Action<Destination> select,
         GoViewModel? go = null,
         DelegateCommand? openSettings = null,
-        SideColumnViewModel? watch = null)
+        OverPanelViewModel? watch = null)
     {
         Assert.NotNull(select, "a strip needs somewhere to send the destination it was asked for");
 
@@ -56,7 +56,7 @@ public sealed class NavStripViewModel : Observable
     public DelegateCommand? OpenSettings { get; }
 
     /// <summary>Viewer's watch settings column. Null in a strip built without one.</summary>
-    public SideColumnViewModel? Watch { get; }
+    public OverPanelViewModel? Watch { get; }
 
     /// <summary>A segment per destination, in the table's order. Fixed for the strip's life.</summary>
     public IReadOnlyList<DestinationTab> Tabs { get; }

@@ -146,11 +146,7 @@ public sealed class ViewerViewModel : Observable
         // A panel holding the flag would be the arrangement written in two places.
         Watch = new WatchSettingsViewModel(form, session, dispatch, CloseWatchSettings);
 
-        // Beside the grid where the window carries both, over it where it does not (Shell/Model/SideColumns.cs).
-        WatchColumn = new SideColumnViewModel(
-            SideColumns.ViewerWatch,
-            "How this computer receives",
-            "Close the watching settings");
+        WatchPanel = new OverPanelViewModel("How streams arrive", "Close how streams arrive");
 
         // News that the draft or the form behind it moved: a row's legs and a tile's leg are both read off it.
         // Raised on the UI loop by the form session, so nothing to marshal here.
@@ -284,12 +280,8 @@ public sealed class ViewerViewModel : Observable
     /// </summary>
     public WatchSettingsViewModel Watch { get; }
 
-    /// <summary>
-    /// Where the panel stands, and whether it is open.
-    /// Beside the stage on a window carrying the tiles and the panel at once, and over the stage on one
-    /// that does not (<c>docs/design-language.md</c>, "Narrow windows").
-    /// </summary>
-    public SideColumnViewModel WatchColumn { get; }
+    /// <summary>Whether the watch settings are open over the stage, and how they stand at this width.</summary>
+    public OverPanelViewModel WatchPanel { get; }
 
     /// <summary>
     /// Shuts the settings panel, whether or not it was open.
@@ -298,7 +290,7 @@ public sealed class ViewerViewModel : Observable
     /// </summary>
     private void CloseWatchSettings()
     {
-        WatchColumn.Close();
+        WatchPanel.Close();
         Apply();
     }
 
@@ -311,7 +303,7 @@ public sealed class ViewerViewModel : Observable
         Assert.That(width > 0, "a window states a width it has", width);
 
         _window = width;
-        WatchColumn.SetWindowWidth(width);
+        WatchPanel.SetWindowWidth(width);
         Apply();
     }
 

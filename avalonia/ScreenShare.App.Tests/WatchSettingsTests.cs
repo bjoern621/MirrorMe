@@ -12,7 +12,7 @@ namespace ScreenShare.App.Tests;
 /// Where the settings about receiving live, and what they do.
 ///
 /// The watch group is drawn beside the tiles and kept by a save of its own, so watching without publishing
-/// needs neither setup nor a <c>StartPublish</c> to keep a change.
+/// needs neither setup nor a <c>Set publish</c> to keep a change.
 /// </summary>
 public sealed class WatchSettingsTests
 {
@@ -311,12 +311,12 @@ public sealed class WatchSettingsTests
     public async Task KeepingTheSettingsClosesThePanel()
     {
         var both = await BothAsync();
-        both.Viewer.WatchColumn.Toggle.Execute(null);
-        Assert.True(both.Viewer.WatchColumn.IsShowing);
+        both.Viewer.WatchPanel.Toggle.Execute(null);
+        Assert.True(both.Viewer.WatchPanel.IsOpen);
 
         both.Viewer.Watch.SaveCommand.Execute(null);
 
-        Assert.False(both.Viewer.WatchColumn.IsShowing);
+        Assert.False(both.Viewer.WatchPanel.IsOpen);
     }
 
     /// <summary>
@@ -328,11 +328,11 @@ public sealed class WatchSettingsTests
     {
         var backend = new SeededBackend("linux") { SaveRefusal = "the settings file could not be written" };
         var both = await BothAsync(backend);
-        both.Viewer.WatchColumn.Toggle.Execute(null);
+        both.Viewer.WatchPanel.Toggle.Execute(null);
 
         both.Viewer.Watch.SaveCommand.Execute(null);
 
-        Assert.True(both.Viewer.WatchColumn.IsShowing);
+        Assert.True(both.Viewer.WatchPanel.IsOpen);
         Assert.True(both.Viewer.Watch.HasNotice);
     }
 
@@ -344,12 +344,12 @@ public sealed class WatchSettingsTests
     public async Task ClosingThePanelKeepsNothing()
     {
         var both = await BothAsync();
-        both.Viewer.WatchColumn.Toggle.Execute(null);
+        both.Viewer.WatchPanel.Toggle.Execute(null);
 
         await ChooseAsync(both, "viewer.render_chain", "sys");
         both.Viewer.Watch.CloseCommand.Execute(null);
 
-        Assert.False(both.Viewer.WatchColumn.IsShowing);
+        Assert.False(both.Viewer.WatchPanel.IsOpen);
         Assert.Empty(both.Backend.Saved);
         Assert.True(both.Viewer.Watch.IsUnkept);
     }
@@ -359,11 +359,11 @@ public sealed class WatchSettingsTests
     public async Task ClosingAClosedPanelIsNotAnOpen()
     {
         var both = await BothAsync();
-        Assert.False(both.Viewer.WatchColumn.IsShowing);
+        Assert.False(both.Viewer.WatchPanel.IsOpen);
 
         both.Viewer.Watch.CloseCommand.Execute(null);
 
-        Assert.False(both.Viewer.WatchColumn.IsShowing);
+        Assert.False(both.Viewer.WatchPanel.IsOpen);
     }
 
     /// <summary>
