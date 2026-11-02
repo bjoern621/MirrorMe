@@ -1,5 +1,4 @@
 using ScreenShare.App.Contracts;
-using ScreenShare.App.Features.Shell.Model;
 using ScreenShare.App.Features.Shell.Update.ViewModel;
 using ScreenShare.App.Mvvm;
 using UpdateCopy = ScreenShare.App.Copy.Updates;
@@ -7,8 +6,7 @@ using UpdateCopy = ScreenShare.App.Copy.Updates;
 namespace ScreenShare.App.Features.Shell.StatusBar.ViewModel;
 
 /// <summary>
-/// Bottom band: the build or the release found beside it, and the sentence saying what the view in front of it
-/// affords.
+/// Bottom band: the build, or the release found beside it.
 /// The band holds its height in every destination and says nothing where there is nothing to state.
 /// </summary>
 public sealed class StatusBarViewModel : Observable
@@ -38,39 +36,26 @@ public sealed class StatusBarViewModel : Observable
 
     // --- What the shell says -------------------------------------------------------
 
-    private Destination _current = Destination.Setup;
-    private string _figuresHint = "";
     private string _build = "";
 
     /// <summary>
     /// Band's whole input.
     /// <paramref name="build"/> is the backend's own, off the handshake, and is empty until it settles.
-    /// It arrives with the hint rather than being set once, so the band keeps one render pass.
     /// Idempotent.
     /// </summary>
-    public void Show(Destination current, string hint, string build)
+    public void Show(string build)
     {
-        Assert.NotNull(hint, "a status band is told what the view in front of it affords");
         Assert.NotNull(build, "a status band is told which build is running");
 
-        _current = current;
-        _figuresHint = hint;
         _build = build;
         Apply();
     }
 
     // --- Outputs -------------------------------------------------------------------
 
-    private string _hint = "";
-    private bool _showsHint;
     private string _release = "";
     private bool _showsRelease;
     private string _releaseHint = "";
-
-    /// <summary>Trailing sentence. Contextual rather than measured: it moves with the view.</summary>
-    public string Hint { get => _hint; private set => Set(ref _hint, value); }
-
-    public bool ShowsHint { get => _showsHint; private set => Set(ref _showsHint, value); }
 
     /// <summary>
     /// The band's one line about the release: what a check found, or the running build where it found nothing.
@@ -101,15 +86,12 @@ public sealed class StatusBarViewModel : Observable
 
     /// <summary>
     /// One render function.
-    /// Every output on every pass, so a viewer figure cannot outlive a step back into setup.
+    /// Every output on every pass.
     /// Reads the update view model rather than rendering it, so a pass driven by that model's own change
     /// does not re-enter it.
     /// </summary>
     private void Render()
     {
-        Hint = HintedIn(_current) ? _figuresHint : "";
-        ShowsHint = Hint.Length > 0;
-
         // Every destination, the build being the app's rather than one screen's.
         var build = _build.Length > 0 ? "v" + _build : "";
 
@@ -120,7 +102,6 @@ public sealed class StatusBarViewModel : Observable
         ShowsRelease = !Updates.IsFailure && Release.Length > 0;
         ReleaseHint = line.Length > 0 ? UpdateCopy.Tip(build, Updates.PressHint) : Updates.PressHint;
 
-        Assert.That(ShowsHint == (Hint.Length > 0), "the trailing hint and its text agree", ShowsHint, Hint);
         Assert.That(
             ShowsRelease == (Release.Length > 0 && !Updates.IsFailure),
             "the release control and its text agree", ShowsRelease, Release);
@@ -128,16 +109,4 @@ public sealed class StatusBarViewModel : Observable
             !(ShowsRelease && Updates.ShowsPlainLine),
             "the band says one thing about the release", ShowsRelease, Updates.ShowsPlainLine);
     }
-
-    /// <summary>
-    /// Whether the band carries a sentence for this destination.
-    /// Exhaustive, so a destination added without an answer fails here rather than printing the last one's.
-    /// </summary>
-    private static bool HintedIn(Destination destination) => destination switch
-    {
-        Destination.Setup => false,
-        Destination.Insights => false,
-        Destination.Viewer => true,
-        _ => Assert.Never<bool>("unexpected destination", (int)destination),
-    };
 }

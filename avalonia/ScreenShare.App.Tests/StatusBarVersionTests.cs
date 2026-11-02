@@ -1,6 +1,5 @@
 using ScreenShare.Api.V1;
 using ScreenShare.App.Copy;
-using ScreenShare.App.Features.Shell.Model;
 using ScreenShare.App.Features.Shell.StatusBar.ViewModel;
 using Xunit;
 
@@ -21,7 +20,7 @@ public sealed class StatusBarVersionTests
     private const string Build = "0.4.0";
 
     private static StatusBarViewModel Band(
-        Destination destination, string version = Build, UpdateState? update = null)
+        string version = Build, UpdateState? update = null)
     {
         var backend = new SeededBackend("linux");
         if (update is not null)
@@ -30,24 +29,17 @@ public sealed class StatusBarVersionTests
         }
 
         var band = new StatusBarViewModel(Flows.Updates(backend));
-        band.Show(destination, "", version);
+        band.Show(version);
         return band;
     }
 
-    /// <summary>
-    /// The build is a fact about the app rather than a figure of one destination,
-    /// so the band states it wherever the reader is standing.
-    /// </summary>
     [Fact]
-    public void TheBandStatesTheBuildInEveryDestination()
+    public void TheBandStatesTheBuild()
     {
-        foreach (var destination in Enum.GetValues<Destination>())
-        {
-            var band = Band(destination);
+        var band = Band();
 
-            Assert.True(band.ShowsRelease);
-            Assert.Contains(Build, band.Release);
-        }
+        Assert.True(band.ShowsRelease);
+        Assert.Contains(Build, band.Release);
     }
 
     /// <summary>
@@ -57,35 +49,19 @@ public sealed class StatusBarVersionTests
     [Fact]
     public void ABuildNobodyAnsweredIsNotDrawn()
     {
-        var band = Band(Destination.Viewer, version: "");
+        var band = Band(version: "");
 
         Assert.False(band.ShowsRelease);
         Assert.Equal("", band.Release);
     }
 
     /// <summary>
-    /// A version reads as one at a glance, beside figures that are measurements.
+    /// A version reads as one at a glance.
     /// </summary>
     [Fact]
     public void TheBuildIsMarkedAsAVersion()
     {
-        Assert.Equal("v" + Build, Band(Destination.Setup).Release);
-    }
-
-    /// <summary>
-    /// The band renders every output on every pass, so a build survives a destination it says
-    /// nothing else in (<c>docs/development-principles.md</c>, "One render function").
-    /// </summary>
-    [Fact]
-    public void TheBuildSurvivesAPassThatStatesNoHint()
-    {
-        var band = Band(Destination.Viewer);
-        band.Show(Destination.Viewer, "hint", Build);
-        band.Show(Destination.Setup, "", Build);
-
-        Assert.False(band.ShowsHint);
-        Assert.True(band.ShowsRelease);
-        Assert.Equal("v" + Build, band.Release);
+        Assert.Equal("v" + Build, Band().Release);
     }
 
     /// <summary>
@@ -96,7 +72,7 @@ public sealed class StatusBarVersionTests
     [Fact]
     public void AFoundReleaseTakesTheBuildsPlace()
     {
-        var band = Band(Destination.Setup, update: new UpdateState
+        var band = Band(update: new UpdateState
         {
             Stage = UpdateStage.Available,
             Running = Build,
@@ -114,7 +90,7 @@ public sealed class StatusBarVersionTests
     [Fact]
     public void ACheckUnderWayTakesTheBuildsPlace()
     {
-        var band = Band(Destination.Setup, update: new UpdateState
+        var band = Band(update: new UpdateState
         {
             Stage = UpdateStage.Checking,
             Running = Build,
@@ -131,7 +107,7 @@ public sealed class StatusBarVersionTests
     [Fact]
     public void ABuildAtThePublishedReleaseTakesTheBuildsPlace()
     {
-        var band = Band(Destination.Setup, update: new UpdateState
+        var band = Band(update: new UpdateState
         {
             Stage = UpdateStage.Current,
             Running = Build,
@@ -149,7 +125,7 @@ public sealed class StatusBarVersionTests
     [Fact]
     public void AFailingCheckLeavesNoPressableControl()
     {
-        var band = Band(Destination.Setup, update: new UpdateState
+        var band = Band(update: new UpdateState
         {
             Stage = UpdateStage.Failed,
             Running = Build,

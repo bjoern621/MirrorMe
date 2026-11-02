@@ -514,7 +514,7 @@ public sealed class ShellViewModel : Observable
     }
 
     /// <summary>Hands the band the destination it stands in, its hint and the build. Idempotent.</summary>
-    private void RenderStatusBar() => StatusBar.Show(_current, Viewer.Hint, _session.Version);
+    private void RenderStatusBar() => StatusBar.Show(_session.Version);
 
     /// <summary>
     /// Whether the window's bands are drawn, derived from the destination and what that destination shows.

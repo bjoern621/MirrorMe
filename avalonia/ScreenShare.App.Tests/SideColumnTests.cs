@@ -20,8 +20,11 @@ public sealed class SideColumnTests
     /// <summary>Quarter of a laptop screen, where every row's threshold is above the window.</summary>
     private const double Quarter = 500;
 
+    /// <summary>Column drawn wherever it fits, unasked.</summary>
+    private static readonly SideColumn Drawn = new(240, 300, ColumnEdge.Left, DrawnUnasked: true);
+
     private static SideColumnViewModel Cards()
-        => new(SideColumns.ViewerRail, "Show the preview.", "Hide the preview.");
+        => new(Drawn, "Show the preview.", "Hide the preview.");
 
     private static SideColumnViewModel Watch()
         => new(SideColumns.ViewerWatch, "Change how streams come back.", "Close the watch settings.");
@@ -152,21 +155,11 @@ public sealed class SideColumnTests
     [Fact]
     public void TheThresholdIsTheColumnPlusTheBodyItNeeds()
     {
-        var row = SideColumns.ViewerRail;
+        var row = Drawn;
 
         Assert.Equal(row.Width + row.Body, row.Beside);
         Assert.True(row.FitsBeside(row.Beside));
         Assert.False(row.FitsBeside(row.Beside - 1));
-    }
-
-    /// <summary>
-    /// The viewer's watch panel measures against the stream rail as well as the grid,
-    /// two side columns on one window otherwise leaving the tiles a strip between them.
-    /// </summary>
-    [Fact]
-    public void TheWatchPanelNeedsTheRailsWidthOnTopOfTheGrids()
-    {
-        Assert.True(SideColumns.ViewerWatch.Beside > SideColumns.ViewerRail.Beside);
     }
 
     /// <summary>Every row draws beside the body on the window the app opens at.</summary>
@@ -174,7 +167,6 @@ public sealed class SideColumnTests
     public void TheOpeningWindowCarriesEveryColumnBesideItsBody()
     {
         Assert.True(SideColumns.ViewerWatch.FitsBeside(WindowSize.Opening));
-        Assert.True(SideColumns.ViewerRail.FitsBeside(WindowSize.Opening));
     }
 
     /// <summary>The floor is a window every surface draws one column in, so no row fits beside the body there.</summary>

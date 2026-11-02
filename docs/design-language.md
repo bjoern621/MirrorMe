@@ -186,11 +186,10 @@ It states its own width and the body it needs beside it, and the threshold is th
 A column that draws unasked carries its control only while it is a panel, a press that changes nothing reading as broken.
 One that opens on request carries its control at every width.
 
-A rail carrying names drops the names rather than the window dropping the rail.
 The settings dialog shows one section at a time, its list beside the section, and each section opens on the question it answers.
 Below 520 px the dialog fills the window and shows the list first, a picked section taking its place and an arrow leading back.
 
-Every band wraps where the window is narrower than its row: the status band's sentence and the insights header's title.
+The insights header's title wraps where the window is narrower than its row.
 Below 520 px `Edit in setup` keeps its pencil alone, and the chart's range picker drops under its figures.
 The floor the window asks the desktop for is the narrowest one column is drawn for (`Features/Shell/Model/WindowSize.cs`).
 
@@ -207,6 +206,10 @@ Escape is always a way out, a screen that draws no controls still having to be o
 
 A stream in a window of its own carries no caption, on the same terms as a filled screen.
 The picture is the whole window, dragged by the picture and resized by the platform's frame, and the tile's menu row is the way back into the grid.
+
+The viewer puts one stream on the stage and lines the strip up beside it: the other streams, a stopped one waiting for its press, a dashed line per member sharing nothing, and the Grid switch.
+A press on a strip tile puts that stream on the stage.
+A window too narrow for the strip beside the stage stacks it under the stage, two to a row, and lists the member lines under it.
 
 A grid is equal cells, and the arrangement is derived: the one with the largest fitted picture wins, and a short last row centres itself.
 No column count is written down anywhere.

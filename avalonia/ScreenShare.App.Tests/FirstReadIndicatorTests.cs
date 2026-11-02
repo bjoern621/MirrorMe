@@ -67,7 +67,7 @@ public sealed class FirstReadIndicatorTests
 
     /// <summary>
     /// Window opens on the viewer, so this is the screen a launch is watched on.
-    /// The rail already says it is reading the relay, and the arc is what makes that sentence a wait.
+    /// The stage already says it is reading the relay, and the arc is what makes that sentence a wait.
     /// </summary>
     [Fact]
     public void TheViewerSaysItBesideTheSentenceAboutTheRelay()
@@ -81,26 +81,6 @@ public sealed class FirstReadIndicatorTests
         Assert.True(viewer.HasNotice);
         Assert.False(viewer.IsDialling);
         Assert.True(viewer.IsReading);
-    }
-
-    /// <summary>
-    /// The member card reads the same session, so it waits and stops waiting with the screen holding it
-    /// rather than off a second reading of its own.
-    /// </summary>
-    [Fact]
-    public void TheMemberCardWaitsWithTheScreenHoldingIt()
-    {
-        var backend = new DeferredBackend();
-        var session = Fresh(backend);
-        var viewer = Flows.Viewer(backend, session);
-
-        viewer.Apply();
-        Assert.True(viewer.Members.IsReading);
-
-        Load(session);
-        viewer.Apply();
-
-        Assert.False(viewer.Members.IsReading);
     }
 
     /// <summary>

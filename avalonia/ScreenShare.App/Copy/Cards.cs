@@ -129,53 +129,37 @@ public static class Cards
     public const string ViewersUnnamed =
         "The relay counts viewers without naming them, so the count above is all there is.";
 
-    // --- The group -----------------------------------------------------------------
-
-    /// <summary>Heading over the member list.</summary>
-    public const string MembersTitle = "In the group";
-
-    /// <summary>Beside the row this machine holds, which nothing else on it distinguishes.</summary>
-    public const string MemberSelf = "this computer";
-
-    /// <summary>
-    /// What a row says about a member beside their name, empty for anyone but this machine.
-    /// Whether a member is sending stands on the sharing pill, so the list carries only which row
-    /// is this computer.
-    /// </summary>
-    public static string MemberDetail(bool isSelf) => isSelf ? MemberSelf : "";
-
-    /// <summary>
-    /// What the member list says in place of rows, one sentence per state and each naming the next step.
-    /// In Discord mode the way into a group is Discord's rather than a key, so two of them name that one.
-    /// </summary>
-    public const string MembersUnread = "Reading who is in this group.";
-
     /// <summary>
     /// What the wizard says before the backend has described this machine.
     /// The steps are drawn out of that answer, so this is what a launch shows in their place,
-    /// worded as the relay and group readings are.
+    /// worded as the relay reading is.
     /// </summary>
     public const string SetupUnread = "Reading what this computer can send.";
-
-    public const string MembersOutside = "This computer is not in a group.";
-
-    public const string MembersNoChannel =
-        "Not in a voice channel. Join one in Discord, and everyone in it is listed here.";
-
-    public const string MembersNone = "Nobody is listed in this group.";
 
     // --- The grid --------------------------------------------------------------------
 
     /// <summary>
     /// What the empty grid says, one sentence per cause and each naming the next step.
-    /// Quiet where the rail's own notice already speaks (<c>Features/Viewer/Model/GridEmpty.cs</c>).
+    /// Quiet where the relay notice already speaks (<c>Features/Viewer/Model/GridEmpty.cs</c>).
     /// </summary>
     public const string GridIdle = "Nobody in the group is sharing a screen.";
 
     public const string GridNoChannel =
         "Not in a voice channel. Join one in Discord, and every member's stream shows here.";
 
-    public const string GridUnwatched = "Nothing is picked to watch. Click a stream on the left to open its picture.";
+    /// <summary>A member sharing nothing, in the strip where their stream would stand.</summary>
+    public static string NotSharing(string name) => $"{name} is in the group, not sharing";
+
+    public const string GridSwitch = "Grid";
+
+    public const string GridSwitchTip = "Show every stream at the same size";
+
+    /// <summary>On a stream the reader stopped, which waits in the strip.</summary>
+    public const string PlayAgainTip = "Stopped. Click to play it again.";
+
+    public const string StopWatching = "Stop watching";
+
+    public const string StopWatchingTip = "Closes this stream. It waits in the strip until you play it again.";
 
     public const string JoinTitle = "Join a group to watch and share";
 

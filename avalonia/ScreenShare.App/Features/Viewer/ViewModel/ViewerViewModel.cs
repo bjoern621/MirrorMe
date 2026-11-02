@@ -4,7 +4,7 @@ using ScreenShare.App.Backend;
 using ScreenShare.App.Contracts;
 using ScreenShare.App.Features.Shell.Model;
 using ScreenShare.App.Features.Shell.ViewModel;
-using ScreenShare.App.Features.Viewer.Members.ViewModel;
+using ScreenShare.App.Copy;
 using ScreenShare.App.Features.Viewer.Model;
 using ScreenShare.App.Features.Viewer.Tile.Model;
 using ScreenShare.App.Features.Viewer.Tile.ViewModel;
@@ -15,22 +15,22 @@ using TablerIcons;
 namespace ScreenShare.App.Features.Viewer.ViewModel;
 
 /// <summary>
-/// A rail over what the relay is carrying, and a grid of what this machine is watching of it.
+/// Every stream the relay carries, played on a stage with a strip under it.
+/// Each ready stream plays with no press, and one the reader stopped waits in the strip until a press.
 ///
 /// <b>Holds no snapshot of its own.</b>
-/// <see cref="Backend.Session"/> owns the running state and <see cref="Apply"/> reads it through on every pass,
-/// so the rail and the status band cannot disagree about what is on the relay.
+/// <see cref="Backend.Session"/> owns the running state and <see cref="Apply"/> reads it through on every pass.
 ///
 /// <b>The arrangement is this shell's alone.</b>
 /// Which streams are decoded is the backend's list; which are drawn, in what order and in which window crosses
 /// no message, the backend describing decodes and a decode not being a tile (<c>docs/ipc-api.md</c>).
-/// The tile set, the focus, the pop-outs and the fullscreen states are that arrangement, owned here rather than read.
+/// The tile set, the stops, the focus, the pop-outs and the fullscreen states are that arrangement, owned here.
 ///
 /// Legs come from the backend as the options of the form's watch-leg field,
 /// so this module holds no list of protocols.
 /// Whether a leg carries a given stream is settled as the viewer opens (<see cref="WatchLegViewModel"/>).
 ///
-/// The settings behind those legs are edited in the panel beside the grid.
+/// The settings behind those legs are edited in the panel beside the stage.
 /// They govern how this machine receives and say nothing about what it sends, hence their placement here
 /// (<c>Features/Fields/Model/GroupPlacement.cs</c>).
 /// </summary>
@@ -91,6 +91,15 @@ public sealed class ViewerViewModel : Observable
     /// </summary>
     private readonly List<string> _parked = [];
 
+    /// <summary>
+    /// Streams the reader stopped, which wait in the strip until a press plays them.
+    /// A name goes once the relay stops listing its stream: a share that ends and starts again plays like any other.
+    /// </summary>
+    private readonly HashSet<string> _stopped = [];
+
+    /// <summary>Streams whose start is out, so a pass before the answer asks for none a second time.</summary>
+    private readonly HashSet<string> _opening = [];
+
     /// <summary>Closes the last hide asked for, complete where it asked for none. A quit waits on it.</summary>
     private Task _parting = Task.CompletedTask;
 
@@ -113,11 +122,6 @@ public sealed class ViewerViewModel : Observable
 
         Streams = [];
         Tiles = [];
-        ToggleRail = new DelegateCommand(() =>
-        {
-            IsRailCollapsed = !IsRailCollapsed;
-            Apply();
-        });
 
         PickDiscord = new DelegateCommand(() => PickJoin(JoinRoute.Discord));
         PickKey = new DelegateCommand(() => PickJoin(JoinRoute.Key));
@@ -128,16 +132,15 @@ public sealed class ViewerViewModel : Observable
             _gridAsked = !IsGrid;
             Apply();
         });
+        Switch = new GridSwitch(ToggleGrid);
+        Strip = [];
+        HintsBelow = [];
 
         LeaveFullscreen = new DelegateCommand(() =>
         {
             Fullscreen = "";
             Apply();
         });
-
-        // Above the list of what the relay carries,
-        // so a stream's row and the member publishing it are read in one glance.
-        Members = new MembersViewModel();
 
         // Whether the panel is open is this screen's state, so the panel is handed only a way to say it is done.
         // A panel holding the flag would be the arrangement written in two places.
@@ -167,17 +170,33 @@ public sealed class ViewerViewModel : Observable
     private bool _isDialling;
     private string _refusal = "";
     private bool _hasRefusal;
-    private bool _hasStreams;
 
     /// <summary>One row per path the relay carries, in the order it listed them.</summary>
     public ObservableCollection<StreamRowViewModel> Streams { get; }
 
     /// <summary>
     /// Tiles on screen, in the order they were added.
-    /// A stream leaves the grid when its row is toggled off and not when the relay stops carrying it,
-    /// so a stream that dropped out and came back keeps the tile the reader put there.
+    /// A stream leaves when the reader stops it and stays while the relay drops it,
+    /// so a stream that dropped out and came back keeps its tile.
     /// </summary>
     public ObservableCollection<TileViewModel> Tiles { get; }
+
+    /// <summary>
+    /// What the tile panel arranges, in order: the playing tiles, the streams waiting for a press,
+    /// a line per member sharing nothing, and the Grid switch while a stage stands over the strip.
+    /// Converged in place, so a playing tile keeps its control and its frame subscription across passes.
+    /// </summary>
+    public ObservableCollection<IStripItem> Strip { get; }
+
+    /// <summary>The members sharing nothing, listed under a stacked strip, empty elsewhere.</summary>
+    public ObservableCollection<MemberHint> HintsBelow { get; }
+
+    private bool _hasHintsBelow;
+
+    public bool HasHintsBelow { get => _hasHintsBelow; private set => Set(ref _hasHintsBelow, value); }
+
+    /// <summary>Strip.s last item while a stage stands over it.</summary>
+    public GridSwitch Switch { get; }
 
     private LayoutMode _mode;
     private string _focused = "";
@@ -195,8 +214,8 @@ public sealed class ViewerViewModel : Observable
     private string _fullscreen = "";
 
     /// <summary>
-    /// How the tiles are arranged: the stage with the strip under it wherever two streams are on screen and
-    /// the reader has not asked for the grid.
+    /// How the tiles are arranged: the stage with the strip under it wherever the strip holds anything and
+    /// the reader has not asked for the grid, stacked on a narrow window.
     /// </summary>
     public LayoutMode Mode { get => _mode; private set => Set(ref _mode, value); }
 
@@ -215,10 +234,6 @@ public sealed class ViewerViewModel : Observable
     /// <summary>Swaps between the stage and equal cells.</summary>
     public DelegateCommand ToggleGrid { get; }
 
-    public Icons LayoutGlyph => IsGrid ? Icons.IconLayoutBoardSplit : Icons.IconLayoutGrid;
-
-    public string LayoutTip => IsGrid ? "Show one stream large, the others in a strip under it" : "Show every stream at the same size";
-
     /// <summary>
     /// Stream the main window is drawing fullscreen, empty when it is not.
     ///
@@ -228,7 +243,7 @@ public sealed class ViewerViewModel : Observable
     /// Not a member of <see cref="LayoutMode"/>: a mode says how tiles sit relative to each other,
     /// this says which window one of them fills.
     ///
-    /// The rail and the grid go, the shell takes its own bands off the window
+    /// The stage and the strip go, the shell takes its own bands off the window
     /// (<c>Features/Shell/ViewModel/ShellViewModel.cs</c>),
     /// and the picture is letterboxed on black at its stream's shape rather than stretched to the monitor's.
     /// </summary>
@@ -245,64 +260,23 @@ public sealed class ViewerViewModel : Observable
 
     private bool _hasFullscreen;
     private TileViewModel? _fullscreenTile;
-    private bool _isRailCollapsed;
 
     /// <summary>
     /// Width the window last stated, infinite until it states one (<see cref="SetWindowWidth"/>).
     /// </summary>
     private double _window = double.PositiveInfinity;
 
-    /// <summary>Whether a tile fills this window, taking the rail and the grid off it.</summary>
+    /// <summary>Whether a tile fills this window, taking the stage and the strip off it.</summary>
     public bool HasFullscreen { get => _hasFullscreen; private set => Set(ref _hasFullscreen, value); }
 
     public TileViewModel? FullscreenTile { get => _fullscreenTile; private set => Set(ref _fullscreenTile, value); }
 
     /// <summary>
-    /// Whether the reader collapsed the rail to its toggle.
-    /// A reader watching a wall of streams wants the width, a reader looking for another wants the list.
-    /// </summary>
-    public bool IsRailCollapsed { get => _isRailCollapsed; private set => Set(ref _isRailCollapsed, value); }
-
-    /// <summary>
-    /// Whether the rail draws the names.
-    /// Two facts read as one: what the reader asked for,
-    /// and whether the window carries the names and a tile beside them
-    /// (<c>Features/Shell/Model/SideColumns.cs</c>).
-    /// </summary>
-    public bool ShowsRailNames => !IsRailCollapsed && SideColumns.ViewerRail.FitsBeside(_window);
-
-    /// <summary>
-    /// Whether the collapse is offered.
-    /// A window too narrow for the names has none to take away, and a control that changes nothing reads as broken.
-    /// </summary>
-    public bool ShowsRailToggle => SideColumns.ViewerRail.FitsBeside(_window);
-
-    /// <summary>
-    /// Collapsed fits an entry with its name taken out: the dot, the action button, the gaps between them,
-    /// the padding around them and the list's scrollbar.
-    /// The rail's header buttons are narrower than that.
-    /// An entry keeps its shape and loses only its name.
-    /// </summary>
-    public double RailWidth => ShowsRailNames ? 240 : 88;
-
-    public Icons RailGlyph => IsRailCollapsed ? Icons.IconChevronRight : Icons.IconChevronLeft;
-
-    public string RailToggleTip => IsRailCollapsed ? "Show the stream names" : "Collapse the rail";
-
-    public DelegateCommand ToggleRail { get; }
-
-    /// <summary>
     /// Gives the main window back to its grid, whether or not a stream was filling it.
-    /// The window's key rather than a tile's: a filled window draws no rail, no menu and no band,
+    /// The window's key rather than a tile's: a filled window draws no strip, no menu and no band,
     /// so the keyboard is what a reader can still reach (<c>Features/Shell/View/ShellWindow.axaml</c>).
     /// </summary>
     public DelegateCommand LeaveFullscreen { get; }
-
-    /// <summary>
-    /// Who this machine shares a group with, and the control that puts it in the group or takes it out.
-    /// Never who is watching what: the group states presence and publication.
-    /// </summary>
-    public MembersViewModel Members { get; }
 
     /// <summary>
     /// How this machine receives: the legs, the jitter buffers and the render chain.
@@ -312,7 +286,7 @@ public sealed class ViewerViewModel : Observable
 
     /// <summary>
     /// Where the panel stands, and whether it is open.
-    /// Beside the grid on a window carrying the rail, the tiles and the panel at once, and over the grid on one
+    /// Beside the stage on a window carrying the tiles and the panel at once, and over the stage on one
     /// that does not (<c>docs/design-language.md</c>, "Narrow windows").
     /// </summary>
     public SideColumnViewModel WatchColumn { get; }
@@ -329,7 +303,7 @@ public sealed class ViewerViewModel : Observable
     }
 
     /// <summary>
-    /// States the width the window has, which decides where the rail and the panel stand.
+    /// States the width the window has, which decides whether the strip stacks and where the panel stands.
     /// Idempotent: the same width twice moves nothing.
     /// </summary>
     public void SetWindowWidth(double width)
@@ -390,12 +364,21 @@ public sealed class ViewerViewModel : Observable
     /// </summary>
     public event Action? WindowsChanged;
 
-    /// <summary>Stands in for the list while it is empty, and tells an unread relay from an idle one.</summary>
+    /// <summary>What keeps the relay from listing streams: an absent backend, an unread relay, an unreachable one.</summary>
     public string Notice { get => _notice; private set => Set(ref _notice, value); }
 
     public bool HasNotice { get => _hasNotice; private set => Set(ref _hasNotice, value); }
 
-    /// <summary>What the empty grid says, empty while a tile is up or another notice speaks (<see cref="Model.GridEmpty"/>).</summary>
+    private bool _noticeCentred;
+    private bool _noticeBelow;
+
+    /// <summary>Whether the notice stands on the empty stage.</summary>
+    public bool NoticeCentred { get => _noticeCentred; private set => Set(ref _noticeCentred, value); }
+
+    /// <summary>Whether the notice stands under a strip that kept its items.</summary>
+    public bool NoticeBelow { get => _noticeBelow; private set => Set(ref _noticeBelow, value); }
+
+    /// <summary>What the empty stage says, empty while the strip holds anything or another notice speaks (<see cref="Model.GridEmpty"/>).</summary>
     public string GridEmptyLine { get => _gridEmptyLine; private set => Set(ref _gridEmptyLine, value); }
 
     public bool ShowsGridEmpty { get => _showsGridEmpty; private set => Set(ref _showsGridEmpty, value); }
@@ -467,16 +450,13 @@ public sealed class ViewerViewModel : Observable
 
     public bool HasRefusal { get => _hasRefusal; private set => Set(ref _hasRefusal, value); }
 
-    public bool HasStreams { get => _hasStreams; private set => Set(ref _hasStreams, value); }
+    private string _groupRefusal = "";
+    private bool _hasGroupRefusal;
 
-    /// <summary>
-    /// Printed by the status band rather than over the grid.
-    /// The gesture it names is the tile's own (<c>Features/Viewer/Tile/View/TileKeys.cs</c>).
-    /// </summary>
-    public string Hint => "Right-click a tile for more options.";
+    /// <summary>Why the group service or this machine.s own settings refused its presence, empty otherwise.</summary>
+    public string GroupRefusal { get => _groupRefusal; private set => Set(ref _groupRefusal, value); }
 
-    /// <summary>Heading over the rail's list.</summary>
-    public string ShowingLabel => "On the relay";
+    public bool HasGroupRefusal { get => _hasGroupRefusal; private set => Set(ref _hasGroupRefusal, value); }
 
     // --- Lifecycle ------------------------------------------------------------------
 
@@ -504,6 +484,11 @@ public sealed class ViewerViewModel : Observable
 
         Reconcile.Onto(Streams, rows.Select(row => Of(row.Name)).ToList());
 
+        // Read off a relay that answered, an unread or unreachable one listing nothing about any stream.
+        if (relay is { Reachable: true })
+        {
+            _stopped.RemoveWhere(stream => rows.All(row => row.Name != stream));
+        }
 
         // A window whose stream left the grid has nothing behind it,
         // and a fullscreen state with no window has nothing to answer for.
@@ -523,9 +508,19 @@ public sealed class ViewerViewModel : Observable
             Fullscreen = "";
         }
 
+        var waiting = rows
+            .Where(row => !_tiles.ContainsKey(row.Name) && !_opening.Contains(row.Name))
+            .Select(row => (IStripItem)Of(row.Name))
+            .ToList();
+        var hints = HintsOf(_session.Members);
+        var narrow = _window < NavWidth.LabelsMinWidth;
+
         // A stage with an empty strip under it would shrink the one picture for nothing.
         ShowsGridToggle = Tiles.Count >= 2;
-        Mode = ShowsGridToggle && !_gridAsked ? LayoutMode.Focus : LayoutMode.Grid;
+        var beside = waiting.Count + (narrow ? 0 : hints.Count);
+        Mode = Tiles.Count == 0 || (Tiles.Count == 1 && beside == 0) || (ShowsGridToggle && _gridAsked)
+            ? LayoutMode.Grid
+            : narrow ? LayoutMode.Stack : LayoutMode.Focus;
         IsGrid = Mode == LayoutMode.Grid;
         Focused = Mode == LayoutMode.Grid ? ""
             : _tiles.ContainsKey(_staged) ? _staged
@@ -548,13 +543,24 @@ public sealed class ViewerViewModel : Observable
                 : Fullscreen == tile.Name;
         }
 
+        var stacked = Mode == LayoutMode.Stack;
+        Reconcile.InPlace(Strip, [
+            .. Tiles,
+            .. waiting,
+            .. stacked ? [] : hints,
+            .. ShowsGridToggle && !IsGrid ? [Switch] : Array.Empty<IStripItem>(),
+        ]);
+        Reconcile.Onto(HintsBelow, stacked ? hints : []);
+        HasHintsBelow = HintsBelow.Count > 0;
+
         // An absent backend is why there is no relay reading at all,
         // so it answers before the relay's own states and is the one notice the dialling belongs under.
         var absent = relay is null && _session.Unavailable.Length > 0;
 
-        HasStreams = Streams.Count > 0;
-        Notice = HasStreams ? "" : absent ? _session.Unavailable : NoticeFor(relay);
+        Notice = absent ? _session.Unavailable : NoticeFor(relay);
         HasNotice = Notice.Length > 0;
+        NoticeCentred = HasNotice && Strip.Count == 0;
+        NoticeBelow = HasNotice && Strip.Count > 0;
         NoticeIsFailure = absent;
 
         // Read off the sentence's own verdict: an attempt is coming for the notice that is a failure,
@@ -563,28 +569,22 @@ public sealed class ViewerViewModel : Observable
 
         // The other half of the same arc, and the one a launch shows: the sentence above says the relay is being
         // read, and this is what makes it a wait rather than a screen that stopped.
-        // Off the session, the member card below waiting on the same answer.
         IsReading = _session.IsReading;
 
         HasRefusal = Refusal.Length > 0;
+        GroupRefusal = Statements.Of(_session.Members?.Refusal);
+        HasGroupRefusal = GroupRefusal.Length > 0;
 
         FullscreenTile = Fullscreen.Length > 0 ? _tiles.GetValueOrDefault(Fullscreen) : null;
         HasFullscreen = FullscreenTile is not null;
 
-        // The way into a group, which the card and the grid each name in their own sentence.
+        // The way into a group, which the card and the stage each name in their own sentence.
         var discordMode = _form.Stored?.Relay?.GroupSource == "discord";
 
-        Members.Reported = _session.Members;
-        Members.Discord = _session.Discord;
-        Members.DiscordMode = discordMode;
-        Members.IsReading = IsReading;
-        Members.Apply();
-
         GridEmptyLine = GridEmpty.For(
-            _session.Members, _session.Discord, discordMode,
-            Streams.Count, _tiles.Count, relay?.Reachable == true);
+            _session.Members, _session.Discord, discordMode, Strip.Count, relay?.Reachable == true);
         ShowsGridEmpty = GridEmptyLine.Length > 0;
-        ShowsJoinCard = GridEmpty.AsksToJoin(_session.Members, _session.Discord, discordMode, _tiles.Count);
+        ShowsJoinCard = GridEmpty.AsksToJoin(_session.Members, _session.Discord, discordMode, Strip.Count);
         var press = JoinPresses.Of(PickedJoin, _session.Discord is { Linked: true });
         JoinLabel = press.Label;
         JoinGlyph = press.Glyph;
@@ -593,33 +593,62 @@ public sealed class ViewerViewModel : Observable
         // so a vocabulary arriving with the catalog reaches the panel's entries without a notification of its own.
         Watch.Apply();
 
-        // Raised by hand: a property with no field of its own has nothing to compare against.
-        OnPropertyChanged(nameof(ShowsRailNames));
-        OnPropertyChanged(nameof(ShowsRailToggle));
-        OnPropertyChanged(nameof(RailWidth));
-        OnPropertyChanged(nameof(RailGlyph));
-        OnPropertyChanged(nameof(RailToggleTip));
-        OnPropertyChanged(nameof(LayoutGlyph));
-        OnPropertyChanged(nameof(LayoutTip));
-
         WindowsChanged?.Invoke();
 
         Assert.That(Streams.Count == rows.Count, "a row per stream on the relay", Streams.Count, rows.Count);
         Assert.That(HasFullscreen == (FullscreenTile is not null), "a fullscreen tile and the state drawing it agree", HasFullscreen);
-        Assert.That(Mode == LayoutMode.Focus == (Focused.Length > 0), "focus and the mode that draws it agree", Mode, Focused);
+        Assert.That(IsGrid == (Focused.Length == 0), "a stage and the mode that draws it agree", Mode, Focused);
         Assert.That(Focused.Length == 0 || _tiles.ContainsKey(Focused), "a focused stream is one of the tiles", Focused);
         Assert.That(Fullscreen.Length == 0 || _tiles.ContainsKey(Fullscreen), "a fullscreen stream is one of the tiles", Fullscreen);
         Assert.That(!_popped.Contains(Fullscreen), "the stream filling this window is one of its own grid's", Fullscreen);
         Assert.That(_tiles.Count == Tiles.Count, "one tile per stream in the grid", _tiles.Count, Tiles.Count);
+        Assert.That(Strip.OfType<TileViewModel>().Count() == Tiles.Count, "every tile stands in the strip", Strip.Count, Tiles.Count);
         Assert.That(_tiles.Keys.All(Drawn), "every tile has a window drawing it", _tiles.Count, _shown);
         Assert.That(!_shown || _parked.Count == 0, "a window on screen keeps no streams for its return", _parked.Count);
         Assert.That(!_parked.Any(_tiles.ContainsKey), "a kept stream has no tile", _parked.Count);
-        Assert.That(HasStreams == (Notice.Length == 0), "a list and the sentence standing in for it are never both on screen", HasStreams);
+        Assert.That(!_stopped.Any(_tiles.ContainsKey), "a stopped stream has no tile", _stopped.Count);
         Assert.That(HasNotice == (Notice.Length > 0), "the notice and its text agree", HasNotice);
+        Assert.That(!(NoticeCentred && NoticeBelow), "the notice stands in one place", Strip.Count);
         Assert.That(!NoticeIsFailure || HasNotice, "a failure is marked on the sentence stating it", NoticeIsFailure, HasNotice);
         Assert.That(!IsDialling || HasNotice, "the wait appears under the notice it belongs to", IsDialling, HasNotice);
         Assert.That(HasRefusal == (Refusal.Length > 0), "a refusal and its sentence agree", HasRefusal);
+
+        // Last, after every output holds: a start answering at once renders again from here.
+        foreach (var stream in Unplayed(rows))
+        {
+            _ = StartAsync(stream);
+        }
     }
+
+    /// <summary>
+    /// Ready streams nobody stopped and nothing is starting, in relay order.
+    /// None while no window draws a tile, and none before the settings name the leg a tile opens on.
+    /// This machine's own share waits for a press: its picture is the one the reader is sending.
+    /// </summary>
+    private List<string> Unplayed(IReadOnlyList<StreamRow> rows)
+    {
+        if (!_shown || TileLeg.Of(_form.Stored).Length == 0)
+        {
+            return [];
+        }
+
+        var own = _session.Publish?.Live?.StreamName ?? "";
+        return rows
+            .Where(row => row.IsReady && row.Name != own)
+            .Select(row => row.Name)
+            .Where(stream => !_tiles.ContainsKey(stream) && !_opening.Contains(stream) && !_stopped.Contains(stream))
+            .ToList();
+    }
+
+    /// <summary>A line per other member of the group publishing nothing, in the group's order.</summary>
+    private static List<MemberHint> HintsOf(MembersState? group)
+        => group is { Joined: true }
+            ? group.Members
+                .Where(member => !member.Self && !member.Publishing)
+                .Select(member => new MemberHint(
+                    Cards.NotSharing(member.DisplayName.Length > 0 ? member.DisplayName : member.MemberId)))
+                .ToList()
+            : [];
 
     /// <summary>
     /// One row per relay path, carrying the legs this machine already has open on it.
@@ -661,9 +690,9 @@ public sealed class ViewerViewModel : Observable
     }
 
     /// <summary>
-    /// Why there is nothing to list, for every reason but an absent backend, which the render pass answers first.
-    /// An unread relay, an unreachable one and an idle one are states a reader has to tell apart,
-    /// and an unreachable one says why in the relay's own words.
+    /// Why the relay lists nothing, for every reason but an absent backend, which the render pass answers first.
+    /// An unreachable relay says why in its own words.
+    /// Empty for a relay that answered: an idle group is the empty stage's line (<see cref="GridEmpty"/>).
     /// </summary>
     private static string NoticeFor(RelayStatus? relay)
     {
@@ -677,7 +706,7 @@ public sealed class ViewerViewModel : Observable
             return relay.Error.Length > 0 ? relay.Error : "The relay could not be reached.";
         }
 
-        return "The relay is up and carrying nothing.";
+        return "";
     }
 
     private StreamRowViewModel Of(string name)
@@ -726,48 +755,64 @@ public sealed class ViewerViewModel : Observable
     private static IReadOnlyList<WatchLeg> LegsOf(IReadOnlyList<string> legs)
         => legs.Select(leg => new WatchLeg(leg, Copy.Words.Transport(leg))).ToList();
 
+    /// <summary>A press on one stream: plays one waiting in the strip, stops one playing.</summary>
+    private Task TileAsync(string stream, bool tiled) => tiled ? StopAsync(stream) : PlayAsync(stream);
+
+    /// <summary>Plays a stream the reader asked for, lifting a stop they made earlier.</summary>
+    private Task PlayAsync(string stream)
+    {
+        _stopped.Remove(stream);
+        return StartAsync(stream);
+    }
+
     /// <summary>
-    /// Puts one stream in the grid, or takes it out.
-    ///
-    /// <b>Two calls in each direction, and the order is the point.</b>
-    /// In: the decode opens first, a tile being a subscription to frames and there being none until something
-    /// decodes.
-    /// Out: the tile goes first,
-    /// a subscription outliving its decode being a window holding handles to memory the backend has freed.
-    ///
-    /// <b>The two directions name their leg from two places.</b>
-    /// A start opens the leg the stored settings say a tile receives on;
-    /// a stop closes the leg the tile was opened on, possibly an older setting.
-    /// A decode is keyed by the stream and the leg together,
-    /// so stopping on the current setting would leave one running whenever the leg had moved.
+    /// Takes one stream off the stage and keeps it in the strip until a press.
+    /// The tile goes before the decode closes:
+    /// a subscription outliving its decode is a window holding handles to memory the backend has freed.
+    /// The stop names the leg the tile opened on, possibly an older setting,
+    /// a decode being keyed by the stream and the leg together.
+    /// Idempotent: a stream already stopped asks the backend for nothing.
+    /// </summary>
+    private async Task StopAsync(string stream)
+    {
+        // Read before the tile goes, the tile being where the answer is.
+        var opened = _tiles.TryGetValue(stream, out var tile) ? tile.Transport : "";
+        _stopped.Add(stream);
+        Drop(stream);
+        _parked.Remove(stream);
+        Apply();
+
+        if (opened.Length > 0)
+        {
+            await CloseAsync(stream, opened).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Opens one stream's decode, then its tile, there being no frames to subscribe to until something decodes.
+    /// Idempotent: a stream playing or starting asks for nothing.
     ///
     /// <b>The leg is the stored one.</b>
     /// It is the only knob of the watch group this call names,
     /// the backend reading the render chain and the jitter buffers out of its own settings as it builds the decode.
     /// Opening on the draft would run an unkept leg against kept buffers
     /// (<c>Features/Viewer/Tile/Model/TileLeg.cs</c>).
+    ///
+    /// A refused start leaves the stream stopped, so the next pass asks nothing until a press,
+    /// and the refusal line says why.
     /// </summary>
-    private async Task TileAsync(string stream, bool tiled)
+    private async Task StartAsync(string stream)
     {
-        if (tiled)
+        if (_tiles.ContainsKey(stream) || !_opening.Add(stream))
         {
-            // Read before the tile goes, the tile being where the answer is.
-            var opened = _tiles.TryGetValue(stream, out var tile) ? tile.Transport : "";
-            Drop(stream);
-            _parked.Remove(stream);
-            Apply();
-
-            if (opened.Length > 0)
-            {
-                await CloseAsync(stream, opened).ConfigureAwait(false);
-            }
-
             return;
         }
 
         var leg = TileLeg.Of(_form.Stored);
         if (leg.Length == 0)
         {
+            _opening.Remove(stream);
+            _stopped.Add(stream);
             Refused("The settings name no protocol for a tile to receive on. Pick one under Watching.");
             return;
         }
@@ -775,16 +820,29 @@ public sealed class ViewerViewModel : Observable
         try
         {
             await _backend.StartReceiveAsync(stream, leg).ConfigureAwait(false);
-            Refused("");
-            _dispatch(() => Add(stream, leg));
+
+            // One step on the loop, so the tile lands before a pass the cleared refusal would run starts another.
+            _dispatch(() =>
+            {
+                _opening.Remove(stream);
+                Refusal = "";
+                Add(stream, leg);
+            });
         }
         catch (BackendUnavailableException e)
         {
             // Shown as it arrived: a refusal names the format and the protocols that would have carried it.
             Refused(e.Message);
+            _dispatch(() =>
+            {
+                _opening.Remove(stream);
+                _stopped.Add(stream);
+                Apply();
+            });
         }
         catch (OperationCanceledException)
         {
+            _dispatch(() => _opening.Remove(stream));
         }
     }
 
@@ -815,7 +873,7 @@ public sealed class ViewerViewModel : Observable
     /// Takes every tile no window draws off the grid, closes its decode and keeps its stream for the window's
     /// return.
     /// Runs after each write that can leave one: the window hiding, and a pop-out closing into a hidden grid.
-    /// The tiles go before any stop is asked for, the order <see cref="TileAsync"/> states.
+    /// The tiles go before any stop is asked for, the order <see cref="StopAsync"/> states.
     /// Answers once every stop has.
     /// </summary>
     private Task Park()
@@ -831,26 +889,25 @@ public sealed class ViewerViewModel : Observable
     }
 
     /// <summary>
-    /// Opens one stream on the grid, for a link the desktop handed this window
+    /// Plays one stream, for a link the desktop handed this window
     /// (<c>Features/Shell/ViewModel/ShellViewModel.cs</c>).
     ///
-    /// The press's own path, so a linked stream is tiled on the leg every other tile uses and a stream already
-    /// tiled stays as it is.
+    /// The press's own path, so a linked stream plays on the leg every other tile uses, a stop on it is lifted,
+    /// and a stream already playing stays as it is.
     /// A refusal lands where a press's would, the screen being where a reader is looking.
     /// </summary>
     public Task OpenAsync(string stream)
     {
         Assert.That(stream.Length > 0, "a link opens a stream it names");
 
-        return TileAsync(stream, tiled: false);
+        return PlayAsync(stream);
     }
 
     /// <summary>Says why a link could not be opened, in the line a press's refusal lands in.</summary>
     public void RefuseLink(string reason) => Refused(reason);
 
     /// <summary>
-    /// Watches every kept stream again through the start a press runs, and forgets the list:
-    /// what the answers add back is the grid.
+    /// Starts every kept stream again and forgets the list: what the answers add back is the grid.
     /// </summary>
     private void Unpark()
     {
@@ -858,7 +915,7 @@ public sealed class ViewerViewModel : Observable
         _parked.Clear();
         foreach (var stream in parked)
         {
-            _ = TileAsync(stream, false);
+            _ = StartAsync(stream);
         }
     }
 
@@ -898,7 +955,7 @@ public sealed class ViewerViewModel : Observable
 
             case TileIntent.PopOut:
                 // The decode is untouched either way: closing a pop-out returns the stream to its slot,
-                // stopping being the rail's toggle.
+                // stopping being an intent of its own.
                 if (!_popped.Remove(stream))
                 {
                     _popped.Add(stream);
@@ -933,9 +990,8 @@ public sealed class ViewerViewModel : Observable
                 break;
 
             case TileIntent.Close:
-                // The rail toggle's own path, fired without waiting:
-                // the tile leaves the grid before the stop's round trip answers.
-                _ = TileAsync(stream, true);
+                // Fired without waiting: the tile leaves before the stop's round trip answers.
+                _ = StopAsync(stream);
                 break;
 
             case TileIntent.LeaveFullscreen:
@@ -988,7 +1044,7 @@ public sealed class ViewerViewModel : Observable
             TileSource.Relay(stream, leg), _backend, _dispatch, intent => Arrange(stream, intent));
         // A tile reports what it drew, which no state the backend owns can carry.
         // The pass it asks for is this screen's,
-        // so the figures over a tile and the rail beside it stay one render function.
+        // so the figures over a tile and the strip around it stay one render function.
         tile.Changed += Apply;
 
         _tiles[stream] = tile;

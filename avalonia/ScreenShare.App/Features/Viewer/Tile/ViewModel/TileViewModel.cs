@@ -26,7 +26,7 @@ namespace ScreenShare.App.Features.Viewer.Tile.ViewModel;
 /// and where pipeline state is read from (<see cref="TilePipeline"/>).
 /// A second implementation would answer twice what a dropped frame is and where a lent handle goes back.
 /// </summary>
-public sealed partial class TileViewModel : Observable, IFrameSource
+public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
 {
     private readonly TileSource _source;
     private readonly IBackend _backend;

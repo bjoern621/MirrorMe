@@ -454,9 +454,11 @@ internal sealed class SeededBackend : IBackend
     // A partial implementation would break the compile of every test touching an unimplemented method,
     // for a reason unrelated to what it tests.
 
-    /// <summary>Nothing publishes, which the absent <c>Live</c> says.</summary>
+    /// <summary>Publish state. Nothing publishes until a test says otherwise, which the absent <c>Live</c> says.</summary>
+    public PublishState Publish { get; set; } = new();
+
     public Task<PublishState> PublishStateAsync(CancellationToken cancellation = default)
-        => Task.FromResult(new PublishState());
+        => Task.FromResult(Publish);
 
     /// <summary>
     /// Relay snapshot, unreachable with a reason by default.

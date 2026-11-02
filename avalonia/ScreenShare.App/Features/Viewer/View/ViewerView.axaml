@@ -3,8 +3,8 @@
              xmlns:controls="using:ScreenShare.App.Controls"
              xmlns:copy="using:ScreenShare.App.Copy"
              xmlns:ti="using:TablerIcons"
+             xmlns:model="using:ScreenShare.App.Features.Viewer.Model"
              xmlns:vm="using:ScreenShare.App.Features.Viewer.ViewModel"
-             xmlns:members="using:ScreenShare.App.Features.Viewer.Members.View"
              xmlns:view="using:ScreenShare.App.Features.Viewer.View"
              xmlns:tile="using:ScreenShare.App.Features.Viewer.Tile.ViewModel"
              xmlns:tiles="using:ScreenShare.App.Features.Viewer.Tile.View"
@@ -14,249 +14,59 @@
              Background="{StaticResource SurfaceBrush}">
 
   <UserControl.Styles>
-    <!-- A path nothing is publishing to reads as absent, not broken. -->
-    <Style Selector="TextBlock.idle">
-      <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+    <!-- A strip cell with no picture: a stopped stream, the Grid switch. -->
+    <Style Selector="Border.cell">
+      <Setter Property="Background" Value="{StaticResource PanelBrush}" />
+      <Setter Property="CornerRadius" Value="{StaticResource RadiusTile}" />
+      <Setter Property="Padding" Value="{StaticResource InsetTight}" />
     </Style>
-    <Style Selector="TextBlock.watched">
-      <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
-      <Setter Property="FontWeight" Value="SemiBold" />
-    </Style>
-
-    <Style Selector="Ellipse.live">
-      <Setter Property="Width" Value="{StaticResource DotSize}" />
-      <Setter Property="Height" Value="{StaticResource DotSize}" />
-      <Setter Property="Fill" Value="{StaticResource MutedBrush}" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
-    <Style Selector="Ellipse.live.on">
-      <Setter Property="Fill" Value="{StaticResource ForegroundBrush}" />
-    </Style>
-
-    <!--
-      The action shows on hover, while its stream is in the grid, and while a press is being answered.
-      The third case is not spare: a press makes the row's command unavailable,
-      an unavailable control takes no pointer, and the entry would hide the spinner as it started turning.
-    -->
-    <Style Selector="Button.entry Button.action">
-      <Setter Property="Opacity" Value="0" />
-      <Setter Property="IsHitTestVisible" Value="False" />
-    </Style>
-    <Style Selector="Button.entry:pointerover Button.action, Button.entry Button.action.on, Button.entry Button.action:pending">
-      <Setter Property="Opacity" Value="1" />
-      <Setter Property="IsHitTestVisible" Value="True" />
+    <Style Selector="Button:pointerover Border.cell">
+      <Setter Property="Background" Value="{StaticResource ControlHoverBrush}" />
     </Style>
   </UserControl.Styles>
 
-  <!--
-    A rail of what the relay carries, beside a grid of what the reader asked to see.
-    No title bar, no nav strip and no status band, the shell owning all three.
-  -->
-  <Grid ColumnDefinitions="Auto,*">
+  <!-- No title bar, no nav strip and no status band, the shell owning all three. -->
+  <Grid>
 
-    <Border Grid.Column="0"
-            Width="{Binding RailWidth}"
-            Background="{StaticResource PanelBrush}"
-            BorderBrush="{StaticResource DividerBrush}"
-            BorderThickness="0,0,1,0">
-      <DockPanel Margin="{StaticResource InsetControl}">
-
-        <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,10">
-          <TextBlock Grid.Column="0" Classes="caption" Text="{Binding ShowingLabel}"
-                     VerticalAlignment="Center" Margin="7,0,0,0"
-                     IsVisible="{Binding ShowsRailNames}" />
-
-          <Button Grid.Column="1" Theme="{StaticResource IconButton}"
-                  IsVisible="{Binding ShowsGridToggle}"
-                  Command="{Binding ToggleGrid}"
-                  ToolTip.Tip="{Binding LayoutTip}">
-            <ti:TablerIcon Classes="button" Icon="{Binding LayoutGlyph}" />
-          </Button>
-
-          <!--
-            Offered while the window has the width for the names.
-            Narrower than that the rail is already down to its dots, and a control that changes nothing
-            reads as broken (docs/design-language.md, "Narrow windows").
-          -->
-          <Button Grid.Column="2" Theme="{StaticResource IconButton}"
-                  IsVisible="{Binding ShowsRailToggle}"
-                  Command="{Binding ToggleRail}"
-                  ToolTip.Tip="{Binding RailToggleTip}">
-            <ti:TablerIcon Classes="button" Icon="{Binding RailGlyph}" />
-          </Button>
-        </Grid>
-
-        <!--
-          Backend's own sentence for a refused open or close, shown as it arrived.
-          Red without a condition: a refusal is a failure and nothing else lands here
-          (docs/design-language.md, "Palette").
-        -->
-        <SelectableTextBlock DockPanel.Dock="Bottom" Classes="hint danger" Text="{Binding Refusal}"
-                             IsVisible="{Binding HasRefusal}" Margin="2,10,2,0" />
-
-        <!--
-          Who else is in the group, at the rail's foot, under the list of what they are sending.
-          Declared after the refusal so the refusal keeps the lowest line.
-          Gone with the names when the rail is collapsed: a member list is names,
-          and a column narrowed to its dots has none left to draw.
-        -->
-        <StackPanel DockPanel.Dock="Bottom" Margin="0,10,0,0"
-                    IsVisible="{Binding ShowsRailNames}">
-          <Border Classes="dividerh" Margin="0,0,0,10" />
-          <members:MembersView DataContext="{Binding Members}" />
-        </StackPanel>
-
-        <!--
-          What the relay answered, the reader's only account of an unreachable one.
-          Red for the backend's own sentence alone: a relay carrying nothing answered.
-        -->
-        <SelectableTextBlock DockPanel.Dock="Top" Classes="hint" Text="{Binding Notice}"
-                             Classes.danger="{Binding NoticeIsFailure}"
-                             IsVisible="{Binding HasNotice}" Margin="2,0" />
-
-        <!--
-          Left-aligned rather than centred: it belongs to the line above it and not to the empty grid.
-          The line it turns under is the failure one:
-          a notice about the relay has nothing being dialled behind it.
-        -->
-        <controls:Waiting DockPanel.Dock="Top"
-                          Margin="2,6,2,0"
-                          IsVisible="{Binding IsDialling}"
-                          ToolTip.Tip="{x:Static copy:Cards.Redialling}" />
-
-        <!--
-          The arc for the answer that is still coming, under the line naming what is being read.
-          No tip: that line already says it, and a tip repeating what stands beside it teaches nothing
-          (docs/design-language.md, "Wording").
-        -->
-        <controls:Waiting DockPanel.Dock="Top"
-                          Margin="2,6,2,0"
-                          IsVisible="{Binding IsReading}" />
-
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-          <ItemsControl ItemsSource="{Binding Streams}">
-            <ItemsControl.ItemTemplate>
-              <DataTemplate x:DataType="vm:StreamRowViewModel">
-
-                <Button Classes="entry" Theme="{StaticResource RowButton}" Margin="0,1"
-                        Command="{Binding Show}">
-
-                  <Button.ContextFlyout>
-                    <MenuFlyout>
-                      <!--
-                        One item per leg the catalog offered, none greyed.
-                        Whether a leg carries this stream is answered against the stream when the viewer opens,
-                        and the relay snapshot can be older than the stream.
-                      -->
-                      <MenuItem Header="Open in player" ItemsSource="{Binding Legs}">
-                        <MenuItem.Icon>
-                          <ti:TablerIcon Icon="IconPlayerPlay" />
-                        </MenuItem.Icon>
-                        <!--
-                          The tick reads whether the leg is open.
-                          A ToggleType would write its own IsChecked on the click, reporting a call the backend
-                          has yet to answer.
-                        -->
-                        <MenuItem.ItemContainerTheme>
-                          <ControlTheme TargetType="MenuItem" x:DataType="vm:WatchLegViewModel"
-                                        BasedOn="{StaticResource {x:Type MenuItem}}">
-                            <Setter Property="Header" Value="{Binding Label}" />
-                            <Setter Property="Command" Value="{Binding Toggle}" />
-                            <Setter Property="IsChecked" Value="{Binding IsOpen, Mode=OneWay}" />
-                          </ControlTheme>
-                        </MenuItem.ItemContainerTheme>
-                      </MenuItem>
-
-                      <!--
-                        A roster of its own, the legs a browser reaches not being the legs a player does.
-                        No tick on these rows: a tab belongs to the browser, so this side can neither read
-                        whether it is open nor close it.
-                        The row names an action where every other row here names a state.
-                      -->
-                      <MenuItem Header="Open in browser" ItemsSource="{Binding BrowserLegs}">
-                        <MenuItem.Icon>
-                          <ti:TablerIcon Icon="IconBrowser" />
-                        </MenuItem.Icon>
-                        <MenuItem.ItemContainerTheme>
-                          <ControlTheme TargetType="MenuItem" x:DataType="vm:BrowserLegViewModel"
-                                        BasedOn="{StaticResource {x:Type MenuItem}}">
-                            <Setter Property="Header" Value="{Binding Label}" />
-                            <Setter Property="Command" Value="{Binding Open}" />
-                          </ControlTheme>
-                        </MenuItem.ItemContainerTheme>
-                      </MenuItem>
-
-                      <Separator />
-
-                      <!--
-                        Printed rather than offered.
-                        A greyed row in this product reads as an action some configuration took away.
-                      -->
-                      <MenuItem Theme="{StaticResource MenuNote}" Header="{Binding Tracks}" />
-                      <MenuItem Theme="{StaticResource MenuNote}" Header="{Binding Detail}" />
-                      <MenuItem Theme="{StaticResource MenuNote}" Header="{Binding Readers}" />
-                    </MenuFlyout>
-                  </Button.ContextFlyout>
-
-                  <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{StaticResource GapTight}">
-                    <Ellipse Grid.Column="0" Classes="live" Classes.on="{Binding IsReady}" />
-
-                    <TextBlock Grid.Column="1" Classes="ident" Text="{Binding Label}"
-                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
-                               IsVisible="{Binding $parent[UserControl].((vm:ViewerViewModel)DataContext).ShowsRailNames}"
-                               Classes.idle="{Binding !IsReady}" Classes.watched="{Binding IsWatched}" />
-
-                    <!--
-                      One control and not one per leg:
-                      which protocol a tile receives on is a setting the backend resolves,
-                      not a choice this entry offers.
-
-                      Runs the entry's own command, so a press landing beside the glyph does the same thing.
-                      What it owns alone is the wait.
-
-                      A button rather than a toggle, a bare toggle arriving wearing Fluent beside controls
-                      that wear the design (avalonia/README.md).
-                    -->
-                    <Button Grid.Column="2" Classes="action"
-                            Classes.on="{Binding IsTiled}"
-                            Theme="{StaticResource IconButton}"
-                            Command="{Binding Show}"
-                            ToolTip.Tip="{Binding WatchLabel}"
-                            controls:Pending.IsActive="{Binding Show.IsRunning}">
-                      <ti:TablerIcon Classes="button" Icon="{Binding WatchGlyph}" />
-                    </Button>
-                  </Grid>
-                </Button>
-
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
-        </ScrollViewer>
-
-      </DockPanel>
-    </Border>
-
-    <!--
-      The grid, and the settings panel beside it or over it (docs/design-language.md, "Narrow windows").
-      The panel measures against the rail as well as the tiles, the three standing on one window.
-    -->
-    <controls:SideColumnPanel Grid.Column="1"
-                              Beside="{Binding WatchColumn.IsBeside}"
+    <!-- The stage, and the settings panel beside it or over it (docs/design-language.md, "Narrow windows"). -->
+    <controls:SideColumnPanel Beside="{Binding WatchColumn.IsBeside}"
                               SideOnLeft="{Binding WatchColumn.IsOnLeft}"
                               SideWidth="{Binding WatchColumn.Width}">
 
-    <!-- No summary and no hint here: the shell's status band prints both off this same view model. -->
     <DockPanel Margin="{StaticResource InsetPanel}">
+
+      <!--
+        Lines under the stage: the members sharing nothing on a stacked strip, and what failed.
+        Red without a condition on the refusals: a refusal is a failure and nothing else lands there
+        (docs/design-language.md, "Palette").
+      -->
+      <StackPanel DockPanel.Dock="Bottom" Spacing="{StaticResource GapTight}">
+        <ItemsControl ItemsSource="{Binding HintsBelow}" IsVisible="{Binding HasHintsBelow}" Margin="0,10,0,0">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="model:MemberHint">
+              <TextBlock Classes="hint" Text="{Binding Line}" TextWrapping="Wrap" TextTrimming="None" />
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <SelectableTextBlock Classes="hint" Text="{Binding Notice}" TextWrapping="Wrap"
+                             Classes.danger="{Binding NoticeIsFailure}"
+                             IsVisible="{Binding NoticeBelow}" Margin="0,10,0,0" />
+        <SelectableTextBlock Classes="hint danger" Text="{Binding Refusal}" TextWrapping="Wrap"
+                             IsVisible="{Binding HasRefusal}" Margin="0,10,0,0" />
+        <SelectableTextBlock Classes="hint danger" Text="{Binding GroupRefusal}" TextWrapping="Wrap"
+                             IsVisible="{Binding HasGroupRefusal}" Margin="0,10,0,0" />
+      </StackPanel>
 
       <Panel>
 
       <!--
-        The sideways bar belongs to the focus rail: the panel reports the width the rail needs, and the focused
-        tile is placed at the offset so it stands still under the reader's eye while the rail moves
+        The sideways bar belongs to the strip: the panel reports the width the strip needs, and the stage is
+        placed at the offset so it stands still under the reader's eye while the strip moves
         (Features/Viewer/Model/FocusLayout.cs).
+        A stacked strip runs down, and the bar with it.
       -->
       <ScrollViewer Name="GridScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-        <ItemsControl ItemsSource="{Binding Tiles}">
+        <ItemsControl ItemsSource="{Binding Strip}">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
               <view:TileGrid Mode="{Binding Mode}"
@@ -265,29 +75,133 @@
             </ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
           <ItemsControl.ItemContainerTheme>
-            <ControlTheme TargetType="ContentPresenter" x:DataType="tile:TileViewModel">
+            <ControlTheme TargetType="ContentPresenter" x:DataType="model:IStripItem">
               <Setter Property="view:TileGrid.Aspect" Value="{Binding Aspect}" />
               <Setter Property="view:TileGrid.IsFocusedTile" Value="{Binding IsFocused}" />
             </ControlTheme>
           </ItemsControl.ItemContainerTheme>
-          <ItemsControl.ItemTemplate>
+          <ItemsControl.DataTemplates>
+
+            <!--
+              The one host that draws the plate.
+              A stream whose picture went elsewhere keeps its slot here, popped out or fullscreen,
+              so which of the two a card draws is the host's to state
+              (Features/Viewer/Tile/View/TileCard.axaml.cs).
+            -->
             <DataTemplate x:DataType="tile:TileViewModel">
-              <!--
-                The one host that draws the plate.
-                A stream whose picture went elsewhere keeps its slot here, popped out or fullscreen,
-                so which of the two a card draws is the host's to state
-                (Features/Viewer/Tile/View/TileCard.axaml.cs).
-              -->
               <tiles:TileCard PictureElsewhere="{Binding PictureElsewhere}" InGrid="True" />
             </DataTemplate>
-          </ItemsControl.ItemTemplate>
+
+            <!-- A stopped stream: a press plays it, and its menu opens it outside this window. -->
+            <DataTemplate x:DataType="vm:StreamRowViewModel">
+              <Button Theme="{StaticResource TileButton}" VerticalContentAlignment="Stretch"
+                      Command="{Binding Show}"
+                      ToolTip.Tip="{x:Static copy:Cards.PlayAgainTip}"
+                      controls:Pending.IsActive="{Binding Show.IsRunning}">
+                <Button.ContextFlyout>
+                  <MenuFlyout>
+                    <!--
+                      One item per leg the catalog offered, none greyed.
+                      Whether a leg carries this stream is answered against the stream when the viewer opens,
+                      and the relay snapshot can be older than the stream.
+                    -->
+                    <MenuItem Header="Open in player" ItemsSource="{Binding Legs}">
+                      <MenuItem.Icon>
+                        <ti:TablerIcon Icon="IconPlayerPlay" />
+                      </MenuItem.Icon>
+                      <!--
+                        The tick reads whether the leg is open.
+                        A ToggleType would write its own IsChecked on the click, reporting a call the backend
+                        has yet to answer.
+                      -->
+                      <MenuItem.ItemContainerTheme>
+                        <ControlTheme TargetType="MenuItem" x:DataType="vm:WatchLegViewModel"
+                                      BasedOn="{StaticResource {x:Type MenuItem}}">
+                          <Setter Property="Header" Value="{Binding Label}" />
+                          <Setter Property="Command" Value="{Binding Toggle}" />
+                          <Setter Property="IsChecked" Value="{Binding IsOpen, Mode=OneWay}" />
+                        </ControlTheme>
+                      </MenuItem.ItemContainerTheme>
+                    </MenuItem>
+
+                    <!--
+                      The legs a browser reaches, a set apart from the player's.
+                      No tick: a tab belongs to the browser, so this side can neither read whether it is open
+                      nor close it.
+                    -->
+                    <MenuItem Header="Open in browser" ItemsSource="{Binding BrowserLegs}">
+                      <MenuItem.Icon>
+                        <ti:TablerIcon Icon="IconBrowser" />
+                      </MenuItem.Icon>
+                      <MenuItem.ItemContainerTheme>
+                        <ControlTheme TargetType="MenuItem" x:DataType="vm:BrowserLegViewModel"
+                                      BasedOn="{StaticResource {x:Type MenuItem}}">
+                          <Setter Property="Header" Value="{Binding Label}" />
+                          <Setter Property="Command" Value="{Binding Open}" />
+                        </ControlTheme>
+                      </MenuItem.ItemContainerTheme>
+                    </MenuItem>
+
+                    <Separator />
+
+                    <!--
+                      Printed, never offered.
+                      A greyed row in this product reads as an action some configuration took away.
+                    -->
+                    <MenuItem Theme="{StaticResource MenuNote}" Header="{Binding Tracks}" />
+                    <MenuItem Theme="{StaticResource MenuNote}" Header="{Binding Detail}" />
+                    <MenuItem Theme="{StaticResource MenuNote}" Header="{Binding Readers}" />
+                  </MenuFlyout>
+                </Button.ContextFlyout>
+
+                <Border Classes="cell">
+                  <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                              Spacing="{StaticResource GapTight}">
+                    <ti:TablerIcon Classes="button" Icon="IconPlayerPlay" HorizontalAlignment="Center"
+                                   Brush="{StaticResource MutedBrush}" />
+                    <TextBlock Classes="ident" Text="{Binding Label}" TextAlignment="Center"
+                               TextTrimming="CharacterEllipsis" />
+                  </StackPanel>
+                </Border>
+              </Button>
+            </DataTemplate>
+
+            <!-- A member sharing nothing, dashed as every empty place in this app is. -->
+            <DataTemplate x:DataType="model:MemberHint">
+              <Panel>
+                <Rectangle Stroke="{StaticResource DividerBrush}"
+                           StrokeThickness="1"
+                           StrokeDashArray="4,4"
+                           RadiusX="{StaticResource RadiusTileValue}"
+                           RadiusY="{StaticResource RadiusTileValue}" />
+                <TextBlock Classes="hint" Text="{Binding Line}" Margin="{StaticResource InsetTight}"
+                           TextWrapping="Wrap" TextTrimming="None" TextAlignment="Center"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Panel>
+            </DataTemplate>
+
+            <DataTemplate x:DataType="vm:GridSwitch">
+              <Button Theme="{StaticResource TileButton}" VerticalContentAlignment="Stretch"
+                      Command="{Binding Toggle}" ToolTip.Tip="{Binding Tip}">
+                <Border Classes="cell">
+                  <StackPanel Orientation="Horizontal" Spacing="{StaticResource GapTight}"
+                              HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <ti:TablerIcon Classes="button" Icon="IconLayoutGrid" Brush="{StaticResource MutedBrush}"
+                                   VerticalAlignment="Center" />
+                    <TextBlock Classes="hint" Text="{x:Static copy:Cards.GridSwitch}" VerticalAlignment="Center" />
+                  </StackPanel>
+                </Border>
+              </Button>
+            </DataTemplate>
+
+          </ItemsControl.DataTemplates>
         </ItemsControl>
       </ScrollViewer>
 
       <!--
         The empty state the design language draws: dashed border, muted badge, one sentence,
         nothing to press (docs/design-language.md, "Empty states").
-        The sentence is per cause and quiet where the rail's notice speaks (Model/GridEmpty.cs).
+        The sentence is per cause and quiet where the relay notice speaks (Model/GridEmpty.cs).
       -->
       <Grid IsVisible="{Binding ShowsGridEmpty}">
         <Rectangle Stroke="{StaticResource DividerBrush}"
@@ -310,65 +224,87 @@
         </StackPanel>
       </Grid>
 
-
-      <!--
-        Outside a group the grid asks the way in (Model/GridEmpty.cs).
-        The press leads to the control that sets the picked way, so the setting keeps one editor.
-      -->
-      <StackPanel IsVisible="{Binding ShowsJoinCard}"
-                  MaxWidth="500"
+      <StackPanel MaxWidth="500"
                   Spacing="{StaticResource GapControl}"
                   VerticalAlignment="Center">
-        <StackPanel Spacing="4" Margin="0,0,0,6">
-          <TextBlock Classes="heading" TextAlignment="Center" TextWrapping="Wrap" TextTrimming="None"
-                     Text="{x:Static copy:Cards.JoinTitle}" />
-          <TextBlock Classes="muted" TextAlignment="Center" TextWrapping="Wrap" TextTrimming="None"
-                     Text="{x:Static copy:Cards.JoinBody}" />
+
+        <!--
+          What the relay answered, the reader's only account of an unreachable one.
+          Red for the backend's own sentence alone.
+        -->
+        <StackPanel IsVisible="{Binding NoticeCentred}" Spacing="{StaticResource GapTight}">
+          <SelectableTextBlock Classes="hint" Text="{Binding Notice}"
+                               Classes.danger="{Binding NoticeIsFailure}"
+                               TextWrapping="Wrap" TextAlignment="Center" />
+
+          <!-- Under the failure line: a notice about the relay has nothing being dialled behind it. -->
+          <controls:Waiting HorizontalAlignment="Center"
+                            IsVisible="{Binding IsDialling}"
+                            ToolTip.Tip="{x:Static copy:Cards.Redialling}" />
+
+          <!--
+            The arc for the answer that is still coming, under the line naming what is being read.
+            No tip: that line already says it (docs/design-language.md, "Wording").
+          -->
+          <controls:Waiting HorizontalAlignment="Center" IsVisible="{Binding IsReading}" />
         </StackPanel>
 
-        <Button Theme="{StaticResource OptionCard}" Classes.picked="{Binding PicksDiscord}" Command="{Binding PickDiscord}">
-          <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource GapControl}">
-            <ti:TablerIcon Grid.Column="0" Classes="button" Icon="IconBrandDiscord"
-                           Brush="{Binding $parent[Button].Foreground}" VerticalAlignment="Center" />
-            <StackPanel Grid.Column="1" Spacing="2">
-              <WrapPanel ItemSpacing="8" LineSpacing="4">
-                <TextBlock Classes="optiontitle" TextWrapping="Wrap" TextTrimming="None"
-                           VerticalAlignment="Center" Text="{x:Static copy:Cards.JoinDiscord}" />
-                <Border Classes="tag" VerticalAlignment="Center">
-                  <TextBlock Classes="tag" Text="{x:Static copy:Cards.Recommended}" />
-                </Border>
-              </WrapPanel>
-              <TextBlock Classes="cardbody" Text="{x:Static copy:Cards.JoinDiscordDetail}" />
-            </StackPanel>
-          </Grid>
-        </Button>
-
-        <Button Theme="{StaticResource OptionCard}" Classes.picked="{Binding PicksKey}" Command="{Binding PickKey}">
-          <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource GapControl}">
-            <ti:TablerIcon Grid.Column="0" Classes="button" Icon="IconKey"
-                           Brush="{Binding $parent[Button].Foreground}" VerticalAlignment="Center" />
-            <StackPanel Grid.Column="1" Spacing="2">
-              <TextBlock Classes="optiontitle" TextWrapping="Wrap" TextTrimming="None" Text="{x:Static copy:Cards.JoinKey}" />
-              <TextBlock Classes="cardbody" Text="{x:Static copy:Cards.JoinKeyDetail}" />
-            </StackPanel>
-          </Grid>
-        </Button>
-
-        <Button Theme="{StaticResource PrimaryButton}" HorizontalAlignment="Stretch" Command="{Binding Join}">
-          <StackPanel Orientation="Horizontal" Spacing="{StaticResource GapTight}" HorizontalAlignment="Center">
-            <ti:TablerIcon Classes="button" Icon="{Binding JoinGlyph}"
-                           Brush="{Binding $parent[Button].Foreground}" VerticalAlignment="Center" />
-            <TextBlock Text="{Binding JoinLabel}" VerticalAlignment="Center" />
+        <!--
+          Outside a group the stage asks the way in (Model/GridEmpty.cs).
+          The press leads to the control that sets the picked way, so the setting keeps one editor.
+        -->
+        <StackPanel IsVisible="{Binding ShowsJoinCard}" Spacing="{StaticResource GapControl}">
+          <StackPanel Spacing="4" Margin="0,0,0,6">
+            <TextBlock Classes="heading" TextAlignment="Center" TextWrapping="Wrap" TextTrimming="None"
+                       Text="{x:Static copy:Cards.JoinTitle}" />
+            <TextBlock Classes="muted" TextAlignment="Center" TextWrapping="Wrap" TextTrimming="None"
+                       Text="{x:Static copy:Cards.JoinBody}" />
           </StackPanel>
-        </Button>
+
+          <Button Theme="{StaticResource OptionCard}" Classes.picked="{Binding PicksDiscord}" Command="{Binding PickDiscord}">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource GapControl}">
+              <ti:TablerIcon Grid.Column="0" Classes="button" Icon="IconBrandDiscord"
+                             Brush="{Binding $parent[Button].Foreground}" VerticalAlignment="Center" />
+              <StackPanel Grid.Column="1" Spacing="2">
+                <WrapPanel ItemSpacing="8" LineSpacing="4">
+                  <TextBlock Classes="optiontitle" TextWrapping="Wrap" TextTrimming="None"
+                             VerticalAlignment="Center" Text="{x:Static copy:Cards.JoinDiscord}" />
+                  <Border Classes="tag" VerticalAlignment="Center">
+                    <TextBlock Classes="tag" Text="{x:Static copy:Cards.Recommended}" />
+                  </Border>
+                </WrapPanel>
+                <TextBlock Classes="cardbody" Text="{x:Static copy:Cards.JoinDiscordDetail}" />
+              </StackPanel>
+            </Grid>
+          </Button>
+
+          <Button Theme="{StaticResource OptionCard}" Classes.picked="{Binding PicksKey}" Command="{Binding PickKey}">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource GapControl}">
+              <ti:TablerIcon Grid.Column="0" Classes="button" Icon="IconKey"
+                             Brush="{Binding $parent[Button].Foreground}" VerticalAlignment="Center" />
+              <StackPanel Grid.Column="1" Spacing="2">
+                <TextBlock Classes="optiontitle" TextWrapping="Wrap" TextTrimming="None" Text="{x:Static copy:Cards.JoinKey}" />
+                <TextBlock Classes="cardbody" Text="{x:Static copy:Cards.JoinKeyDetail}" />
+              </StackPanel>
+            </Grid>
+          </Button>
+
+          <Button Theme="{StaticResource PrimaryButton}" HorizontalAlignment="Stretch" Command="{Binding Join}">
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource GapTight}" HorizontalAlignment="Center">
+              <ti:TablerIcon Classes="button" Icon="{Binding JoinGlyph}"
+                             Brush="{Binding $parent[Button].Foreground}" VerticalAlignment="Center" />
+              <TextBlock Text="{Binding JoinLabel}" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
       </StackPanel>
       </Panel>
 
     </DockPanel>
 
     <!--
-      A fixed width beside the grid: a column that reflowed would move the controls under the reader's hand.
-      A column rather than a flyout: a leg is changed while the next tile is watched,
+      A fixed width beside the stage: a column that reflowed would move the controls under the reader's hand.
+      A column, never a flyout: a leg is changed while the next tile is watched,
       and a flyout would close on every click.
     -->
     <Border Padding="{StaticResource InsetPanel}"
@@ -382,15 +318,14 @@
     </controls:SideColumnPanel>
 
     <!--
-      The stream filling this window, over every column rather than inside the grid: fullscreen is a property
-      of the window and not an arrangement of tiles, so the rail and the grid go and the shell takes its bands
-      off the window too (Features/Shell/ViewModel/ShellViewModel.cs).
+      The stream filling this window, over every column: fullscreen is a property of the window and not an
+      arrangement of tiles, so the stage goes and the shell takes its bands off the window too
+      (Features/Shell/ViewModel/ShellViewModel.cs).
 
-      A TileGrid of one card letterboxes the picture, rather than a second definition of a letterbox living
-      here (Features/Viewer/Model/TileLayout.cs).
+      A TileGrid of one card letterboxes the picture, one definition of a letterbox serving both
+      (Features/Viewer/Model/TileLayout.cs).
     -->
-    <Panel Grid.Column="0" Grid.ColumnSpan="2"
-           Background="{StaticResource TileBrush}"
+    <Panel Background="{StaticResource TileBrush}"
            IsVisible="{Binding HasFullscreen}">
       <ContentControl Content="{Binding FullscreenTile}"
                       HorizontalContentAlignment="Stretch"

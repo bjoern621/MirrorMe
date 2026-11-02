@@ -15,9 +15,14 @@ public enum LayoutMode
     Grid,
 
     /// <summary>
-    /// One tile takes the space, the rest sit in a rail beneath it.
+    /// One tile takes the space, the rest sit in a strip beneath it.
     /// At most one tile is focused, never several.
     /// Which one is held by stream name, so a stream that drops out and comes back returns to its place.
     /// </summary>
     Focus,
+
+    /// <summary>
+    /// Focus for a narrow window: the stage at the full width, the strip wrapping two to a row under it.
+    /// </summary>
+    Stack,
 }

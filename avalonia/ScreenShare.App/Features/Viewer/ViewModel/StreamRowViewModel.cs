@@ -2,13 +2,12 @@ using System.Collections.ObjectModel;
 using ScreenShare.App.Contracts;
 using ScreenShare.App.Features.Viewer.Model;
 using ScreenShare.App.Mvvm;
-using TablerIcons;
 
 namespace ScreenShare.App.Features.Viewer.ViewModel;
 
 /// <summary>
-/// One stream on the relay, as the rail draws it: what it is, what it is carrying,
-/// and the legs this machine can open a viewer on.
+/// One stream on the relay: what it is, what it is carrying, and the legs this machine can open a viewer on.
+/// Drawn in the strip while it waits for a press, its menu offering the legs.
 ///
 /// <b>Outputs only.</b>
 /// A press runs one of the row's commands, which asks the backend and waits for the event stream to answer.
@@ -16,7 +15,7 @@ namespace ScreenShare.App.Features.Viewer.ViewModel;
 /// Kept across passes and updated in place rather than rebuilt,
 /// so the commands stay the same instances and an expanded row does not collapse on every relay poll.
 /// </summary>
-public sealed class StreamRowViewModel : Observable
+public sealed class StreamRowViewModel : Observable, IStripItem
 {
     private readonly Func<string, string, bool, Task> _watch;
     private readonly Func<string, string, Task> _browse;
@@ -109,26 +108,13 @@ public sealed class StreamRowViewModel : Observable
     /// </summary>
     public bool IsTiled { get => _isTiled; private set => Set(ref _isTiled, value); }
 
-    /// <summary>Adds the stream to the grid, or takes it out.</summary>
+    /// <summary>Plays the stream, or stops it.</summary>
     public PendingCommand Show { get; }
 
-    private string _watchLabel = "";
+    /// <summary>Waits at the strip's cell shape, having no picture of its own.</summary>
+    public double Aspect => TileLayout.UnknownAspect;
 
-    /// <summary>
-    /// What the action says it will do, the effect and not the state.
-    /// The dot says whether anything is publishing and the pressed toggle says whether the stream is in the grid,
-    /// so a label repeating either is a third opinion about one fact.
-    /// </summary>
-    public string WatchLabel { get => _watchLabel; private set => Set(ref _watchLabel, value); }
-
-    private Icons _watchGlyph = Icons.IconPlayerPlay;
-
-    /// <summary>
-    /// Action's glyph: on screen, or off it.
-    /// One glyph that changes rather than two controls one of which is hidden,
-    /// so the action never moves under the pointer.
-    /// </summary>
-    public Icons WatchGlyph { get => _watchGlyph; private set => Set(ref _watchGlyph, value); }
+    public bool IsFocused => false;
 
     /// <summary>
     /// The one render function.
@@ -145,8 +131,6 @@ public sealed class StreamRowViewModel : Observable
         _watchedOn = row.WatchedOn;
         _tiled = tiled;
         IsTiled = tiled;
-        WatchLabel = tiled ? "Take out of the grid" : "Watch in the grid";
-        WatchGlyph = tiled ? Icons.IconX : Icons.IconPlayerPlay;
 
         Label = row.Name;
         Detail = row.Detail;

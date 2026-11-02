@@ -659,6 +659,16 @@ internal static class Flows
     public static ViewerViewModel Viewer(IBackend backend, Session session)
         => new(backend, new FormSession(backend, session, Inline), session, Inline);
 
+    /// <summary>A viewer over a session that has read the relay once, so every ready stream has started.</summary>
+    public static (ViewerViewModel Viewer, Session Session) Watching(IBackend backend)
+    {
+        var session = new Session(backend, Inline);
+        session.Start();
+        var viewer = Viewer(backend, session);
+        viewer.Apply();
+        return (viewer, session);
+    }
+
     /// <summary>
     /// What the app says about the published release, over a session that has read once.
     /// The read is what fills the state in: a session that never started answers nothing,

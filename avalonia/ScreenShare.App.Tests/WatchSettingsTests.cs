@@ -199,9 +199,13 @@ public sealed class WatchSettingsTests
         return backend;
     }
 
-    /// <summary>Shows one stream and waits for the decode it opens.</summary>
+    /// <summary>
+    /// Plays one stream afresh and waits for the decode it opens.
+    /// The stream started playing as the viewer opened, so it is stopped first.
+    /// </summary>
     private static async Task TileAsync(Both both, string stream)
     {
+        both.Viewer.Tiles.SingleOrDefault(tile => tile.Name == stream)?.Close.Execute(null);
         var row = both.Viewer.Streams.Single(entry => entry.Name == stream);
         row.Show.Execute(null);
         await both.Form.Settled;

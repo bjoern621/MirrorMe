@@ -53,10 +53,13 @@ public sealed class TileGrid : Panel
 
     /// <summary>
     /// How far the scroll viewer around this panel has scrolled it sideways.
-    /// The focused tile is placed at it so it stands still while the rail moves (<see cref="FocusLayout"/>).
+    /// The focused tile is placed at it so it stands still while the strip moves (<see cref="FocusLayout"/>).
     /// </summary>
     public static readonly StyledProperty<double> OffsetProperty =
         AvaloniaProperty.Register<TileGrid, double>(nameof(Offset));
+
+    /// <summary>Box the last measure pass solved, which the arrange pass places the children in.</summary>
+    private Size _measured;
 
     static TileGrid()
     {
@@ -94,13 +97,14 @@ public sealed class TileGrid : Panel
     /// <summary>
     /// Measures every child at the size it will be arranged at, and reports the size the arrangement needs.
     /// The arrangement's own rather than the box's,
-    /// so a grid that had to scroll comes out taller than its viewport and a rail that had to scroll comes out
+    /// so a grid that had to scroll comes out taller than its viewport and a strip that had to scroll comes out
     /// wider, and the scroll viewer around it has something to scroll.
     /// An arrangement that fitted reports what it used.
     /// </summary>
     protected override Size MeasureOverride(Size availableSize)
     {
-        var (places, width) = Solve(Box(availableSize));
+        _measured = Box(availableSize);
+        var (places, width) = Solve(_measured);
 
         foreach (var (child, rect) in places)
         {
@@ -111,9 +115,15 @@ public sealed class TileGrid : Panel
         return new Size(width, height);
     }
 
+    /// <summary>
+    /// Places every child in the box the measure pass solved.
+    /// The viewport can move between the two passes, and a child arranged at a size it was not measured at
+    /// keeps its insides at the old size: a later measure leaves its rectangle unchanged, so no arrange reaches them.
+    /// The viewport moving measures again, and that pass places the tiles in the new box.
+    /// </summary>
     protected override Size ArrangeOverride(Size finalSize)
     {
-        var (places, _) = Solve(Box(finalSize));
+        var (places, _) = Solve(_measured);
         foreach (var (child, rect) in places)
         {
             child.Arrange(rect);
@@ -123,9 +133,9 @@ public sealed class TileGrid : Panel
     }
 
     /// <summary>
-    /// Wheel means the rail while a tile is focused.
+    /// Wheel means the strip while a tile is focused.
     /// The arrangement fits the height there, so the notch would otherwise be spent on nothing,
-    /// and a platform that sends no sideways delta would leave the rail reachable by its scrollbar alone.
+    /// and a platform that sends no sideways delta would leave the strip reachable by its scrollbar alone.
     /// </summary>
     protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
     {
@@ -148,7 +158,7 @@ public sealed class TileGrid : Panel
     }
 
     /// <summary>
-    /// Box the arrangement is fitted into, one box for both passes.
+    /// Box the arrangement is fitted into.
     ///
     /// <see cref="Viewport"/> wins over the size a pass was handed.
     /// Inside a scroll viewer the two passes get different sizes,
@@ -165,8 +175,13 @@ public sealed class TileGrid : Panel
         => viewport > 0 ? viewport : (double.IsFinite(available) && available > 0 ? available : 0);
 
     /// <summary>Where the tiles go, and how wide the arrangement came out.</summary>
-    private (List<(Control Child, Rect Rect)> Places, double Width) Solve(Size box)
-        => Mode == LayoutMode.Focus ? Focused(box) : (Grid(box), box.Width);
+    private (List<(Control Child, Rect Rect)> Places, double Width) Solve(Size box) => Mode switch
+    {
+        LayoutMode.Focus => Focused(box),
+        LayoutMode.Stack => Stacked(box),
+        LayoutMode.Grid => (Grid(box), box.Width),
+        _ => Assert.Never<(List<(Control Child, Rect Rect)>, double)>("a layout mode the panel arranges", Mode),
+    };
 
     /// <summary>
     /// Every tile at the one height the arrangement chose, each as wide as its own shape makes it there.
@@ -180,7 +195,7 @@ public sealed class TileGrid : Panel
     }
 
     /// <summary>
-    /// One tile above, the rest in a rail below.
+    /// One tile above, the rest in a strip below.
     /// With nothing focused it is the grid,
     /// so the mode is safe to be in while a focused stream is being chosen and after it has gone:
     /// the arrangement degrades to the other mode rather than to an empty screen.
@@ -198,6 +213,23 @@ public sealed class TileGrid : Panel
             children.Select(GetAspect).ToList(), focused, box.Width, box.Height, Gap, Offset);
 
         return (Place(children, arrangement.Tiles), Math.Max(box.Width, arrangement.Extent));
+    }
+
+    /// <summary>
+    /// One tile across the top, the rest two to a row under it, the column as tall as that makes it.
+    /// With nothing focused it is the grid, for the reason <see cref="Focused"/> gives.
+    /// </summary>
+    private (List<(Control Child, Rect Rect)> Places, double Width) Stacked(Size box)
+    {
+        var children = Children.OfType<Control>().ToList();
+        var focused = children.FindIndex(GetIsFocusedTile);
+        if (focused < 0)
+        {
+            return (Grid(box), box.Width);
+        }
+
+        var arrangement = FocusLayout.Stack(children.Select(GetAspect).ToList(), focused, box.Width, Gap);
+        return (Place(children, arrangement.Tiles), box.Width);
     }
 
     /// <summary>

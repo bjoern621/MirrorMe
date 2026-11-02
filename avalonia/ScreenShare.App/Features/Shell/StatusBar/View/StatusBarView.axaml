@@ -6,12 +6,8 @@
              x:DataType="vm:StatusBarViewModel">
 
   <!--
-    Grouped by spacing alone, with no rule and no separators, so a run of figures does not read as a table.
-
     Inset written out: GapPanel holds the same 12, and a Thickness has no token to name.
-
-    A minimum height rather than a fixed one, because the trailing sentence wraps where a desktop hands the
-    window less than its stated minimum width.
+    A minimum height: the release line wraps where a desktop hands the window less than its stated minimum width.
   -->
   <Border Classes="chromeband"
           MinHeight="{StaticResource StatusBarHeight}"
@@ -59,20 +55,6 @@
                              VerticalAlignment="Center" />
       </StackPanel>
 
-      <!--
-        Held against the far edge by the star column rather than by a spacer: the column is what the figures
-        leave over, so a window too narrow for both wraps the sentence instead of drawing it past the edge.
-        The left margin keeps a wrapped line clear of the figures.
-      -->
-      <TextBlock Grid.Column="1"
-                 Classes="muted"
-                 Text="{Binding Hint}"
-                 IsVisible="{Binding ShowsHint}"
-                 TextWrapping="Wrap"
-                 TextAlignment="Right"
-                 HorizontalAlignment="Right"
-                 Margin="16,0,0,0"
-                 VerticalAlignment="Center" />
     </Grid>
   </Border>
 </UserControl>

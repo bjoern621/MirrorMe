@@ -55,41 +55,6 @@ public sealed class NarrowWindowTests
         Assert.False(viewer.WatchColumn.IsBeside);
     }
 
-    /// <summary>
-    /// The rail keeps the names a window has the width for.
-    /// Below that width the entries keep their dots and drop their names, which leaves the grid a tile's width.
-    /// </summary>
-    [Fact]
-    public void AWindowTooNarrowForTheRailDrawsItAsDots()
-    {
-        var backend = new SeededBackend("linux");
-        var viewer = Flows.Viewer(backend, new Session(backend, Inline));
-
-        viewer.SetWindowWidth(WindowSize.Floor);
-
-        Assert.False(viewer.ShowsRailNames);
-        Assert.False(viewer.ShowsRailToggle);
-        Assert.Equal(88, viewer.RailWidth);
-    }
-
-    /// <summary>The reader's own collapse survives a window wide enough for the names.</summary>
-    [Fact]
-    public void ACollapsedRailStaysCollapsedOnAWideWindow()
-    {
-        var backend = new SeededBackend("linux");
-        var viewer = Flows.Viewer(backend, new Session(backend, Inline));
-
-        viewer.SetWindowWidth(WindowSize.Opening);
-        viewer.ToggleRail.Execute(null);
-
-        Assert.False(viewer.ShowsRailNames);
-        Assert.True(viewer.ShowsRailToggle);
-
-        viewer.SetWindowWidth(WindowSize.Opening);
-
-        Assert.False(viewer.ShowsRailNames);
-    }
-
     /// <summary>A width the window states twice changes nothing the second time.</summary>
     [Fact]
     public void TheSameWidthTwiceIsOnePass()
