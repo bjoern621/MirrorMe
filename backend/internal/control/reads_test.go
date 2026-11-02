@@ -146,8 +146,8 @@ func TestResolveFormGreysNothingBeforeTheProbeHasRun(t *testing.T) {
 // The verdict a shell greys the apply on, answered where sameness is decided (publish.SamePipeline):
 // a shell comparing fields would fall behind the builders the first time one read a field it did not name.
 //
-// The stream is built from what the empty draft repairs to on this machine,
-// the settings a start would run being the ones a resolve answers with.
+// The stream runs what the empty draft repairs to on this machine, brokered as a start brokers it.
+// A start runs the settings that a resolve answers with.
 func TestResolveFormReportsADraftTheRunningStreamWasBuiltFrom(t *testing.T) {
 	backend := &probedBackend{}
 	server := New(backend, events.New(), "test")
@@ -161,7 +161,7 @@ func TestResolveFormReportsADraftTheRunningStreamWasBuiltFrom(t *testing.T) {
 	}
 
 	running := idle.GetForm().GetSettings()
-	backend.publish = wire.PublishSnapshot{Live: &wire.LiveSnapshot{Settings: wire.ToSettings(running)}}
+	backend.publish = wire.PublishSnapshot{Live: &wire.LiveSnapshot{Settings: backend.Brokered(wire.ToSettings(running))}}
 
 	same, err := server.Ask(context.Background(), &screensharev1.AskRequest{Question: &screensharev1.AskRequest_Form{Form: running}})
 	if err != nil {
