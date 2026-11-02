@@ -13,7 +13,7 @@
   # Updating is an edit, not a command.
   # docs/packaging.md ("Version pinning") states the procedure and what to re-measure.
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/2fcb964de67fcf60b43471c55d5d99e61a9ccb5a";
+    nixpkgs.url = "github:NixOS/nixpkgs/e7fe03cce61eebcf570cd294f70cefe3ad76feed";
     flake-utils.url = "github:numtide/flake-utils/11707dc2f618dd54ca8739b309ec4fc024de578b";
   };
 
