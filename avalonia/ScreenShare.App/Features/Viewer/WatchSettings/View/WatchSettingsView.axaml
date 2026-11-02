@@ -1,66 +1,111 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:controls="using:ScreenShare.App.Controls"
-             xmlns:fields="using:ScreenShare.App.Features.Fields.View"
+             xmlns:fields="using:ScreenShare.App.Features.Fields.ViewModel"
+             xmlns:model="using:ScreenShare.App.Features.Fields.Model"
              xmlns:ti="using:TablerIcons"
              xmlns:vm="using:ScreenShare.App.Features.Viewer.WatchSettings.ViewModel"
              x:Class="ScreenShare.App.Features.Viewer.WatchSettings.View.WatchSettingsView"
              x:DataType="vm:WatchSettingsViewModel">
 
   <!--
-    One group of the resolved form, drawn by the renderer every wizard step shares.
-    Which screen places a group is the shell's own business (Features/Fields/Model/GroupPlacement.cs).
-
-    Controls scroll and the commit is pinned under them, so the button stays reachable whatever the group carries.
-
-    The dismissal repeats on this edge: the rail that opened the panel sits across the window,
-    and the panel already covers the side of the grid the pointer is on.
+    The question, one card per way a stream can arrive, and every control of the group behind the fold.
+    Nothing to commit: the group is applied, so a choice is kept as it is made.
   -->
 
-  <Grid RowDefinitions="Auto,*,Auto">
+  <UserControl.Resources>
+    <!-- One way a stream can arrive: the protocol's entry under a plain name, with what picking it raises. -->
+    <DataTemplate x:Key="ArrivalCard" x:DataType="fields:OptionViewModel">
+      <Button Theme="{StaticResource OptionCard}"
+              Classes.picked="{Binding IsSelected}"
+              Margin="0,0,0,8"
+              IsEnabled="{Binding IsEnabled}"
+              Command="{Binding Choose}">
+        <StackPanel Spacing="4">
+          <Grid ColumnDefinitions="Auto,*">
+            <Ellipse Grid.Column="0" Classes="radiodot" />
+            <TextBlock Grid.Column="1"
+                       Classes="cardtitle"
+                       Margin="7,0,0,0"
+                       VerticalAlignment="Center"
+                       Text="{Binding Label}" />
+          </Grid>
+          <SelectableTextBlock Classes="reason"
+                               TextWrapping="Wrap"
+                               IsVisible="{Binding HasReason}"
+                               Text="{Binding Reason}" />
+          <TextBlock Classes="cardbody" Text="{Binding Detail}" />
+          <ItemsControl ItemsSource="{Binding Impacts}" IsVisible="{Binding HasImpacts}" Margin="0,2,0,0">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="model:Impact">
+                <Border Classes="impact" Margin="0,2,6,0">
+                  <StackPanel Orientation="Horizontal" Spacing="5">
+                    <ti:TablerIcon Classes="badge impact" Icon="IconEye" VerticalAlignment="Center" />
+                    <TextBlock Classes="impact" Text="{Binding Text}" VerticalAlignment="Center" />
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Button>
+    </DataTemplate>
+  </UserControl.Resources>
 
-    <!--
-      No heading beside it: the group card carries its own (Features/Fields/View/FieldGroupView.axaml),
-      and a second would print one word twice.
-    -->
-    <Button Grid.Row="0"
-            HorizontalAlignment="Right"
-            Margin="0,0,0,6"
-            Theme="{StaticResource IconButton}"
-            Command="{Binding CloseCommand}"
-            ToolTip.Tip="{Binding CloseTip}">
-      <ti:TablerIcon Classes="button" Icon="IconX" />
-    </Button>
+  <Grid RowDefinitions="Auto,*">
 
-    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
-      <fields:FieldGroupView DataContext="{Binding Group}" />
-    </ScrollViewer>
-
-    <StackPanel Grid.Row="2" Margin="0,10,0,0" Spacing="{StaticResource GapTight}">
-
-      <!--
-        Over the button rather than over the fields: the sentence is about the whole group,
-        and the press answers it.
-      -->
-      <TextBlock Classes="hint"
+    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+      <TextBlock Grid.Column="0"
+                 Classes="heading"
+                 VerticalAlignment="Center"
                  TextWrapping="Wrap"
                  TextTrimming="None"
-                 IsVisible="{Binding IsUnkept}"
-                 Text="{Binding UnkeptNotice}" />
+                 Text="{Binding Group.Heading}" />
+      <Button Grid.Column="1"
+              Theme="{StaticResource IconButton}"
+              Command="{Binding CloseCommand}"
+              ToolTip.Tip="{Binding CloseTip}">
+        <ti:TablerIcon Classes="button" Icon="IconX" />
+      </Button>
+    </Grid>
 
-      <!-- Backend's own sentence about the last save, unrewritten. -->
-      <SelectableTextBlock Classes="hint"
-                           IsVisible="{Binding HasNotice}"
-                           Text="{Binding Notice}" />
+    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
+      <StackPanel>
+        <ItemsControl ItemsSource="{Binding Arrivals}" ItemTemplate="{StaticResource ArrivalCard}" />
 
-      <Button Theme="{StaticResource PrimaryButton}"
-              Height="{StaticResource FooterButtonHeight}"
-              HorizontalAlignment="Stretch"
-              Content="Keep these settings"
-              Command="{Binding SaveCommand}"
-              controls:Pending.IsActive="{Binding SaveCommand.IsRunning}"
-              ToolTip.Tip="{Binding SaveTip}" />
-    </StackPanel>
+        <TextBlock Classes="hint"
+                   TextWrapping="Wrap"
+                   TextTrimming="None"
+                   Margin="0,0,0,8"
+                   IsVisible="{Binding Group.HasHelp}"
+                   Text="{Binding Group.Help}" />
+
+        <!-- Backend's own sentence about the last write, unrewritten. -->
+        <SelectableTextBlock Classes="reason"
+                             TextWrapping="Wrap"
+                             Margin="0,0,0,8"
+                             IsVisible="{Binding HasNotice}"
+                             Text="{Binding Notice}" />
+
+        <ContentControl IsVisible="{Binding Group.Fold.HasAny}"
+                        Content="{Binding Group.Fold}"
+                        ContentTemplate="{StaticResource FoldDisclosure}" />
+
+        <StackPanel IsVisible="{Binding Group.Fold.Shown}" Margin="0,12,0,0">
+          <ItemsControl ItemsSource="{Binding Group.Folded}" ItemTemplate="{StaticResource FieldRow}" />
+          <Button Theme="{StaticResource OutlineButton}"
+                  HorizontalAlignment="Left"
+                  IsVisible="{Binding Group.HasAction}"
+                  Content="{Binding Group.Action.Label}"
+                  Command="{Binding Group.Action.Command}"
+                  ToolTip.Tip="{Binding Group.Action.Tip}" />
+        </StackPanel>
+      </StackPanel>
+    </ScrollViewer>
 
   </Grid>
 

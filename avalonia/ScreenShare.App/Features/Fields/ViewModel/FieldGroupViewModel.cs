@@ -117,7 +117,7 @@ public sealed class FieldGroupViewModel : Observable
     public ObservableCollection<FieldViewModel> Folded { get; }
 
     /// <summary>The disclosure over <see cref="Folded"/>.</summary>
-    public FoldViewModel Fold { get; } = new(Copy.Fields.AdvancedTitle);
+    public FoldViewModel Fold { get; } = new(Copy.Fields.ExpertTitle);
 
     /// <summary>Key of the group last rendered, empty before one arrives.</summary>
     public string Key { get => _key; private set => Set(ref _key, value); }

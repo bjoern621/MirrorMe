@@ -207,9 +207,6 @@ public static class Cards
 
     public const string RelayCheckUnrun = "No check has run on this relay.";
 
-    /// <summary>Disclosure over the encode controls the step asks no question about.</summary>
-    public const string ExpertTitle = "Expert options";
-
     /// <summary>Encode step's first question, answered by the built-in presets.</summary>
     public const string PresetQuestion = "How should the picture look?";
 

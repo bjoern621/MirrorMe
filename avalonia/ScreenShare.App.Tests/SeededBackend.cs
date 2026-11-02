@@ -1892,9 +1892,11 @@ internal sealed class SeededBackend : IBackend
         // How this machine receives: a group of the same form, drawn by the viewer rather than by the wizard
         // (Features/Fields/Model/GroupPlacement.cs).
         // Seeded so the split is testable, a form with no watch group leaving the filter nothing to filter.
+        // Applied: a receive reads the stored settings and is handed none (backend/internal/form/groups.go).
         new()
         {
             Key = "watch",
+            Applied = true,
             Fields =
             [
                 new()
@@ -1903,9 +1905,11 @@ internal sealed class SeededBackend : IBackend
                     Control = ControlKind.Select,
                     Options =
                     [
-                        new() { Value = "srt" },
+                        new() { Value = "hls" },
+                        new() { Value = "rtmp" },
                         new() { Value = "rtsp" },
-                        new() { Value = "whep" },
+                        new() { Value = "srt" },
+                        new() { Value = "webrtc" },
                     ],
                 },
                 new()

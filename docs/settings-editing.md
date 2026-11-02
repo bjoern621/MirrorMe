@@ -85,7 +85,7 @@ A group is staged unless the form marks it `applied`.
 
 Staged is the default: the draft carries the change and a commit is what stores it.
 Applied is for settings no effect is handed: the relay's address, which its poll dials for the life of the process,
-and the app group, which the next start reads off the stored file.
+the watch group, which the next receive reads off the stored file, and the app group, which the next start reads off it.
 The form says which, and the shell reads the mark (`ipc-api.md`).
 
 The app group is therefore a dialog with no commit on it.
@@ -104,8 +104,5 @@ Any applied field of that group makes the write a setting.
 A group carries a reset to what a fresh installation holds where the reader has no other way back to it.
 An applied group is one: its fields are already what this machine is.
 A staged group drawn beside the wizard's own commit is not, a reader who dislikes the proposal walking away from it.
-
-The watch group is staged and carries one all the same, its commit standing on the panel that draws it.
-A leg kept there has become what this machine watches on, and closing the panel puts nothing back.
 
 The values are the form's, one per field, so no screen holds a table of defaults.

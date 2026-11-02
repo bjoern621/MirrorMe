@@ -29,7 +29,7 @@ public sealed class ExpertFoldViewModel : Observable
     private IReadOnlyList<FieldViewModel> _fields = [];
     private string _open = "";
 
-    public FoldViewModel Fold { get; } = new(Copy.Cards.ExpertTitle);
+    public FoldViewModel Fold { get; } = new(Copy.Fields.ExpertTitle);
 
     public ObservableCollection<ExpertRow> Rows { get; } = [];
 

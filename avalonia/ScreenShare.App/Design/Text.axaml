@@ -231,7 +231,17 @@
     <Setter Property="LineHeight" Value="{DynamicResource LineHeightSmall}" />
   </Style>
 
+  <Style Selector=":is(TextBlock).impact">
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeMinor}" />
+    <Setter Property="LineHeight" Value="{DynamicResource LineHeightSmall}" />
+    <Setter Property="FontFeatures" Value="{DynamicResource FigureFeatures}" />
+    <Setter Property="Foreground" Value="{DynamicResource SecondaryBrush}" />
+  </Style>
+
   <!-- Picked. The card's fill turns light, so its text turns dark to stay on it. -->
+  <Style Selector="Button.picked :is(TextBlock).impact">
+    <Setter Property="Foreground" Value="{DynamicResource OnSelectedMutedBrush}" />
+  </Style>
   <Style Selector="Button.picked :is(TextBlock).optiontitle">
     <Setter Property="Foreground" Value="{DynamicResource OnSelectedBrush}" />
   </Style>

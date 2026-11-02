@@ -11,8 +11,8 @@ namespace ScreenShare.App.Tests;
 /// <summary>
 /// Where the settings about receiving live, and what they do.
 ///
-/// The watch group is drawn beside the tiles and kept by a save of its own, so watching without publishing
-/// needs neither setup nor a <c>Set publish</c> to keep a change.
+/// The watch group is drawn over the stage and applied, so a choice there is kept as it is made,
+/// and watching without publishing needs neither setup nor a <c>Set publish</c>.
 /// </summary>
 public sealed class WatchSettingsTests
 {
@@ -70,19 +70,47 @@ public sealed class WatchSettingsTests
     }
 
     /// <summary>
-    /// The panel opens on its question, the protocol a tile receives on.
-    /// Windows and the conversion chain have defaults behind them and wait in the fold.
+    /// The panel opens on its question and the ways a stream can arrive, named for what a viewer notices.
+    /// Every control waits in the fold, the protocol among them.
     /// </summary>
     [Fact]
     public async Task ThePanelAsksHowStreamsArriveAndFoldsTheRest()
     {
         var both = await BothAsync();
-        var group = both.Viewer.Watch.Group;
+        var watch = both.Viewer.Watch;
 
-        Assert.Equal("How should streams arrive?", group.Heading);
-        Assert.Equal(["viewer.tile_watch_transport"], group.Floor.Select(field => field.Key));
-        Assert.NotEmpty(group.Folded);
-        Assert.DoesNotContain(group.Folded, field => field.Key == "viewer.tile_watch_transport");
+        Assert.Equal("How should streams arrive?", watch.Group.Heading);
+        Assert.Equal(["rtsp", "srt", "hls"], watch.Arrivals.Select(card => card.Value));
+        Assert.Equal(["Low delay", "Steady", "Compatible"], watch.Arrivals.Select(card => card.Label));
+        Assert.Empty(watch.Group.Floor);
+        Assert.Contains(watch.Group.Folded, field => field.Key == "viewer.tile_watch_transport");
+    }
+
+    /// <summary>A card writes the protocol it stands for, and the card for the protocol in the draft is the picked one.</summary>
+    [Fact]
+    public async Task ACardPicksTheProtocolItStandsFor()
+    {
+        var both = await BothAsync();
+
+        both.Viewer.Watch.Arrivals.Single(card => card.Label == "Steady").Choose.Execute(null);
+        await both.Form.Settled;
+
+        Assert.Equal("srt", both.Form.Draft!.Viewer.TileWatchTransport);
+        Assert.Equal(["srt"], both.Viewer.Watch.Arrivals.Where(card => card.IsSelected).Select(card => card.Value));
+    }
+
+    /// <summary>
+    /// A protocol that no card stands for is picked in the fold, and then no card is picked:
+    /// a card marked for it would claim a trade that the protocol does not make.
+    /// </summary>
+    [Fact]
+    public async Task AProtocolPickedInTheFoldLeavesEveryCardUnpicked()
+    {
+        var both = await BothAsync();
+
+        await ChooseAsync(both, "viewer.tile_watch_transport", "webrtc");
+
+        Assert.DoesNotContain(both.Viewer.Watch.Arrivals, card => card.IsSelected);
     }
 
     /// <summary>
@@ -116,59 +144,33 @@ public sealed class WatchSettingsTests
     }
 
     /// <summary>
-    /// Saving hands the whole draft over as a settings write and not as a publish,
-    /// so a reader who never sends keeps what they chose.
+    /// The group is applied, so a choice is kept as it is made, as a settings write and never as a publish.
+    /// A reader who never sends keeps what they chose.
     /// </summary>
     [Fact]
-    public async Task SavingKeepsTheDraftWithoutPublishing()
+    public async Task AChoiceIsKeptAsItIsMade()
     {
         var both = await BothAsync();
 
         await ChooseAsync(both, "viewer.render_chain", "sys");
-        both.Viewer.Watch.SaveCommand.Execute(null);
 
-        var saved = Assert.Single(both.Backend.Saved);
-        Assert.Equal("sys", saved.Viewer.RenderChain);
+        Assert.Equal("sys", Assert.Single(both.Backend.Saved).Viewer.RenderChain);
         Assert.Empty(both.Backend.Started);
         Assert.False(both.Viewer.Watch.HasNotice);
     }
 
-    /// <summary>
-    /// A second save asks for a state that already holds, which is a success
-    /// (<c>docs/development-principles.md</c>, "Effects across a process boundary").
-    /// </summary>
+    /// <summary>The refusal is the backend's own sentence, and the next write that lands clears it.</summary>
     [Fact]
-    public async Task SavingTwiceIsNotAnError()
-    {
-        var both = await BothAsync();
-
-        both.Viewer.Watch.SaveCommand.Execute(null);
-        both.Viewer.Watch.SaveCommand.Execute(null);
-
-        Assert.Equal(2, both.Backend.Saved.Count);
-        Assert.False(both.Viewer.Watch.HasNotice);
-        Assert.True(both.Viewer.Watch.SaveCommand.CanExecute(null));
-    }
-
-    /// <summary>
-    /// The refusal is the backend's own sentence, and the button stays pressable.
-    /// A save that succeeds clears it, the render function's usual property applied to a string.
-    /// </summary>
-    [Fact]
-    public async Task ARefusedSaveShowsTheBackendsSentenceAndClearsOnTheNextOne()
+    public async Task ARefusedWriteShowsTheBackendsSentenceAndClearsOnTheNextOne()
     {
         var backend = new SeededBackend("linux") { SaveRefusal = "the settings file could not be written" };
         var both = await BothAsync(backend);
 
-        both.Viewer.Watch.SaveCommand.Execute(null);
-
-        Assert.True(both.Viewer.Watch.HasNotice);
+        await ChooseAsync(both, "viewer.render_chain", "sys");
         Assert.Equal("the settings file could not be written", both.Viewer.Watch.Notice);
-        Assert.True(both.Viewer.Watch.SaveCommand.CanExecute(null));
 
         backend.SaveRefusal = "";
-        both.Viewer.Watch.SaveCommand.Execute(null);
-
+        await ChooseAsync(both, "viewer.render_chain", "gl");
         Assert.False(both.Viewer.Watch.HasNotice);
     }
 
@@ -211,69 +213,17 @@ public sealed class WatchSettingsTests
         await both.Form.Settled;
     }
 
-    /// <summary>
-    /// The leg is the only knob in the group the shell names in a call: the backend reads the render chain
-    /// and both jitter buffers out of its own settings as it builds the pipeline.
-    /// Taken off the draft instead, it opens an unkept protocol against kept buffers,
-    /// and nothing on the screen says which half of a staged panel took effect.
-    /// </summary>
+    /// <summary>A leg picked in the panel is what the next tile opens on, with nothing else pressed.</summary>
     [Fact]
-    public async Task ATileOpensOnTheKeptLegAndNotOnTheDraftedOne()
+    public async Task APickedLegIsWhatTheNextTileOpensOn()
     {
         var backend = Carrying("desk");
         var both = await BothAsync(backend);
 
         await ChooseAsync(both, "viewer.tile_watch_transport", "srt");
-        await TileAsync(both, "desk");
-
-        Assert.Equal("rtsp", Assert.Single(backend.Decoded).Transport);
-    }
-
-    [Fact]
-    public async Task AKeptLegIsWhatTheNextTileOpensOn()
-    {
-        var backend = Carrying("desk");
-        var both = await BothAsync(backend);
-
-        await ChooseAsync(both, "viewer.tile_watch_transport", "srt");
-        both.Viewer.Watch.SaveCommand.Execute(null);
         await TileAsync(both, "desk");
 
         Assert.Equal("srt", Assert.Single(backend.Decoded).Transport);
-    }
-
-    /// <summary>
-    /// A staged group draws the same controls whether or not it has been kept,
-    /// so without the notice the button has nothing to mean.
-    /// </summary>
-    [Fact]
-    public async Task ThePanelSaysWhenWhatItShowsIsNotWhatIsKept()
-    {
-        var both = await BothAsync();
-        Assert.False(both.Viewer.Watch.IsUnkept);
-
-        await ChooseAsync(both, "viewer.render_chain", "sys");
-        Assert.True(both.Viewer.Watch.IsUnkept);
-
-        both.Viewer.Watch.SaveCommand.Execute(null);
-        Assert.False(both.Viewer.Watch.IsUnkept);
-    }
-
-    /// <summary>
-    /// The settings travel whole, so an applied field's keystroke stores the watch group with it,
-    /// and the panel has no difference left to warn about.
-    /// </summary>
-    [Fact]
-    public async Task AnAppliedWriteElsewhereKeepsTheseSettingsToo()
-    {
-        var both = await BothAsync();
-
-        await ChooseAsync(both, "viewer.render_chain", "sys");
-        both.Form.Write("relay.host", new FieldValue { Text = "relay.example" });
-        await both.Form.Settled;
-
-        Assert.Equal("sys", Assert.Single(both.Backend.Saved).Viewer.RenderChain);
-        Assert.False(both.Viewer.Watch.IsUnkept);
     }
 
     // --- What a roster row offers -------------------------------------------------------
@@ -306,55 +256,19 @@ public sealed class WatchSettingsTests
 
     // --- The panel, open and closed -----------------------------------------------------
 
-    /// <summary>What the reader asked for has happened, and the tiles the panel governs are behind it.</summary>
+    /// <summary>A choice leaves the panel open, so the reader can try the next one.</summary>
     [Fact]
-    public async Task KeepingTheSettingsClosesThePanel()
-    {
-        var both = await BothAsync();
-        both.Viewer.WatchPanel.Toggle.Execute(null);
-        Assert.True(both.Viewer.WatchPanel.IsOpen);
-
-        both.Viewer.Watch.SaveCommand.Execute(null);
-
-        Assert.False(both.Viewer.WatchPanel.IsOpen);
-    }
-
-    /// <summary>
-    /// The sentence explaining the refusal is on this panel,
-    /// so dismissing it would take that off the screen with the fields it is about.
-    /// </summary>
-    [Fact]
-    public async Task ARefusedSaveLeavesThePanelOpen()
-    {
-        var backend = new SeededBackend("linux") { SaveRefusal = "the settings file could not be written" };
-        var both = await BothAsync(backend);
-        both.Viewer.WatchPanel.Toggle.Execute(null);
-
-        both.Viewer.Watch.SaveCommand.Execute(null);
-
-        Assert.True(both.Viewer.WatchPanel.IsOpen);
-        Assert.True(both.Viewer.Watch.HasNotice);
-    }
-
-    /// <summary>
-    /// A reader who moved a control and then dismissed the panel decided against the change,
-    /// so nothing is stored on the way out.
-    /// </summary>
-    [Fact]
-    public async Task ClosingThePanelKeepsNothing()
+    public async Task AChoiceLeavesThePanelOpen()
     {
         var both = await BothAsync();
         both.Viewer.WatchPanel.Toggle.Execute(null);
 
         await ChooseAsync(both, "viewer.render_chain", "sys");
-        both.Viewer.Watch.CloseCommand.Execute(null);
 
-        Assert.False(both.Viewer.WatchPanel.IsOpen);
-        Assert.Empty(both.Backend.Saved);
-        Assert.True(both.Viewer.Watch.IsUnkept);
+        Assert.True(both.Viewer.WatchPanel.IsOpen);
     }
 
-    /// <summary>Closing a closed panel changes nothing, so a commit can run it unconditionally.</summary>
+    /// <summary>Closing a closed panel changes nothing, so a dismissal can run it unconditionally.</summary>
     [Fact]
     public async Task ClosingAClosedPanelIsNotAnOpen()
     {
@@ -367,10 +281,7 @@ public sealed class WatchSettingsTests
     }
 
     /// <summary>
-    /// The panel puts its own group back.
-    /// A staged group elsewhere is a proposal a reader walks away from, and this one keeps itself,
-    /// so after a Keep there is nowhere else to read what a fresh installation holds
-    /// (<c>docs/settings-editing.md</c>, "Staged and applied").
+    /// The panel puts its own group back, and the reset is kept as it is pressed.
     /// The values are the form's, stated per field, so no default is named here.
     /// </summary>
     [Fact]
@@ -388,19 +299,6 @@ public sealed class WatchSettingsTests
         await both.Form.Settled;
 
         Assert.Equal(fresh, both.Form.Draft!.Viewer);
-    }
-
-    /// <summary>A staged reset stores nothing: the panel's own commit is what keeps it.</summary>
-    [Fact]
-    public async Task AResetInTheWatchPanelIsKeptByTheButton()
-    {
-        var both = await BothAsync();
-
-        await ChooseAsync(both, "viewer.render_chain", "sys");
-        both.Viewer.Watch.Group.Action!.Command.Execute(null);
-        await both.Form.Settled;
-
-        Assert.Empty(both.Backend.Saved);
-        Assert.False(both.Viewer.Watch.IsUnkept);
+        Assert.Equal(fresh, both.Backend.Saved[^1].Viewer);
     }
 }

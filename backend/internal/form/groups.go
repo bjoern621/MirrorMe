@@ -55,9 +55,8 @@ package form
 // A group the backend reads without being handed it is applied rather than staged,
 // which form.proto states in full.
 // The relay poll dials the address for as long as the process runs,
-// and the app group is read off the stored file rather than off a form a caller hands in.
-// Every other group here is read by an effect carrying its own settings,
-// a publish on what StartPublish is given and a viewer on what was saved before it.
+// and the watch and app groups are read off the stored file rather than off a form a caller hands in.
+// Every other group here is read by a publish, on the settings that Set publish carries.
 // Such a group is written as it is edited, or a corrected address reaches the backend
 // only through a publish that is refused for not reaching the relay it would replace.
 var groups = []group{
@@ -66,7 +65,7 @@ var groups = []group{
 	{key: GroupQuality, publishReads: true},
 	{key: GroupAudio, publishReads: true},
 	{key: GroupTransport, publishReads: true},
-	{key: GroupWatch},
+	{key: GroupWatch, applied: true},
 	{key: GroupRelay, applied: true, publishReads: true},
 	{key: GroupApp, applied: true},
 }

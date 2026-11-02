@@ -31,7 +31,7 @@ public static class Fields
     /// Names where a step's folded controls are, on the same terms as <see cref="RefusedTitle"/>:
     /// the presets and the shipped defaults already cover them.
     /// </summary>
-    public const string AdvancedTitle = "Advanced options";
+    public const string ExpertTitle = "Expert options";
 
     /// <summary>
     /// Face of a control whose every entry the backend greyed, and the same word on the step's chip.
@@ -309,7 +309,7 @@ public static class Fields
 
         ["watch"] = new(
             "Watching",
-            "How a stream comes back from the relay and how it is decoded. It covers every stream this window watches, anyone's as well as this computer's. External players and browser pages are not set here. Right-click a stream in the list to pick their protocol. A tile already on screen keeps its settings, so a change here reaches the next one.",
+            "Each choice is kept as it is made and reaches the next stream that opens.",
             "How should streams arrive?"),
 
         ["relay"] = new(

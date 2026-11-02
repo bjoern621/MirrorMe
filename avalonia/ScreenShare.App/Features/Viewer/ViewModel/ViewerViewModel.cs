@@ -144,7 +144,7 @@ public sealed class ViewerViewModel : Observable
 
         // Whether the panel is open is this screen's state, so the panel is handed only a way to say it is done.
         // A panel holding the flag would be the arrangement written in two places.
-        Watch = new WatchSettingsViewModel(form, session, dispatch, CloseWatchSettings);
+        Watch = new WatchSettingsViewModel(form, session, CloseWatchSettings);
 
         WatchPanel = new OverPanelViewModel("How streams arrive", "Close how streams arrive");
 

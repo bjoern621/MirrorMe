@@ -73,7 +73,7 @@ public sealed class AudioStepViewModel : Observable
     /// The disclosure over <see cref="UnderList"/>.
     /// The source rows are the step's floor; the format under them has a default behind it and folds.
     /// </summary>
-    public FoldViewModel Fold { get; } = new(Copy.Fields.AdvancedTitle);
+    public FoldViewModel Fold { get; } = new(Copy.Fields.ExpertTitle);
 
     public string Title { get => _title; private set => Set(ref _title, value); }
 

@@ -269,8 +269,10 @@ func TestEveryGroupIsDeclaredOnceUnderADeclaredKey(t *testing.T) {
 // and that publish is refused because the relay it would replace cannot be reached.
 // The app group is applied on its own grounds: no effect is handed it,
 // the next start reading it off the stored file, so a staged write would reach nothing.
+// The watch group is applied on the same grounds: a receive reads the stored file, never a draft.
 func TestOnlyTheStandingSettingsAreApplied(t *testing.T) {
 	applied := map[string]bool{
+		GroupWatch: true,
 		GroupRelay: true,
 		GroupApp:   true,
 	}

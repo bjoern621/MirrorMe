@@ -40,6 +40,9 @@
   <Style Selector="ti|TablerIcon.impact.blocks">
     <Setter Property="Brush" Value="{DynamicResource AttentionBrush}" />
   </Style>
+  <Style Selector="Button.picked ti|TablerIcon.impact">
+    <Setter Property="Brush" Value="{DynamicResource OnSelectedMutedBrush}" />
+  </Style>
 
   <!-- Radio mark of a choice card: a ring, filled to a thick ring on the picked card. -->
   <Style Selector="Ellipse.radiodot">
