@@ -1067,6 +1067,15 @@ internal sealed class SeededBackend : IBackend
             });
         }
 
+        // How far behind the picked watch leg plays, a note every resolve carries
+        // (backend/internal/form/diagnostics.go, diagnosticsAboutTheWatchDelay).
+        form.Diagnostics.Add(new Diagnostic
+        {
+            Severity = Severity.Info,
+            FieldKey = "viewer.tile_watch_transport",
+            Text = Say(TextCode.WatchDelay, Num(TextArgName.DelayMs, 32)),
+        });
+
         // A group off the voice channel with no account behind it, which blocks the publish
         // (backend/internal/form/diagnostics.go).
         if (settings.Relay.GroupSource == "discord" && !Discord.Linked)

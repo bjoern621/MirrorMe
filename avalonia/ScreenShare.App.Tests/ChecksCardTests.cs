@@ -43,6 +43,15 @@ public sealed class ChecksCardTests
         Assert.True(flow.Checks.IsShown);
     }
 
+    /// <summary>The viewer draws the watch legs, so a line about one stands beside its tiles.</summary>
+    [Fact]
+    public async Task ALineAboutAControlTheViewerDrawsStaysOutOfSetup()
+    {
+        var flow = await FlowAsync(new SeededBackend("linux"));
+
+        Assert.DoesNotContain(flow.Checks.Lines, check => check.FieldKey == "viewer.tile_watch_transport");
+    }
+
     [Fact]
     public async Task ALineOnTheStepOnScreenStandsUnderItsControlAlone()
     {

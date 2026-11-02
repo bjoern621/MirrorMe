@@ -31,6 +31,25 @@ public sealed record PreflightCheckRow
 /// </summary>
 public static class PreflightChecks
 {
+    /// <summary>
+    /// The form's diagnostics a publish answers to: those about the combination,
+    /// and those about a control of a group the wizard or the share picker draws.
+    /// A line about a control the viewer draws belongs beside the tiles it governs.
+    /// </summary>
+    public static IReadOnlyList<Diagnostic> About(Form? form)
+    {
+        if (form is null)
+        {
+            return [];
+        }
+
+        var elsewhere = form.Groups
+            .Where(group => GroupPlacement.InViewer(group.Key))
+            .SelectMany(group => group.Fields.Select(field => field.Key))
+            .ToHashSet();
+        return form.Diagnostics.Where(diagnostic => !elsewhere.Contains(diagnostic.FieldKey)).ToList();
+    }
+
     /// <summary>Diagnostics as lines, in the order the form ranked them.</summary>
     /// <param name="anchorOf">
     /// Anchors one diagnostic on the screen fixing it.

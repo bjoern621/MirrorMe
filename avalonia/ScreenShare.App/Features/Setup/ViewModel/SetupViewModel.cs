@@ -484,7 +484,7 @@ public sealed class SetupViewModel : Observable
         // After its group, the step reading the fields that pass rendered.
         Quality.Apply();
 
-        IReadOnlyList<Diagnostic> diagnostics = form is null ? [] : form.Diagnostics;
+        var diagnostics = PreflightChecks.About(form);
 
         _steps = SetupSteps.For(drawn);
         var current = Standing(_steps);
