@@ -3,7 +3,6 @@ package control
 import (
 	"context"
 	"errors"
-	"strings"
 	"time"
 
 	"google.golang.org/grpc"
@@ -14,6 +13,7 @@ import (
 	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
 
 	"bjoernblessin.de/screenshare/internal/events"
+	"bjoernblessin.de/screenshare/internal/text"
 )
 
 // Read, Watch, Ask, Set and Do: each picks the named function for what the request names,
@@ -27,14 +27,14 @@ import (
 func (s *Server) Read(ctx context.Context, req *screensharev1.ReadRequest) (*screensharev1.ReadResponse, error) {
 	kinds := req.GetKinds()
 	if len(kinds) == 0 {
-		return nil, invalidArgument("a read names at least one state")
+		return nil, invalidArgument(text.Fail(readNamesNothing))
 	}
 
 	answer := &screensharev1.ReadResponse{States: make([]*screensharev1.Event, 0, len(kinds))}
 	for _, kind := range kinds {
 		build, ok := states[kind]
 		if !ok {
-			return nil, invalidArgument("%s happens rather than stands, so it is watched rather than read", kind)
+			return nil, invalidArgument(text.Fail(kindNotReadable, argKind(kind)))
 		}
 		answer.States = append(answer.States, build(s))
 	}
@@ -136,7 +136,7 @@ func splitKinds(kinds []screensharev1.EventKind) (announced []screensharev1.Even
 	for _, kind := range kinds {
 		switch {
 		case readAlone[kind]:
-			return nil, false, false, invalidArgument("%s moves with no announcement, so it is read rather than watched", kind)
+			return nil, false, false, invalidArgument(text.Fail(kindNotWatchable, argKind(kind)))
 		case kind == screensharev1.EventKind_EVENT_KIND_AUDIO_LEVELS:
 			levels = true
 		case kind == screensharev1.EventKind_EVENT_KIND_POINTER:
@@ -156,8 +156,8 @@ func refusedKind(err error) error {
 		// A second reason reaching here is a change to the broker this method was never told about.
 		assert.Never("a subscription is refused only for a kind this build has none of", err)
 	}
-	return invalidArgument("no event kind named '%s'. This build carries %s",
-		unknown.Kind, strings.Join(events.KindNames(), ", "))
+	return invalidArgument(text.Fail(kindUnknown, argKind(unknown.Kind),
+		text.IDs(screensharev1.TextArgName_TEXT_ARG_NAME_KINDS, events.KindNames())))
 }
 
 // Ask answers one question about its arguments and changes nothing.
@@ -173,7 +173,7 @@ func (s *Server) Ask(ctx context.Context, req *screensharev1.AskRequest) (*scree
 		return &screensharev1.AskResponse{Answer: &screensharev1.AskResponse_StreamName{StreamName: stream}}, nil
 	default:
 		// Off the wire, so possibly from a shell built against a later minor: the caller's to fix.
-		return nil, invalidArgument("the question names nothing this build answers")
+		return nil, invalidArgument(text.Fail(requestNotInThisBuild))
 	}
 }
 
@@ -200,7 +200,7 @@ func (s *Server) Set(ctx context.Context, req *screensharev1.SetRequest) (*empty
 	case *screensharev1.SetRequest_DiscordLink:
 		err = s.setDiscordLink(ctx, state.DiscordLink)
 	default:
-		err = invalidArgument("the request names no state this build sets")
+		err = invalidArgument(text.Fail(requestNotInThisBuild))
 	}
 	if err != nil {
 		return nil, err
@@ -257,7 +257,7 @@ func (s *Server) Do(ctx context.Context, req *screensharev1.DoRequest) (*screens
 		}
 		return &screensharev1.DoResponse{Outcome: &screensharev1.DoResponse_ReportId{ReportId: id}}, nil
 	default:
-		return nil, invalidArgument("the request names no action this build runs")
+		return nil, invalidArgument(text.Fail(requestNotInThisBuild))
 	}
 }
 

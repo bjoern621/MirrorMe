@@ -93,8 +93,7 @@ public sealed class PreviewViewModel : Observable
 
     /// <summary>
     /// Why the backend refused the end-to-end decode, empty while it has not.
-    /// That side's own sentence, shown as it stands: a leg that cannot carry this stream's format names
-    /// the format and the protocols that would have carried it (<c>docs/ipc-api.md</c>, "Errors").
+    /// The refusal names the leg, and its cause what stands in the way (<c>docs/ipc-api.md</c>, "Errors").
     ///
     /// Also stops the converge asking again, a refusal being a fact about this stream and leg rather than a moment.
     /// Cleared when either moves.
@@ -602,8 +601,7 @@ public sealed class PreviewViewModel : Observable
         }
         catch (BackendUnavailableException e)
         {
-            // The backend's own sentence: a leg that cannot carry this stream's format names the format and
-            // the protocols that would have carried it.
+            // The refusal names the leg, and its cause what stands in the way.
             refusal = e.Message;
         }
         catch (OperationCanceledException)

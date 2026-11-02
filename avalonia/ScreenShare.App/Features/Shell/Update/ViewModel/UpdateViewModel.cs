@@ -241,7 +241,7 @@ public sealed class UpdateViewModel : Observable
     /// <summary>
     /// What the failing side said, drawn as it stands and selectable:
     /// it is the string a reader carries into a bug report.
-    /// Carries the backend's refusal of a call as well, that being the same kind of string.
+    /// Carries a refused call's sentence as well.
     /// </summary>
     public string Detail { get => _detail; private set => Set(ref _detail, value); }
 

@@ -17,7 +17,7 @@ namespace ScreenShare.App.Mvvm;
 /// so the control a reader sees and the guard that would refuse them cannot disagree.
 ///
 /// Errors stay with the effect.
-/// A refusal is the backend's sentence about an attempt and belongs on the screen that asked
+/// A refusal speaks about one attempt and belongs on the screen that asked
 /// (<c>docs/ipc-api.md</c>, "Errors"), so nothing is caught here
 /// and the only guarantee is a flag that clears whichever way the call ended.
 /// </summary>

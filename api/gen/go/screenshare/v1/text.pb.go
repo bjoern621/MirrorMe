@@ -184,6 +184,17 @@ const (
 	TextArgName_TEXT_ARG_NAME_DELAY_MS TextArgName = 73
 	// Longest a viewer opening the stream waits for its first picture, ms: one keyframe interval.
 	TextArgName_TEXT_ARG_NAME_JOIN_WAIT_MS TextArgName = 74
+	// Stream name as the relay spells it, a user's word rather than a table's.
+	TextArgName_TEXT_ARG_NAME_STREAM TextArgName = 75
+	// How many of a thing a request asked for, and the most this machine runs.
+	TextArgName_TEXT_ARG_NAME_COUNT       TextArgName = 76
+	TextArgName_TEXT_ARG_NAME_COUNT_LIMIT TextArgName = 77
+	// Event kind as the contract spells it, "EVENT_KIND_POINTER", or its number where no name exists.
+	TextArgName_TEXT_ARG_NAME_KIND  TextArgName = 78
+	TextArgName_TEXT_ARG_NAME_KINDS TextArgName = 79
+	// Control protocol major the backend implements, and the one the shell asked for.
+	TextArgName_TEXT_ARG_NAME_PROTOCOL_MAJOR       TextArgName = 80
+	TextArgName_TEXT_ARG_NAME_ASKED_PROTOCOL_MAJOR TextArgName = 81
 )
 
 // Enum value maps for TextArgName.
@@ -259,78 +270,92 @@ var (
 		72: "TEXT_ARG_NAME_TARGET_FPS",
 		73: "TEXT_ARG_NAME_DELAY_MS",
 		74: "TEXT_ARG_NAME_JOIN_WAIT_MS",
+		75: "TEXT_ARG_NAME_STREAM",
+		76: "TEXT_ARG_NAME_COUNT",
+		77: "TEXT_ARG_NAME_COUNT_LIMIT",
+		78: "TEXT_ARG_NAME_KIND",
+		79: "TEXT_ARG_NAME_KINDS",
+		80: "TEXT_ARG_NAME_PROTOCOL_MAJOR",
+		81: "TEXT_ARG_NAME_ASKED_PROTOCOL_MAJOR",
 	}
 	TextArgName_value = map[string]int32{
-		"TEXT_ARG_NAME_UNSPECIFIED":        0,
-		"TEXT_ARG_NAME_CAPTURE":            1,
-		"TEXT_ARG_NAME_ENGINE":             2,
-		"TEXT_ARG_NAME_OTHER_ENGINE":       3,
-		"TEXT_ARG_NAME_TRANSPORT":          4,
-		"TEXT_ARG_NAME_CODEC":              5,
-		"TEXT_ARG_NAME_FORMAT":             6,
-		"TEXT_ARG_NAME_FAMILY":             7,
-		"TEXT_ARG_NAME_ENCODER":            37,
-		"TEXT_ARG_NAME_CHROMA":             8,
-		"TEXT_ARG_NAME_COLOR_RANGE":        9,
-		"TEXT_ARG_NAME_MODE":               10,
-		"TEXT_ARG_NAME_MEMORY":             11,
-		"TEXT_ARG_NAME_AUDIO":              12,
-		"TEXT_ARG_NAME_AUDIO_CODEC":        13,
-		"TEXT_ARG_NAME_EFFORT":             14,
-		"TEXT_ARG_NAME_RTSP_PROTOCOL":      15,
-		"TEXT_ARG_NAME_DECODE_FAMILY":      16,
-		"TEXT_ARG_NAME_DECODER":            17,
-		"TEXT_ARG_NAME_OS":                 18,
-		"TEXT_ARG_NAME_DISPLAY":            19,
-		"TEXT_ARG_NAME_OPTION":             20,
-		"TEXT_ARG_NAME_VALUE":              21,
-		"TEXT_ARG_NAME_PATH":               22,
-		"TEXT_ARG_NAME_ELEMENT":            23,
-		"TEXT_ARG_NAME_PRESET":             24,
-		"TEXT_ARG_NAME_CURSOR":             25,
-		"TEXT_ARG_NAME_TUNE":               26,
-		"TEXT_ARG_NAME_GPU_DRIVER":         27,
-		"TEXT_ARG_NAME_GPU_MODEL":          28,
-		"TEXT_ARG_NAME_SHARE_KIND":         68,
-		"TEXT_ARG_NAME_WINDOW":             69,
-		"TEXT_ARG_NAME_REGION":             70,
-		"TEXT_ARG_NAME_FAMILIES":           30,
-		"TEXT_ARG_NAME_FORMATS":            38,
-		"TEXT_ARG_NAME_TRANSPORTS":         31,
-		"TEXT_ARG_NAME_AUDIO_CODECS":       32,
-		"TEXT_ARG_NAME_DECODERS":           33,
-		"TEXT_ARG_NAME_DECODE_FAMILIES":    34,
-		"TEXT_ARG_NAME_RTSP_PROTOCOLS":     35,
-		"TEXT_ARG_NAME_DEVICE":             36,
-		"TEXT_ARG_NAME_MONITOR":            40,
-		"TEXT_ARG_NAME_WIDTH":              41,
-		"TEXT_ARG_NAME_HEIGHT":             42,
-		"TEXT_ARG_NAME_FPS":                43,
-		"TEXT_ARG_NAME_REFRESH_HZ":         44,
-		"TEXT_ARG_NAME_CQ":                 45,
-		"TEXT_ARG_NAME_CQ_MAX":             46,
-		"TEXT_ARG_NAME_BITRATE_MBPS":       47,
-		"TEXT_ARG_NAME_MAXRATE_MBPS":       48,
-		"TEXT_ARG_NAME_BITRATE_LIMIT_MBPS": 49,
-		"TEXT_ARG_NAME_UPLINK_MBPS":        50,
-		"TEXT_ARG_NAME_LOW_MBPS":           52,
-		"TEXT_ARG_NAME_HIGH_MBPS":          53,
-		"TEXT_ARG_NAME_RATE_HZ":            54,
-		"TEXT_ARG_NAME_BITRATE_KBPS":       55,
-		"TEXT_ARG_NAME_OTHER_COUNT":        56,
-		"TEXT_ARG_NAME_GPU_DRIVER_VERSION": 57,
-		"TEXT_ARG_NAME_CAUSE":              60,
-		"TEXT_ARG_NAME_IMPORT":             61,
-		"TEXT_ARG_NAME_COST":               62,
-		"TEXT_ARG_NAME_REACH":              63,
-		"TEXT_ARG_NAME_GOP_LIMIT_FRAMES":   64,
-		"TEXT_ARG_NAME_NEXT_TRANSPORT":     65,
-		"TEXT_ARG_NAME_CHANNEL":            66,
-		"TEXT_ARG_NAME_VERSION":            67,
-		"TEXT_ARG_NAME_DETAIL_STEP":        71,
-		"TEXT_ARG_NAME_TARGET_FPS":         72,
-		"TEXT_ARG_NAME_DELAY_MS":           73,
-		"TEXT_ARG_NAME_JOIN_WAIT_MS":       74,
+		"TEXT_ARG_NAME_UNSPECIFIED":          0,
+		"TEXT_ARG_NAME_CAPTURE":              1,
+		"TEXT_ARG_NAME_ENGINE":               2,
+		"TEXT_ARG_NAME_OTHER_ENGINE":         3,
+		"TEXT_ARG_NAME_TRANSPORT":            4,
+		"TEXT_ARG_NAME_CODEC":                5,
+		"TEXT_ARG_NAME_FORMAT":               6,
+		"TEXT_ARG_NAME_FAMILY":               7,
+		"TEXT_ARG_NAME_ENCODER":              37,
+		"TEXT_ARG_NAME_CHROMA":               8,
+		"TEXT_ARG_NAME_COLOR_RANGE":          9,
+		"TEXT_ARG_NAME_MODE":                 10,
+		"TEXT_ARG_NAME_MEMORY":               11,
+		"TEXT_ARG_NAME_AUDIO":                12,
+		"TEXT_ARG_NAME_AUDIO_CODEC":          13,
+		"TEXT_ARG_NAME_EFFORT":               14,
+		"TEXT_ARG_NAME_RTSP_PROTOCOL":        15,
+		"TEXT_ARG_NAME_DECODE_FAMILY":        16,
+		"TEXT_ARG_NAME_DECODER":              17,
+		"TEXT_ARG_NAME_OS":                   18,
+		"TEXT_ARG_NAME_DISPLAY":              19,
+		"TEXT_ARG_NAME_OPTION":               20,
+		"TEXT_ARG_NAME_VALUE":                21,
+		"TEXT_ARG_NAME_PATH":                 22,
+		"TEXT_ARG_NAME_ELEMENT":              23,
+		"TEXT_ARG_NAME_PRESET":               24,
+		"TEXT_ARG_NAME_CURSOR":               25,
+		"TEXT_ARG_NAME_TUNE":                 26,
+		"TEXT_ARG_NAME_GPU_DRIVER":           27,
+		"TEXT_ARG_NAME_GPU_MODEL":            28,
+		"TEXT_ARG_NAME_SHARE_KIND":           68,
+		"TEXT_ARG_NAME_WINDOW":               69,
+		"TEXT_ARG_NAME_REGION":               70,
+		"TEXT_ARG_NAME_FAMILIES":             30,
+		"TEXT_ARG_NAME_FORMATS":              38,
+		"TEXT_ARG_NAME_TRANSPORTS":           31,
+		"TEXT_ARG_NAME_AUDIO_CODECS":         32,
+		"TEXT_ARG_NAME_DECODERS":             33,
+		"TEXT_ARG_NAME_DECODE_FAMILIES":      34,
+		"TEXT_ARG_NAME_RTSP_PROTOCOLS":       35,
+		"TEXT_ARG_NAME_DEVICE":               36,
+		"TEXT_ARG_NAME_MONITOR":              40,
+		"TEXT_ARG_NAME_WIDTH":                41,
+		"TEXT_ARG_NAME_HEIGHT":               42,
+		"TEXT_ARG_NAME_FPS":                  43,
+		"TEXT_ARG_NAME_REFRESH_HZ":           44,
+		"TEXT_ARG_NAME_CQ":                   45,
+		"TEXT_ARG_NAME_CQ_MAX":               46,
+		"TEXT_ARG_NAME_BITRATE_MBPS":         47,
+		"TEXT_ARG_NAME_MAXRATE_MBPS":         48,
+		"TEXT_ARG_NAME_BITRATE_LIMIT_MBPS":   49,
+		"TEXT_ARG_NAME_UPLINK_MBPS":          50,
+		"TEXT_ARG_NAME_LOW_MBPS":             52,
+		"TEXT_ARG_NAME_HIGH_MBPS":            53,
+		"TEXT_ARG_NAME_RATE_HZ":              54,
+		"TEXT_ARG_NAME_BITRATE_KBPS":         55,
+		"TEXT_ARG_NAME_OTHER_COUNT":          56,
+		"TEXT_ARG_NAME_GPU_DRIVER_VERSION":   57,
+		"TEXT_ARG_NAME_CAUSE":                60,
+		"TEXT_ARG_NAME_IMPORT":               61,
+		"TEXT_ARG_NAME_COST":                 62,
+		"TEXT_ARG_NAME_REACH":                63,
+		"TEXT_ARG_NAME_GOP_LIMIT_FRAMES":     64,
+		"TEXT_ARG_NAME_NEXT_TRANSPORT":       65,
+		"TEXT_ARG_NAME_CHANNEL":              66,
+		"TEXT_ARG_NAME_VERSION":              67,
+		"TEXT_ARG_NAME_DETAIL_STEP":          71,
+		"TEXT_ARG_NAME_TARGET_FPS":           72,
+		"TEXT_ARG_NAME_DELAY_MS":             73,
+		"TEXT_ARG_NAME_JOIN_WAIT_MS":         74,
+		"TEXT_ARG_NAME_STREAM":               75,
+		"TEXT_ARG_NAME_COUNT":                76,
+		"TEXT_ARG_NAME_COUNT_LIMIT":          77,
+		"TEXT_ARG_NAME_KIND":                 78,
+		"TEXT_ARG_NAME_KINDS":                79,
+		"TEXT_ARG_NAME_PROTOCOL_MAJOR":       80,
+		"TEXT_ARG_NAME_ASKED_PROTOCOL_MAJOR": 81,
 	}
 )
 
@@ -896,6 +921,74 @@ const (
 	// so the app setting asking for one reaches nothing (avalonia/README.md, "The tray").
 	// No arguments.
 	TextCode_TEXT_CODE_TRAY_ICON_OFF TextCode = 198
+	// Request shape: the request names something absent, or nothing at all.
+	// A question, state or action arm this build has no case for. No arguments.
+	TextCode_TEXT_CODE_REQUEST_NOT_IN_THIS_BUILD TextCode = 210
+	// Frame stream whose first message names no source. No arguments.
+	TextCode_TEXT_CODE_FRAME_SOURCE_UNNAMED TextCode = 211
+	TextCode_TEXT_CODE_STREAM_UNNAMED       TextCode = 212
+	// TEXT_ARG_NAME_STREAM.
+	TextCode_TEXT_CODE_TRANSPORT_UNNAMED  TextCode = 213
+	TextCode_TEXT_CODE_SETTINGS_ABSENT    TextCode = 214
+	TextCode_TEXT_CODE_PRESET_UNNAMED     TextCode = 215
+	TextCode_TEXT_CODE_READ_NAMES_NOTHING TextCode = 216
+	// TEXT_ARG_NAME_KIND, a kind that happens and is watched.
+	TextCode_TEXT_CODE_KIND_NOT_READABLE TextCode = 217
+	// TEXT_ARG_NAME_KIND, a kind that moves with no announcement and is read.
+	TextCode_TEXT_CODE_KIND_NOT_WATCHABLE TextCode = 218
+	// TEXT_ARG_NAME_KIND, and TEXT_ARG_NAME_KINDS for every kind this build carries.
+	TextCode_TEXT_CODE_KIND_UNKNOWN TextCode = 219
+	TextCode_TEXT_CODE_LINK_EMPTY   TextCode = 220
+	// TEXT_ARG_NAME_COUNT.
+	TextCode_TEXT_CODE_TEST_STREAM_COUNT_NEGATIVE TextCode = 221
+	// Exit that carried no log path. No arguments.
+	TextCode_TEXT_CODE_RUN_KEEPS_NO_LOG TextCode = 222
+	// Bounds and absences.
+	// TEXT_ARG_NAME_COUNT and TEXT_ARG_NAME_COUNT_LIMIT.
+	TextCode_TEXT_CODE_TEST_STREAMS_ABOVE_LIMIT TextCode = 223
+	// Run log rotated away. TEXT_ARG_NAME_PATH.
+	TextCode_TEXT_CODE_LOG_GONE TextCode = 224
+	// TEXT_ARG_NAME_STREAM and TEXT_ARG_NAME_TRANSPORT name a decode nothing runs.
+	TextCode_TEXT_CODE_RECEIVE_AUDIO_OF_NO_DECODE TextCode = 225
+	// The world not ready.
+	// TEXT_ARG_NAME_STREAM with TEXT_ARG_NAME_TRANSPORT for a relay decode,
+	// TEXT_ARG_NAME_MONITOR for a monitor preview, neither for the publish preview.
+	TextCode_TEXT_CODE_FRAMES_UNDRAWABLE TextCode = 226
+	// TEXT_ARG_NAME_STREAM and TEXT_ARG_NAME_TRANSPORT.
+	TextCode_TEXT_CODE_WATCH_REFUSED        TextCode = 227
+	TextCode_TEXT_CODE_BROWSER_OPEN_REFUSED TextCode = 228
+	TextCode_TEXT_CODE_RECEIVE_REFUSED      TextCode = 229
+	// TEXT_ARG_NAME_MONITOR.
+	TextCode_TEXT_CODE_MONITOR_PREVIEW_REFUSED TextCode = 230
+	TextCode_TEXT_CODE_REPORT_REFUSED          TextCode = 231
+	TextCode_TEXT_CODE_UPDATE_CHECK_REFUSED    TextCode = 232
+	TextCode_TEXT_CODE_UPDATE_INSTALL_REFUSED  TextCode = 233
+	// A measurement asked for while a stream publishes. No arguments.
+	TextCode_TEXT_CODE_UPLINK_MEASURE_WHILE_LIVE      TextCode = 234
+	TextCode_TEXT_CODE_ENCODE_RATE_MEASURE_WHILE_LIVE TextCode = 235
+	// TEXT_ARG_NAME_PROTOCOL_MAJOR and TEXT_ARG_NAME_ASKED_PROTOCOL_MAJOR.
+	TextCode_TEXT_CODE_PROTOCOL_MAJOR_MISMATCH TextCode = 236
+	TextCode_TEXT_CODE_LINK_UNRESOLVED         TextCode = 237
+	// The world failing at something legal to ask for.
+	TextCode_TEXT_CODE_SETTINGS_UNSAVED TextCode = 238
+	// TEXT_ARG_NAME_PRESET.
+	TextCode_TEXT_CODE_PRESET_UNSAVED TextCode = 239
+	TextCode_TEXT_CODE_PRESETS_UNREAD TextCode = 240
+	// TEXT_ARG_NAME_PRESET.
+	TextCode_TEXT_CODE_PRESET_UNDELETED  TextCode = 241
+	TextCode_TEXT_CODE_PUBLISH_UNSTARTED TextCode = 242
+	TextCode_TEXT_CODE_PUBLISH_UNAPPLIED TextCode = 243
+	// TEXT_ARG_NAME_COUNT.
+	TextCode_TEXT_CODE_TEST_STREAMS_UNSTARTED TextCode = 244
+	TextCode_TEXT_CODE_PORTAL_CONSENT_KEPT    TextCode = 245
+	TextCode_TEXT_CODE_GROUP_KEY_UNDRAWN      TextCode = 246
+	TextCode_TEXT_CODE_DISCORD_UNLINK_FAILED  TextCode = 247
+	TextCode_TEXT_CODE_DISCORD_LINK_FAILED    TextCode = 248
+	// TEXT_ARG_NAME_PATH.
+	TextCode_TEXT_CODE_LOG_UNOPENED           TextCode = 249
+	TextCode_TEXT_CODE_LOGS_FOLDER_UNOPENED   TextCode = 250
+	TextCode_TEXT_CODE_UPLINK_UNMEASURED      TextCode = 251
+	TextCode_TEXT_CODE_ENCODE_RATE_UNMEASURED TextCode = 252
 )
 
 // Enum value maps for TextCode.
@@ -1061,6 +1154,49 @@ var (
 		187: "TEXT_CODE_UPDATE_INSTALL_FAILED",
 		188: "TEXT_CODE_UPDATE_DOWNLOAD_UNVERIFIABLE",
 		198: "TEXT_CODE_TRAY_ICON_OFF",
+		210: "TEXT_CODE_REQUEST_NOT_IN_THIS_BUILD",
+		211: "TEXT_CODE_FRAME_SOURCE_UNNAMED",
+		212: "TEXT_CODE_STREAM_UNNAMED",
+		213: "TEXT_CODE_TRANSPORT_UNNAMED",
+		214: "TEXT_CODE_SETTINGS_ABSENT",
+		215: "TEXT_CODE_PRESET_UNNAMED",
+		216: "TEXT_CODE_READ_NAMES_NOTHING",
+		217: "TEXT_CODE_KIND_NOT_READABLE",
+		218: "TEXT_CODE_KIND_NOT_WATCHABLE",
+		219: "TEXT_CODE_KIND_UNKNOWN",
+		220: "TEXT_CODE_LINK_EMPTY",
+		221: "TEXT_CODE_TEST_STREAM_COUNT_NEGATIVE",
+		222: "TEXT_CODE_RUN_KEEPS_NO_LOG",
+		223: "TEXT_CODE_TEST_STREAMS_ABOVE_LIMIT",
+		224: "TEXT_CODE_LOG_GONE",
+		225: "TEXT_CODE_RECEIVE_AUDIO_OF_NO_DECODE",
+		226: "TEXT_CODE_FRAMES_UNDRAWABLE",
+		227: "TEXT_CODE_WATCH_REFUSED",
+		228: "TEXT_CODE_BROWSER_OPEN_REFUSED",
+		229: "TEXT_CODE_RECEIVE_REFUSED",
+		230: "TEXT_CODE_MONITOR_PREVIEW_REFUSED",
+		231: "TEXT_CODE_REPORT_REFUSED",
+		232: "TEXT_CODE_UPDATE_CHECK_REFUSED",
+		233: "TEXT_CODE_UPDATE_INSTALL_REFUSED",
+		234: "TEXT_CODE_UPLINK_MEASURE_WHILE_LIVE",
+		235: "TEXT_CODE_ENCODE_RATE_MEASURE_WHILE_LIVE",
+		236: "TEXT_CODE_PROTOCOL_MAJOR_MISMATCH",
+		237: "TEXT_CODE_LINK_UNRESOLVED",
+		238: "TEXT_CODE_SETTINGS_UNSAVED",
+		239: "TEXT_CODE_PRESET_UNSAVED",
+		240: "TEXT_CODE_PRESETS_UNREAD",
+		241: "TEXT_CODE_PRESET_UNDELETED",
+		242: "TEXT_CODE_PUBLISH_UNSTARTED",
+		243: "TEXT_CODE_PUBLISH_UNAPPLIED",
+		244: "TEXT_CODE_TEST_STREAMS_UNSTARTED",
+		245: "TEXT_CODE_PORTAL_CONSENT_KEPT",
+		246: "TEXT_CODE_GROUP_KEY_UNDRAWN",
+		247: "TEXT_CODE_DISCORD_UNLINK_FAILED",
+		248: "TEXT_CODE_DISCORD_LINK_FAILED",
+		249: "TEXT_CODE_LOG_UNOPENED",
+		250: "TEXT_CODE_LOGS_FOLDER_UNOPENED",
+		251: "TEXT_CODE_UPLINK_UNMEASURED",
+		252: "TEXT_CODE_ENCODE_RATE_UNMEASURED",
 	}
 	TextCode_value = map[string]int32{
 		"TEXT_CODE_UNSPECIFIED":                               0,
@@ -1223,6 +1359,49 @@ var (
 		"TEXT_CODE_UPDATE_INSTALL_FAILED":                     187,
 		"TEXT_CODE_UPDATE_DOWNLOAD_UNVERIFIABLE":              188,
 		"TEXT_CODE_TRAY_ICON_OFF":                             198,
+		"TEXT_CODE_REQUEST_NOT_IN_THIS_BUILD":                 210,
+		"TEXT_CODE_FRAME_SOURCE_UNNAMED":                      211,
+		"TEXT_CODE_STREAM_UNNAMED":                            212,
+		"TEXT_CODE_TRANSPORT_UNNAMED":                         213,
+		"TEXT_CODE_SETTINGS_ABSENT":                           214,
+		"TEXT_CODE_PRESET_UNNAMED":                            215,
+		"TEXT_CODE_READ_NAMES_NOTHING":                        216,
+		"TEXT_CODE_KIND_NOT_READABLE":                         217,
+		"TEXT_CODE_KIND_NOT_WATCHABLE":                        218,
+		"TEXT_CODE_KIND_UNKNOWN":                              219,
+		"TEXT_CODE_LINK_EMPTY":                                220,
+		"TEXT_CODE_TEST_STREAM_COUNT_NEGATIVE":                221,
+		"TEXT_CODE_RUN_KEEPS_NO_LOG":                          222,
+		"TEXT_CODE_TEST_STREAMS_ABOVE_LIMIT":                  223,
+		"TEXT_CODE_LOG_GONE":                                  224,
+		"TEXT_CODE_RECEIVE_AUDIO_OF_NO_DECODE":                225,
+		"TEXT_CODE_FRAMES_UNDRAWABLE":                         226,
+		"TEXT_CODE_WATCH_REFUSED":                             227,
+		"TEXT_CODE_BROWSER_OPEN_REFUSED":                      228,
+		"TEXT_CODE_RECEIVE_REFUSED":                           229,
+		"TEXT_CODE_MONITOR_PREVIEW_REFUSED":                   230,
+		"TEXT_CODE_REPORT_REFUSED":                            231,
+		"TEXT_CODE_UPDATE_CHECK_REFUSED":                      232,
+		"TEXT_CODE_UPDATE_INSTALL_REFUSED":                    233,
+		"TEXT_CODE_UPLINK_MEASURE_WHILE_LIVE":                 234,
+		"TEXT_CODE_ENCODE_RATE_MEASURE_WHILE_LIVE":            235,
+		"TEXT_CODE_PROTOCOL_MAJOR_MISMATCH":                   236,
+		"TEXT_CODE_LINK_UNRESOLVED":                           237,
+		"TEXT_CODE_SETTINGS_UNSAVED":                          238,
+		"TEXT_CODE_PRESET_UNSAVED":                            239,
+		"TEXT_CODE_PRESETS_UNREAD":                            240,
+		"TEXT_CODE_PRESET_UNDELETED":                          241,
+		"TEXT_CODE_PUBLISH_UNSTARTED":                         242,
+		"TEXT_CODE_PUBLISH_UNAPPLIED":                         243,
+		"TEXT_CODE_TEST_STREAMS_UNSTARTED":                    244,
+		"TEXT_CODE_PORTAL_CONSENT_KEPT":                       245,
+		"TEXT_CODE_GROUP_KEY_UNDRAWN":                         246,
+		"TEXT_CODE_DISCORD_UNLINK_FAILED":                     247,
+		"TEXT_CODE_DISCORD_LINK_FAILED":                       248,
+		"TEXT_CODE_LOG_UNOPENED":                              249,
+		"TEXT_CODE_LOGS_FOLDER_UNOPENED":                      250,
+		"TEXT_CODE_UPLINK_UNMEASURED":                         251,
+		"TEXT_CODE_ENCODE_RATE_UNMEASURED":                    252,
 	}
 )
 
@@ -1497,6 +1676,64 @@ func (x *Text) GetArgs() []*TextArg {
 	return nil
 }
 
+// Refusal rides as the one detail on every status the backend serves (docs/ipc-api.md, "Errors"),
+// whose message carries the code's name and nothing a shell renders.
+type Refusal struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// What was refused, with the coded reason behind it under TEXT_ARG_NAME_CAUSE.
+	Text *Text `protobuf:"bytes,1,opt,name=text,proto3" json:"text,omitempty"`
+	// A third party's own words behind the refusal, verbatim: an OS error, a child's stderr line,
+	// a service's answer.
+	// Empty where the statement says everything.
+	Message       string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Refusal) Reset() {
+	*x = Refusal{}
+	mi := &file_screenshare_v1_text_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Refusal) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Refusal) ProtoMessage() {}
+
+func (x *Refusal) ProtoReflect() protoreflect.Message {
+	mi := &file_screenshare_v1_text_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Refusal.ProtoReflect.Descriptor instead.
+func (*Refusal) Descriptor() ([]byte, []int) {
+	return file_screenshare_v1_text_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *Refusal) GetText() *Text {
+	if x != nil {
+		return x.Text
+	}
+	return nil
+}
+
+func (x *Refusal) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 var File_screenshare_v1_text_proto protoreflect.FileDescriptor
 
 const file_screenshare_v1_text_proto_rawDesc = "" +
@@ -1514,7 +1751,10 @@ const file_screenshare_v1_text_proto_rawDesc = "" +
 	"\x05value\"a\n" +
 	"\x04Text\x12,\n" +
 	"\x04code\x18\x01 \x01(\x0e2\x18.screenshare.v1.TextCodeR\x04code\x12+\n" +
-	"\x04args\x18\x02 \x03(\v2\x17.screenshare.v1.TextArgR\x04args*\x82\x10\n" +
+	"\x04args\x18\x02 \x03(\v2\x17.screenshare.v1.TextArgR\x04args\"M\n" +
+	"\aRefusal\x12(\n" +
+	"\x04text\x18\x01 \x01(\v2\x14.screenshare.v1.TextR\x04text\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage*\xcf\x11\n" +
 	"\vTextArgName\x12\x1d\n" +
 	"\x19TEXT_ARG_NAME_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15TEXT_ARG_NAME_CAPTURE\x10\x01\x12\x18\n" +
@@ -1586,7 +1826,14 @@ const file_screenshare_v1_text_proto_rawDesc = "" +
 	"\x19TEXT_ARG_NAME_DETAIL_STEP\x10G\x12\x1c\n" +
 	"\x18TEXT_ARG_NAME_TARGET_FPS\x10H\x12\x1a\n" +
 	"\x16TEXT_ARG_NAME_DELAY_MS\x10I\x12\x1e\n" +
-	"\x1aTEXT_ARG_NAME_JOIN_WAIT_MS\x10J\"\x04\b3\x103*\x18TEXT_ARG_NAME_ENC_PRESET*\x16TEXT_ARG_NAME_RAW_MBPS*\x954\n" +
+	"\x1aTEXT_ARG_NAME_JOIN_WAIT_MS\x10J\x12\x18\n" +
+	"\x14TEXT_ARG_NAME_STREAM\x10K\x12\x17\n" +
+	"\x13TEXT_ARG_NAME_COUNT\x10L\x12\x1d\n" +
+	"\x19TEXT_ARG_NAME_COUNT_LIMIT\x10M\x12\x16\n" +
+	"\x12TEXT_ARG_NAME_KIND\x10N\x12\x17\n" +
+	"\x13TEXT_ARG_NAME_KINDS\x10O\x12 \n" +
+	"\x1cTEXT_ARG_NAME_PROTOCOL_MAJOR\x10P\x12&\n" +
+	"\"TEXT_ARG_NAME_ASKED_PROTOCOL_MAJOR\x10Q\"\x04\b3\x103*\x18TEXT_ARG_NAME_ENC_PRESET*\x16TEXT_ARG_NAME_RAW_MBPS*\xfc?\n" +
 	"\bTextCode\x12\x19\n" +
 	"\x15TEXT_CODE_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aTEXT_CODE_CAPTURE_WRONG_OS\x10\x01\x12#\n" +
@@ -1748,7 +1995,50 @@ const file_screenshare_v1_text_proto_rawDesc = "" +
 	"!TEXT_CODE_UPDATE_DOWNLOAD_CORRUPT\x10\xba\x01\x12$\n" +
 	"\x1fTEXT_CODE_UPDATE_INSTALL_FAILED\x10\xbb\x01\x12+\n" +
 	"&TEXT_CODE_UPDATE_DOWNLOAD_UNVERIFIABLE\x10\xbc\x01\x12\x1c\n" +
-	"\x17TEXT_CODE_TRAY_ICON_OFF\x10\xc6\x01\"\x04\bL\x10L\"\x04\b\x7f\x10\x7f\"\x06\b\x89\x01\x10\x89\x01\"\x06\b\x8a\x01\x10\x8a\x01\"\x06\b\x8e\x01\x10\x8e\x01\"\x04\bB\x10B\"\x04\bP\x10P\"\x06\b\xa7\x01\x10\xa7\x01*%TEXT_CODE_CURSOR_METADATA_NOT_CARRIED*$TEXT_CODE_CURSOR_METADATA_LOCAL_ONLY*\x1bTEXT_CODE_COMPRESSION_RATIO*\x1aTEXT_CODE_STREAM_IS_PUBLIC**TEXT_CODE_SRT_PASSPHRASE_IS_THE_ENCRYPTION*!TEXT_CODE_PRESET_ONLY_ON_FAMILIES*\x1fTEXT_CODE_PRESET_PINNED_BY_MODE*\x1eTEXT_CODE_GST_NO_PRESET_LADDER*!TEXT_CODE_RELAY_LEG_LOOPBACK_ONLYB[ZDbjoernblessin.de/screenshare/api/gen/go/screenshare/v1;screensharev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
+	"\x17TEXT_CODE_TRAY_ICON_OFF\x10\xc6\x01\x12(\n" +
+	"#TEXT_CODE_REQUEST_NOT_IN_THIS_BUILD\x10\xd2\x01\x12#\n" +
+	"\x1eTEXT_CODE_FRAME_SOURCE_UNNAMED\x10\xd3\x01\x12\x1d\n" +
+	"\x18TEXT_CODE_STREAM_UNNAMED\x10\xd4\x01\x12 \n" +
+	"\x1bTEXT_CODE_TRANSPORT_UNNAMED\x10\xd5\x01\x12\x1e\n" +
+	"\x19TEXT_CODE_SETTINGS_ABSENT\x10\xd6\x01\x12\x1d\n" +
+	"\x18TEXT_CODE_PRESET_UNNAMED\x10\xd7\x01\x12!\n" +
+	"\x1cTEXT_CODE_READ_NAMES_NOTHING\x10\xd8\x01\x12 \n" +
+	"\x1bTEXT_CODE_KIND_NOT_READABLE\x10\xd9\x01\x12!\n" +
+	"\x1cTEXT_CODE_KIND_NOT_WATCHABLE\x10\xda\x01\x12\x1b\n" +
+	"\x16TEXT_CODE_KIND_UNKNOWN\x10\xdb\x01\x12\x19\n" +
+	"\x14TEXT_CODE_LINK_EMPTY\x10\xdc\x01\x12)\n" +
+	"$TEXT_CODE_TEST_STREAM_COUNT_NEGATIVE\x10\xdd\x01\x12\x1f\n" +
+	"\x1aTEXT_CODE_RUN_KEEPS_NO_LOG\x10\xde\x01\x12'\n" +
+	"\"TEXT_CODE_TEST_STREAMS_ABOVE_LIMIT\x10\xdf\x01\x12\x17\n" +
+	"\x12TEXT_CODE_LOG_GONE\x10\xe0\x01\x12)\n" +
+	"$TEXT_CODE_RECEIVE_AUDIO_OF_NO_DECODE\x10\xe1\x01\x12 \n" +
+	"\x1bTEXT_CODE_FRAMES_UNDRAWABLE\x10\xe2\x01\x12\x1c\n" +
+	"\x17TEXT_CODE_WATCH_REFUSED\x10\xe3\x01\x12#\n" +
+	"\x1eTEXT_CODE_BROWSER_OPEN_REFUSED\x10\xe4\x01\x12\x1e\n" +
+	"\x19TEXT_CODE_RECEIVE_REFUSED\x10\xe5\x01\x12&\n" +
+	"!TEXT_CODE_MONITOR_PREVIEW_REFUSED\x10\xe6\x01\x12\x1d\n" +
+	"\x18TEXT_CODE_REPORT_REFUSED\x10\xe7\x01\x12#\n" +
+	"\x1eTEXT_CODE_UPDATE_CHECK_REFUSED\x10\xe8\x01\x12%\n" +
+	" TEXT_CODE_UPDATE_INSTALL_REFUSED\x10\xe9\x01\x12(\n" +
+	"#TEXT_CODE_UPLINK_MEASURE_WHILE_LIVE\x10\xea\x01\x12-\n" +
+	"(TEXT_CODE_ENCODE_RATE_MEASURE_WHILE_LIVE\x10\xeb\x01\x12&\n" +
+	"!TEXT_CODE_PROTOCOL_MAJOR_MISMATCH\x10\xec\x01\x12\x1e\n" +
+	"\x19TEXT_CODE_LINK_UNRESOLVED\x10\xed\x01\x12\x1f\n" +
+	"\x1aTEXT_CODE_SETTINGS_UNSAVED\x10\xee\x01\x12\x1d\n" +
+	"\x18TEXT_CODE_PRESET_UNSAVED\x10\xef\x01\x12\x1d\n" +
+	"\x18TEXT_CODE_PRESETS_UNREAD\x10\xf0\x01\x12\x1f\n" +
+	"\x1aTEXT_CODE_PRESET_UNDELETED\x10\xf1\x01\x12 \n" +
+	"\x1bTEXT_CODE_PUBLISH_UNSTARTED\x10\xf2\x01\x12 \n" +
+	"\x1bTEXT_CODE_PUBLISH_UNAPPLIED\x10\xf3\x01\x12%\n" +
+	" TEXT_CODE_TEST_STREAMS_UNSTARTED\x10\xf4\x01\x12\"\n" +
+	"\x1dTEXT_CODE_PORTAL_CONSENT_KEPT\x10\xf5\x01\x12 \n" +
+	"\x1bTEXT_CODE_GROUP_KEY_UNDRAWN\x10\xf6\x01\x12$\n" +
+	"\x1fTEXT_CODE_DISCORD_UNLINK_FAILED\x10\xf7\x01\x12\"\n" +
+	"\x1dTEXT_CODE_DISCORD_LINK_FAILED\x10\xf8\x01\x12\x1b\n" +
+	"\x16TEXT_CODE_LOG_UNOPENED\x10\xf9\x01\x12#\n" +
+	"\x1eTEXT_CODE_LOGS_FOLDER_UNOPENED\x10\xfa\x01\x12 \n" +
+	"\x1bTEXT_CODE_UPLINK_UNMEASURED\x10\xfb\x01\x12%\n" +
+	" TEXT_CODE_ENCODE_RATE_UNMEASURED\x10\xfc\x01\"\x04\bL\x10L\"\x04\b\x7f\x10\x7f\"\x06\b\x89\x01\x10\x89\x01\"\x06\b\x8a\x01\x10\x8a\x01\"\x06\b\x8e\x01\x10\x8e\x01\"\x04\bB\x10B\"\x04\bP\x10P\"\x06\b\xa7\x01\x10\xa7\x01*%TEXT_CODE_CURSOR_METADATA_NOT_CARRIED*$TEXT_CODE_CURSOR_METADATA_LOCAL_ONLY*\x1bTEXT_CODE_COMPRESSION_RATIO*\x1aTEXT_CODE_STREAM_IS_PUBLIC**TEXT_CODE_SRT_PASSPHRASE_IS_THE_ENCRYPTION*!TEXT_CODE_PRESET_ONLY_ON_FAMILIES*\x1fTEXT_CODE_PRESET_PINNED_BY_MODE*\x1eTEXT_CODE_GST_NO_PRESET_LADDER*!TEXT_CODE_RELAY_LEG_LOOPBACK_ONLYB[ZDbjoernblessin.de/screenshare/api/gen/go/screenshare/v1;screensharev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
 
 var (
 	file_screenshare_v1_text_proto_rawDescOnce sync.Once
@@ -1763,13 +2053,14 @@ func file_screenshare_v1_text_proto_rawDescGZIP() []byte {
 }
 
 var file_screenshare_v1_text_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_screenshare_v1_text_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_screenshare_v1_text_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_screenshare_v1_text_proto_goTypes = []any{
 	(TextArgName)(0), // 0: screenshare.v1.TextArgName
 	(TextCode)(0),    // 1: screenshare.v1.TextCode
 	(*IdList)(nil),   // 2: screenshare.v1.IdList
 	(*TextArg)(nil),  // 3: screenshare.v1.TextArg
 	(*Text)(nil),     // 4: screenshare.v1.Text
+	(*Refusal)(nil),  // 5: screenshare.v1.Refusal
 }
 var file_screenshare_v1_text_proto_depIdxs = []int32{
 	0, // 0: screenshare.v1.TextArg.name:type_name -> screenshare.v1.TextArgName
@@ -1777,11 +2068,12 @@ var file_screenshare_v1_text_proto_depIdxs = []int32{
 	4, // 2: screenshare.v1.TextArg.text:type_name -> screenshare.v1.Text
 	1, // 3: screenshare.v1.Text.code:type_name -> screenshare.v1.TextCode
 	3, // 4: screenshare.v1.Text.args:type_name -> screenshare.v1.TextArg
-	5, // [5:5] is the sub-list for method output_type
-	5, // [5:5] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	4, // 5: screenshare.v1.Refusal.text:type_name -> screenshare.v1.Text
+	6, // [6:6] is the sub-list for method output_type
+	6, // [6:6] is the sub-list for method input_type
+	6, // [6:6] is the sub-list for extension type_name
+	6, // [6:6] is the sub-list for extension extendee
+	0, // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_screenshare_v1_text_proto_init() }
@@ -1802,7 +2094,7 @@ func file_screenshare_v1_text_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_screenshare_v1_text_proto_rawDesc), len(file_screenshare_v1_text_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   3,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

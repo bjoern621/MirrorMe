@@ -108,14 +108,14 @@ public sealed class CommitViewModel : Observable
     /// <summary>
     /// Why the button is locked, empty while it is not.
     /// Never this step's own prose about a setting: a setting's own blocker stands under its control or on the checks card,
-    /// in the words the backend wrote it in.
+    /// as <see cref="Copy.Statements"/> words it.
     /// </summary>
     public string Blocked { get => _blocked; private set => Set(ref _blocked, value); }
 
     public bool IsBlocked { get => _isBlocked; private set => Set(ref _isBlocked, value); }
 
     /// <summary>
-    /// Backend's own sentence for a refused start, empty otherwise.
+    /// Refusal of a start, empty otherwise.
     /// A second line rather than folded into <see cref="Blocked"/>, being about an attempt rather than a precondition.
     /// </summary>
     public string Refusal { get => _refusal; private set => Set(ref _refusal, value); }

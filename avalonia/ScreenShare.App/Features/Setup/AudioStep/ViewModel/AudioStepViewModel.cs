@@ -79,7 +79,7 @@ public sealed class AudioStepViewModel : Observable
 
     public string Help { get => _help; private set => Set(ref _help, value); }
 
-    /// <summary>What this step settled on, in the backend's own sentence, as the strip repeats it.</summary>
+    /// <summary>What this step settled on, as the strip repeats it.</summary>
     public string Summary { get => _summary; private set => Set(ref _summary, value); }
 
     /// <summary>

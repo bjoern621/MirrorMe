@@ -9,6 +9,7 @@ import (
 	"bjoernblessin.de/screenshare/internal/form"
 	"bjoernblessin.de/screenshare/internal/publish"
 	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/screenshare/internal/text"
 	"bjoernblessin.de/screenshare/internal/wire"
 )
 
@@ -233,12 +234,12 @@ func (s *Server) discordState() *screensharev1.DiscordState {
 // without asking the backend (internal/applink).
 func (s *Server) resolveLink(url string) (string, error) {
 	if url == "" {
-		return "", invalidArgument("a link names a stream to open")
+		return "", invalidArgument(text.Fail(linkEmpty))
 	}
 
 	stream, err := s.backend.ResolveLink(url)
 	if err != nil {
-		return "", failedPrecondition("%s", err.Error())
+		return "", failedPrecondition(text.Because(err, linkUnresolved))
 	}
 	return stream, nil
 }

@@ -79,7 +79,7 @@ public sealed class RelayCheckViewModel : Observable
     /// <summary>One line about the whole list, empty before a check has run.</summary>
     public string Summary { get => _summary; private set => Set(ref _summary, value); }
 
-    /// <summary>Why the check could not be made, in the backend's own words.</summary>
+    /// <summary>Why the check could not be made.</summary>
     public string Refusal { get => _refusal; private set => Set(ref _refusal, value); }
 
     public bool HasRefusal { get => _hasRefusal; private set => Set(ref _hasRefusal, value); }

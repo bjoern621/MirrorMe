@@ -314,8 +314,7 @@ public sealed class Session
 
     /// <summary>
     /// Why the backend could not be reached, empty while it can.
-    /// That side's own sentence, shown as it stands: a shell with nothing to talk to says so rather than drawing
-    /// figures it made up.
+    /// A shell with nothing to talk to says so rather than drawing figures it made up.
     /// </summary>
     public string Unavailable { get; private set; } = "";
 

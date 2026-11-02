@@ -44,7 +44,7 @@ public interface IFrameSource
 /// </param>
 /// <param name="Notice">
 /// Why the tile is not drawing, empty while it is.
-/// The backend's own sentence where there is one,
+/// The refusal's sentence where there is one,
 /// a chain in the wrong memory or a decode that ended being facts about the pipeline.
 /// </param>
 public readonly record struct TileReport(

@@ -191,6 +191,17 @@ enum TextArgName {
   TEXT_ARG_NAME_DELAY_MS = 73;
   // Longest a viewer opening the stream waits for its first picture, ms: one keyframe interval.
   TEXT_ARG_NAME_JOIN_WAIT_MS = 74;
+  // Stream name as the relay spells it, a user's word rather than a table's.
+  TEXT_ARG_NAME_STREAM = 75;
+  // How many of a thing a request asked for, and the most this machine runs.
+  TEXT_ARG_NAME_COUNT = 76;
+  TEXT_ARG_NAME_COUNT_LIMIT = 77;
+  // Event kind as the contract spells it, "EVENT_KIND_POINTER", or its number where no name exists.
+  TEXT_ARG_NAME_KIND = 78;
+  TEXT_ARG_NAME_KINDS = 79;
+  // Control protocol major the backend implements, and the one the shell asked for.
+  TEXT_ARG_NAME_PROTOCOL_MAJOR = 80;
+  TEXT_ARG_NAME_ASKED_PROTOCOL_MAJOR = 81;
 
   // Reserved for a rename rather than a removal:
   // TEXT_ARG_NAME_EFFORT carries the number,
@@ -230,6 +241,17 @@ message TextArg {
 message Text {
   TextCode code = 1;
   repeated TextArg args = 2;
+}
+
+// Refusal rides as the one detail on every status the backend serves (docs/ipc-api.md, "Errors"),
+// whose message carries the code's name and nothing a shell renders.
+message Refusal {
+  // What was refused, with the coded reason behind it under TEXT_ARG_NAME_CAUSE.
+  Text text = 1;
+  // A third party's own words behind the refusal, verbatim: an OS error, a child's stderr line,
+  // a service's answer.
+  // Empty where the statement says everything.
+  string message = 2;
 }
 
 // TextCode names one statement.
@@ -859,6 +881,83 @@ enum TextCode {
   // so the app setting asking for one reaches nothing (avalonia/README.md, "The tray").
   // No arguments.
   TEXT_CODE_TRAY_ICON_OFF = 198;
+
+  // --- Refusals ------------------------------------------------------------------
+  //
+  // What a served status refuses (Refusal).
+  // Each takes TEXT_ARG_NAME_CAUSE where a coded reason stands behind it.
+
+  // Request shape: the request names something absent, or nothing at all.
+  // A question, state or action arm this build has no case for. No arguments.
+  TEXT_CODE_REQUEST_NOT_IN_THIS_BUILD = 210;
+  // Frame stream whose first message names no source. No arguments.
+  TEXT_CODE_FRAME_SOURCE_UNNAMED = 211;
+  TEXT_CODE_STREAM_UNNAMED = 212;
+  // TEXT_ARG_NAME_STREAM.
+  TEXT_CODE_TRANSPORT_UNNAMED = 213;
+  TEXT_CODE_SETTINGS_ABSENT = 214;
+  TEXT_CODE_PRESET_UNNAMED = 215;
+  TEXT_CODE_READ_NAMES_NOTHING = 216;
+  // TEXT_ARG_NAME_KIND, a kind that happens and is watched.
+  TEXT_CODE_KIND_NOT_READABLE = 217;
+  // TEXT_ARG_NAME_KIND, a kind that moves with no announcement and is read.
+  TEXT_CODE_KIND_NOT_WATCHABLE = 218;
+  // TEXT_ARG_NAME_KIND, and TEXT_ARG_NAME_KINDS for every kind this build carries.
+  TEXT_CODE_KIND_UNKNOWN = 219;
+  TEXT_CODE_LINK_EMPTY = 220;
+  // TEXT_ARG_NAME_COUNT.
+  TEXT_CODE_TEST_STREAM_COUNT_NEGATIVE = 221;
+  // Exit that carried no log path. No arguments.
+  TEXT_CODE_RUN_KEEPS_NO_LOG = 222;
+
+  // Bounds and absences.
+  // TEXT_ARG_NAME_COUNT and TEXT_ARG_NAME_COUNT_LIMIT.
+  TEXT_CODE_TEST_STREAMS_ABOVE_LIMIT = 223;
+  // Run log rotated away. TEXT_ARG_NAME_PATH.
+  TEXT_CODE_LOG_GONE = 224;
+  // TEXT_ARG_NAME_STREAM and TEXT_ARG_NAME_TRANSPORT name a decode nothing runs.
+  TEXT_CODE_RECEIVE_AUDIO_OF_NO_DECODE = 225;
+
+  // The world not ready.
+  // TEXT_ARG_NAME_STREAM with TEXT_ARG_NAME_TRANSPORT for a relay decode,
+  // TEXT_ARG_NAME_MONITOR for a monitor preview, neither for the publish preview.
+  TEXT_CODE_FRAMES_UNDRAWABLE = 226;
+  // TEXT_ARG_NAME_STREAM and TEXT_ARG_NAME_TRANSPORT.
+  TEXT_CODE_WATCH_REFUSED = 227;
+  TEXT_CODE_BROWSER_OPEN_REFUSED = 228;
+  TEXT_CODE_RECEIVE_REFUSED = 229;
+  // TEXT_ARG_NAME_MONITOR.
+  TEXT_CODE_MONITOR_PREVIEW_REFUSED = 230;
+  TEXT_CODE_REPORT_REFUSED = 231;
+  TEXT_CODE_UPDATE_CHECK_REFUSED = 232;
+  TEXT_CODE_UPDATE_INSTALL_REFUSED = 233;
+  // A measurement asked for while a stream publishes. No arguments.
+  TEXT_CODE_UPLINK_MEASURE_WHILE_LIVE = 234;
+  TEXT_CODE_ENCODE_RATE_MEASURE_WHILE_LIVE = 235;
+  // TEXT_ARG_NAME_PROTOCOL_MAJOR and TEXT_ARG_NAME_ASKED_PROTOCOL_MAJOR.
+  TEXT_CODE_PROTOCOL_MAJOR_MISMATCH = 236;
+  TEXT_CODE_LINK_UNRESOLVED = 237;
+
+  // The world failing at something legal to ask for.
+  TEXT_CODE_SETTINGS_UNSAVED = 238;
+  // TEXT_ARG_NAME_PRESET.
+  TEXT_CODE_PRESET_UNSAVED = 239;
+  TEXT_CODE_PRESETS_UNREAD = 240;
+  // TEXT_ARG_NAME_PRESET.
+  TEXT_CODE_PRESET_UNDELETED = 241;
+  TEXT_CODE_PUBLISH_UNSTARTED = 242;
+  TEXT_CODE_PUBLISH_UNAPPLIED = 243;
+  // TEXT_ARG_NAME_COUNT.
+  TEXT_CODE_TEST_STREAMS_UNSTARTED = 244;
+  TEXT_CODE_PORTAL_CONSENT_KEPT = 245;
+  TEXT_CODE_GROUP_KEY_UNDRAWN = 246;
+  TEXT_CODE_DISCORD_UNLINK_FAILED = 247;
+  TEXT_CODE_DISCORD_LINK_FAILED = 248;
+  // TEXT_ARG_NAME_PATH.
+  TEXT_CODE_LOG_UNOPENED = 249;
+  TEXT_CODE_LOGS_FOLDER_UNOPENED = 250;
+  TEXT_CODE_UPLINK_UNMEASURED = 251;
+  TEXT_CODE_ENCODE_RATE_UNMEASURED = 252;
 
   // 66 said only some encoder families take a preset ladder,
   // which stopped holding once every implemented encoder's row declared its own.

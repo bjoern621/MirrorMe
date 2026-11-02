@@ -6,12 +6,15 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
+	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+
 	"bjoernblessin.de/screenshare/internal/control"
 	"bjoernblessin.de/screenshare/internal/decode"
 	"bjoernblessin.de/screenshare/internal/display"
 	"bjoernblessin.de/screenshare/internal/platform"
 	"bjoernblessin.de/screenshare/internal/receive"
 	"bjoernblessin.de/screenshare/internal/screensrc"
+	"bjoernblessin.de/screenshare/internal/text"
 	"bjoernblessin.de/screenshare/internal/wire"
 )
 
@@ -61,7 +64,8 @@ func (a *App) StartMonitorPreview(monitor int) error {
 	if _, enumerated := display.At(monitor); !enumerated {
 		// Typed: an index naming no output of this machine is what the contract calls INVALID_ARGUMENT,
 		// against a session that cannot read one screen apart from another (control/refusal.go).
-		return control.Refuse("monitor %d is not one of this machine's outputs", monitor)
+		return control.Refuse(text.Fail(screensharev1.TextCode_TEXT_CODE_MONITOR_NOT_ENUMERATED,
+			text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_MONITOR, int64(monitor))))
 	}
 
 	source, err := screensrc.PreviewSource(platform.Detect(), monitor)

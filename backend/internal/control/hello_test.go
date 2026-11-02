@@ -1,13 +1,12 @@
 package control
 
 import (
-	"bjoernblessin.de/screenshare/internal/pointer"
 	"context"
 	"errors"
 	"fmt"
-	"strconv"
-	"strings"
 	"testing"
+
+	"bjoernblessin.de/screenshare/internal/pointer"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -164,18 +163,12 @@ func TestAMismatchedMajorNamesBothVersions(t *testing.T) {
 		Client:        "avalonia",
 		ProtocolMajor: ProtocolMajor + 1,
 	})
-	if err == nil {
-		t.Fatal("a major this build does not implement was accepted, want it refused")
+	refusal := refusalOf(t, err, codes.FailedPrecondition)
+	if got := argOf(refusal, screensharev1.TextArgName_TEXT_ARG_NAME_PROTOCOL_MAJOR).GetNumber(); got != ProtocolMajor {
+		t.Errorf("refusal names backend major %d, want %d", got, ProtocolMajor)
 	}
-	if got := status.Code(err); got != codes.FailedPrecondition {
-		t.Errorf("code = %s, want %s", got, codes.FailedPrecondition)
-	}
-
-	message := status.Convert(err).Message()
-	for _, version := range []int{ProtocolMajor, ProtocolMajor + 1} {
-		if !strings.Contains(message, strconv.Itoa(version)) {
-			t.Errorf("refusal %q does not name major %d", message, version)
-		}
+	if got := argOf(refusal, screensharev1.TextArgName_TEXT_ARG_NAME_ASKED_PROTOCOL_MAJOR).GetNumber(); got != ProtocolMajor+1 {
+		t.Errorf("refusal names shell major %d, want %d", got, ProtocolMajor+1)
 	}
 }
 

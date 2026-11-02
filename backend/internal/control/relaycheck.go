@@ -25,7 +25,7 @@ import (
 // an empty one would check the relay nobody named and report every leg unaddressed,
 // reading as an answer about the relay on screen.
 func (s *Server) checkRelay(ctx context.Context, m *screensharev1.Settings) (*screensharev1.RelayCheck, error) {
-	draft, err := draftOf(m, "check")
+	draft, err := draftOf(m)
 	if err != nil {
 		return nil, err
 	}

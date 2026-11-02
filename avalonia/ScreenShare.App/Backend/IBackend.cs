@@ -196,7 +196,7 @@ public interface IBackend
     ///
     /// Refused while a stream is already in force, a retry backoff included, and a combination no engine can
     /// build is refused before anything is launched.
-    /// Both arrive as <see cref="BackendUnavailableException"/> carrying the backend's own sentence.
+    /// Both arrive as <see cref="BackendUnavailableException"/> carrying the refusal's sentence.
     /// </summary>
     Task StartPublishAsync(Settings settings, CancellationToken cancellation = default);
 
@@ -218,7 +218,7 @@ public interface IBackend
     /// starting one: a stream the reader had stopped coming back is not what they asked for.
     /// A combination no engine can build is refused before anything is torn down, so the stream goes on carrying
     /// what it has.
-    /// Both arrive as <see cref="BackendUnavailableException"/> carrying the backend's own sentence.
+    /// Both arrive as <see cref="BackendUnavailableException"/> carrying the refusal's sentence.
     /// </summary>
     Task ApplyToStreamAsync(Settings settings, CancellationToken cancellation = default);
 
@@ -281,7 +281,7 @@ public interface IBackend
     ///
     /// Runs the real thing and takes seconds.
     /// Refused outright while a stream is publishing,
-    /// as <see cref="BackendUnavailableException"/> carrying the backend's own sentence,
+    /// as <see cref="BackendUnavailableException"/> carrying the refusal's sentence,
     /// a measurement competing with the stream for the line.
     /// </summary>
     Task<double> MeasureUplinkAsync(CancellationToken cancellation = default);
@@ -303,7 +303,7 @@ public interface IBackend
     /// Stores nothing and joins nothing: possession of the key is membership,
     /// so what moves this machine into the group is the caller writing the key to the settings field,
     /// like a value that was pasted.
-    /// A relay with no group service is refused with the backend's own sentence.
+    /// A relay with no group service is refused, the refusal saying so.
     /// </summary>
     Task<(string Key, string Id)> CreateGroupAsync(RelaySettings relay, CancellationToken cancellation = default);
 
@@ -357,7 +357,7 @@ public interface IBackend
     /// this shell's whole job (<c>docs/ipc-api.md</c>).
     ///
     /// A leg that cannot carry the stream's format is refused with the format named,
-    /// as <see cref="BackendUnavailableException"/> carrying the backend's own sentence.
+    /// as <see cref="BackendUnavailableException"/> carrying the refusal's sentence.
     ///
     /// <paramref name="toneMap"/> asks for an HDR stream to be rolled down into the range a standard display
     /// shows, and is part of what the decode is built from rather than a value written to a running one.
@@ -427,7 +427,7 @@ public interface IBackend
     /// Opens no pipeline.
     /// The publish is what brings the preview up,
     /// so a call made with nothing publishing is refused as <see cref="BackendUnavailableException"/>,
-    /// carrying the backend's own sentence.
+    /// carrying the refusal's sentence.
     /// A caller reads <c>PublishState</c> to know whether there is one to ask for.
     /// </summary>
     Task<FrameChannel> OpenPreviewFramesAsync(CancellationToken cancellation = default);

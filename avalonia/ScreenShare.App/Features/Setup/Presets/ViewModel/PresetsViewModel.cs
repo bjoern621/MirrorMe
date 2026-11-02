@@ -68,7 +68,7 @@ public sealed class PresetsViewModel : Observable
     private PresetStore? _store;
 
     /// <summary>
-    /// Backend's own sentence for the last refused call, empty otherwise.
+    /// Refusal of the last call, empty otherwise.
     /// Shown as it stands (<c>docs/ipc-api.md</c>, "Errors").
     /// </summary>
     private string _refusal = "";

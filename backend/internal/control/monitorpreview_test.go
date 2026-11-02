@@ -3,7 +3,6 @@ package control
 import (
 	"context"
 	"errors"
-	"strings"
 	"testing"
 
 	"google.golang.org/grpc/codes"
@@ -19,7 +18,7 @@ import (
 // the request is well formed, every integer being a monitor index somewhere,
 // and what refuses it is a fact about this machine.
 // The line docs/ipc-api.md draws between the two codes.
-// The sentence stays the backend's, so the reason travels instead of being replaced.
+// The reason behind it travels beside the statement instead of being replaced.
 func TestARefusedMonitorPreviewIsAPrecondition(t *testing.T) {
 	server := New(&fakeBackend{err: errors.New("this session cannot read one monitor apart from another")},
 		events.New(), "test")
@@ -27,19 +26,13 @@ func TestARefusedMonitorPreviewIsAPrecondition(t *testing.T) {
 	_, err := server.Set(context.Background(), &screensharev1.SetRequest{State: &screensharev1.SetRequest_MonitorPreview{
 		MonitorPreview: &screensharev1.MonitorPreviewWanted{Monitor: 2, Open: true},
 	}})
-	if err == nil {
-		t.Fatal("a backend that refused the screen answered success")
-	}
-	if got := status.Code(err); got != codes.FailedPrecondition {
-		t.Errorf("code = %s, want %s", got, codes.FailedPrecondition)
-	}
 
-	message := status.Convert(err).Message()
-	if !strings.Contains(message, "cannot read one monitor apart from another") {
-		t.Errorf("refusal %q drops the backend's own reason", message)
+	refusal := refusalOf(t, err, codes.FailedPrecondition)
+	if refusal.GetMessage() != "this session cannot read one monitor apart from another" {
+		t.Errorf("refusal words %q drop the backend's own reason", refusal.GetMessage())
 	}
-	if !strings.Contains(message, "2") {
-		t.Errorf("refusal %q does not name the screen it is about", message)
+	if got := argOf(refusal, screensharev1.TextArgName_TEXT_ARG_NAME_MONITOR).GetNumber(); got != 2 {
+		t.Errorf("refusal names monitor %d, want the screen it is about", got)
 	}
 }
 
@@ -48,21 +41,13 @@ func TestARefusedMonitorPreviewIsAPrecondition(t *testing.T) {
 // both cases arrive as an error from one method,
 // and a code read off the sentence would be the contract deriving itself from prose (refusal.go).
 func TestAPreviewOfAScreenThatDoesNotExistIsARequestFault(t *testing.T) {
-	server := New(&fakeBackend{err: Refuse("monitor 9 is not one of this machine's outputs")},
+	server := New(&fakeBackend{err: Refuse(errors.New("monitor 9 is not one of this machine's outputs"))},
 		events.New(), "test")
 
 	_, err := server.Set(context.Background(), &screensharev1.SetRequest{State: &screensharev1.SetRequest_MonitorPreview{
 		MonitorPreview: &screensharev1.MonitorPreviewWanted{Monitor: 9, Open: true},
 	}})
-	if err == nil {
-		t.Fatal("a screen this machine does not have was previewed")
-	}
-	if got := status.Code(err); got != codes.InvalidArgument {
-		t.Errorf("code = %s, want %s", got, codes.InvalidArgument)
-	}
-	if message := status.Convert(err).Message(); !strings.Contains(message, "not one of this machine's outputs") {
-		t.Errorf("refusal %q drops the backend's own reason", message)
-	}
+	refusalOf(t, err, codes.InvalidArgument)
 }
 
 // The same line on the watch pair:
@@ -71,7 +56,7 @@ func TestAPreviewOfAScreenThatDoesNotExistIsARequestFault(t *testing.T) {
 func TestAWatchOverALegThisBuildHasNoViewerForIsARequestFault(t *testing.T) {
 	viewer := &screensharev1.StreamRef{StreamName: "desk", Transport: "moq"}
 
-	refused := New(&fakeBackend{err: Refuse("no viewer implements transport %q", "moq")}, events.New(), "test")
+	refused := New(&fakeBackend{err: Refuse(errors.New(`no viewer implements transport "moq"`))}, events.New(), "test")
 	_, err := refused.Set(context.Background(), &screensharev1.SetRequest{State: &screensharev1.SetRequest_Viewer{
 		Viewer: &screensharev1.ViewerWanted{Viewer: viewer, Open: true},
 	}})

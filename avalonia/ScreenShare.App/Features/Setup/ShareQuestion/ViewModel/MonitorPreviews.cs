@@ -38,7 +38,7 @@ public sealed class MonitorPreviews
     private readonly HashSet<int> _asked = [];
 
     /// <summary>
-    /// Why a screen was refused, in the backend's own words.
+    /// Why a screen was refused.
     /// Separates a picture that has not arrived from one that never will: the same empty tile, different news.
     /// </summary>
     private readonly Dictionary<int, string> _refused = [];
@@ -178,7 +178,7 @@ public sealed class MonitorPreviews
         }
         catch (BackendUnavailableException e)
         {
-            // Held as the backend wrote it, what refuses a screen being a fact about this machine.
+            // Kept: what refuses a screen holds until this machine changes.
             // A tile left opening for a picture that will never arrive is the one thing a chooser must not say.
             _dispatch(() =>
             {

@@ -5,6 +5,7 @@ import (
 
 	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
 
+	"bjoernblessin.de/screenshare/internal/text"
 	"bjoernblessin.de/screenshare/internal/wire"
 )
 
@@ -31,13 +32,12 @@ import (
 // so a guessed uplink figure can be replaced with a measured one.
 func (s *Server) measureUplink(ctx context.Context) (float64, error) {
 	if s.backend.PublishState().Publishing() {
-		return 0, failedPrecondition(
-			"a stream is publishing, and an uplink measurement would compete with it for the line. Stop the stream to measure")
+		return 0, failedPrecondition(text.Fail(uplinkMeasureWhileLive))
 	}
 
 	mbps, err := s.backend.MeasureUplink(ctx)
 	if err != nil {
-		return 0, fromBackend("cannot measure the uplink", err)
+		return 0, fromBackend(err, uplinkUnmeasured)
 	}
 	return mbps, nil
 }
@@ -50,19 +50,18 @@ func (s *Server) measureUplink(ctx context.Context) (float64, error) {
 // the empty draft would time an encoder nobody chose,
 // and the figure would read as an answer about the one they did.
 func (s *Server) measureEncodeRate(ctx context.Context, m *screensharev1.Settings) (*screensharev1.EncodeRate, error) {
-	draft, err := draftOf(m, "time")
+	draft, err := draftOf(m)
 	if err != nil {
 		return nil, err
 	}
 
 	if s.backend.PublishState().Publishing() {
-		return nil, failedPrecondition(
-			"a stream is publishing, and an encode-rate measurement would compete with it for the encoder. Stop the stream to measure")
+		return nil, failedPrecondition(text.Fail(encodeRateMeasureWhileLive))
 	}
 
 	rate, err := s.backend.MeasureEncodeRate(ctx, draft)
 	if err != nil {
-		return nil, fromBackend("cannot measure the encode rate", err)
+		return nil, fromBackend(err, encodeRateUnmeasured)
 	}
 	return wire.EncodeRate(rate), nil
 }

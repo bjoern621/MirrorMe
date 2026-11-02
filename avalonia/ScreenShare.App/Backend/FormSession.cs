@@ -226,7 +226,6 @@ public sealed class FormSession
 
     /// <summary>
     /// Why the last read could not be answered, empty while the backend is answering.
-    /// The backend's own sentence, shown as it stands.
     /// Cleared by the next answer, so a recovered backend clears the notice a failed read left rather than
     /// leaving it under a form that is drawing again.
     /// </summary>
@@ -234,7 +233,6 @@ public sealed class FormSession
 
     /// <summary>
     /// Why the last write could not be stored, empty while they are being stored.
-    /// The backend's own sentence, shown as it stands.
     ///
     /// Separate from <see cref="Unavailable"/>: neither stands in for the other.
     /// An unanswered read leaves an older answer on screen and a publish with nothing to go on.

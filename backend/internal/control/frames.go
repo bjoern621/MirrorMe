@@ -10,6 +10,7 @@ import (
 
 	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
 
+	"bjoernblessin.de/screenshare/internal/text"
 	"bjoernblessin.de/screenshare/internal/wire"
 )
 
@@ -61,11 +62,11 @@ func (s *FrameServer) Frames(stream screensharev1.FrameService_FramesServer) err
 
 	subscribe := first.GetSubscribe()
 	if subscribe == nil {
-		return invalidArgument("the first message on a frame stream says which decode it is for")
+		return invalidArgument(text.Fail(frameSourceUnnamed))
 	}
 	source, named := wire.FrameSourceOf(subscribe)
 	if !named {
-		return invalidArgument("a frame stream draws from a relay decode, the publish preview or a monitor preview, and this one names none of them")
+		return invalidArgument(text.Fail(frameSourceUnnamed))
 	}
 	// A relay decode is named by a pair, and half of one names nothing that could exist.
 	// The other two need no such check:
@@ -74,10 +75,10 @@ func (s *FrameServer) Frames(stream screensharev1.FrameService_FramesServer) err
 	// Whether an index is one of this machine's is a fact about the machine, so the backend decides it.
 	if source.Kind == wire.FrameSourceRelay {
 		if source.Stream.StreamName == "" {
-			return invalidArgument("no stream named to receive frames of")
+			return invalidArgument(text.Fail(streamUnnamed))
 		}
 		if source.Stream.Transport == "" {
-			return invalidArgument("no transport named to receive frames of '%s' over", source.Stream.StreamName)
+			return invalidArgument(text.Fail(transportUnnamed, argStream(source.Stream.StreamName)))
 		}
 	}
 
@@ -86,7 +87,7 @@ func (s *FrameServer) Frames(stream screensharev1.FrameService_FramesServer) err
 		// The world is not ready rather than the request malformed:
 		// a relay decode is opened by StartReceive and the publish preview by the publish itself,
 		// so a shell that lost the race asks again instead of being told it named something impossible.
-		return failedPrecondition("cannot draw %s: %v", describe(source), err)
+		return failedPrecondition(text.Because(err, framesUndrawable, argsSource(source)...))
 	}
 	// Closed on every way out, the ones that never reach the loop below included.
 	// The close frees the pool, so a consumer that died gives its GPU memory back

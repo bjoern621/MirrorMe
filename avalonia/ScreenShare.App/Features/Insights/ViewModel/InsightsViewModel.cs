@@ -171,7 +171,7 @@ public sealed class InsightsViewModel : Observable
 
     public InsightsSnapshot Snapshot { get => _snapshot; private set => Set(ref _snapshot, value); }
 
-    /// <summary>Backend's own sentence for something this screen asked and was refused, empty otherwise.</summary>
+    /// <summary>Refusal of something this screen asked for, empty otherwise.</summary>
     public string Refusal
     {
         get => _refusal;
@@ -278,7 +278,7 @@ public sealed class InsightsViewModel : Observable
     }
 
     /// <summary>
-    /// Asks the backend for one effect and shows its refusal as the backend wrote it (<c>docs/ipc-api.md</c>, "Errors").
+    /// Asks the backend for one effect and shows its refusal (<c>docs/ipc-api.md</c>, "Errors").
     /// A success clears what the last one left.
     /// </summary>
     private async Task PerformAsync(Func<CancellationToken, Task> effect)

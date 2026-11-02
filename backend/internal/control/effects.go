@@ -3,7 +3,6 @@ package control
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io/fs"
 	"os"
 	"slices"
@@ -17,6 +16,7 @@ import (
 	"bjoernblessin.de/screenshare/internal/form"
 	"bjoernblessin.de/screenshare/internal/publish"
 	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/screenshare/internal/text"
 	"bjoernblessin.de/screenshare/internal/wire"
 )
 
@@ -28,11 +28,11 @@ import (
 // Reading state back here for a richer answer is the same fault:
 // a read after the effect is already one event out of date.
 
-// fromBackend turns an untyped backend error into UNAVAILABLE.
+// fromBackend serves a backend error as UNAVAILABLE, stated under the code given.
 //
 // One helper rather than a judgement per call site.
-// Backend errors carry no type, so coding them off the text would derive the error model
-// from a sentence written for a person, the one input that changes without breaking the build.
+// Backend errors carry no status code, and reading one off the statement would put the error model
+// in the table of statements.
 //
 // UNAVAILABLE is the residue.
 // Every refusal the request itself earns is made above the backend call, against the arguments
@@ -45,11 +45,11 @@ import (
 // Cost: a settings combination no engine can build also comes back untyped from a live Set,
 // where INVALID_ARGUMENT would fit better.
 // Telling the two apart needs a typed refusal on Backend.
-// A guess off the sentence, landing wrong, would tell a shell to blame the user for a full disk.
-func fromBackend(what string, err error) error {
-	assert.IsNotNil(err, "a classified failure is a failure", what)
+// A guess off the statement, landing wrong, would tell a shell to blame the user for a full disk.
+func fromBackend(err error, code screensharev1.TextCode, args ...*screensharev1.TextArg) error {
+	assert.IsNotNil(err, "a classified failure is a failure", code.String())
 
-	return unavailable("%s: %v", what, err)
+	return unavailable(text.Because(err, code, args...))
 }
 
 // draftOf reads the settings off a request that needs them.
@@ -61,13 +61,9 @@ func fromBackend(what string, err error) error {
 //
 // Emptiness is tested against the zero message rather than one chosen field,
 // so a field added to the contract stays covered without an edit here.
-func draftOf(m *screensharev1.Settings, verb string) (settings.Settings, error) {
-	// Verb is this file's word for what the caller was doing, fixed at the call site,
-	// so an empty one leaves a hole in the sentence a person reads.
-	assert.Assert(verb != "", "a refused draft names what it was going to be used for")
-
+func draftOf(m *screensharev1.Settings) (settings.Settings, error) {
 	if m == nil || proto.Equal(m, &screensharev1.Settings{}) {
-		return settings.Settings{}, invalidArgument("no settings to %s", verb)
+		return settings.Settings{}, invalidArgument(text.Fail(settingsAbsent))
 	}
 	return wire.ToSettings(m), nil
 }
@@ -77,11 +73,9 @@ func draftOf(m *screensharev1.Settings, verb string) (settings.Settings, error) 
 //
 // A preset is a PublishSettings and nothing else: where the relay is belongs to a deployment,
 // how this machine watches to a viewer, so neither is part of applying one.
-func presetOf(m *screensharev1.PublishSettings, verb string) (settings.Publish, error) {
-	assert.Assert(verb != "", "a refused preset names what it was going to be used for")
-
+func presetOf(m *screensharev1.PublishSettings) (settings.Publish, error) {
 	if m == nil || proto.Equal(m, &screensharev1.PublishSettings{}) {
-		return settings.Publish{}, invalidArgument("no settings to %s", verb)
+		return settings.Publish{}, invalidArgument(text.Fail(settingsAbsent))
 	}
 	return wire.ToPublish(m), nil
 }
@@ -90,16 +84,13 @@ func presetOf(m *screensharev1.PublishSettings, verb string) (settings.Publish, 
 //
 // Half a pair is INVALID_ARGUMENT for the reason StreamRef exists:
 // one stream is watched over several legs at once, so half an identity names nothing that can exist.
-// What names the effect in the refusal, fixed at the call site.
-func keyOf(m *screensharev1.StreamRef, what string) (wire.StreamRef, error) {
-	assert.Assert(what != "", "a refused stream names what it was going to be used for")
-
+func keyOf(m *screensharev1.StreamRef) (wire.StreamRef, error) {
 	ref := wire.StreamRefOf(m)
 	if ref.StreamName == "" {
-		return wire.StreamRef{}, invalidArgument("no stream named to %s", what)
+		return wire.StreamRef{}, invalidArgument(text.Fail(streamUnnamed))
 	}
 	if ref.Transport == "" {
-		return wire.StreamRef{}, invalidArgument("no transport named to %s '%s' over", what, ref.StreamName)
+		return wire.StreamRef{}, invalidArgument(text.Fail(transportUnnamed, argStream(ref.StreamName)))
 	}
 	return ref, nil
 }
@@ -111,13 +102,13 @@ func keyOf(m *screensharev1.StreamRef, what string) (wire.StreamRef, error) {
 // Two arms because the user's two intentions differ: keep this for next time,
 // and put this on the air.
 func (s *Server) saveSettings(m *screensharev1.Settings) error {
-	draft, err := draftOf(m, "save")
+	draft, err := draftOf(m)
 	if err != nil {
 		return err
 	}
 
 	if err := s.backend.SaveSettings(draft); err != nil {
-		return fromBackend("cannot save the settings", err)
+		return fromBackend(err, settingsUnsaved)
 	}
 	return nil
 }
@@ -132,20 +123,20 @@ func (s *Server) saveSettings(m *screensharev1.Settings) error {
 func (s *Server) setPreset(w *screensharev1.PresetWanted) error {
 	name := w.GetName()
 	if name == "" {
-		return invalidArgument("a preset is named, and none was given")
+		return invalidArgument(text.Fail(presetUnnamed))
 	}
 
 	if w.GetSettings() == nil {
 		return s.dropPreset(name)
 	}
 
-	preset, err := presetOf(w.GetSettings(), "save as a preset")
+	preset, err := presetOf(w.GetSettings())
 	if err != nil {
 		return err
 	}
 
 	if err := settings.SavePreset(name, preset); err != nil {
-		return fromBackend("cannot save the preset '"+name+"'", err)
+		return fromBackend(err, presetUnsaved, argPreset(name))
 	}
 	return nil
 }
@@ -155,14 +146,14 @@ func (s *Server) dropPreset(name string) error {
 
 	presets, err := settings.LoadPresets()
 	if err != nil {
-		return fromBackend("cannot read the presets", err)
+		return fromBackend(err, presetsUnread)
 	}
 	if !slices.ContainsFunc(presets, func(p settings.Preset) bool { return p.Name == name }) {
 		return nil
 	}
 
 	if err := settings.DeletePreset(name); err != nil {
-		return fromBackend("cannot delete the preset '"+name+"'", err)
+		return fromBackend(err, presetUndeleted, argPreset(name))
 	}
 	return nil
 }
@@ -183,9 +174,8 @@ func (s *Server) resolveFollowed(draft settings.Settings) (settings.Settings, er
 
 	resolved, ok := form.ResolveBuiltin(s.formDeps(), draft)
 	if !ok {
-		return settings.Settings{}, failedPrecondition(
-			"no configuration on this machine delivers the selected preset (%s). Open the stream settings to see what stands in the way",
-			draft.Publish.Preset)
+		return settings.Settings{}, failedPrecondition(text.Fail(presetUnreachable,
+			argPreset(draft.Publish.Preset), argTransport(draft.Publish.Transport)))
 	}
 	return resolved, nil
 }
@@ -210,7 +200,7 @@ func (s *Server) setPublish(w *screensharev1.PublishWanted) error {
 		return nil
 	}
 
-	draft, err := draftOf(w.GetSettings(), "publish")
+	draft, err := draftOf(w.GetSettings())
 	if err != nil {
 		return err
 	}
@@ -222,7 +212,7 @@ func (s *Server) setPublish(w *screensharev1.PublishWanted) error {
 	state := s.backend.PublishState()
 	if !state.Publishing() {
 		if err := s.backend.StartPublish(draft); err != nil {
-			return fromBackend("cannot start publishing", err)
+			return fromBackend(err, publishUnstarted)
 		}
 		return nil
 	}
@@ -237,7 +227,7 @@ func (s *Server) setPublish(w *screensharev1.PublishWanted) error {
 	}
 
 	if err := s.backend.ApplyToStream(draft); err != nil {
-		return fromBackend("cannot apply the settings to the running stream", err)
+		return fromBackend(err, publishUnapplied)
 	}
 	return nil
 }
@@ -250,7 +240,7 @@ func (s *Server) setPublish(w *screensharev1.PublishWanted) error {
 // so one stream is watchable over any leg the relay serves it on.
 func (s *Server) setViewer(w *screensharev1.ViewerWanted) error {
 	if !w.GetOpen() {
-		ref, err := keyOf(w.GetViewer(), "stop watching")
+		ref, err := keyOf(w.GetViewer())
 		if err != nil {
 			return err
 		}
@@ -258,7 +248,7 @@ func (s *Server) setViewer(w *screensharev1.ViewerWanted) error {
 		return nil
 	}
 
-	ref, err := keyOf(w.GetViewer(), "watch")
+	ref, err := keyOf(w.GetViewer())
 	if err != nil {
 		return err
 	}
@@ -274,9 +264,9 @@ func (s *Server) setViewer(w *screensharev1.ViewerWanted) error {
 		// A transport this build has no viewer for is INVALID_ARGUMENT under the contract's table,
 		// and the backend separates the two by returning a Refused for it.
 		if refused(err) {
-			return invalidArgument("cannot watch '%s' over %s: %v", ref.StreamName, ref.Transport, err)
+			return invalidArgument(text.Because(err, watchRefused, argsRef(ref)...))
 		}
-		return failedPrecondition("cannot watch '%s' over %s: %v", ref.StreamName, ref.Transport, err)
+		return failedPrecondition(text.Because(err, watchRefused, argsRef(ref)...))
 	}
 	return nil
 }
@@ -291,13 +281,13 @@ func (s *Server) setViewer(w *screensharev1.ViewerWanted) error {
 // the effect lands in a program this process does not own, so there is no state to read back,
 // no stop to write, and nothing here reaches the viewer state.
 func (s *Server) openInBrowser(m *screensharev1.StreamRef) error {
-	ref, err := keyOf(m, "open in the browser")
+	ref, err := keyOf(m)
 	if err != nil {
 		return err
 	}
 
 	if err := s.backend.OpenInBrowser(ref); err != nil {
-		return failedPrecondition("cannot open '%s' over %s in the browser: %v", ref.StreamName, ref.Transport, err)
+		return failedPrecondition(text.Because(err, browserOpenRefused, argsRef(ref)...))
 	}
 	return nil
 }
@@ -317,7 +307,7 @@ func (s *Server) openInBrowser(m *screensharev1.StreamRef) error {
 // so a refusal here would guess at both.
 func (s *Server) setReceive(w *screensharev1.ReceiveWanted) error {
 	if !w.GetOpen() {
-		ref, err := keyOf(w.GetStream(), "stop receiving")
+		ref, err := keyOf(w.GetStream())
 		if err != nil {
 			return err
 		}
@@ -325,12 +315,12 @@ func (s *Server) setReceive(w *screensharev1.ReceiveWanted) error {
 		return nil
 	}
 
-	ref, err := keyOf(w.GetStream(), "receive")
+	ref, err := keyOf(w.GetStream())
 	if err != nil {
 		return err
 	}
 	if err := s.backend.StartReceive(ref, w.GetToneMap()); err != nil {
-		return failedPrecondition("cannot receive '%s' over %s: %v", ref.StreamName, ref.Transport, err)
+		return failedPrecondition(text.Because(err, receiveRefused, argsRef(ref)...))
 	}
 	return nil
 }
@@ -354,9 +344,9 @@ func (s *Server) setMonitorPreview(w *screensharev1.MonitorPreviewWanted) error 
 
 	if err := s.backend.StartMonitorPreview(monitor); err != nil {
 		if refused(err) {
-			return invalidArgument("cannot preview monitor %d: %v", monitor, err)
+			return invalidArgument(text.Because(err, monitorPreviewRefused, argMonitor(monitor)))
 		}
-		return failedPrecondition("cannot preview monitor %d: %v", monitor, err)
+		return failedPrecondition(text.Because(err, monitorPreviewRefused, argMonitor(monitor)))
 	}
 	return nil
 }
@@ -372,13 +362,13 @@ func (s *Server) setMonitorPreview(w *screensharev1.MonitorPreviewWanted) error 
 // The bound lives at the backend, which brings a figure past the end of the range back,
 // and a refusal would turn a slider that overshot into an error a reader has to read.
 func (s *Server) setReceiveAudio(a *screensharev1.ReceiveAudio) error {
-	ref, err := keyOf(a.GetStream(), "set the audio of")
+	ref, err := keyOf(a.GetStream())
 	if err != nil {
 		return err
 	}
 
 	if err := s.backend.SetReceiveAudio(ref, a.GetVolume(), a.GetMuted()); err != nil {
-		return notFound("cannot set the audio of '%s' over %s: %v", ref.StreamName, ref.Transport, err)
+		return notFound(text.Because(err, receiveAudioOfNoDecode, argsRef(ref)...))
 	}
 	return nil
 }
@@ -411,7 +401,7 @@ func (s *Server) probeEncoders(ctx context.Context) {
 // under RESOURCE_EXHAUSTED as well, and a missing binary is not a saturated machine.
 func (s *Server) setTestStreams(count int) error {
 	if count < 0 {
-		return invalidArgument("a test-stream count is at least zero, and %d was asked for", count)
+		return invalidArgument(text.Fail(testStreamCountNegative, argCount(count)))
 	}
 	if count == 0 {
 		s.backend.StopTestStreams()
@@ -421,11 +411,12 @@ func (s *Server) setTestStreams(count int) error {
 	max := s.backend.MaxTestStreams()
 	assert.Assert(max > 0, "a backend that runs test streams runs at least one", max)
 	if count > max {
-		return resourceExhausted("this machine runs at most %d test streams at once, and %d were asked for", max, count)
+		return resourceExhausted(text.Fail(testStreamsAboveLimit,
+			argCount(count), text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_COUNT_LIMIT, int64(max))))
 	}
 
 	if err := s.backend.StartTestStreams(count); err != nil {
-		return fromBackend(fmt.Sprintf("cannot start %d test streams", count), err)
+		return fromBackend(err, testStreamsUnstarted, argCount(count))
 	}
 	return nil
 }
@@ -435,7 +426,7 @@ func (s *Server) setTestStreams(count int) error {
 // How a share aimed at the wrong window or monitor is corrected.
 func (s *Server) forgetPortalConsent() error {
 	if err := s.backend.ForgetPortalConsent(); err != nil {
-		return fromBackend("cannot forget the screen-capture consent", err)
+		return fromBackend(err, portalConsentKept)
 	}
 	return nil
 }
@@ -450,7 +441,7 @@ func (s *Server) forgetPortalConsent() error {
 func (s *Server) createGroup(relay *screensharev1.RelaySettings) (*screensharev1.Group, error) {
 	groupKey, groupID, err := s.backend.CreateGroup(wire.ToRelay(relay))
 	if err != nil {
-		return nil, fromBackend("cannot draw a group key", err)
+		return nil, fromBackend(err, groupKeyUndrawn)
 	}
 	return &screensharev1.Group{Key: groupKey, Id: groupID}, nil
 }
@@ -464,7 +455,7 @@ func (s *Server) createGroup(relay *screensharev1.RelaySettings) (*screensharev1
 func (s *Server) setDiscordLink(ctx context.Context, w *screensharev1.DiscordLinkWanted) error {
 	if !w.GetLinked() {
 		if err := s.backend.UnlinkDiscord(); err != nil {
-			return fromBackend("cannot unlink Discord", err)
+			return fromBackend(err, discordUnlinkFailed)
 		}
 		return nil
 	}
@@ -473,7 +464,7 @@ func (s *Server) setDiscordLink(ctx context.Context, w *screensharev1.DiscordLin
 		return nil
 	}
 	if err := s.backend.LinkDiscord(ctx, wire.ToRelay(w.GetRelay())); err != nil {
-		return fromBackend("cannot link Discord", err)
+		return fromBackend(err, discordLinkFailed)
 	}
 	return nil
 }
@@ -490,14 +481,14 @@ func (s *Server) setDiscordLink(ctx context.Context, w *screensharev1.DiscordLin
 // A second call opens a second window, the departure openInBrowser documents.
 func (s *Server) openLog(path string) error {
 	if path == "" {
-		return invalidArgument("no log file for this run")
+		return invalidArgument(text.Fail(runKeepsNoLog))
 	}
 	if _, err := os.Stat(path); errors.Is(err, fs.ErrNotExist) {
-		return notFound("no log file at %s. The run logs are rotated, so one named by an older exit may already be gone", path)
+		return notFound(text.Fail(logGone, argPath(path)))
 	}
 
 	if err := s.backend.OpenLog(path); err != nil {
-		return fromBackend("cannot open "+path, err)
+		return fromBackend(err, logUnopened, argPath(path))
 	}
 	return nil
 }
@@ -506,7 +497,7 @@ func (s *Server) openLog(path string) error {
 // and opens a second window on a second call, as openLog does.
 func (s *Server) openLogsFolder() error {
 	if err := s.backend.OpenLogsFolder(); err != nil {
-		return fromBackend("cannot open the logs folder", err)
+		return fromBackend(err, logsFolderUnopened)
 	}
 	return nil
 }
@@ -518,7 +509,7 @@ func (s *Server) sendReport() (string, error) {
 	if err != nil {
 		// A well-formed request whose moment is wrong, on checkUpdate's terms:
 		// a report goes to the deployment in use, and the settings may name none.
-		return "", failedPrecondition("cannot send a report: %v", err)
+		return "", failedPrecondition(text.Because(err, reportRefused))
 	}
 	return id, nil
 }
@@ -535,7 +526,7 @@ func (s *Server) checkUpdate() error {
 	if err := s.backend.CheckUpdate(); err != nil {
 		// A well-formed request whose moment is wrong: this install asks nothing,
 		// which UpdateState.unchecked stated before any control was drawn.
-		return failedPrecondition("cannot check for updates: %v", err)
+		return failedPrecondition(text.Because(err, updateCheckRefused))
 	}
 	return nil
 }
@@ -549,7 +540,7 @@ func (s *Server) installUpdate() error {
 	if err := s.backend.InstallUpdate(); err != nil {
 		// FAILED_PRECONDITION for the reason checkUpdate answers with one:
 		// nothing is staged, which the state says before the dialog offers a restart.
-		return failedPrecondition("cannot install the staged release: %v", err)
+		return failedPrecondition(text.Because(err, updateInstallRefused))
 	}
 	return nil
 }

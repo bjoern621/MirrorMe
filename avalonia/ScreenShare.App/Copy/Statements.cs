@@ -717,9 +717,9 @@ public static class Statements
                 "The tray icon is off in this environment (MIRRORME_TRAY=0). "
                 + "Clear the variable and restart MirrorMe to use this setting.",
 
-            // A backend newer than this build.
-            // The code is printed so it can be searched for and reported.
-            _ => text.Code.ToString(),
+            // A refusal, or a backend newer than this build.
+            // An unknown code is printed so it can be searched for and reported.
+            _ => Refusals.Of(text) ?? text.Code.ToString(),
         };
     }
 
@@ -858,6 +858,25 @@ public static class Statements
         public string GpuModel => Id(TextArgName.GpuModel);
 
         public string Path => Id(TextArgName.Path);
+
+        public string Stream => Id(TextArgName.Stream);
+
+        public string Kind => Id(TextArgName.Kind);
+
+        public IReadOnlyList<string> Kinds => Ids(TextArgName.Kinds);
+
+        public long Monitor => Num(TextArgName.Monitor);
+
+        /// <summary>Whether the statement names a monitor, index 0 being one.</summary>
+        public bool NamesMonitor => Find(TextArgName.Monitor) is not null;
+
+        public long Count => Num(TextArgName.Count);
+
+        public long CountLimit => Num(TextArgName.CountLimit);
+
+        public long ProtocolMajor => Num(TextArgName.ProtocolMajor);
+
+        public long AskedProtocolMajor => Num(TextArgName.AskedProtocolMajor);
 
         public string Value => Id(TextArgName.Value);
 

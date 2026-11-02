@@ -2,7 +2,6 @@ package control
 
 import (
 	"errors"
-	"fmt"
 
 	"bjoernblessin.de/go-utils/util/assert"
 )
@@ -12,9 +11,7 @@ import (
 // The contract (api/proto/screenshare/v1/control.proto) splits them:
 // INVALID_ARGUMENT for a request naming something absent from this build or this machine,
 // FAILED_PRECONDITION for one whose arguments are all real and whose moment is wrong.
-// A backend answering both with a plain error leaves this side to tell them apart by the sentence,
-// a contract derived from prose written for a person (fromBackend).
-// The type carries the difference instead.
+// Both arrive here as an error from one method, so the type carries the difference.
 
 // Refused marks an error as earned by the request:
 // a monitor index no output is enumerated under, a transport this build has no viewer for.
@@ -23,12 +20,11 @@ type Refused struct {
 	cause error
 }
 
-// Refuse builds a Refused carrying the sentence the user reads.
-// The wording stays the backend's, and this side adds the code.
-func Refuse(format string, args ...any) error {
-	assert.Assert(format != "", "a refusal says what it refused")
+// Refuse marks the backend's own failure, statement and all, as earned by the request.
+func Refuse(err error) error {
+	assert.IsNotNil(err, "a refusal says what it refused")
 
-	return &Refused{cause: fmt.Errorf(format, args...)}
+	return &Refused{cause: err}
 }
 
 func (e *Refused) Error() string { return e.cause.Error() }

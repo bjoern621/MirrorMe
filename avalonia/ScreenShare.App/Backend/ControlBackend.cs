@@ -660,8 +660,8 @@ public sealed class ControlBackend : IBackend
     /// The token is checked alongside the code,
     /// so a <c>CANCELLED</c> the backend produced on its own is not mistaken for one this shell asked for.
     ///
-    /// Everything else divides by who wrote the status, not by which code it carries.
-    /// A status the backend produced carries prose written for a person and is the screen's to show verbatim:
+    /// Everything else divides by who wrote the status, whatever code it carries.
+    /// A status the backend served carries a <see cref="Refusal"/>, read as this shell's sentence for its code:
     /// a relay that could not be reached
     /// and a child process that would not start are both <c>UNAVAILABLE</c> (<c>docs/ipc-api.md</c>, "Errors"),
     /// so reading that code as "nothing is listening" would answer Start sharing with a sentence about its own connection.
@@ -677,7 +677,7 @@ public sealed class ControlBackend : IBackend
     /// an unbound socket as <c>UNAVAILABLE</c>.
     /// Both name the address that was tried (<see cref="ControlEndpoint.Describe"/>).
     ///
-    /// A served status with no prose names the code it failed with rather than being handed upwards empty:
+    /// A served status carrying no refusal comes from a backend of another build, and names its code:
     /// the exception promises a sentence, and the assertion upstairs refuses a blank one.
     /// </summary>
     internal static Exception Translate(RpcException e, CancellationToken cancellation)
@@ -707,12 +707,33 @@ public sealed class ControlBackend : IBackend
                 $"The backend is not running: nothing is listening on {ControlEndpoint.Describe()} ({e.StatusCode}).", e);
         }
 
-        var detail = e.Status.Detail;
-        if (string.IsNullOrWhiteSpace(detail))
+        var refusal = RefusalOf(e);
+        if (refusal is null)
         {
-            detail = $"The backend answered {e.StatusCode} over {ControlEndpoint.Describe()} and said nothing further.";
+            return new BackendUnavailableException(
+                $"The backend answered {e.StatusCode} over {ControlEndpoint.Describe()} and said nothing further.", e);
         }
 
-        return new BackendUnavailableException(detail, e);
+        return new BackendUnavailableException(Copy.Refusals.Of(refusal), e);
+    }
+
+    /// <summary>The Refusal a served status carries in its details trailer, null where it carries none.</summary>
+    private static Refusal? RefusalOf(RpcException e)
+    {
+        var packed = e.Trailers.GetValueBytes("grpc-status-details-bin");
+        if (packed is null)
+        {
+            return null;
+        }
+
+        var status = Google.Rpc.Status.Parser.ParseFrom(packed);
+        foreach (var detail in status.Details)
+        {
+            if (detail.TryUnpack<Refusal>(out var refusal))
+            {
+                return refusal;
+            }
+        }
+        return null;
     }
 }

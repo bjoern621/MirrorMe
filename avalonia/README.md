@@ -201,7 +201,7 @@ What is left is the case the shell cannot act on: no binary beside the app or on
 The sentence is the same either way, nothing is listening on this endpoint, that being what is true whether a start was attempted or not.
 
 **Which sentence it is depends on who wrote the status.**
-A status the backend served carries prose written for a person and is shown as it arrived.
+A status the backend served carries a `Refusal`, read as this shell's sentence for its code (`Copy/Refusals.cs`).
 The contract gives `UNAVAILABLE` to a relay that could not be reached and to a child process that would not start.
 Reading that code as absence would answer a press of Start sharing with a sentence about the endpoint the shell had just resolved a form through.
 What says the backend is absent is `Status.DebugException`, which the client library sets on a status it made from a local failure and leaves null on one that arrived.
@@ -209,7 +209,7 @@ What says the backend is absent is `Status.DebugException`, which the client lib
 **The commit is real, and it reads four states rather than one.**
 It sends the draft to `Set publish`, which persists it and starts the encoder on it.
 The reply says nothing and the stream arrives on the event stream, so the window that pressed the button and the window that did not learn it the same way.
-`Features/Setup/Model/PublishGate.cs` decides, and every condition in it is a whole state some other side stated: `Form.publishable`, the backend's own sentence when it cannot describe the settings at all, `RelayStatus.reachable`, and the presence of `PublishState.live`.
+`Features/Setup/Model/PublishGate.cs` decides, and every condition in it is a whole state some other side stated: `Form.publishable`, the reason the backend cannot describe the settings at all, `RelayStatus.reachable`, and the presence of `PublishState.live`.
 None is ranked or re-decided here, and only one sentence is shown.
 A settings problem gets no sentence of its own: each one stands under its control or on the checks card, in the backend's words.
 

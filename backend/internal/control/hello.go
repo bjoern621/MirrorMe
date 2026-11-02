@@ -7,6 +7,7 @@ import (
 	"bjoernblessin.de/go-utils/util/logger"
 
 	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	"bjoernblessin.de/screenshare/internal/text"
 )
 
 // Hello settles the contract version before any other method is reached
@@ -31,9 +32,9 @@ func (s *Server) Hello(ctx context.Context, req *screensharev1.HelloRequest) (*s
 	assert.IsNotNil(req, "a handshake carries a request")
 
 	if req.GetProtocolMajor() != ProtocolMajor {
-		return nil, failedPrecondition(
-			"this backend implements control protocol major %d and the shell was built against major %d. Both sides have to be on the same major",
-			ProtocolMajor, req.GetProtocolMajor())
+		return nil, failedPrecondition(text.Fail(protocolMajorMismatch,
+			text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_PROTOCOL_MAJOR, ProtocolMajor),
+			text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_ASKED_PROTOCOL_MAJOR, int64(req.GetProtocolMajor()))))
 	}
 
 	// The client name carries no behaviour.

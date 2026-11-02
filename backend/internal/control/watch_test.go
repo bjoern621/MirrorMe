@@ -2,14 +2,11 @@ package control
 
 import (
 	"context"
-	"strconv"
-	"strings"
 	"testing"
 	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
 
@@ -56,14 +53,9 @@ func TestAnUnknownEventKindIsRefusedRatherThanIgnored(t *testing.T) {
 	err := server.Watch(
 		&screensharev1.WatchRequest{Kinds: []screensharev1.EventKind{screensharev1.EventKind_EVENT_KIND_PUBLISH_STATE, unknownKind}},
 		newFakeStream(context.Background()))
-	if err == nil {
-		t.Fatal("a kind this build has none of was accepted, want it refused")
-	}
-	if got := status.Code(err); got != codes.InvalidArgument {
-		t.Errorf("code = %s, want %s", got, codes.InvalidArgument)
-	}
-	if message := status.Convert(err).Message(); !strings.Contains(message, strconv.Itoa(int(unknownKind))) {
-		t.Errorf("refusal %q does not name the kind that was wrong", message)
+	refusal := refusalOf(t, err, codes.InvalidArgument)
+	if got := argOf(refusal, screensharev1.TextArgName_TEXT_ARG_NAME_KIND).GetId(); got != unknownKind.String() {
+		t.Errorf("refusal names kind %q, want the one that was wrong, %q", got, unknownKind.String())
 	}
 }
 

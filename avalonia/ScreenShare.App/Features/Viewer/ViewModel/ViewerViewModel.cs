@@ -418,7 +418,7 @@ public sealed class ViewerViewModel : Observable
 
     /// <summary>
     /// Whether the notice reports a failure rather than a state of the relay.
-    /// True for the backend's own sentence, which is the one thing here that is broken:
+    /// True for a refusal, the one thing here that is broken:
     /// a relay carrying nothing answered (<c>docs/design-language.md</c>, "Palette").
     /// </summary>
     public bool NoticeIsFailure { get => _noticeIsFailure; private set => Set(ref _noticeIsFailure, value); }
@@ -437,7 +437,7 @@ public sealed class ViewerViewModel : Observable
     /// </summary>
     public bool IsReading { get => _isReading; private set => Set(ref _isReading, value); }
 
-    /// <summary>Backend's own sentence when it refused to open or close something, empty otherwise.</summary>
+    /// <summary>Refusal to open or close something, empty otherwise.</summary>
     public string Refusal { get => _refusal; private set => Set(ref _refusal, value); }
 
     public bool HasRefusal { get => _hasRefusal; private set => Set(ref _hasRefusal, value); }
@@ -823,7 +823,6 @@ public sealed class ViewerViewModel : Observable
         }
         catch (BackendUnavailableException e)
         {
-            // Shown as it arrived: a refusal names the format and the protocols that would have carried it.
             Refused(e.Message);
             _dispatch(() =>
             {

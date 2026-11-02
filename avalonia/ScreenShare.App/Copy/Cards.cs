@@ -9,7 +9,7 @@ namespace ScreenShare.App.Copy;
 /// These are keyed on nothing.
 /// Here rather than in markup or spelled twice at two render functions (<c>avalonia/README.md</c>, "Layout").
 ///
-/// A refusal reads as the backend wrote it (<c>docs/ipc-api.md</c>, "Errors").
+/// A refusal takes its sentence from <see cref="Refusals"/> (<c>docs/ipc-api.md</c>, "Errors").
 /// These cover the states no call failed in.
 /// </summary>
 public static class Cards

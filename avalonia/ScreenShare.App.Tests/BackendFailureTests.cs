@@ -1,5 +1,7 @@
 using Grpc.Core;
+using ScreenShare.Api.V1;
 using ScreenShare.App.Backend;
+using ScreenShare.App.Copy;
 using Xunit;
 
 namespace ScreenShare.App.Tests;
@@ -12,25 +14,50 @@ namespace ScreenShare.App.Tests;
 /// and for a child process that would not start (<c>docs/ipc-api.md</c>, "Errors"),
 /// so a shell reading that code as "nothing is listening" answers a press of Start sharing
 /// with a sentence about the connection to a backend it just resolved a form through.
-/// Prose the backend wrote reaches the reader intact,
+/// A served refusal reads as this shell's sentence for its code,
 /// and only a failure the client made itself names the endpoint.
 /// </summary>
 public sealed class BackendFailureTests
 {
-    /// <summary>
-    /// Sentence naming what went wrong is the useful part of the screen,
-    /// and the code it travelled under is no second opinion about it.
-    /// </summary>
+    /// <summary>A third party's words follow the sentence on a line of their own, verbatim.</summary>
     [Fact]
-    public void ARefusalTheBackendServedKeepsItsOwnSentence()
+    public void ARefusalTheBackendServedReadsAsThisShellsSentence()
     {
-        const string served = "cannot start publishing: the relay at 192.168.1.9:8890 refused the connection";
+        var refusal = new Refusal { Text = new Text { Code = TextCode.SettingsUnsaved }, Message = "no space left on device" };
 
-        var failure = ControlBackend.Translate(
-            new RpcException(new Status(StatusCode.Unavailable, served)), CancellationToken.None);
+        var failure = ControlBackend.Translate(Served.Refusal(StatusCode.Unavailable, refusal), CancellationToken.None);
 
         var unavailable = Assert.IsType<BackendUnavailableException>(failure);
-        Assert.Equal(served, unavailable.Message);
+        Assert.Equal("Could not save the settings.\nno space left on device", unavailable.Message);
+    }
+
+    /// <summary>A coded reason behind the refusal follows it as its own sentence.</summary>
+    [Fact]
+    public void ACodedCauseFollowsTheRefusal()
+    {
+        var cause = new Text { Code = TextCode.TrayIconOff };
+        var text = new Text { Code = TextCode.PublishUnstarted };
+        text.Args.Add(new TextArg { Name = TextArgName.Cause, Text = cause });
+
+        var failure = ControlBackend.Translate(
+            Served.Refusal(StatusCode.Unavailable, new Refusal { Text = text }), CancellationToken.None);
+
+        Assert.Equal($"Could not start sharing. {Statements.Of(cause)}", failure.Message);
+    }
+
+    /// <summary>
+    /// A served status carrying no refusal comes from a backend of another build.
+    /// Its message is no sentence of this shell's, so the code stands in for it.
+    /// </summary>
+    [Fact]
+    public void AServedStatusWithNoRefusalNamesItsCode()
+    {
+        var failure = ControlBackend.Translate(
+            new RpcException(new Status(StatusCode.Unavailable, "cannot start publishing")), CancellationToken.None);
+
+        var unavailable = Assert.IsType<BackendUnavailableException>(failure);
+        Assert.Contains("Unavailable", unavailable.Message);
+        Assert.DoesNotContain("cannot start publishing", unavailable.Message);
     }
 
     /// <summary>
@@ -88,12 +115,10 @@ public sealed class BackendFailureTests
     [Fact]
     public void ACancellationNobodyAskedForIsStillASentence()
     {
-        const string served = "the run was cancelled while the encoder was starting";
-
         var failure = ControlBackend.Translate(
-            new RpcException(new Status(StatusCode.Cancelled, served)), CancellationToken.None);
+            new RpcException(new Status(StatusCode.Cancelled, "")), CancellationToken.None);
 
         var unavailable = Assert.IsType<BackendUnavailableException>(failure);
-        Assert.Equal(served, unavailable.Message);
+        Assert.Contains("Cancelled", unavailable.Message);
     }
 }

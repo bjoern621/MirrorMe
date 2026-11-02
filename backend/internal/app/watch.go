@@ -280,7 +280,7 @@ func (a *App) StartWatch(streamName, transportName string) error {
 		// The carriage check above is the other kind:
 		// every half of that request exists and the stream's format is what stands in the way
 		// (control/refusal.go).
-		return control.Refuse("%v", err)
+		return control.Refuse(err)
 	}
 	args, env, err := engine.Command(s, streamName, transportName)
 	if err != nil {

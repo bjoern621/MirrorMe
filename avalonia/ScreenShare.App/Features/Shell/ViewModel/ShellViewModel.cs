@@ -352,7 +352,7 @@ public sealed class ShellViewModel : Observable
         }
         catch (BackendUnavailableException e)
         {
-            // Shown as the backend wrote it: the refusal names the channel to join or the group to hold.
+            // The refusal's cause names the channel to join or the group to hold.
             _dispatch(() => Viewer.RefuseLink(e.Message));
         }
         catch (OperationCanceledException)

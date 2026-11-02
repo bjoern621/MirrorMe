@@ -250,7 +250,9 @@ The ordinary shape of a capability here: the fact is stated, the shell offers wh
 
 The repository's two error kinds (`development-principles.md`) cross differently, and that difference is the whole error model.
 
-An **Umgebungsfehler**, a condition the app must survive, is a gRPC status: expected, the user's to see, its message prose written for a person.
+An **Umgebungsfehler**, a condition the app must survive, is a gRPC status: expected, and the user's to see.
+Its one detail: a `Refusal`, a `Text` naming what was refused, the coded reason under `TEXT_ARG_NAME_CAUSE`, and a third party's words beside it, verbatim.
+Its message spells the code for a reader of the raw status, and no shell renders it.
 
 | Status | Means |
 | --- | --- |
@@ -270,7 +272,7 @@ A call that succeeded and left something not working reports it on the state it 
 The code is what a shell writes a sentence for, and the string beside it stays raw so a child's own words reach the reader unedited (`text.proto`).
 On the status instead, the reason would belong to the one call that asked, and a shell reading the state afterwards would find a tile that is dark and nothing saying why.
 
-**A served status is shown as the backend wrote it, and no code means "the backend is absent".**
+**A served status reads as the shell's sentence for its refusal, and no code means "the backend is absent".**
 A shell learns that from the connection failing: the client library makes its own status for a local failure.
 Which code that wears is the platform's business, an absent named pipe being `INTERNAL` on Windows and an unbound socket `UNAVAILABLE`.
 Reading `UNAVAILABLE` as absence turns a relay that refused a publish into a sentence about the endpoint, on a connection the same shell had just resolved a form through.

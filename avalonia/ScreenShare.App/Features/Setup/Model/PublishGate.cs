@@ -89,7 +89,7 @@ public sealed record PublishGate
         bool starting,
         bool asks)
     {
-        Assert.NotNull(unreachable, "the gate reads the backend's own sentence, or the empty one");
+        Assert.NotNull(unreachable, "the gate reads why the backend is unreachable, or the empty string");
 
         var blocked = BlockedBy(unreachable, relay);
         var commit = CommitFor(publish);
