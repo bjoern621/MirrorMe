@@ -80,6 +80,10 @@ func TestEveryDeclaredCodecReachesTheMessage(t *testing.T) {
 			t.Errorf("%s crosses as family %q format %q, want %q and %q",
 				want.Name, row.GetFamily(), row.GetFormat(), want.Family, want.Format)
 		}
+		if row.GetEncoder() != want.Encoder() {
+			t.Errorf("%s crosses as encoder %q, want %q: format and encoder are the pair the settings name it by",
+				want.Name, row.GetEncoder(), want.Encoder())
+		}
 		if row.GetImplemented() != want.Implemented {
 			t.Errorf("%s crosses as implemented=%v, want %v", want.Name, row.GetImplemented(), want.Implemented)
 		}

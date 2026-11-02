@@ -32,6 +32,7 @@ func catalogCodecs() []*screensharev1.VideoCodec {
 			Name:        c.Name,
 			Family:      c.Family,
 			Format:      c.Format,
+			Encoder:     c.Encoder(),
 			Implemented: c.Implemented,
 			Chromas:     slices.Clone(c.Chromas),
 			Limits:      engineLimits(c.CqMax, c.BitrateLimitM),
