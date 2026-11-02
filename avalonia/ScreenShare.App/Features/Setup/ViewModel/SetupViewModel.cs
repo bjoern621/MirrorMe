@@ -993,7 +993,7 @@ public sealed class SetupViewModel : Observable
         Assert.That(stepKey.Length > 0, "a fix command is identified by the step it moves to");
         Assert.That(fieldKey.Length > 0, "a fix command is identified by the field it reveals");
 
-        var key = $"{stepKey} {fieldKey}";
+        var key = $"{stepKey}\0{fieldKey}";
         if (_fix.TryGetValue(key, out var command))
         {
             return command;
