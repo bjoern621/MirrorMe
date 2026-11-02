@@ -43,20 +43,21 @@
   </UserControl.Resources>
 
   <UserControl.Styles>
-    <!-- Every size in setters, a local value outranking the compact style. -->
+    <!--
+      Every size in setters, a local value outranking the compact style.
+      Stretched up to a cap, so every section opens in one box and the window alone decides a smaller one.
+    -->
     <Style Selector="Border.dialog">
       <Setter Property="MaxWidth" Value="680" />
-      <Setter Property="Height" Value="480" />
+      <Setter Property="MaxHeight" Value="480" />
       <Setter Property="Margin" Value="{StaticResource InsetSection}" />
-      <Setter Property="HorizontalAlignment" Value="Center" />
-      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="VerticalAlignment" Value="Stretch" />
     </Style>
     <Style Selector="Border.dialog.compact">
       <Setter Property="MaxWidth" Value="Infinity" />
-      <Setter Property="Height" Value="NaN" />
+      <Setter Property="MaxHeight" Value="Infinity" />
       <Setter Property="Margin" Value="0" />
-      <Setter Property="HorizontalAlignment" Value="Stretch" />
-      <Setter Property="VerticalAlignment" Value="Stretch" />
       <Setter Property="CornerRadius" Value="0" />
     </Style>
 
