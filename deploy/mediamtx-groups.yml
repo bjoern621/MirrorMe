@@ -140,6 +140,11 @@ rtmpServerKey: /var/lib/screenshare-tls/key.pem
 
 hls: yes
 hlsAddress: 127.0.0.1:8888
+# Whole segments, the playlist reloaded once per segment.
+# The low-latency variant answers each blocking reload of hlsdemux2 at once,
+# and the demuxer repeats the reload several hundred times a second.
+# The low-latency legs are SRT and WebRTC; HLS is the one a player picks for reach.
+hlsVariant: fmp4
 
 webrtc: yes
 webrtcAddress: 127.0.0.1:8889
