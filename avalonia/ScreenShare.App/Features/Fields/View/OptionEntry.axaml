@@ -54,6 +54,10 @@
         <TextBlock Classes="cardbody"
                    IsVisible="{Binding HasDetail}"
                    Text="{Binding Detail}" />
+        <ItemsControl IsVisible="{Binding HasImpacts}"
+                      ItemsSource="{Binding Impacts}"
+                      ItemsPanel="{StaticResource ChipPanel}"
+                      ItemTemplate="{StaticResource ImpactChip}" />
       </StackPanel>
     </Button>
   </DataTemplate>

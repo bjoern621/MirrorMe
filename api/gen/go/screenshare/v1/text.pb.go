@@ -182,6 +182,8 @@ const (
 	TextArgName_TEXT_ARG_NAME_TARGET_FPS TextArgName = 72
 	// How far a stream runs behind its publisher on one watch protocol, ms.
 	TextArgName_TEXT_ARG_NAME_DELAY_MS TextArgName = 73
+	// Longest a viewer opening the stream waits for its first picture, ms: one keyframe interval.
+	TextArgName_TEXT_ARG_NAME_JOIN_WAIT_MS TextArgName = 74
 )
 
 // Enum value maps for TextArgName.
@@ -256,6 +258,7 @@ var (
 		71: "TEXT_ARG_NAME_DETAIL_STEP",
 		72: "TEXT_ARG_NAME_TARGET_FPS",
 		73: "TEXT_ARG_NAME_DELAY_MS",
+		74: "TEXT_ARG_NAME_JOIN_WAIT_MS",
 	}
 	TextArgName_value = map[string]int32{
 		"TEXT_ARG_NAME_UNSPECIFIED":        0,
@@ -327,6 +330,7 @@ var (
 		"TEXT_ARG_NAME_DETAIL_STEP":        71,
 		"TEXT_ARG_NAME_TARGET_FPS":         72,
 		"TEXT_ARG_NAME_DELAY_MS":           73,
+		"TEXT_ARG_NAME_JOIN_WAIT_MS":       74,
 	}
 )
 
@@ -524,6 +528,18 @@ const (
 	// How far behind its publisher a stream plays on this watch protocol, measured through the relay.
 	// TEXT_ARG_NAME_DELAY_MS.
 	TextCode_TEXT_CODE_WATCH_DELAY TextCode = 36
+	// Every decode family that decodes this format at this chroma does so in hardware.
+	// TEXT_ARG_NAME_FORMAT, TEXT_ARG_NAME_CHROMA.
+	TextCode_TEXT_CODE_DECODES_IN_HARDWARE_EVERYWHERE TextCode = 201
+	// The encoder runs on a graphics card rather than the processor.
+	// TEXT_ARG_NAME_FAMILY.
+	TextCode_TEXT_CODE_ENCODES_ON_GPU TextCode = 202
+	// Target frame rate equals the captured monitor's refresh rate.
+	// TEXT_ARG_NAME_FPS, TEXT_ARG_NAME_REFRESH_HZ.
+	TextCode_TEXT_CODE_FPS_MATCHES_REFRESH TextCode = 203
+	// How long a viewer opening the stream waits at most for its first picture.
+	// TEXT_ARG_NAME_JOIN_WAIT_MS.
+	TextCode_TEXT_CODE_JOIN_WAIT TextCode = 204
 	// Capture backend and codec share no device memory on this engine.
 	// TEXT_ARG_NAME_CAPTURE, TEXT_ARG_NAME_CODEC, TEXT_ARG_NAME_ENGINE.
 	TextCode_TEXT_CODE_PAIR_HAS_NO_DEVICE_MEMORY TextCode = 40
@@ -925,6 +941,10 @@ var (
 		34:  "TEXT_CODE_DECODES_ON_CPU",
 		35:  "TEXT_CODE_DECODES_IN_HARDWARE_PARTLY",
 		36:  "TEXT_CODE_WATCH_DELAY",
+		201: "TEXT_CODE_DECODES_IN_HARDWARE_EVERYWHERE",
+		202: "TEXT_CODE_ENCODES_ON_GPU",
+		203: "TEXT_CODE_FPS_MATCHES_REFRESH",
+		204: "TEXT_CODE_JOIN_WAIT",
 		40:  "TEXT_CODE_PAIR_HAS_NO_DEVICE_MEMORY",
 		41:  "TEXT_CODE_PAIR_CONVERTS_ON_DEVICE",
 		42:  "TEXT_CODE_PAIR_TRADES_COLOUR",
@@ -1083,6 +1103,10 @@ var (
 		"TEXT_CODE_DECODES_ON_CPU":                            34,
 		"TEXT_CODE_DECODES_IN_HARDWARE_PARTLY":                35,
 		"TEXT_CODE_WATCH_DELAY":                               36,
+		"TEXT_CODE_DECODES_IN_HARDWARE_EVERYWHERE":            201,
+		"TEXT_CODE_ENCODES_ON_GPU":                            202,
+		"TEXT_CODE_FPS_MATCHES_REFRESH":                       203,
+		"TEXT_CODE_JOIN_WAIT":                                 204,
 		"TEXT_CODE_PAIR_HAS_NO_DEVICE_MEMORY":                 40,
 		"TEXT_CODE_PAIR_CONVERTS_ON_DEVICE":                   41,
 		"TEXT_CODE_PAIR_TRADES_COLOUR":                        42,
@@ -1490,7 +1514,7 @@ const file_screenshare_v1_text_proto_rawDesc = "" +
 	"\x05value\"a\n" +
 	"\x04Text\x12,\n" +
 	"\x04code\x18\x01 \x01(\x0e2\x18.screenshare.v1.TextCodeR\x04code\x12+\n" +
-	"\x04args\x18\x02 \x03(\v2\x17.screenshare.v1.TextArgR\x04args*\xe2\x0f\n" +
+	"\x04args\x18\x02 \x03(\v2\x17.screenshare.v1.TextArgR\x04args*\x82\x10\n" +
 	"\vTextArgName\x12\x1d\n" +
 	"\x19TEXT_ARG_NAME_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15TEXT_ARG_NAME_CAPTURE\x10\x01\x12\x18\n" +
@@ -1561,7 +1585,8 @@ const file_screenshare_v1_text_proto_rawDesc = "" +
 	"\x15TEXT_ARG_NAME_VERSION\x10C\x12\x1d\n" +
 	"\x19TEXT_ARG_NAME_DETAIL_STEP\x10G\x12\x1c\n" +
 	"\x18TEXT_ARG_NAME_TARGET_FPS\x10H\x12\x1a\n" +
-	"\x16TEXT_ARG_NAME_DELAY_MS\x10I\"\x04\b3\x103*\x18TEXT_ARG_NAME_ENC_PRESET*\x16TEXT_ARG_NAME_RAW_MBPS*\x893\n" +
+	"\x16TEXT_ARG_NAME_DELAY_MS\x10I\x12\x1e\n" +
+	"\x1aTEXT_ARG_NAME_JOIN_WAIT_MS\x10J\"\x04\b3\x103*\x18TEXT_ARG_NAME_ENC_PRESET*\x16TEXT_ARG_NAME_RAW_MBPS*\x954\n" +
 	"\bTextCode\x12\x19\n" +
 	"\x15TEXT_CODE_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aTEXT_CODE_CAPTURE_WRONG_OS\x10\x01\x12#\n" +
@@ -1603,7 +1628,11 @@ const file_screenshare_v1_text_proto_rawDesc = "" +
 	"\x1dTEXT_CODE_DECODES_IN_HARDWARE\x10!\x12\x1c\n" +
 	"\x18TEXT_CODE_DECODES_ON_CPU\x10\"\x12(\n" +
 	"$TEXT_CODE_DECODES_IN_HARDWARE_PARTLY\x10#\x12\x19\n" +
-	"\x15TEXT_CODE_WATCH_DELAY\x10$\x12'\n" +
+	"\x15TEXT_CODE_WATCH_DELAY\x10$\x12-\n" +
+	"(TEXT_CODE_DECODES_IN_HARDWARE_EVERYWHERE\x10\xc9\x01\x12\x1d\n" +
+	"\x18TEXT_CODE_ENCODES_ON_GPU\x10\xca\x01\x12\"\n" +
+	"\x1dTEXT_CODE_FPS_MATCHES_REFRESH\x10\xcb\x01\x12\x18\n" +
+	"\x13TEXT_CODE_JOIN_WAIT\x10\xcc\x01\x12'\n" +
 	"#TEXT_CODE_PAIR_HAS_NO_DEVICE_MEMORY\x10(\x12%\n" +
 	"!TEXT_CODE_PAIR_CONVERTS_ON_DEVICE\x10)\x12 \n" +
 	"\x1cTEXT_CODE_PAIR_TRADES_COLOUR\x10*\x12 \n" +

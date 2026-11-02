@@ -259,7 +259,7 @@
                  IsVisible="{Binding HasNote}"
                  Text="{Binding Note}" />
 
-      <!-- What the form says about the settings at this control, under it where the reader fixes it. -->
+      <!-- Warnings under the control, where the reader fixes them, then its notes as chips. -->
       <ItemsControl ItemsSource="{Binding Diagnostics}" IsVisible="{Binding HasDiagnostics}" Margin="0,4,0,0">
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="model:Impact">
@@ -267,6 +267,10 @@
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>
+      <ItemsControl IsVisible="{Binding HasNotes}"
+                    ItemsSource="{Binding Notes}"
+                    ItemsPanel="{StaticResource ChipPanel}"
+                    ItemTemplate="{StaticResource ImpactChip}" />
     </StackPanel>
   </DataTemplate>
 

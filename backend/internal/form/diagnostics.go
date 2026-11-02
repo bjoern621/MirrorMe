@@ -84,6 +84,7 @@ func diagnosticsOfTheSettings(d Deps, s settings.Settings, est *screensharev1.Es
 	out = append(out, diagnosticsAboutTheCeiling(d, s)...)
 	out = append(out, diagnosticsAboutTheCapture(d, s)...)
 	out = append(out, diagnosticsAboutTheViewer(s)...)
+	out = append(out, diagnosticsAboutTheEncode(s)...)
 	out = append(out, diagnosticsAboutTheWatchDelay(s)...)
 	out = append(out, diagnosticsAboutThePrediction(d, s, est)...)
 	return out
@@ -240,6 +241,9 @@ func diagnosticsAboutTheCapture(d Deps, s settings.Settings) []*screensharev1.Di
 	if m, found := estimateMonitor(d, s); found && m.RefreshHz > 0 && s.Publish.Fps > m.RefreshHz {
 		out = append(out, diagnosticFor(screensharev1.Severity_SEVERITY_WARNING, KeyFps,
 			say(fpsAboveRefresh, argFps(s.Publish.Fps), argRefreshHz(m.RefreshHz))))
+	} else if found && m.RefreshHz > 0 && s.Publish.Fps == m.RefreshHz {
+		out = append(out, diagnosticFor(screensharev1.Severity_SEVERITY_INFO, KeyFps,
+			say(fpsMatchesRefresh, argFps(s.Publish.Fps), argRefreshHz(m.RefreshHz))))
 	}
 
 	// An engine whose own tooling is missing was never probed, so no codec on it carries a verdict
@@ -297,7 +301,10 @@ func diagnosticsAboutTheViewer(s settings.Settings) []*screensharev1.Diagnostic 
 					argDecodeFamily(limited), argOtherCount(others))),
 		}
 	}
-	return nil
+	return []*screensharev1.Diagnostic{
+		diagnosticFor(screensharev1.Severity_SEVERITY_INFO, KeyChroma,
+			say(decodesInHardwareEverywhere, argFormat(format), argChroma(s.Publish.Chroma))),
+	}
 }
 
 // diagnosticsAboutTheWatchDelay states how far behind its publisher a stream plays on the watch leg,

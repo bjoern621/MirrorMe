@@ -1,6 +1,7 @@
 package form
 
 import (
+	"slices"
 	"strconv"
 	"testing"
 
@@ -20,8 +21,9 @@ func impactTestCodes(o *screensharev1.FieldOption) []screensharev1.TextCode {
 func TestAPixelFormatNoHardwareDecodesCarriesTheViewersCost(t *testing.T) {
 	chroma := priceTestField(t, Resolve(estimateTestDeps(), estimateTestStream()), KeyChroma)
 
-	if codes := impactTestCodes(priceTestOption(t, chroma, "yuv420p")); len(codes) != 0 {
-		t.Errorf("4:2:0 decodes in hardware everywhere and carries %v", codes)
+	light := impactTestCodes(priceTestOption(t, chroma, "yuv420p"))
+	if !slices.Equal(light, []screensharev1.TextCode{screensharev1.TextCode_TEXT_CODE_DECODES_IN_HARDWARE_EVERYWHERE}) {
+		t.Errorf("4:2:0 decodes in hardware everywhere and carries %v", light)
 	}
 	full := priceTestOption(t, chroma, "yuv444p")
 	if !full.GetEnabled() {

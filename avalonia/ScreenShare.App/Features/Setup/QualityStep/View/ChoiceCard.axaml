@@ -5,9 +5,8 @@
                     xmlns:fields="using:ScreenShare.App.Features.Fields.ViewModel">
 
   <!--
-    One entry of a question: its name, and under it the price of picking it or what it was derived from.
-    The use case and the impacts stand once under the question for the picked entry,
-    so the card carries two short lines (QualityStepView.axaml).
+    One entry of a question: its name, under it the price of picking it or what it was derived from,
+    and what picking it raises as chips, each naming its sentence on hover.
     A refused card states its reason in the figure's place, so nothing opens over it
     (docs/tooltips.md, "An availability note is a line").
     The radio dot's treatment is a style of the view, a ControlTheme carrying no descendant selector.
@@ -28,16 +27,6 @@
                      TextWrapping="Wrap"
                      TextTrimming="None"
                      VerticalAlignment="Center" />
-          <!-- What picking this entry would raise, named on hover. The picked entry's stand under the question. -->
-          <ti:TablerIcon Grid.Column="2"
-                         Classes="impact"
-                         Classes.warns="{Binding ImpactWarns}"
-                         Classes.blocks="{Binding ImpactBlocks}"
-                         Margin="6,0,0,0"
-                         VerticalAlignment="Center"
-                         IsVisible="{Binding ShowsImpactMark}"
-                         Icon="{Binding ImpactState, Converter={x:Static controls:CheckGlyphConverter.Instance}}"
-                         ToolTip.Tip="{Binding ImpactTip}" />
         </Grid>
         <TextBlock Classes="hint"
                    Margin="20,0,0,0"
@@ -48,6 +37,11 @@
                              Margin="20,0,0,0"
                              IsVisible="{Binding HasReason}"
                              Text="{Binding Reason}" />
+        <ItemsControl Margin="20,0,0,0"
+                      IsVisible="{Binding HasImpacts}"
+                      ItemsSource="{Binding Impacts}"
+                      ItemsPanel="{StaticResource ChipPanel}"
+                      ItemTemplate="{StaticResource ImpactChip}" />
       </StackPanel>
     </Button>
   </DataTemplate>

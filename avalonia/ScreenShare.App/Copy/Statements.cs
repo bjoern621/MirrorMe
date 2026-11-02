@@ -211,10 +211,23 @@ public static class Statements
                 + $"{Words.List(a.DecodeFamilies.Select(Words.DecodeFamily), "and")}. "
                 + "Every other viewer decodes it on the CPU.",
 
-            // Fragments, as a card prints them beside its protocol: "~0.4 s behind".
             TextCode.WatchDelay => a.DelayMs < 100
-                ? "Under 0.1 s behind"
-                : $"~{(a.DelayMs / 1000.0).ToString("0.0", CultureInfo.CurrentCulture)} s behind",
+                ? "On this protocol, pictures arrive less than 0.1 s after they leave the shared screen."
+                : $"On this protocol, pictures arrive about {Tenths(a.DelayMs)} s after they leave the shared screen.",
+
+            TextCode.DecodesInHardwareEverywhere =>
+                $"Every graphics card that decodes {Words.Format(a.Format)} also decodes it at {Words.Chroma(a.Chroma)}, "
+                + "so no viewer with one falls back to the processor.",
+
+            TextCode.EncodesOnGpu =>
+                $"{Words.Family(a.Family)} encodes on the graphics card and leaves the processor free.",
+
+            TextCode.FpsMatchesRefresh =>
+                $"The screen draws {Number(a.RefreshHz)} frames a second, and the stream sends every one of them.",
+
+            TextCode.JoinWait =>
+                $"A viewer who opens the stream waits up to {Seconds(a.JoinWaitMs)} s for the first picture, "
+                + "the time between two keyframes.",
 
             // Frame memory and the GPU path.
 
@@ -762,6 +775,12 @@ public static class Statements
     private static string Decimal(double value) =>
         value < 10 ? value.ToString("0.#", CultureInfo.CurrentCulture) : value.ToString("0", CultureInfo.CurrentCulture);
 
+    /// <summary>Milliseconds as seconds, a tenth shown only where it is not zero: "0.5", "2".</summary>
+    internal static string Seconds(long ms) => (ms / 1000.0).ToString("0.#", CultureInfo.CurrentCulture);
+
+    /// <summary>Milliseconds as seconds to a fixed tenth: "0.4", "2.7".</summary>
+    internal static string Tenths(long ms) => (ms / 1000.0).ToString("0.0", CultureInfo.CurrentCulture);
+
     /// <summary>
     /// A sentence lowercased at its first letter, for quoting one inside another.
     /// Only the first character moves, so an acronym further in is left alone.
@@ -774,7 +793,7 @@ public static class Statements
     /// A statement carries the arguments its facts needed and leaves out the rest,
     /// so a reader keyed on position would silently shift.
     /// </summary>
-    private readonly struct Args(Text text)
+    internal readonly struct Args(Text text)
     {
         private readonly Text _text = text;
 
@@ -872,6 +891,8 @@ public static class Statements
         public long TargetFps => Num(TextArgName.TargetFps);
 
         public long DelayMs => Num(TextArgName.DelayMs);
+
+        public long JoinWaitMs => Num(TextArgName.JoinWaitMs);
 
         public long RefreshHz => Num(TextArgName.RefreshHz);
 

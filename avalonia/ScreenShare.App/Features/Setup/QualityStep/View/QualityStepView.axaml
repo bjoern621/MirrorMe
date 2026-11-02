@@ -111,6 +111,10 @@
                   </DataTemplate>
                 </ItemsControl.ItemTemplate>
               </ItemsControl>
+              <ItemsControl IsVisible="{Binding Field.HasNotes}"
+                            ItemsSource="{Binding Field.Notes}"
+                            ItemsPanel="{StaticResource ChipPanel}"
+                            ItemTemplate="{StaticResource ImpactChip}" />
             </StackPanel>
           </Border>
         </DataTemplate>

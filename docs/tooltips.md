@@ -18,9 +18,10 @@ One name and one sentence per identifier the backend can send, in `avalonia/Scre
 | the vocabulary table | what each identifier is called |
 | the description table | the paragraph behind a choice |
 | the statement table | the sentence each code the backend can send is rendered as |
+| the chip table | the few words a card prints for each statement the settings raise |
 | the counter table | what each figure on a tile's stats panel is called, and what a reading of it is evidence of |
 
-An identifier with no name renders as the raw identifier, and a statement with no sentence renders as its code.
+An identifier with no name renders as the raw identifier, and a statement with no sentence or no chip renders as its code.
 Both show on screen, which is what gets the missing text written.
 
 A tip whose text depends on the settings is still the shell's sentence, built from what the form resolved.
@@ -51,11 +52,17 @@ Nothing opens over a greyed entry, and a disabled control takes no pointer event
 
 A reason is one of the codes the availability pass produces from the tables, so the shell cannot explain a greying the encoder does not have.
 
+## Chips
+
+What picking an entry would raise stands on its card as chips, a few words each, the sentence on hover.
+A warning or an error about the held value also stands under its control as a sentence.
+A note about it stays a chip there, and the picked card's chips are not repeated under the control.
+
 ## Comparison crops
 
 A field whose entries change what the picture looks like carries an info glyph beside its name, and the tip it opens sets crops of one test picture side by side.
 Each crop went through the real encoder at the settings its caption names, then was cut from the same spot and enlarged without smoothing.
-The pictures stand in the tip alone, so a choice card keeps its two lines.
+The pictures stand in the tip alone, so a choice card keeps to its name, its figure and its chips.
 
 `avalonia/ScreenShare.App/Assets/Crops/manifest.json` lists every crop: the field it belongs to, its caption, and the encoder arguments that made it.
 `tools/crops.sh` renders the crops from that list, and the shell reads the same list to draw them.

@@ -278,6 +278,7 @@ public sealed class FieldViewModel : Observable
     private bool _hasPickedNote;
     private OptionViewModel? _picked;
     private ValueList<Impact> _diagnostics = ValueList<Impact>.Empty;
+    private ValueList<Impact> _notes = ValueList<Impact>.Empty;
     private bool _hasNothingLeft;
     private bool _isVisible;
     private bool _isEnabled;
@@ -421,7 +422,7 @@ public sealed class FieldViewModel : Observable
     /// </summary>
     public OptionViewModel? Picked { get => _picked; private set => Set(ref _picked, value); }
 
-    /// <summary>What the form says about the settings at this control, drawn under it where the reader fixes it.</summary>
+    /// <summary>Warnings and errors about the settings at this control, drawn under it where the reader fixes it.</summary>
     public ValueList<Impact> Diagnostics
     {
         get => _diagnostics;
@@ -435,6 +436,21 @@ public sealed class FieldViewModel : Observable
     }
 
     public bool HasDiagnostics => _diagnostics.Count > 0;
+
+    /// <summary>Notes about the settings at this control, as chips. A chip the picked card prints is left to it.</summary>
+    public ValueList<Impact> Notes
+    {
+        get => _notes;
+        private set
+        {
+            if (Set(ref _notes, value))
+            {
+                OnPropertyChanged(nameof(HasNotes));
+            }
+        }
+    }
+
+    public bool HasNotes => _notes.Count > 0;
 
     /// <summary>
     /// Whether this combination leaves the control nothing to pick: every entry greyed, the held value with them.
@@ -702,7 +718,9 @@ public sealed class FieldViewModel : Observable
         // so a field whose entry went away cannot go on showing the last one it had.
         var picked = Options.FirstOrDefault(option => option.IsSelected);
         Picked = HasNothingLeft ? null : picked;
-        Diagnostics = Impacts.Of(diagnostics ?? []);
+        var said = Impacts.Of(diagnostics ?? []);
+        Diagnostics = Impacts.Lines(said);
+        Notes = Impacts.Notes(said, Picked?.Impacts ?? ValueList<Impact>.Empty);
         PickedLabel = HasNothingLeft ? Copy.Fields.NothingLeft : picked?.Label ?? Readback;
         PickedNote = HasNothingLeft ? "" : picked?.Note ?? "";
         HasPickedNote = PickedNote.Length > 0;
@@ -835,7 +853,7 @@ public sealed class FieldViewModel : Observable
             IsRecommended = option.Recommended,
             Glyph = Copy.Glyphs.Of(Key, option.Value),
             Price = option.Estimate is { } estimate ? Copy.Fields.Megabits(estimate.BitrateMbps) : "",
-            Impacts = Impacts.Of(option.Impacts),
+            Impacts = Impacts.Chipped(option.Impacts),
             IsReveal = false,
             Choose = ChooseCommand(option.Value),
         }).ToList();

@@ -34,23 +34,11 @@
                                IsVisible="{Binding HasReason}"
                                Text="{Binding Reason}" />
           <TextBlock Classes="cardbody" Text="{Binding Detail}" />
-          <ItemsControl ItemsSource="{Binding Impacts}" IsVisible="{Binding HasImpacts}" Margin="0,2,0,0">
-            <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate>
-                <WrapPanel />
-              </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-              <DataTemplate x:DataType="model:Impact">
-                <Border Classes="impact" Margin="0,2,6,0">
-                  <StackPanel Orientation="Horizontal" Spacing="5">
-                    <ti:TablerIcon Classes="badge impact" Icon="IconEye" VerticalAlignment="Center" />
-                    <TextBlock Classes="impact" Text="{Binding Text}" VerticalAlignment="Center" />
-                  </StackPanel>
-                </Border>
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
+          <ItemsControl ItemsSource="{Binding Impacts}"
+                        IsVisible="{Binding HasImpacts}"
+                        Margin="0,2,0,0"
+                        ItemsPanel="{StaticResource ChipPanel}"
+                        ItemTemplate="{StaticResource ImpactChip}" />
         </StackPanel>
       </Button>
     </DataTemplate>

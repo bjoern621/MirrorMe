@@ -60,43 +60,47 @@ const (
 	noEncoderForFormat        = screensharev1.TextCode_TEXT_CODE_NO_ENCODER_FOR_FORMAT
 	encoderCodesNoFormat      = screensharev1.TextCode_TEXT_CODE_ENCODER_CODES_NO_FORMAT
 
-	transportCarriesNoFormat   = screensharev1.TextCode_TEXT_CODE_TRANSPORT_CARRIES_NO_FORMAT
-	legCarriesNoAudioCodec     = screensharev1.TextCode_TEXT_CODE_LEG_CARRIES_NO_AUDIO_CODEC
-	engineHasNoAudioEncoder    = screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_AUDIO_ENCODER
-	renderChainElementMissing  = screensharev1.TextCode_TEXT_CODE_RENDER_CHAIN_ELEMENT_MISSING
-	codecCodesNoRGB            = screensharev1.TextCode_TEXT_CODE_CODEC_CODES_NO_RGB
-	codecCannotEncodeChroma    = screensharev1.TextCode_TEXT_CODE_CODEC_CANNOT_ENCODE_CHROMA
-	rgbIsFullRange             = screensharev1.TextCode_TEXT_CODE_RGB_IS_FULL_RANGE
-	decodesInHardware          = screensharev1.TextCode_TEXT_CODE_DECODES_IN_HARDWARE
-	decodesOnCPU               = screensharev1.TextCode_TEXT_CODE_DECODES_ON_CPU
-	decodesInHardwarePartly    = screensharev1.TextCode_TEXT_CODE_DECODES_IN_HARDWARE_PARTLY
-	watchDelay                 = screensharev1.TextCode_TEXT_CODE_WATCH_DELAY
-	pairHasNoDeviceMemory      = screensharev1.TextCode_TEXT_CODE_PAIR_HAS_NO_DEVICE_MEMORY
-	pairConvertsOnDevice       = screensharev1.TextCode_TEXT_CODE_PAIR_CONVERTS_ON_DEVICE
-	pairTradesColour           = screensharev1.TextCode_TEXT_CODE_PAIR_TRADES_COLOUR
-	exactColourReach           = screensharev1.TextCode_TEXT_CODE_EXACT_COLOUR_REACH
-	devicePathHasNoScaler      = screensharev1.TextCode_TEXT_CODE_DEVICE_PATH_HAS_NO_SCALER
-	drmMapUnusedOnDevice       = screensharev1.TextCode_TEXT_CODE_DRM_MAP_UNUSED_ON_DEVICE
-	cqOnlyInConstantQuality    = screensharev1.TextCode_TEXT_CODE_CQ_ONLY_IN_CONSTANT_QUALITY
-	bitrateNotInMode           = screensharev1.TextCode_TEXT_CODE_BITRATE_NOT_IN_MODE
-	maxrateOnlyInConstrained   = screensharev1.TextCode_TEXT_CODE_MAXRATE_ONLY_IN_CONSTRAINED_VBR
-	vbvOnlyInBoundedModes      = screensharev1.TextCode_TEXT_CODE_VBV_ONLY_IN_BOUNDED_MODES
-	noCeilingInConstantQuality = screensharev1.TextCode_TEXT_CODE_NO_CEILING_IN_CONSTANT_QUALITY
-	vbvNeedsACeiling           = screensharev1.TextCode_TEXT_CODE_VBV_NEEDS_A_CEILING
-	qualityCeilingRequired     = screensharev1.TextCode_TEXT_CODE_QUALITY_CEILING_REQUIRED
-	bframesOffInMode           = screensharev1.TextCode_TEXT_CODE_BFRAMES_OFF_IN_MODE
-	bframesOnlyOnFamilies      = screensharev1.TextCode_TEXT_CODE_BFRAMES_ONLY_ON_FAMILIES
-	codecTakesNoEffortLadder   = screensharev1.TextCode_TEXT_CODE_CODEC_TAKES_NO_EFFORT_LADDER
-	effortPinnedByMode         = screensharev1.TextCode_TEXT_CODE_EFFORT_PINNED_BY_MODE
-	codecTakesNoTuneLadder     = screensharev1.TextCode_TEXT_CODE_CODEC_TAKES_NO_TUNE_LADDER
-	tunePinnedByMode           = screensharev1.TextCode_TEXT_CODE_TUNE_PINNED_BY_MODE
-	audioCodecNeedsSource      = screensharev1.TextCode_TEXT_CODE_AUDIO_CODEC_NEEDS_SOURCE
-	audioDeviceNeedsSource     = screensharev1.TextCode_TEXT_CODE_AUDIO_ENTRY_NEEDS_SOURCE
-	audioSourceHasOneDevice    = screensharev1.TextCode_TEXT_CODE_AUDIO_SOURCE_HAS_ONE_DEVICE
-	audioDeviceNotEnumerated   = screensharev1.TextCode_TEXT_CODE_AUDIO_DEVICE_NOT_ENUMERATED
-	audioTrackCodedAt          = screensharev1.TextCode_TEXT_CODE_AUDIO_TRACK_CODED_AT
-	vaapiCeilingBound          = screensharev1.TextCode_TEXT_CODE_VAAPI_CEILING_BOUND
-	portalServesNoCursorMode   = screensharev1.TextCode_TEXT_CODE_PORTAL_SERVES_NO_CURSOR_MODE
+	transportCarriesNoFormat    = screensharev1.TextCode_TEXT_CODE_TRANSPORT_CARRIES_NO_FORMAT
+	legCarriesNoAudioCodec      = screensharev1.TextCode_TEXT_CODE_LEG_CARRIES_NO_AUDIO_CODEC
+	engineHasNoAudioEncoder     = screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_AUDIO_ENCODER
+	renderChainElementMissing   = screensharev1.TextCode_TEXT_CODE_RENDER_CHAIN_ELEMENT_MISSING
+	codecCodesNoRGB             = screensharev1.TextCode_TEXT_CODE_CODEC_CODES_NO_RGB
+	codecCannotEncodeChroma     = screensharev1.TextCode_TEXT_CODE_CODEC_CANNOT_ENCODE_CHROMA
+	rgbIsFullRange              = screensharev1.TextCode_TEXT_CODE_RGB_IS_FULL_RANGE
+	decodesInHardware           = screensharev1.TextCode_TEXT_CODE_DECODES_IN_HARDWARE
+	decodesOnCPU                = screensharev1.TextCode_TEXT_CODE_DECODES_ON_CPU
+	decodesInHardwarePartly     = screensharev1.TextCode_TEXT_CODE_DECODES_IN_HARDWARE_PARTLY
+	watchDelay                  = screensharev1.TextCode_TEXT_CODE_WATCH_DELAY
+	decodesInHardwareEverywhere = screensharev1.TextCode_TEXT_CODE_DECODES_IN_HARDWARE_EVERYWHERE
+	encodesOnGPU                = screensharev1.TextCode_TEXT_CODE_ENCODES_ON_GPU
+	fpsMatchesRefresh           = screensharev1.TextCode_TEXT_CODE_FPS_MATCHES_REFRESH
+	joinWait                    = screensharev1.TextCode_TEXT_CODE_JOIN_WAIT
+	pairHasNoDeviceMemory       = screensharev1.TextCode_TEXT_CODE_PAIR_HAS_NO_DEVICE_MEMORY
+	pairConvertsOnDevice        = screensharev1.TextCode_TEXT_CODE_PAIR_CONVERTS_ON_DEVICE
+	pairTradesColour            = screensharev1.TextCode_TEXT_CODE_PAIR_TRADES_COLOUR
+	exactColourReach            = screensharev1.TextCode_TEXT_CODE_EXACT_COLOUR_REACH
+	devicePathHasNoScaler       = screensharev1.TextCode_TEXT_CODE_DEVICE_PATH_HAS_NO_SCALER
+	drmMapUnusedOnDevice        = screensharev1.TextCode_TEXT_CODE_DRM_MAP_UNUSED_ON_DEVICE
+	cqOnlyInConstantQuality     = screensharev1.TextCode_TEXT_CODE_CQ_ONLY_IN_CONSTANT_QUALITY
+	bitrateNotInMode            = screensharev1.TextCode_TEXT_CODE_BITRATE_NOT_IN_MODE
+	maxrateOnlyInConstrained    = screensharev1.TextCode_TEXT_CODE_MAXRATE_ONLY_IN_CONSTRAINED_VBR
+	vbvOnlyInBoundedModes       = screensharev1.TextCode_TEXT_CODE_VBV_ONLY_IN_BOUNDED_MODES
+	noCeilingInConstantQuality  = screensharev1.TextCode_TEXT_CODE_NO_CEILING_IN_CONSTANT_QUALITY
+	vbvNeedsACeiling            = screensharev1.TextCode_TEXT_CODE_VBV_NEEDS_A_CEILING
+	qualityCeilingRequired      = screensharev1.TextCode_TEXT_CODE_QUALITY_CEILING_REQUIRED
+	bframesOffInMode            = screensharev1.TextCode_TEXT_CODE_BFRAMES_OFF_IN_MODE
+	bframesOnlyOnFamilies       = screensharev1.TextCode_TEXT_CODE_BFRAMES_ONLY_ON_FAMILIES
+	codecTakesNoEffortLadder    = screensharev1.TextCode_TEXT_CODE_CODEC_TAKES_NO_EFFORT_LADDER
+	effortPinnedByMode          = screensharev1.TextCode_TEXT_CODE_EFFORT_PINNED_BY_MODE
+	codecTakesNoTuneLadder      = screensharev1.TextCode_TEXT_CODE_CODEC_TAKES_NO_TUNE_LADDER
+	tunePinnedByMode            = screensharev1.TextCode_TEXT_CODE_TUNE_PINNED_BY_MODE
+	audioCodecNeedsSource       = screensharev1.TextCode_TEXT_CODE_AUDIO_CODEC_NEEDS_SOURCE
+	audioDeviceNeedsSource      = screensharev1.TextCode_TEXT_CODE_AUDIO_ENTRY_NEEDS_SOURCE
+	audioSourceHasOneDevice     = screensharev1.TextCode_TEXT_CODE_AUDIO_SOURCE_HAS_ONE_DEVICE
+	audioDeviceNotEnumerated    = screensharev1.TextCode_TEXT_CODE_AUDIO_DEVICE_NOT_ENUMERATED
+	audioTrackCodedAt           = screensharev1.TextCode_TEXT_CODE_AUDIO_TRACK_CODED_AT
+	vaapiCeilingBound           = screensharev1.TextCode_TEXT_CODE_VAAPI_CEILING_BOUND
+	portalServesNoCursorMode    = screensharev1.TextCode_TEXT_CODE_PORTAL_SERVES_NO_CURSOR_MODE
 
 	groupRequired               = screensharev1.TextCode_TEXT_CODE_GROUP_REQUIRED
 	groupNameMissing            = screensharev1.TextCode_TEXT_CODE_GROUP_NAME_MISSING
@@ -328,4 +332,8 @@ func argDevice(v string) *screensharev1.TextArg {
 
 func argDelayMs(v time.Duration) *screensharev1.TextArg {
 	return text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_DELAY_MS, v.Milliseconds())
+}
+
+func argJoinWaitMs(v time.Duration) *screensharev1.TextArg {
+	return text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_JOIN_WAIT_MS, v.Milliseconds())
 }

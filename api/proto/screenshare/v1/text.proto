@@ -189,6 +189,8 @@ enum TextArgName {
   TEXT_ARG_NAME_TARGET_FPS = 72;
   // How far a stream runs behind its publisher on one watch protocol, ms.
   TEXT_ARG_NAME_DELAY_MS = 73;
+  // Longest a viewer opening the stream waits for its first picture, ms: one keyframe interval.
+  TEXT_ARG_NAME_JOIN_WAIT_MS = 74;
 
   // Reserved for a rename rather than a removal:
   // TEXT_ARG_NAME_EFFORT carries the number,
@@ -407,6 +409,18 @@ enum TextCode {
   // How far behind its publisher a stream plays on this watch protocol, measured through the relay.
   // TEXT_ARG_NAME_DELAY_MS.
   TEXT_CODE_WATCH_DELAY = 36;
+  // Every decode family that decodes this format at this chroma does so in hardware.
+  // TEXT_ARG_NAME_FORMAT, TEXT_ARG_NAME_CHROMA.
+  TEXT_CODE_DECODES_IN_HARDWARE_EVERYWHERE = 201;
+  // The encoder runs on a graphics card rather than the processor.
+  // TEXT_ARG_NAME_FAMILY.
+  TEXT_CODE_ENCODES_ON_GPU = 202;
+  // Target frame rate equals the captured monitor's refresh rate.
+  // TEXT_ARG_NAME_FPS, TEXT_ARG_NAME_REFRESH_HZ.
+  TEXT_CODE_FPS_MATCHES_REFRESH = 203;
+  // How long a viewer opening the stream waits at most for its first picture.
+  // TEXT_ARG_NAME_JOIN_WAIT_MS.
+  TEXT_CODE_JOIN_WAIT = 204;
 
   // --- Frame memory and the GPU path --------------------------------------------
 
