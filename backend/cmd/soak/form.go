@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"slices"
 	"strings"
 	"time"
 
@@ -90,6 +91,10 @@ func runForm(ctx context.Context, run *session, rng *rand.Rand, until time.Time)
 
 		move := moves[rng.Intn(len(moves))]
 		draft := proto.Clone(settings).(*v1.Settings)
+		// The detach rule a shell applies with the write (form.proto, Form.preset_owned_field_keys).
+		if slices.Contains(form.GetPresetOwnedFieldKeys(), move.key) {
+			draft.Publish.Preset = ""
+		}
 		chosen, err := mutate(rng, draft, move)
 		if err != nil {
 			run.report.report("form.unwritable_key", "form/key/"+move.key,
@@ -233,8 +238,8 @@ func checkMove(run *session, move mutable, chosen string, draft *v1.Settings, ne
 			continue
 		}
 		// An entry taken off a list is what its own removal entry does,
-		// so the key naming it is gone rather than walked.
-		if _, _, err := locate(next.GetSettings(), move.key, false); err != nil {
+		// so the key naming it is gone, or names the entry that moved up into its row.
+		if _, _, err := locate(next.GetSettings(), move.key, false); err != nil || shifted(draft, next.GetSettings(), move.key) {
 			continue
 		}
 		run.report.report("form.enabled_option_repaired", "form/repaired/"+move.key+"="+chosen,

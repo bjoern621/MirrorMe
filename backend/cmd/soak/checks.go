@@ -256,6 +256,13 @@ func checkRepairsNamed(run *session, form *v1.Form, draft *v1.Settings, moved, c
 	for _, key := range form.GetRepairedFieldKeys() {
 		named[key] = true
 	}
+	// A followed preset writes its own fields from the rest of the draft, the uplink picking its rate rung:
+	// those values are the preset's to move (form.proto, Form.preset_owned_field_keys).
+	if draft.GetPublish().GetPreset() != "" && form.GetSettings().GetPublish().GetPreset() == draft.GetPublish().GetPreset() {
+		for _, key := range form.GetPresetOwnedFieldKeys() {
+			named[key] = true
+		}
+	}
 
 	for _, group := range form.GetGroups() {
 		for _, field := range group.GetFields() {
