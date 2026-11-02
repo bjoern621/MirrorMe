@@ -89,6 +89,8 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
     // --- Outputs ---------------------------------------------------------------------
 
     private string _title = "";
+    private string _figure = "";
+    private bool _hasFigure;
     private string _notice = "";
     private bool _hasNotice;
     private bool _noticeIsFailure;
@@ -197,6 +199,11 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
 
     /// <summary>Stream and leg, as the heading prints them.</summary>
     public string Title { get => _title; private set => Set(ref _title, value); }
+
+    /// <summary>Picture height and rate as the last sample read them, "1080p · 60 fps". Empty before a sample with a picture.</summary>
+    public string Figure { get => _figure; private set => Set(ref _figure, value); }
+
+    public bool HasFigure { get => _hasFigure; private set => Set(ref _hasFigure, value); }
 
     /// <summary>
     /// Every stage of the pipeline and the figures read off it, in the order frames pass through.
@@ -403,6 +410,8 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
         NoticeIsFailure = notice.Failure;
         IsConnecting = notice.Connecting;
         Aspect = AspectOf();
+        Figure = sample is { Height: > 0 } s ? TileFigure.Of(s.Height, s.HasVideoFps ? s.VideoFps : null) : "";
+        HasFigure = Figure.Length > 0;
 
         TileStats.Merge(Stats, ShowStats ? TileStats.Of(sample, _report) : []);
 

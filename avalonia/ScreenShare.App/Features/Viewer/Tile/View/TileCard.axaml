@@ -19,8 +19,8 @@
     The controls wait for the pointer, and go again once the pointer holds still:
     a pointer parked on a picture is somebody watching it (Features/Viewer/Tile/View/RestingWatch.cs).
 
-    Nothing is measured over the picture.
-    A decode is diagnosed in one place, the stats overlay, with no pinned copy in the chrome.
+    The stage tile carries one figure, the picture's height and rate.
+    Every other reading of a decode sits in the stats overlay.
     A card drawing it is a card being read: the overlay stays up wherever the pointer goes,
     and it holds the chrome and the cursor up with it (Features/Viewer/Tile/View/TileChrome.cs).
   -->
@@ -65,6 +65,9 @@
       <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
       <Setter Property="FontSize" Value="{StaticResource FontSizeMinor}" />
       <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="Border.nameplate TextBlock.figure">
+      <Setter Property="FontWeight" Value="Normal" />
     </Style>
 
     <!-- Tile's shape, and what stands behind a picture that has not arrived. -->
@@ -351,6 +354,19 @@
                    IsVisible="{Binding !HasNotice}" />
           <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
         </StackPanel>
+      </Border>
+
+      <!-- On the stage, where the picture is large enough to carry a second plate. -->
+      <Border Classes="nameplate" VerticalAlignment="Bottom" HorizontalAlignment="Right"
+              Margin="{StaticResource InsetTight}">
+        <Border.IsVisible>
+          <MultiBinding Converter="{x:Static BoolConverters.And}">
+            <Binding Path="HasFigure" />
+            <Binding Path="IsFocused" />
+            <Binding Path="!PictureElsewhere" />
+          </MultiBinding>
+        </Border.IsVisible>
+        <TextBlock Classes="figure" Text="{Binding Figure}" FontFeatures="{StaticResource FigureFeatures}" />
       </Border>
 
       <!-- The stop takes its own tap, a tap on the card being a request for the stage. -->
