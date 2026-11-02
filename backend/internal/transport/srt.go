@@ -17,7 +17,7 @@ import (
 //   - ffmpeg's srt protocol counts latency in MICROSECONDS, not milliseconds.
 //   - sndbuf, rcvbuf and ffs are large so a lossless keyframe burst survives while a display-paced
 //     player drains slowly.
-//   - pkt_size 1316 is 7 MPEG-TS packets per SRT datagram.
+//   - srtTSPackets sets the datagram size.
 //
 // A latency set here is what this end asks for, not what the link runs at.
 // The handshake negotiates one delay per direction and the larger of the two ends' values wins, so
@@ -30,6 +30,13 @@ func init() {
 
 // srtBufBytes sizes the SRT window and the socket buffers, 150 MB.
 const srtBufBytes = 150_000_000
+
+// srtTSPackets counts the 188-byte MPEG-TS packets in one SRT datagram.
+// Six make 1208 bytes behind SRT, UDP and IPv6 headers, which crosses a 1280-byte link whole:
+// the IPv6 minimum, and the MTU of the relay's pod network.
+// Seven, libsrt's default payload, make 1380 and are dropped wherever nothing fragments them,
+// leaving a publish that connects and delivers no frame.
+const srtTSPackets = 6
 
 func (SRT) Name() string { return "srt" }
 
@@ -69,8 +76,8 @@ func (SRT) PublishArgs(s settings.Settings) []string {
 	// ffmpeg's srt protocol takes every knob as a URL query: latency in MICROSECONDS, and the buffers
 	// under ffmpeg's own names (pkt_size, sndbuf, ffs).
 	url := SRT{}.ListenerURL(s) + fmt.Sprintf(
-		"?streamid=%s&pkt_size=1316&latency=%d&sndbuf=%d&ffs=%d",
-		srtStreamID(s, "publish", s.PublishPath()),
+		"?streamid=%s&pkt_size=%d&latency=%d&sndbuf=%d&ffs=%d",
+		srtStreamID(s, "publish", s.PublishPath()), srtTSPackets*188,
 		s.Publish.SrtPublishLatencyMs*1000, srtBufBytes, srtBufBytes) + srtPassphraseQuery(s)
 
 	return []string{"-f", "mpegts", url}
@@ -79,10 +86,10 @@ func (SRT) PublishArgs(s settings.Settings) []string {
 // GstSink configures srtsink the way libsrt takes it, which is not the way ffmpeg's srt protocol
 // does: the URI is a bare srt://host:port, and streamid and latency are properties, latency
 // in MILLISECONDS rather than microseconds.
-// alignment=7 packs 7 * 188-byte TS packets per buffer, matching the SRT payload size.
+// alignment packs srtTSPackets per buffer, one buffer per datagram.
 func (SRT) GstSink(s settings.Settings) []string {
 	return append([]string{
-		"mpegtsmux", "name=" + GstMuxName, "alignment=7",
+		"mpegtsmux", "name=" + GstMuxName, fmt.Sprintf("alignment=%d", srtTSPackets),
 		"!", "srtsink",
 		"uri=" + SRT{}.ListenerURL(s),
 		"mode=caller",

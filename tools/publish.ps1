@@ -41,7 +41,7 @@ Write-Host "Publishing '$Name'  $($Fps)fps  $Codec  $Chroma  range=$Range  captu
 Write-Host "Friends watch:  ./watch.ps1 -Name $Name -Relay <your-ip>" -ForegroundColor DarkGray
 
 # ffmpeg's srt 'latency' is in microseconds; big sndbuf and fc for lossless bursts
-$srt = "srt://${Relay}:${Port}?streamid=publish:${Name}&pkt_size=1316&latency=1500000&sndbuf=150000000&ffs=150000000"
+$srt = "srt://${Relay}:${Port}?streamid=publish:${Name}&pkt_size=1128&latency=1500000&sndbuf=150000000&ffs=150000000"
 $gop = $Fps * 2
 
 if ($Capture -eq "ddagrab") {

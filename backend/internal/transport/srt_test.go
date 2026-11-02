@@ -2,6 +2,7 @@ package transport
 
 import (
 	"net/url"
+	"strconv"
 	"slices"
 	"strings"
 	"testing"
@@ -61,7 +62,6 @@ func TestSRTPublishArgs(t *testing.T) {
 	for _, want := range []string{
 		"srt://10.0.0.5:8890",
 		"streamid=publish:" + testGroupKey.Prefix() + "monitor-0",
-		"pkt_size=1316",
 		"latency=300000", // ffmpeg's srt protocol counts microseconds
 	} {
 		if !strings.Contains(url, want) {
@@ -131,6 +131,40 @@ func TestSRTWatchURL(t *testing.T) {
 	} {
 		if !strings.Contains(url, want) {
 			t.Errorf("watch URL %q missing %q", url, want)
+		}
+	}
+}
+
+// Both engines send datagrams that cross a 1280-byte link whole: the IPv6 minimum, and the MTU of
+// the relay's pod network.
+// A larger one dropped there for want of fragmenting reaches the relay as a publish that connects
+// and never delivers a frame.
+func TestSRTDatagramsCrossTheMinimumLink(t *testing.T) {
+	const link, ipv6, udp, srt, ts = 1280, 40, 8, 16, 188
+	s := testStream()
+
+	query, err := url.Parse(SRT{}.PublishArgs(s)[2])
+	if err != nil {
+		t.Fatal(err)
+	}
+	ffmpeg, err := strconv.Atoi(query.Query().Get("pkt_size"))
+	if err != nil {
+		t.Fatalf("publish URL %q carries no pkt_size", query)
+	}
+	gst := 0
+	for _, arg := range (SRT{}).GstSink(s) {
+		if packets, ok := strings.CutPrefix(arg, "alignment="); ok {
+			n, _ := strconv.Atoi(packets)
+			gst = n * ts
+		}
+	}
+
+	for engine, payload := range map[string]int{"ffmpeg": ffmpeg, "gstreamer": gst} {
+		if payload == 0 || payload%ts != 0 {
+			t.Errorf("%s payload = %d bytes, want whole TS packets", engine, payload)
+		}
+		if payload+srt+udp+ipv6 > link {
+			t.Errorf("%s datagram = %d bytes, past the %d-byte link", engine, payload+srt+udp+ipv6, link)
 		}
 	}
 }

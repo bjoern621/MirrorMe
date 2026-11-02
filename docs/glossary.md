@@ -132,7 +132,7 @@ The **Not** column lists the synonyms this repository refuses for the same thing
 | TURN | Traversal Using Relays around NAT | Relay a peer falls back to when no direct path survives, at the cost of carrying all media through it. |
 | SSRC | Synchronization Source | 32-bit RTP identifier of one media source. |
 | MPEG-TS | MPEG Transport Stream | Container of fixed 188-byte packets built for lossy links, the SRT payload here. |
-| TS | Transport Stream | Short form of MPEG-TS, also the packet unit that `alignment=7` groups seven of per SRT datagram. |
+| TS | Transport Stream | Short form of MPEG-TS, also the packet unit that `alignment=6` groups six of per SRT datagram. |
 | IVF | Indeo Video Format | Minimal container carrying a bitstream with one length-and-timestamp header per frame and nothing about colour, which is why the colorimetry tests decode through it. |
 | WebM | (no expansion) | Matroska subset restricted to royalty-free codecs, the container name browsers associate with VP8 and VP9. |
 | HLS | HTTP Live Streaming | Segment-and-playlist protocol the relay serves, so it is a watch leg only. |
