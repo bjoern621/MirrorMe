@@ -211,6 +211,11 @@ public static class Statements
                 + $"{Words.List(a.DecodeFamilies.Select(Words.DecodeFamily), "and")}. "
                 + "Every other viewer decodes it on the CPU.",
 
+            // Fragments, as a card prints them beside its protocol: "~0.4 s behind".
+            TextCode.WatchDelay => a.DelayMs < 100
+                ? "Under 0.1 s behind"
+                : $"~{(a.DelayMs / 1000.0).ToString("0.0", CultureInfo.CurrentCulture)} s behind",
+
             // Frame memory and the GPU path.
 
             TextCode.PairHasNoDeviceMemory =>
@@ -865,6 +870,8 @@ public static class Statements
         public long Fps => Num(TextArgName.Fps);
 
         public long TargetFps => Num(TextArgName.TargetFps);
+
+        public long DelayMs => Num(TextArgName.DelayMs);
 
         public long RefreshHz => Num(TextArgName.RefreshHz);
 

@@ -81,14 +81,24 @@ func pickPricesDiffer(picks []*pick) bool {
 
 // pickImpact names a diagnostic apart from its figures,
 // so an uplink shortfall at 30 fps and at 60 fps count as one statement.
+// A statement in pickFigureClaims keeps its figure, two figures there being two claims.
 type pickImpact struct {
 	code     screensharev1.TextCode
 	severity screensharev1.Severity
 	anchor   string
+	figure   string
 }
 
+// pickFigureClaims are the statements whose figure is what they claim:
+// "0.4 s behind" and "2.7 s behind" tell two entries apart.
+var pickFigureClaims = []screensharev1.TextCode{watchDelay}
+
 func pickImpactOf(w *screensharev1.Diagnostic) pickImpact {
-	return pickImpact{code: w.GetText().GetCode(), severity: w.GetSeverity(), anchor: w.GetFieldKey()}
+	i := pickImpact{code: w.GetText().GetCode(), severity: w.GetSeverity(), anchor: w.GetFieldKey()}
+	if slices.Contains(pickFigureClaims, i.code) {
+		i.figure = w.GetText().String()
+	}
+	return i
 }
 
 // pickSharedImpacts collects every statement that each evaluated entry raises.

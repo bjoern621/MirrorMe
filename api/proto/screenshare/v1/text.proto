@@ -187,6 +187,8 @@ enum TextArgName {
   TEXT_ARG_NAME_DETAIL_STEP = 71;
   // Frame rate a stream was asked to hold, fps.
   TEXT_ARG_NAME_TARGET_FPS = 72;
+  // How far a stream runs behind its publisher on one watch protocol, ms.
+  TEXT_ARG_NAME_DELAY_MS = 73;
 
   // Reserved for a rename rather than a removal:
   // TEXT_ARG_NAME_EFFORT carries the number,
@@ -402,6 +404,9 @@ enum TextCode {
   // TEXT_ARG_NAME_DECODE_FAMILY for the family whose limit is quoted,
   // TEXT_ARG_NAME_OTHER_COUNT for how many further ones agree.
   TEXT_CODE_DECODES_IN_HARDWARE_PARTLY = 35;
+  // How far behind its publisher a stream plays on this watch protocol, measured through the relay.
+  // TEXT_ARG_NAME_DELAY_MS.
+  TEXT_CODE_WATCH_DELAY = 36;
 
   // --- Frame memory and the GPU path --------------------------------------------
 

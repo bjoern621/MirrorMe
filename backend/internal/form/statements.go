@@ -1,6 +1,8 @@
 package form
 
 import (
+	"time"
+
 	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
 
 	"bjoernblessin.de/screenshare/internal/text"
@@ -68,6 +70,7 @@ const (
 	decodesInHardware          = screensharev1.TextCode_TEXT_CODE_DECODES_IN_HARDWARE
 	decodesOnCPU               = screensharev1.TextCode_TEXT_CODE_DECODES_ON_CPU
 	decodesInHardwarePartly    = screensharev1.TextCode_TEXT_CODE_DECODES_IN_HARDWARE_PARTLY
+	watchDelay                 = screensharev1.TextCode_TEXT_CODE_WATCH_DELAY
 	pairHasNoDeviceMemory      = screensharev1.TextCode_TEXT_CODE_PAIR_HAS_NO_DEVICE_MEMORY
 	pairConvertsOnDevice       = screensharev1.TextCode_TEXT_CODE_PAIR_CONVERTS_ON_DEVICE
 	pairTradesColour           = screensharev1.TextCode_TEXT_CODE_PAIR_TRADES_COLOUR
@@ -321,4 +324,8 @@ func argAudio(v string) *screensharev1.TextArg {
 
 func argDevice(v string) *screensharev1.TextArg {
 	return text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_DEVICE, v)
+}
+
+func argDelayMs(v time.Duration) *screensharev1.TextArg {
+	return text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_DELAY_MS, v.Milliseconds())
 }

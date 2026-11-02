@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+
+	"bjoernblessin.de/screenshare/internal/transport"
 )
 
 func impactTestCodes(o *screensharev1.FieldOption) []screensharev1.TextCode {
@@ -79,4 +81,31 @@ func impactTestHas(o *screensharev1.FieldOption, code screensharev1.TextCode) bo
 		}
 	}
 	return false
+}
+
+// Every watch protocol states how far behind its publisher a stream plays on it,
+// the figure the watch panel prints on its card.
+func TestEachWatchProtocolStatesHowFarBehindItPlays(t *testing.T) {
+	protocols := priceTestField(t, Resolve(estimateTestDeps(), estimateTestStream()), KeyTileWatchTransport)
+
+	for _, o := range protocols.GetOptions() {
+		want, ok := transport.PathDelay(o.GetValue())
+		if !ok {
+			t.Errorf("watch protocol %q has no measured delay", o.GetValue())
+			continue
+		}
+		var got *screensharev1.Diagnostic
+		for _, w := range o.GetImpacts() {
+			if w.GetText().GetCode() == screensharev1.TextCode_TEXT_CODE_WATCH_DELAY {
+				got = w
+			}
+		}
+		if got == nil {
+			t.Errorf("%s carries %v and no delay", o.GetValue(), impactTestCodes(o))
+			continue
+		}
+		if ms := got.GetText().GetArgs()[0].GetNumber(); ms != want.Milliseconds() {
+			t.Errorf("%s states %d ms behind, want %d", o.GetValue(), ms, want.Milliseconds())
+		}
+	}
 }

@@ -10,6 +10,7 @@ import (
 	"bjoernblessin.de/screenshare/internal/capabilities"
 	"bjoernblessin.de/screenshare/internal/publish"
 	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/screenshare/internal/transport"
 )
 
 // warningAnchors is every field key a diagnostic may anchor on.
@@ -83,6 +84,7 @@ func diagnosticsOfTheSettings(d Deps, s settings.Settings, est *screensharev1.Es
 	out = append(out, diagnosticsAboutTheCeiling(d, s)...)
 	out = append(out, diagnosticsAboutTheCapture(d, s)...)
 	out = append(out, diagnosticsAboutTheViewer(s)...)
+	out = append(out, diagnosticsAboutTheWatchDelay(s)...)
 	out = append(out, diagnosticsAboutThePrediction(d, s, est)...)
 	return out
 }
@@ -296,6 +298,20 @@ func diagnosticsAboutTheViewer(s settings.Settings) []*screensharev1.Diagnostic 
 		}
 	}
 	return nil
+}
+
+// diagnosticsAboutTheWatchDelay states how far behind its publisher a stream plays on the watch leg,
+// a note on the leg it is about.
+// Every leg states its own, so each entry of the leg control carries the figure picking it would bring (picked.go).
+func diagnosticsAboutTheWatchDelay(s settings.Settings) []*screensharev1.Diagnostic {
+	delay, ok := transport.PathDelay(s.Viewer.TileWatchTransport)
+	if !ok {
+		return nil
+	}
+	return []*screensharev1.Diagnostic{
+		diagnosticFor(screensharev1.Severity_SEVERITY_INFO, KeyTileWatchTransport,
+			say(watchDelay, argDelayMs(delay))),
+	}
 }
 
 // diagnosticsAboutThePrediction says why there is no prediction.

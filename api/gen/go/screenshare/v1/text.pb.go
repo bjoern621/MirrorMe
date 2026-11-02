@@ -180,6 +180,8 @@ const (
 	TextArgName_TEXT_ARG_NAME_DETAIL_STEP TextArgName = 71
 	// Frame rate a stream was asked to hold, fps.
 	TextArgName_TEXT_ARG_NAME_TARGET_FPS TextArgName = 72
+	// How far a stream runs behind its publisher on one watch protocol, ms.
+	TextArgName_TEXT_ARG_NAME_DELAY_MS TextArgName = 73
 )
 
 // Enum value maps for TextArgName.
@@ -253,6 +255,7 @@ var (
 		67: "TEXT_ARG_NAME_VERSION",
 		71: "TEXT_ARG_NAME_DETAIL_STEP",
 		72: "TEXT_ARG_NAME_TARGET_FPS",
+		73: "TEXT_ARG_NAME_DELAY_MS",
 	}
 	TextArgName_value = map[string]int32{
 		"TEXT_ARG_NAME_UNSPECIFIED":        0,
@@ -323,6 +326,7 @@ var (
 		"TEXT_ARG_NAME_VERSION":            67,
 		"TEXT_ARG_NAME_DETAIL_STEP":        71,
 		"TEXT_ARG_NAME_TARGET_FPS":         72,
+		"TEXT_ARG_NAME_DELAY_MS":           73,
 	}
 )
 
@@ -517,6 +521,9 @@ const (
 	// TEXT_ARG_NAME_DECODE_FAMILY for the family whose limit is quoted,
 	// TEXT_ARG_NAME_OTHER_COUNT for how many further ones agree.
 	TextCode_TEXT_CODE_DECODES_IN_HARDWARE_PARTLY TextCode = 35
+	// How far behind its publisher a stream plays on this watch protocol, measured through the relay.
+	// TEXT_ARG_NAME_DELAY_MS.
+	TextCode_TEXT_CODE_WATCH_DELAY TextCode = 36
 	// Capture backend and codec share no device memory on this engine.
 	// TEXT_ARG_NAME_CAPTURE, TEXT_ARG_NAME_CODEC, TEXT_ARG_NAME_ENGINE.
 	TextCode_TEXT_CODE_PAIR_HAS_NO_DEVICE_MEMORY TextCode = 40
@@ -917,6 +924,7 @@ var (
 		33:  "TEXT_CODE_DECODES_IN_HARDWARE",
 		34:  "TEXT_CODE_DECODES_ON_CPU",
 		35:  "TEXT_CODE_DECODES_IN_HARDWARE_PARTLY",
+		36:  "TEXT_CODE_WATCH_DELAY",
 		40:  "TEXT_CODE_PAIR_HAS_NO_DEVICE_MEMORY",
 		41:  "TEXT_CODE_PAIR_CONVERTS_ON_DEVICE",
 		42:  "TEXT_CODE_PAIR_TRADES_COLOUR",
@@ -1074,6 +1082,7 @@ var (
 		"TEXT_CODE_DECODES_IN_HARDWARE":                       33,
 		"TEXT_CODE_DECODES_ON_CPU":                            34,
 		"TEXT_CODE_DECODES_IN_HARDWARE_PARTLY":                35,
+		"TEXT_CODE_WATCH_DELAY":                               36,
 		"TEXT_CODE_PAIR_HAS_NO_DEVICE_MEMORY":                 40,
 		"TEXT_CODE_PAIR_CONVERTS_ON_DEVICE":                   41,
 		"TEXT_CODE_PAIR_TRADES_COLOUR":                        42,
@@ -1481,7 +1490,7 @@ const file_screenshare_v1_text_proto_rawDesc = "" +
 	"\x05value\"a\n" +
 	"\x04Text\x12,\n" +
 	"\x04code\x18\x01 \x01(\x0e2\x18.screenshare.v1.TextCodeR\x04code\x12+\n" +
-	"\x04args\x18\x02 \x03(\v2\x17.screenshare.v1.TextArgR\x04args*\xc6\x0f\n" +
+	"\x04args\x18\x02 \x03(\v2\x17.screenshare.v1.TextArgR\x04args*\xe2\x0f\n" +
 	"\vTextArgName\x12\x1d\n" +
 	"\x19TEXT_ARG_NAME_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15TEXT_ARG_NAME_CAPTURE\x10\x01\x12\x18\n" +
@@ -1551,7 +1560,8 @@ const file_screenshare_v1_text_proto_rawDesc = "" +
 	"\x15TEXT_ARG_NAME_CHANNEL\x10B\x12\x19\n" +
 	"\x15TEXT_ARG_NAME_VERSION\x10C\x12\x1d\n" +
 	"\x19TEXT_ARG_NAME_DETAIL_STEP\x10G\x12\x1c\n" +
-	"\x18TEXT_ARG_NAME_TARGET_FPS\x10H\"\x04\b3\x103*\x18TEXT_ARG_NAME_ENC_PRESET*\x16TEXT_ARG_NAME_RAW_MBPS*\xee2\n" +
+	"\x18TEXT_ARG_NAME_TARGET_FPS\x10H\x12\x1a\n" +
+	"\x16TEXT_ARG_NAME_DELAY_MS\x10I\"\x04\b3\x103*\x18TEXT_ARG_NAME_ENC_PRESET*\x16TEXT_ARG_NAME_RAW_MBPS*\x893\n" +
 	"\bTextCode\x12\x19\n" +
 	"\x15TEXT_CODE_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aTEXT_CODE_CAPTURE_WRONG_OS\x10\x01\x12#\n" +
@@ -1592,7 +1602,8 @@ const file_screenshare_v1_text_proto_rawDesc = "" +
 	"\x1bTEXT_CODE_RGB_IS_FULL_RANGE\x10 \x12!\n" +
 	"\x1dTEXT_CODE_DECODES_IN_HARDWARE\x10!\x12\x1c\n" +
 	"\x18TEXT_CODE_DECODES_ON_CPU\x10\"\x12(\n" +
-	"$TEXT_CODE_DECODES_IN_HARDWARE_PARTLY\x10#\x12'\n" +
+	"$TEXT_CODE_DECODES_IN_HARDWARE_PARTLY\x10#\x12\x19\n" +
+	"\x15TEXT_CODE_WATCH_DELAY\x10$\x12'\n" +
 	"#TEXT_CODE_PAIR_HAS_NO_DEVICE_MEMORY\x10(\x12%\n" +
 	"!TEXT_CODE_PAIR_CONVERTS_ON_DEVICE\x10)\x12 \n" +
 	"\x1cTEXT_CODE_PAIR_TRADES_COLOUR\x10*\x12 \n" +
