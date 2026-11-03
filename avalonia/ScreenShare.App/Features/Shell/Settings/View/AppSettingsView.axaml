@@ -36,7 +36,7 @@
         <ti:TablerIcon Grid.Column="1"
                        Classes="button"
                        Icon="IconChevronRight"
-                       Brush="{Binding $parent[ListBoxItem].Foreground}"
+                       Brush="{Binding $parent[ListBoxItem].Foreground, Mode=OneWay}"
                        IsVisible="{Binding $parent[view:AppSettingsView].((vm:AppSettingsViewModel)DataContext).IsCompact}" />
       </Grid>
     </DataTemplate>

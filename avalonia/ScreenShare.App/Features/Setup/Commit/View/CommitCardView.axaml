@@ -51,7 +51,7 @@
               Height="{StaticResource FooterButtonHeight}"
               Command="{Binding BackCommand}">
         <StackPanel Orientation="Horizontal" Spacing="{StaticResource GapTight}">
-          <ti:TablerIcon Classes="button" Icon="IconArrowLeft" Brush="{Binding $parent[Button].Foreground}" VerticalAlignment="Center" />
+          <ti:TablerIcon Classes="button" Icon="IconArrowLeft" Brush="{Binding $parent[Button].Foreground, Mode=OneWay}" VerticalAlignment="Center" />
           <TextBlock Classes="backword" Text="Back" VerticalAlignment="Center" />
         </StackPanel>
       </Button>

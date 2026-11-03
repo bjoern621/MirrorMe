@@ -86,7 +86,7 @@
               -->
               <ti:TablerIcon Classes="button"
                              Icon="IconScreenShare"
-                             Brush="{Binding $parent[Button].Foreground}" />
+                             Brush="{Binding $parent[Button].Foreground, Mode=OneWay}" />
               <TextBlock Text="{x:Static model:SharePickerCopy.Confirm}" VerticalAlignment="Center" />
             </StackPanel>
           </Button>

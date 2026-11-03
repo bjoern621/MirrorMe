@@ -95,7 +95,7 @@
                     Command="{Binding BackCommand}"
                     IsVisible="{Binding CanGoBack}">
               <StackPanel Orientation="Horizontal" Spacing="{StaticResource GapTight}">
-                <ti:TablerIcon Classes="button" Icon="IconArrowLeft" Brush="{Binding $parent[Button].Foreground}" VerticalAlignment="Center" />
+                <ti:TablerIcon Classes="button" Icon="IconArrowLeft" Brush="{Binding $parent[Button].Foreground, Mode=OneWay}" VerticalAlignment="Center" />
                 <TextBlock Classes="backword" Text="Back" VerticalAlignment="Center" />
               </StackPanel>
             </Button>
@@ -108,7 +108,7 @@
                     IsVisible="{Binding CanContinue}">
               <StackPanel Orientation="Horizontal" Spacing="{StaticResource GapTight}">
                 <TextBlock Text="{Binding ContinueLabel}" VerticalAlignment="Center" />
-                <ti:TablerIcon Classes="button" Icon="IconArrowRight" Brush="{Binding $parent[Button].Foreground}" VerticalAlignment="Center" />
+                <ti:TablerIcon Classes="button" Icon="IconArrowRight" Brush="{Binding $parent[Button].Foreground, Mode=OneWay}" VerticalAlignment="Center" />
               </StackPanel>
             </Button>
           </Grid>

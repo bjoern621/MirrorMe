@@ -36,7 +36,7 @@
             <ti:TablerIcon Classes="button"
                            Icon="{Binding Glyph, FallbackValue=IconPoint}"
                            IsVisible="{Binding HasGlyph}"
-                           Brush="{Binding $parent[Button].Foreground}"
+                           Brush="{Binding $parent[Button].Foreground, Mode=OneWay}"
                            VerticalAlignment="Center" />
             <TextBlock Classes="optiontitle" Text="{Binding Label}" VerticalAlignment="Center" />
           </StackPanel>

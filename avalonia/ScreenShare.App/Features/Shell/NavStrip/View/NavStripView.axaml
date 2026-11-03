@@ -33,7 +33,7 @@
               <StackPanel Orientation="Horizontal" Spacing="{StaticResource GapTight}">
                 <ti:TablerIcon Classes="button"
                                Icon="{Binding Icon}"
-                               Brush="{Binding $parent[ListBoxItem].Foreground}"
+                               Brush="{Binding $parent[ListBoxItem].Foreground, Mode=OneWay}"
                                VerticalAlignment="Center" />
                 <TextBlock Text="{Binding Label}"
                            IsVisible="{Binding $parent[ListBox].((vm:NavStripViewModel)DataContext).ShowsLabels}"

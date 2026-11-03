@@ -38,7 +38,7 @@
                  VerticalAlignment="Center" />
         <ti:TablerIcon Classes="button"
                        Icon="IconPlayerStop"
-                       Brush="{Binding $parent[Button].Foreground}"
+                       Brush="{Binding $parent[Button].Foreground, Mode=OneWay}"
                        IsVisible="{Binding ShowsStop}"
                        VerticalAlignment="Center" />
         <TextBlock Text="{Binding PressLabel}" />
@@ -52,7 +52,7 @@
             CornerRadius="{StaticResource RadiusButtonTrailing}"
             Padding="7,0"
             Click="OnMenuPressed">
-      <ti:TablerIcon Icon="IconChevronDown" Brush="{Binding $parent[Button].Foreground}" />
+      <ti:TablerIcon Icon="IconChevronDown" Brush="{Binding $parent[Button].Foreground, Mode=OneWay}" />
     </Button>
   </StackPanel>
 </UserControl>

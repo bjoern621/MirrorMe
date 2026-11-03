@@ -314,7 +314,7 @@
           <Button Theme="{StaticResource OptionCard}" Classes.picked="{Binding PicksDiscord}" Command="{Binding PickDiscord}">
             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource GapControl}">
               <ti:TablerIcon Grid.Column="0" Classes="button" Icon="IconBrandDiscord"
-                             Brush="{Binding $parent[Button].Foreground}" VerticalAlignment="Center" />
+                             Brush="{Binding $parent[Button].Foreground, Mode=OneWay}" VerticalAlignment="Center" />
               <StackPanel Grid.Column="1" Spacing="2">
                 <WrapPanel ItemSpacing="8" LineSpacing="4">
                   <TextBlock Classes="optiontitle" TextWrapping="Wrap" TextTrimming="None"
@@ -331,7 +331,7 @@
           <Button Theme="{StaticResource OptionCard}" Classes.picked="{Binding PicksKey}" Command="{Binding PickKey}">
             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource GapControl}">
               <ti:TablerIcon Grid.Column="0" Classes="button" Icon="IconKey"
-                             Brush="{Binding $parent[Button].Foreground}" VerticalAlignment="Center" />
+                             Brush="{Binding $parent[Button].Foreground, Mode=OneWay}" VerticalAlignment="Center" />
               <StackPanel Grid.Column="1" Spacing="2">
                 <TextBlock Classes="optiontitle" TextWrapping="Wrap" TextTrimming="None" Text="{x:Static copy:Cards.JoinKey}" />
                 <TextBlock Classes="cardbody" Text="{x:Static copy:Cards.JoinKeyDetail}" />
@@ -342,7 +342,7 @@
           <Button Theme="{StaticResource PrimaryButton}" HorizontalAlignment="Stretch" Command="{Binding Join}">
             <StackPanel Orientation="Horizontal" Spacing="{StaticResource GapTight}" HorizontalAlignment="Center">
               <ti:TablerIcon Classes="button" Icon="{Binding JoinGlyph}"
-                             Brush="{Binding $parent[Button].Foreground}" VerticalAlignment="Center" />
+                             Brush="{Binding $parent[Button].Foreground, Mode=OneWay}" VerticalAlignment="Center" />
               <TextBlock Text="{Binding JoinLabel}" VerticalAlignment="Center" />
             </StackPanel>
           </Button>
