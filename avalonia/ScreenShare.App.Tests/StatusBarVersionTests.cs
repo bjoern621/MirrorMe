@@ -1,4 +1,5 @@
 using ScreenShare.Api.V1;
+using ScreenShare.App.Backend;
 using ScreenShare.App.Copy;
 using ScreenShare.App.Features.Shell.StatusBar.ViewModel;
 using Xunit;
@@ -135,5 +136,38 @@ public sealed class StatusBarVersionTests
         Assert.False(band.ShowsRelease);
         Assert.True(band.Updates.ShowsPlainLine);
         Assert.True(band.Updates.IsFailure);
+    }
+
+    /// <summary>
+    /// A check that failed and then staged the release moves the band from the plain failure line
+    /// to the control, with no pass drawing both.
+    /// The case is a start while a release is still uploading: the first read finds no asset,
+    /// and a press after the upload finds it.
+    /// </summary>
+    [Fact]
+    public void AFailureGivingWayToAStagedReleaseDrawsTheControl()
+    {
+        var backend = new SeededBackend("linux")
+        {
+            Update = new UpdateState
+            {
+                Stage = UpdateStage.Failed,
+                Running = Build,
+                Failure = new Text { Code = TextCode.UpdateServiceUnreadable },
+            },
+        };
+        var session = new Session(backend, action => action());
+        session.Start();
+        session.Stop();
+        var band = new StatusBarViewModel(Flows.Updates(backend, session));
+        band.Show(Build);
+
+        backend.Update = new UpdateState { Stage = UpdateStage.Ready, Running = Build, Latest = "v0.5.0" };
+        session.Start();
+        session.Stop();
+        band.Updates.Apply();
+
+        Assert.True(band.ShowsRelease);
+        Assert.False(band.Updates.ShowsPlainLine);
     }
 }

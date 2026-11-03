@@ -25,7 +25,7 @@ public sealed class StatusBarViewModel : Observable
 
         // The release slot is composed out of what the update view model derived,
         // so a refusal or a check landing there re-renders the band without waiting for the shell's next pass.
-        updates.PropertyChanged += (_, _) => Render();
+        updates.Rendered += Render;
     }
 
     /// <summary>

@@ -206,6 +206,13 @@ public sealed class UpdateViewModel : Observable
     /// </summary>
     public bool ShowsPlainLine { get => _showsPlainLine; private set => Set(ref _showsPlainLine, value); }
 
+    /// <summary>
+    /// Raised once a pass has written every output.
+    /// A reader composing several of them reads here, a property change landing mid-pass beside outputs
+    /// the pass has yet to write.
+    /// </summary>
+    public event Action? Rendered;
+
     /// <summary>Whether the version is a control at all, which an install that asks nothing is not.</summary>
     public bool CanCheck { get => _canCheck; private set => Set(ref _canCheck, value); }
 
@@ -309,5 +316,7 @@ public sealed class UpdateViewModel : Observable
         Assert.That(!CanInstall || CanCheck, "a release only installs where this copy checks at all", CanInstall);
         Assert.That(ShowsHeld == (Held.Length > 0), "the held reason and its text agree", ShowsHeld, Held);
         Assert.That(HasPage == (PageUrl.Length > 0), "the release page and the flag offering it agree", HasPage);
+
+        Rendered?.Invoke();
     }
 }
