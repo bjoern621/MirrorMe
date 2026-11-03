@@ -875,6 +875,7 @@ type ReceiveStream struct {
 	// so a tile with no meter and no slider beats one offering a slider wired to nothing.
 	HasAudio bool `protobuf:"varint,8,opt,name=has_audio,json=hasAudio,proto3" json:"has_audio,omitempty"`
 	// Last values SetReceiveAudio was given, kept whether or not a branch exists to apply them to.
+	// A decode opens muted at a volume of one.
 	// An audio pad arriving later picks them up,
 	// which takes the ordering out of the caller's hands.
 	// Read back from here rather than remembered per caller,

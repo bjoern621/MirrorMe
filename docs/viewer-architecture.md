@@ -105,6 +105,7 @@ The other track is decoded beside the picture, added to the running pipeline.
 Without both halves an RTSP tile drops the audio at the source and plays silently while the relay reports two tracks.
 
 Loudness is a property of the decode and not of a window: one pipeline holds one audio branch, so a per-window volume would be several controls over one element.
+A decode opens muted, at the loudness the stream arrived with, and sound starts on a request of its own.
 The level is measured **before** the volume, a stream muted and metered after appearing silent, leaving a reader unable to see it had started making noise again.
 
 Levels leave on a subscription of their own rather than as an event kind.

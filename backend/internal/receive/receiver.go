@@ -222,10 +222,11 @@ func New(st Stream, open Open, ev Events) (*Receiver, error) {
 		fit:      pipeline.GetByName(fitName),
 		cancel:   cancel,
 		started:  time.Now(),
-		// A decode plays at the loudness it arrived with until something asks
-		// for another.
-		// Any other default alters a stream nobody has said anything about.
+		// A decode opens muted, at the loudness it arrived with.
+		// Opening a stream asks to see it, and sound starts on a second request.
+		// Unmuting plays the stream unchanged.
 		wantVolume: 1,
+		wantMuted:  true,
 	}
 	// A chain's elements and its fit caps come from one row, so a mismatch is that row's
 	// two halves having drifted apart rather than anything a stream can cause.
