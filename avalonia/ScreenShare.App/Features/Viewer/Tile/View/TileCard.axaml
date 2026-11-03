@@ -69,6 +69,17 @@
     <Style Selector="Border.nameplate TextBlock.figure">
       <Setter Property="FontWeight" Value="Normal" />
     </Style>
+    <Style Selector="Border.nameplate ti|TablerIcon.muted">
+      <Setter Property="Brush" Value="{StaticResource ForegroundBrush}" />
+    </Style>
+
+    <!-- A muted stream's meter dims to the grey of a reading, the level still moving under it. -->
+    <Style Selector="Border.level">
+      <Setter Property="Background" Value="{StaticResource ForegroundBrush}" />
+    </Style>
+    <Style Selector="Border.level.muted">
+      <Setter Property="Background" Value="{StaticResource MutedBrush}" />
+    </Style>
 
     <!-- Tile's shape, and what stands behind a picture that has not arrived. -->
     <Style Selector="tiles|TileCard Border.frame">
@@ -346,13 +357,26 @@
         </StackPanel>
       </Border>
 
-      <!-- Off with the picture it names, the plate standing in for both. -->
+      <!--
+        Off with the picture it names, the plate standing in for both.
+        The mute mark stands at rest beside the name, every decode opening muted:
+        a silent tile then says why it is silent without a hover.
+        A stream without an audio track wears none, having nothing to mute.
+      -->
       <Border Classes="nameplate" VerticalAlignment="Bottom" HorizontalAlignment="Left"
               Margin="{StaticResource InsetTight}" IsVisible="{Binding !PictureElsewhere}">
         <StackPanel Orientation="Horizontal" Spacing="6">
           <Ellipse Width="6" Height="6" Fill="{StaticResource GoBrush}" VerticalAlignment="Center"
                    IsVisible="{Binding !HasNotice}" />
           <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+          <ti:TablerIcon Classes="badge muted" Icon="IconVolumeOff">
+            <ti:TablerIcon.IsVisible>
+              <MultiBinding Converter="{x:Static BoolConverters.And}">
+                <Binding Path="HasAudio" />
+                <Binding Path="Muted" />
+              </MultiBinding>
+            </ti:TablerIcon.IsVisible>
+          </ti:TablerIcon>
         </StackPanel>
       </Border>
 
@@ -493,8 +517,8 @@
       -->
       <Border VerticalAlignment="Bottom" Height="3" IsVisible="{Binding HasAudio}"
               Background="{StaticResource DividerBrush}">
-        <Border Name="Level" Height="3" HorizontalAlignment="Left"
-                Background="{StaticResource ForegroundBrush}"
+        <Border Name="Level" Classes="level" Height="3" HorizontalAlignment="Left"
+                Classes.muted="{Binding Muted}"
                 IsVisible="{Binding HasLevel}" />
       </Border>
 
