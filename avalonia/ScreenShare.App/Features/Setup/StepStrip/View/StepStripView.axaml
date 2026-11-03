@@ -81,7 +81,7 @@
       <Setter Property="Foreground" Value="{StaticResource SelectedBrush}" />
     </Style>
     <Style Selector="Button.blocked TextBlock.chipglyph">
-      <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+      <Setter Property="Foreground" Value="{StaticResource OnHueBrush}" />
     </Style>
 
     <Style Selector="TextBlock.chiplabel">

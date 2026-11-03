@@ -15,9 +15,9 @@
   <Color x:Key="Grey600">#303030</Color>
   <Color x:Key="Grey550">#3A3A3A</Color>
   <Color x:Key="Grey500">#4A4A4A</Color>
-  <Color x:Key="Grey450">#565656</Color>
-  <Color x:Key="Grey400">#6E6E6E</Color>
-  <Color x:Key="Grey300">#9A9A9A</Color>
+  <Color x:Key="Grey450">#929292</Color>
+  <Color x:Key="Grey400">#9A9A9A</Color>
+  <Color x:Key="Grey300">#B4B4B4</Color>
   <Color x:Key="Grey200">#C8C8C8</Color>
   <Color x:Key="Grey150">#D0D0D0</Color>
   <Color x:Key="Grey100">#E6E6E6</Color>
@@ -29,11 +29,11 @@
     Never state that is merely on, and never selection, which is inversion.
   -->
   <!-- Broken, or on air. -->
-  <Color x:Key="Attention">#E5484D</Color>
-  <!-- It runs, and something about it disappoints. Too light for a white label, so a fill of it takes near-black. -->
+  <Color x:Key="Attention">#FF6369</Color>
+  <!-- It runs, and something about it disappoints. -->
   <Color x:Key="Caution">#FFB224</Color>
   <!-- The way is clear. -->
-  <Color x:Key="Go">#30A46C</Color>
+  <Color x:Key="Go">#3CB179</Color>
 
   <!--
     Fluent's accent keys, pointed at the one light surface.
@@ -72,7 +72,7 @@
   <SolidColorBrush x:Key="ControlBorderBrush" Color="{StaticResource Grey550}" />
   <SolidColorBrush x:Key="ChipBorderBrush" Color="{StaticResource Grey500}" />
 
-  <!-- Text  -->
+  <!-- Text. Every step clears 4.5:1 on each surface it sits on, the hover fill included. -->
 
   <SolidColorBrush x:Key="ForegroundBrush" Color="{StaticResource White}" />
   <SolidColorBrush x:Key="ControlForegroundBrush" Color="{StaticResource Grey100}" />
@@ -92,10 +92,7 @@
   <SolidColorBrush x:Key="AttentionBrush" Color="{StaticResource Attention}" />
   <SolidColorBrush x:Key="CautionBrush" Color="{StaticResource Caution}" />
   <SolidColorBrush x:Key="GoBrush" Color="{StaticResource Go}" />
-  <!--
-    What a glyph alone on a hue fill takes, on amber and on red and green alike:
-    a 1.25px stroke asks more of the fill than a label's stems, and white clears 3.9:1 on red where this clears 4.7.
-  -->
+  <!-- Label and glyph on a hue fill. Clears 6:1 on every hue, where white stays under 3. -->
   <SolidColorBrush x:Key="OnHueBrush" Color="{StaticResource Grey900}" />
 
   <!-- Elevation  -->

@@ -8,20 +8,21 @@ This page states the rules.
 
 Greyscale, and three hues that each answer one question about a stream.
 
-Ramp: `#141414` `#181818` `#1C1C1C` `#212121` `#262626` `#2A2A2A` `#303030` `#3A3A3A` `#4A4A4A` `#565656` `#6E6E6E` `#9A9A9A` `#C8C8C8` `#D0D0D0` `#E6E6E6` `#F2F2F2` `#FFFFFF`.
+Ramp: `#141414` `#181818` `#1C1C1C` `#212121` `#262626` `#2A2A2A` `#303030` `#3A3A3A` `#4A4A4A` `#929292` `#9A9A9A` `#B4B4B4` `#C8C8C8` `#D0D0D0` `#E6E6E6` `#F2F2F2` `#FFFFFF`.
 A hex is written here and nowhere else: a component asks for the role it wants and the palette decides, so a light variant is a second dictionary rather than a sweep through every view.
 
 Surfaces are four steps: app body, the two chrome bands one shade lighter, a recessed panel, a raised control.
 One light surface, near-white, means selected: a chosen destination, an on toggle, the current step.
 Text on it is near-black.
 Lines are three weights: a hairline where one band meets the next, a divider inside a strip or menu, a raised control's edge.
-Text is five steps from white down through control label, secondary copy, muted figures and faint hints, ending at the disabled grey.
+Text is five steps from white down through control label, secondary copy, muted figures and hints, ending at the disabled grey.
+Every text step and every hue clears 4.5:1 on each surface it sits on, the hover fill `#303030` included.
 
 | Hue | Says | Spent on |
 | --- | --- | --- |
-| red `#E5484D` | broken, or on air | a check that blocks, the step chip it names, a failure sentence, the sharing pill and badge, `Stop sharing` |
+| red `#FF6369` | broken, or on air | a check that blocks, the step chip it names, a failure sentence, the sharing pill and badge, `Stop sharing` |
 | amber `#FFB224` | it runs, and something about it disappoints | a check that warns, a figure out of bounds, an estimate over the measured line, why a control is inert |
-| green `#30A46C` | the way is clear | a check that passed, `Start sharing` |
+| green `#3CB179` | the way is clear | a check that passed, `Start sharing` |
 
 Red is the one that has to carry across a room, so it stays scarce.
 A screen with three red things on it says which one broke; a screen with thirty says nothing.
@@ -30,10 +31,8 @@ Green marks the way in: `Start sharing` is green, and the machine that is sharin
 
 On and selected both take inversion ("Selection"), so each hue keeps to the question its row names.
 None of the three carries a fact alone: what is coloured also says itself in words, a glyph or weight, so a reader who separates none of them loses nothing.
-A hue as a fill takes the label its contrast affords, white on red and green, near-black on amber.
-A badge whose whole content is a glyph takes near-black on every hue, a 1.25px stroke asking more of a fill than a label's stems do:
-white clears 3.9:1 on red and 3.2:1 on green, and near-black clears 4.7 and 5.8.
-A glyph standing beside a label follows the label.
+A hue as a fill takes near-black for its label and glyph, clearing 6.3:1 on red, 6.8:1 on green and 10:1 on amber.
+White stays under 3:1 on all three.
 A hue that cannot be pressed drops the fill for a grey outline, so colour on a control says a press is there and the greyed controls read as one family.
 
 **Why a control is inert is read before anything else on it.**

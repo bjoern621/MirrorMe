@@ -220,7 +220,7 @@
       <Setter Property="Foreground" Value="{StaticResource DisabledBrush}" />
     </Style>
     <Style Selector="^:disabled /template/ ContentPresenter#Icon">
-      <Setter Property="Opacity" Value="0.45" />
+      <Setter Property="Opacity" Value="0.7" />
     </Style>
     <!-- The key sets its own colour, so a greyed row does not reach it. -->
     <Style Selector="^:disabled /template/ TextBlock#Gesture">
