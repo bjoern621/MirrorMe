@@ -218,6 +218,9 @@ A stream that starts speaking, starts being shared or begins dropping frames the
 One struggling stream never becomes the loudest thing on a screen someone is scanning.
 
 What a stream is doing is said on its face, over the picture and at no cost to layout: a name plate with a small presence dot lower left, a status badge upper right, the figure lower right.
+A stream opens muted.
+While it plays muted, its name plate carries the volume-off glyph after the name and its level meter dims to grey.
+A stream without sound carries neither.
 The badge is neutral except on this machine's own outgoing stream, which wears the filled red one.
 A struggling stream wears the same neutral badge, names itself in words, and prints its drop count at a heavier weight.
 The hues stay off the picture: a colour over arbitrary video is a colour against an unknown background, so a fault on a video surface is read rather than spotted.
