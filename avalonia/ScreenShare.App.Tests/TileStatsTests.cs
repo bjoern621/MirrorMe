@@ -120,7 +120,7 @@ public sealed class TileStatsTests
         Assert.Equal(
             [
                 "End to end", "Capture and encode", "Publisher to here", "Buffered here",
-                "Decode", "Held for play time", "Latency window",
+                "Decode", "Waiting to show", "Latency window",
             ],
             Section(panel, "Delay").Lines.Select(line => line.Label));
 
@@ -199,7 +199,7 @@ public sealed class TileStatsTests
         Assert.Equal("60 /s", Value(panel, "Arriving", "Declared rate"));
         Assert.Equal("2.40 GB", Value(panel, "Arriving", "Video received"));
         Assert.Equal("2560×1440", Value(panel, "Picture", "Size"));
-        Assert.Equal("1280×720", Value(panel, "Render", "Drawn at"));
+        Assert.Equal("1280×720", Value(panel, "Render", "Draw size"));
         Assert.Equal("1:00:00", Value(panel, "Clock", "Position"));
         Assert.Equal("96 kb/s", Value(panel, "Audio", "Bitrate"));
     }
@@ -211,7 +211,7 @@ public sealed class TileStatsTests
 
         Assert.Equal("HDR (PQ)", Value(panel, "Picture", "Transfer"));
         Assert.Equal("the GPU, dmabuf", Value(panel, "Decode", "Decoded into"));
-        Assert.Equal("the GPU, OpenGL", Value(panel, "Render", "Handed over in"));
+        Assert.Equal("the GPU, OpenGL", Value(panel, "Render", "Window reads from"));
         Assert.Contains("OpenGL", Value(panel, "Render", "Render chain"));
     }
 
@@ -234,10 +234,10 @@ public sealed class TileStatsTests
         Assert.Equal("…", Value(panel, "Arriving", "Codec"));
         Assert.Equal("…", Value(panel, "Picture", "Size"));
         Assert.Equal("…", Value(panel, "Delay", "Latency window"));
-        Assert.Equal("…", Value(panel, "This window", "Handed over at"));
+        Assert.Equal("…", Value(panel, "This window", "Frame size"));
 
         // A counter that counted nothing is a reading of zero, not an absence.
-        Assert.Equal("0", Value(panel, "This window", "Frames taken"));
+        Assert.Equal("0", Value(panel, "This window", "Frames received"));
     }
 
     [Fact]
@@ -317,7 +317,7 @@ public sealed class TileStatsTests
         var panel = TileStats.Of(null, Report());
 
         Assert.Equal(["This window"], panel.Select(section => section.Heading));
-        Assert.Equal("3", Value(panel, "This window", "Dropped waiting for this window"));
+        Assert.Equal("3", Value(panel, "This window", "Dropped for this window"));
     }
 
     /// <summary>

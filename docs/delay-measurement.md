@@ -32,7 +32,7 @@ So no measurement maps a video surface, and the frames a capture or a decoder le
 | Buffered here | receive pipeline, decoder sink pad | its own clock, less the frame's running time |
 | Decode | receive pipeline, sink pad | the same subtraction, less what the buffering took |
 | Slowest frame | receive pipeline, sink pad | the worst that subtraction has ever read |
-| Held for play time | derived | the latency query, less the buffering and the decode |
+| Waiting to show | derived | the latency query, less the buffering and the decode |
 | End to end | derived | the measured stretches, each counted once |
 
 Every row is a stage any transport can fill.
