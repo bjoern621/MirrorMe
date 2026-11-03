@@ -21,7 +21,7 @@
       <Setter Property="Padding" Value="{StaticResource InsetTight}" />
       <Setter Property="Transitions">
         <Transitions>
-          <BrushTransition Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+          <controls:BrushFade Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
         </Transitions>
       </Setter>
     </Style>

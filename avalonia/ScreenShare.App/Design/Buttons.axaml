@@ -1,5 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:ScreenShare.App.Controls">
 
   <!--
     The button family, as one table of variants.
@@ -30,7 +31,7 @@
     <!-- The label's colour moves with the fill, and a glyph bound to it follows. -->
     <Setter Property="Transitions">
       <Transitions>
-        <BrushTransition Property="Foreground" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+        <controls:BrushFade Property="Foreground" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
       </Transitions>
     </Setter>
     <Setter Property="Template">
@@ -43,8 +44,8 @@
                 RenderTransform="none">
           <Border.Transitions>
             <Transitions>
-              <BrushTransition Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
-              <BrushTransition Property="BorderBrush" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              <controls:BrushFade Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              <controls:BrushFade Property="BorderBrush" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
               <DoubleTransition Property="Opacity" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
               <TransformOperationsTransition Property="RenderTransform" Duration="{StaticResource MotionPress}" Easing="{StaticResource MotionEase}" />
             </Transitions>

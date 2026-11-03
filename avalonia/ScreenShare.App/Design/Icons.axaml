@@ -1,5 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:ScreenShare.App.Controls"
         xmlns:ti="using:TablerIcons">
 
   <!--
@@ -21,7 +22,7 @@
     <Setter Property="RenderTransform" Value="none" />
     <Setter Property="Transitions">
       <Transitions>
-        <BrushTransition Property="Brush" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+        <controls:BrushFade Property="Brush" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
         <DoubleTransition Property="Opacity" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
         <TransformOperationsTransition Property="RenderTransform" Duration="{StaticResource MotionMove}" Easing="{StaticResource MotionEase}" />
       </Transitions>
@@ -90,7 +91,7 @@
     <Setter Property="VerticalAlignment" Value="Center" />
     <Setter Property="Transitions">
       <Transitions>
-        <BrushTransition Property="Stroke" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+        <controls:BrushFade Property="Stroke" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
         <DoubleTransition Property="StrokeThickness" Duration="{StaticResource MotionMove}" Easing="{StaticResource MotionEase}" />
       </Transitions>
     </Setter>

@@ -94,7 +94,7 @@
       <Setter Property="Background" Value="{StaticResource ForegroundBrush}" />
       <Setter Property="Transitions">
         <Transitions>
-          <BrushTransition Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+          <controls:BrushFade Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
         </Transitions>
       </Setter>
     </Style>

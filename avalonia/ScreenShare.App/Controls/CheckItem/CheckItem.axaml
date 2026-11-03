@@ -28,7 +28,7 @@
                 Margin="-6,-4">
           <Border.Transitions>
             <Transitions>
-              <BrushTransition Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              <controls:BrushFade Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
             </Transitions>
           </Border.Transitions>
           <Grid ColumnDefinitions="Auto,*">
@@ -45,8 +45,8 @@
               <!-- A line changing verdict recolours its badge over a moment, so the change itself is seen. -->
               <Border.Transitions>
                 <Transitions>
-                  <BrushTransition Property="Background" Duration="{StaticResource MotionMark}" Easing="{StaticResource MotionEase}" />
-                  <BrushTransition Property="BorderBrush" Duration="{StaticResource MotionMark}" Easing="{StaticResource MotionEase}" />
+                  <controls:BrushFade Property="Background" Duration="{StaticResource MotionMark}" Easing="{StaticResource MotionEase}" />
+                  <controls:BrushFade Property="BorderBrush" Duration="{StaticResource MotionMark}" Easing="{StaticResource MotionEase}" />
                 </Transitions>
               </Border.Transitions>
               <ti:TablerIcon Name="Glyph"

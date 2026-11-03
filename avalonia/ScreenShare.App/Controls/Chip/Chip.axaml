@@ -22,8 +22,8 @@
                 Padding="{TemplateBinding Padding}">
           <Border.Transitions>
             <Transitions>
-              <BrushTransition Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
-              <BrushTransition Property="BorderBrush" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              <controls:BrushFade Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              <controls:BrushFade Property="BorderBrush" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
             </Transitions>
           </Border.Transitions>
           <StackPanel Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">

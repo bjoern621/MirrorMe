@@ -1,5 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:ScreenShare.App.Controls">
 
   <!--
     The controls a person types into or drags, keyed on the type so a bare TextBox or Slider gets the design.
@@ -39,8 +40,8 @@
                 CornerRadius="{TemplateBinding CornerRadius}">
           <Border.Transitions>
             <Transitions>
-              <BrushTransition Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
-              <BrushTransition Property="BorderBrush" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              <controls:BrushFade Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              <controls:BrushFade Property="BorderBrush" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
             </Transitions>
           </Border.Transitions>
           <!--
@@ -144,7 +145,7 @@
                  RenderTransform="none">
           <Ellipse.Transitions>
             <Transitions>
-              <BrushTransition Property="Fill" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              <controls:BrushFade Property="Fill" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
               <TransformOperationsTransition Property="RenderTransform" Duration="{StaticResource MotionPress}" Easing="{StaticResource MotionEase}" />
             </Transitions>
           </Ellipse.Transitions>
@@ -180,7 +181,7 @@
                 Background="{StaticResource ForegroundBrush}">
           <Border.Transitions>
             <Transitions>
-              <BrushTransition Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              <controls:BrushFade Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
             </Transitions>
           </Border.Transitions>
         </Border>

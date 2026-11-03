@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:ScreenShare.App.Controls"
              xmlns:setup="using:ScreenShare.App.Features.Setup.ViewModel"
              xmlns:strip="using:ScreenShare.App.Features.Setup.StepStrip.ViewModel"
              x:Class="ScreenShare.App.Features.Setup.StepStrip.View.StepStripView"
@@ -45,7 +46,7 @@
       <Setter Property="Background" Value="{StaticResource DividerBrush}" />
       <Setter Property="Transitions">
         <Transitions>
-          <BrushTransition Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+          <controls:BrushFade Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
         </Transitions>
       </Setter>
     </Style>

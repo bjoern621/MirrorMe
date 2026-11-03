@@ -1,5 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:ScreenShare.App.Controls"
                     xmlns:ti="using:TablerIcons">
 
   <!--
@@ -67,7 +68,7 @@
                   Padding="{TemplateBinding Padding}">
             <Border.Transitions>
               <Transitions>
-                <BrushTransition Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+                <controls:BrushFade Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
               </Transitions>
             </Border.Transitions>
             <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
