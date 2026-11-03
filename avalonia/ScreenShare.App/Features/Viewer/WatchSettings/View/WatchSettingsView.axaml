@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:ScreenShare.App.Controls"
              xmlns:fields="using:ScreenShare.App.Features.Fields.ViewModel"
              xmlns:model="using:ScreenShare.App.Features.Fields.Model"
              xmlns:ti="using:TablerIcons"
@@ -83,15 +84,17 @@
                         Content="{Binding Group.Fold}"
                         ContentTemplate="{StaticResource FoldDisclosure}" />
 
-        <StackPanel IsVisible="{Binding Group.Fold.Shown}" Margin="0,12,0,0">
-          <ItemsControl ItemsSource="{Binding Group.Folded}" ItemTemplate="{StaticResource FieldRow}" />
-          <Button Theme="{StaticResource OutlineButton}"
-                  HorizontalAlignment="Left"
-                  IsVisible="{Binding Group.HasAction}"
-                  Content="{Binding Group.Action.Label}"
-                  Command="{Binding Group.Action.Command}"
-                  ToolTip.Tip="{Binding Group.Action.Tip}" />
-        </StackPanel>
+        <controls:Reveal IsOpen="{Binding Group.Fold.Shown}">
+          <StackPanel Margin="0,12,0,0">
+            <ItemsControl ItemsSource="{Binding Group.Folded}" ItemTemplate="{StaticResource FieldRow}" />
+            <Button Theme="{StaticResource OutlineButton}"
+                    HorizontalAlignment="Left"
+                    IsVisible="{Binding Group.HasAction}"
+                    Content="{Binding Group.Action.Label}"
+                    Command="{Binding Group.Action.Command}"
+                    ToolTip.Tip="{Binding Group.Action.Tip}" />
+          </StackPanel>
+        </controls:Reveal>
       </StackPanel>
     </ScrollViewer>
 

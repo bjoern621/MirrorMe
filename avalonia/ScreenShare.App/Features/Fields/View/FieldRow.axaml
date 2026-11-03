@@ -205,7 +205,7 @@
                 IsVisible="{Binding HasRefused}"
                 Command="{Binding RevealCommand}">
           <StackPanel Orientation="Horizontal" Spacing="8">
-            <ti:TablerIcon Icon="{Binding RefusedGlyph}"
+            <ti:TablerIcon Classes="disclosure" Classes.open="{Binding RefusedShown}" Icon="IconChevronRight"
                            Brush="{StaticResource MutedBrush}"
                            VerticalAlignment="Center" />
             <TextBlock Classes="secondary" Text="{Binding RefusedTitle}" VerticalAlignment="Center" />
@@ -213,11 +213,12 @@
           </StackPanel>
         </Button>
 
-        <ItemsControl ItemsSource="{Binding Refused}"
-                      ItemTemplate="{StaticResource OptionEntry}"
-                      IsEnabled="{Binding IsEnabled}"
-                      IsVisible="{Binding RefusedShown}"
-                      Margin="0,6,0,0" />
+        <controls:Reveal IsOpen="{Binding RefusedShown}">
+          <ItemsControl ItemsSource="{Binding Refused}"
+                        ItemTemplate="{StaticResource OptionEntry}"
+                        IsEnabled="{Binding IsEnabled}"
+                        Margin="0,6,0,0" />
+        </controls:Reveal>
       </StackPanel>
 
       <!--

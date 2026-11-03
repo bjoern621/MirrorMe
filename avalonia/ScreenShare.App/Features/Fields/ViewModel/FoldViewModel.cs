@@ -2,7 +2,6 @@ using ScreenShare.App.Contracts;
 using ScreenShare.App.Controls;
 using ScreenShare.App.Features.Fields.Model;
 using ScreenShare.App.Mvvm;
-using TablerIcons;
 
 namespace ScreenShare.App.Features.Fields.ViewModel;
 
@@ -36,17 +35,7 @@ public sealed class FoldViewModel : Observable
     public DelegateCommand ToggleCommand { get; }
 
     /// <summary>Reader-owned: written by the press alone.</summary>
-    public bool Shown
-    {
-        get => _shown;
-        set
-        {
-            if (Set(ref _shown, value))
-            {
-                OnPropertyChanged(nameof(Glyph));
-            }
-        }
-    }
+    public bool Shown { get => _shown; set => Set(ref _shown, value); }
 
     /// <summary>Whether the step holds anything to fold. The disclosure row draws only while it does.</summary>
     public bool HasAny { get => _hasAny; private set => Set(ref _hasAny, value); }
@@ -83,8 +72,6 @@ public sealed class FoldViewModel : Observable
     public bool ImpactWarns => ImpactState == CheckState.Warned;
 
     public string ImpactTip => string.Join("\n", Impacts.Select(impact => impact.Text));
-
-    public Icons Glyph => Shown ? Icons.IconChevronDown : Icons.IconChevronRight;
 
     /// <summary>Render-pass input. Idempotent, and it never writes <see cref="Shown"/>.</summary>
     /// <param name="folded">Controls behind the fold.</param>

@@ -203,127 +203,130 @@
         Every control kind the contract carries is here,
         so a field the backend adds to this group is drawn without an edit to this file.
       -->
-      <ItemsControl ItemsSource="{Binding UnderList}" Margin="0,12,0,0" IsVisible="{Binding Fold.Shown}">
-        <ItemsControl.ItemTemplate>
-          <DataTemplate x:DataType="fields:FieldViewModel">
-            <StackPanel Spacing="6" Margin="0,0,0,18">
-              <Grid ColumnDefinitions="*,Auto,Auto">
-                <TextBlock Grid.Column="0" Classes="secondary" Text="{Binding Label}" />
-                <TextBlock Grid.Column="1"
-                           Classes="hint"
-                           Margin="8,0,0,0"
-                           VerticalAlignment="Center"
-                           IsVisible="{Binding AppliesLive}"
-                           Text="{Binding LiveNotice}" />
-                <TextBlock Grid.Column="2" Classes="figure" IsVisible="{Binding HasUnit}" Text="{Binding Unit}" />
-              </Grid>
+      <controls:Reveal IsOpen="{Binding Fold.Shown}">
+        <ItemsControl ItemsSource="{Binding UnderList}" Margin="0,12,0,0">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="fields:FieldViewModel">
+              <StackPanel Spacing="6" Margin="0,0,0,18">
+                <Grid ColumnDefinitions="*,Auto,Auto">
+                  <TextBlock Grid.Column="0" Classes="secondary" Text="{Binding Label}" />
+                  <TextBlock Grid.Column="1"
+                             Classes="hint"
+                             Margin="8,0,0,0"
+                             VerticalAlignment="Center"
+                             IsVisible="{Binding AppliesLive}"
+                             Text="{Binding LiveNotice}" />
+                  <TextBlock Grid.Column="2" Classes="figure" IsVisible="{Binding HasUnit}" Text="{Binding Unit}" />
+                </Grid>
 
-              <TextBlock Classes="hint"
-                         TextWrapping="Wrap"
-                         TextTrimming="None"
-                         IsVisible="{Binding HasHelp}"
-                         Text="{Binding Help}" />
+                <TextBlock Classes="hint"
+                           TextWrapping="Wrap"
+                           TextTrimming="None"
+                           IsVisible="{Binding HasHelp}"
+                           Text="{Binding Help}" />
 
-              <TextBox IsVisible="{Binding IsText}"
-                       IsEnabled="{Binding IsEnabled}"
-                       Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+                <TextBox IsVisible="{Binding IsText}"
+                         IsEnabled="{Binding IsEnabled}"
+                         Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
 
-              <NumericUpDown IsVisible="{Binding IsNumber}"
-                             IsEnabled="{Binding IsEnabled}"
-                             Value="{Binding Number, Mode=TwoWay}"
-                             Minimum="{Binding NumberMinimum}"
-                             Maximum="{Binding NumberMaximum}"
-                             Increment="{Binding NumberStep}"
-                             FormatString="0"
-                             MinWidth="160"
-                             HorizontalAlignment="Left" />
-
-              <StackPanel Orientation="Horizontal"
-                          IsVisible="{Binding IsNumberSelect}"
-                          HorizontalAlignment="Left">
-                <NumericUpDown Theme="{StaticResource NumberSelectInput}"
+                <NumericUpDown IsVisible="{Binding IsNumber}"
                                IsEnabled="{Binding IsEnabled}"
                                Value="{Binding Number, Mode=TwoWay}"
                                Minimum="{Binding NumberMinimum}"
                                Maximum="{Binding NumberMaximum}"
                                Increment="{Binding NumberStep}"
                                FormatString="0"
-                               MinWidth="160" />
-                <Button Theme="{StaticResource NumberSelectCaret}" IsEnabled="{Binding IsEnabled}">
-                  <ti:TablerIcon Icon="IconChevronDown" Brush="{StaticResource MutedBrush}" />
-                  <Button.Flyout>
-                    <MenuFlyout ItemsSource="{Binding MenuRows}"
-                                ItemTemplate="{StaticResource SelectEntry}"
-                                ItemContainerTheme="{StaticResource SelectMenuItem}"
-                                Placement="BottomEdgeAlignedRight" />
-                  </Button.Flyout>
-                </Button>
-              </StackPanel>
+                               MinWidth="160"
+                               HorizontalAlignment="Left" />
 
-              <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsSlider}">
-                <controls:SweepSlider Grid.Column="0"
-                        IsEnabled="{Binding IsEnabled}"
-                        Minimum="{Binding Minimum}"
-                        Maximum="{Binding Maximum}"
-                        Ticks="{Binding Ticks}"
-                        TickFrequency="{Binding Step}"
-                        IsSnapToTickEnabled="True"
-                        SmallChange="{Binding Step}"
-                        LargeChange="{Binding PageStep}"
-                        Sweeping="{Binding IsSweeping}"
-                        Value="{Binding Slide, Mode=TwoWay}" />
-                <TextBlock Grid.Column="1"
-                           Classes="figure"
-                           Margin="10,0,0,0"
-                           VerticalAlignment="Center"
-                           Text="{Binding Readback}" />
-              </Grid>
+                <StackPanel Orientation="Horizontal"
+                            IsVisible="{Binding IsNumberSelect}"
+                            HorizontalAlignment="Left">
+                  <NumericUpDown Theme="{StaticResource NumberSelectInput}"
+                                 IsEnabled="{Binding IsEnabled}"
+                                 Value="{Binding Number, Mode=TwoWay}"
+                                 Minimum="{Binding NumberMinimum}"
+                                 Maximum="{Binding NumberMaximum}"
+                                 Increment="{Binding NumberStep}"
+                                 FormatString="0"
+                                 MinWidth="160" />
+                  <Button Theme="{StaticResource NumberSelectCaret}" IsEnabled="{Binding IsEnabled}">
+                    <ti:TablerIcon Icon="IconChevronDown" Brush="{StaticResource MutedBrush}" />
+                    <Button.Flyout>
+                      <MenuFlyout ItemsSource="{Binding MenuRows}"
+                                  ItemTemplate="{StaticResource SelectEntry}"
+                                  ItemContainerTheme="{StaticResource SelectMenuItem}"
+                                  Placement="BottomEdgeAlignedRight" />
+                    </Button.Flyout>
+                  </Button>
+                </StackPanel>
 
-              <ToggleButton IsVisible="{Binding IsToggle}"
-                            Theme="{StaticResource SwitchTheme}"
-                            IsEnabled="{Binding IsEnabled}"
-                            IsChecked="{Binding Flag, Mode=TwoWay}" />
+                <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsSlider}">
+                  <controls:SweepSlider Grid.Column="0"
+                          IsEnabled="{Binding IsEnabled}"
+                          Minimum="{Binding Minimum}"
+                          Maximum="{Binding Maximum}"
+                          Ticks="{Binding Ticks}"
+                          TickFrequency="{Binding Step}"
+                          IsSnapToTickEnabled="True"
+                          SmallChange="{Binding Step}"
+                          LargeChange="{Binding PageStep}"
+                          Sweeping="{Binding IsSweeping}"
+                          Value="{Binding Slide, Mode=TwoWay}" />
+                  <TextBlock Grid.Column="1"
+                             Classes="figure"
+                             Margin="10,0,0,0"
+                             VerticalAlignment="Center"
+                             Text="{Binding Readback}" />
+                </Grid>
 
-              <TextBlock Classes="figure" IsVisible="{Binding IsReadonly}" Text="{Binding Readback}" />
-
-              <!-- Disclosure between the two lists, where every choice control keeps it (OptionEntry.axaml). -->
-              <StackPanel IsVisible="{Binding IsChoice}">
-                <ItemsControl ItemsSource="{Binding Offered}"
-                              ItemTemplate="{StaticResource OptionEntry}"
-                              IsEnabled="{Binding IsEnabled}" />
-
-                <Button Theme="{StaticResource LinkButton}"
-                        HorizontalAlignment="Left"
-                        Margin="0,2,0,0"
-                        IsVisible="{Binding HasRefused}"
-                        Command="{Binding RevealCommand}">
-                  <StackPanel Orientation="Horizontal" Spacing="8">
-                    <ti:TablerIcon Icon="{Binding RefusedGlyph}"
-                                   Brush="{StaticResource MutedBrush}"
-                                   VerticalAlignment="Center" />
-                    <TextBlock Classes="secondary" Text="{Binding RefusedTitle}" VerticalAlignment="Center" />
-                    <TextBlock Classes="hint" Text="{Binding RefusedCount}" VerticalAlignment="Center" />
-                  </StackPanel>
-                </Button>
-
-                <ItemsControl ItemsSource="{Binding Refused}"
-                              ItemTemplate="{StaticResource OptionEntry}"
+                <ToggleButton IsVisible="{Binding IsToggle}"
+                              Theme="{StaticResource SwitchTheme}"
                               IsEnabled="{Binding IsEnabled}"
-                              IsVisible="{Binding RefusedShown}"
-                              Margin="0,6,0,0" />
+                              IsChecked="{Binding Flag, Mode=TwoWay}" />
+
+                <TextBlock Classes="figure" IsVisible="{Binding IsReadonly}" Text="{Binding Readback}" />
+
+                <!-- Disclosure between the two lists, where every choice control keeps it (OptionEntry.axaml). -->
+                <StackPanel IsVisible="{Binding IsChoice}">
+                  <ItemsControl ItemsSource="{Binding Offered}"
+                                ItemTemplate="{StaticResource OptionEntry}"
+                                IsEnabled="{Binding IsEnabled}" />
+
+                  <Button Theme="{StaticResource LinkButton}"
+                          HorizontalAlignment="Left"
+                          Margin="0,2,0,0"
+                          IsVisible="{Binding HasRefused}"
+                          Command="{Binding RevealCommand}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <ti:TablerIcon Classes="disclosure" Classes.open="{Binding RefusedShown}" Icon="IconChevronRight"
+                                     Brush="{StaticResource MutedBrush}"
+                                     VerticalAlignment="Center" />
+                      <TextBlock Classes="secondary" Text="{Binding RefusedTitle}" VerticalAlignment="Center" />
+                      <TextBlock Classes="hint" Text="{Binding RefusedCount}" VerticalAlignment="Center" />
+                    </StackPanel>
+                  </Button>
+
+                  <controls:Reveal IsOpen="{Binding RefusedShown}">
+                    <ItemsControl ItemsSource="{Binding Refused}"
+                                  ItemTemplate="{StaticResource OptionEntry}"
+                                  IsEnabled="{Binding IsEnabled}"
+                                  Margin="0,6,0,0" />
+                  </controls:Reveal>
+                </StackPanel>
+
+                <SelectableTextBlock Classes="reason" IsVisible="{Binding HasReason}" Text="{Binding Reason}" />
+
+                <TextBlock Classes="hint"
+                           TextWrapping="Wrap"
+                           TextTrimming="None"
+                           IsVisible="{Binding HasNote}"
+                           Text="{Binding Note}" />
               </StackPanel>
-
-              <SelectableTextBlock Classes="reason" IsVisible="{Binding HasReason}" Text="{Binding Reason}" />
-
-              <TextBlock Classes="hint"
-                         TextWrapping="Wrap"
-                         TextTrimming="None"
-                         IsVisible="{Binding HasNote}"
-                         Text="{Binding Note}" />
-            </StackPanel>
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </controls:Reveal>
     </StackPanel>
   </Border>
 

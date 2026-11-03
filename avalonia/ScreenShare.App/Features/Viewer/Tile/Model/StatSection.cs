@@ -1,7 +1,6 @@
 using ScreenShare.App.Contracts;
 using ScreenShare.App.Features.Insights.Model;
 using ScreenShare.App.Mvvm;
-using TablerIcons;
 
 namespace ScreenShare.App.Features.Viewer.Tile.Model;
 
@@ -94,19 +93,7 @@ public sealed class StatSection : Observable
     /// <summary>Set while any row stands out, so a closed block says where to look.</summary>
     public bool HasAlarm => Lines.Any(line => line.Alarm);
 
-    public bool IsOpen
-    {
-        get => _open;
-        set
-        {
-            if (Set(ref _open, value))
-            {
-                OnPropertyChanged(nameof(Glyph));
-            }
-        }
-    }
-
-    public Icons Glyph => IsOpen ? Icons.IconChevronDown : Icons.IconChevronRight;
+    public bool IsOpen { get => _open; set => Set(ref _open, value); }
 
     public DelegateCommand? Toggle { get => _toggle; set => Set(ref _toggle, value); }
 }

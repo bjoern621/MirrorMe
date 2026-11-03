@@ -164,6 +164,8 @@
   <sys:TimeSpan x:Key="MotionClose">0:0:0.11</sys:TimeSpan>
   <!-- A glyph or a mark appearing on a state change. -->
   <sys:TimeSpan x:Key="MotionMark">0:0:0.2</sys:TimeSpan>
+  <!-- A fold's body unrolling to its height, and rolling back up. -->
+  <sys:TimeSpan x:Key="MotionFold">0:0:0.22</sys:TimeSpan>
   <!-- A tile taking its place, and a picture fading in over it once frames arrive. -->
   <sys:TimeSpan x:Key="MotionMount">0:0:0.26</sys:TimeSpan>
   <sys:TimeSpan x:Key="MotionPicture">0:0:0.5</sys:TimeSpan>

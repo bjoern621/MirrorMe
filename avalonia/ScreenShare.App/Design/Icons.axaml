@@ -43,6 +43,20 @@
     <Setter Property="RenderTransform" Value="scale(1.12)" />
   </Style>
 
+  <!--
+    A fold's chevron points right while the fold is closed and turns down as it opens.
+    After the lift and the press, so an open chevron keeps its turn under the pointer.
+  -->
+  <Style Selector="ti|TablerIcon.disclosure.open">
+    <Setter Property="RenderTransform" Value="rotate(90deg)" />
+  </Style>
+  <Style Selector="Button:pointerover:not(:disabled) ti|TablerIcon.disclosure.open">
+    <Setter Property="RenderTransform" Value="rotate(90deg) scale(1.12)" />
+  </Style>
+  <Style Selector="Button:pressed:not(:disabled) ti|TablerIcon.disclosure.open">
+    <Setter Property="RenderTransform" Value="rotate(90deg) scale(0.94)" />
+  </Style>
+
   <Style Selector="ti|TablerIcon.badge">
     <Setter Property="Width" Value="{DynamicResource IconSizeBadge}" />
     <Setter Property="Height" Value="{DynamicResource IconSizeBadge}" />

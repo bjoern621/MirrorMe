@@ -21,6 +21,21 @@
     <Style Selector="ContentControl.expert TextBlock.fieldlabel">
       <Setter Property="IsVisible" Value="False" />
     </Style>
+
+    <!-- A row opening fades its value out, the control unrolling under it taking over, and turns its chevron up. -->
+    <Style Selector="TextBlock.value">
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="TextBlock.value.open">
+      <Setter Property="Opacity" Value="0" />
+    </Style>
+    <Style Selector="ti|TablerIcon.fold.open">
+      <Setter Property="RenderTransform" Value="rotate(180deg)" />
+    </Style>
   </UserControl.Styles>
 
   <!--
@@ -81,21 +96,22 @@
                       IsVisible="{Binding Field.HasRefused}"
                       Command="{Binding Field.RevealCommand}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
-                  <ti:TablerIcon Icon="{Binding Field.RefusedGlyph}" Brush="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                  <ti:TablerIcon Classes="disclosure" Classes.open="{Binding Field.RefusedShown}" Icon="IconChevronRight" Brush="{StaticResource MutedBrush}" VerticalAlignment="Center" />
                   <TextBlock Classes="secondary" Text="{Binding Field.RefusedTitle}" VerticalAlignment="Center" />
                   <TextBlock Classes="hint" Text="{Binding Field.RefusedCount}" VerticalAlignment="Center" />
                 </StackPanel>
               </Button>
 
-              <ItemsControl ItemsSource="{Binding Field.Refused}"
-                            ItemTemplate="{StaticResource ChoiceCard}"
-                            IsVisible="{Binding Field.RefusedShown}">
-                <ItemsControl.ItemsPanel>
-                  <ItemsPanelTemplate>
-                    <controls:ChoiceRowPanel />
-                  </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-              </ItemsControl>
+              <controls:Reveal IsOpen="{Binding Field.RefusedShown}">
+                <ItemsControl ItemsSource="{Binding Field.Refused}"
+                              ItemTemplate="{StaticResource ChoiceCard}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <controls:ChoiceRowPanel />
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                </ItemsControl>
+              </controls:Reveal>
 
               <!-- What the picked entry is for, and what the form says at this control, once under the question. -->
               <TextBlock Classes="secondary"
@@ -126,78 +142,88 @@
       <StackPanel>
         <ContentControl Content="{Binding Expert.Fold}" ContentTemplate="{StaticResource FoldDisclosure}" />
 
-        <ItemsControl ItemsSource="{Binding Expert.Rows}" IsVisible="{Binding Expert.Fold.Shown}" Margin="0,10,0,0">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate x:DataType="vm:ExpertRow">
-              <StackPanel>
-                <!-- A greyed row keeps its value and its reason, and opens onto nothing. -->
-                <Button Theme="{StaticResource RowButton}" Command="{Binding Toggle}">
-                  <Grid ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,6">
-                    <TextBlock Grid.Column="0" Classes="secondary" VerticalAlignment="Center" Text="{Binding Field.Label}" />
-                    <ContentControl Grid.Column="1"
-                                    HorizontalAlignment="Left"
-                                    IsVisible="{Binding Field.HasComparison}"
-                                    Content="{Binding Field}"
-                                    ContentTemplate="{StaticResource ComparisonGlyph}" />
-                    <!-- The open control shows the value itself. -->
-                    <TextBlock Grid.Column="2"
-                               Margin="10,0,0,0"
-                               VerticalAlignment="Center"
-                               IsVisible="{Binding !IsOpen}"
-                               FontFeatures="{StaticResource FigureFeatures}"
-                               Text="{Binding Field.PickedLabel}" />
-                    <ti:TablerIcon Grid.Column="3"
-                                   Margin="8,0,0,0"
-                                   Icon="IconChevronDown"
-                                   Brush="{StaticResource MutedBrush}"
-                                   IsVisible="{Binding Field.IsEnabled}"
-                                   VerticalAlignment="Center" />
-                  </Grid>
-                </Button>
-                <SelectableTextBlock Classes="reason"
-                                     Margin="7,0,0,6"
-                                     IsVisible="{Binding !Field.IsEnabled}"
-                                     Text="{Binding Field.Reason}" />
-                <!-- The open control draws its own lines under it. -->
-                <ItemsControl Margin="7,0,0,0" IsVisible="{Binding !IsOpen}" ItemsSource="{Binding Field.Diagnostics}">
-                  <ItemsControl.ItemTemplate>
-                    <DataTemplate x:DataType="fields:Impact">
-                      <controls:CheckItem Margin="0,0,0,7" Text="{Binding Text}" State="{Binding State}" />
-                    </DataTemplate>
-                  </ItemsControl.ItemTemplate>
-                </ItemsControl>
-                <ContentControl Classes="expert"
-                                Margin="7,4,0,0"
-                                IsVisible="{Binding IsOpen}"
-                                Content="{Binding Field}"
-                                ContentTemplate="{StaticResource FieldRow}" />
-                <Grid ColumnDefinitions="*,Auto" Margin="7,8,0,8" IsVisible="{Binding IsOpen}">
-                  <ItemsControl Grid.Column="0" VerticalAlignment="Center" ItemsSource="{Binding Pips}">
-                    <ItemsControl.ItemsPanel>
-                      <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal" Spacing="4" />
-                      </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                      <DataTemplate x:DataType="x:Boolean">
-                        <Border Classes="pip" Classes.current="{Binding}" />
-                      </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                  </ItemsControl>
-                  <Button Grid.Column="1"
-                          Theme="{StaticResource LinkButton}"
-                          IsVisible="{Binding HasNext}"
-                          Command="{Binding Next}">
-                    <StackPanel Orientation="Horizontal" Spacing="4">
-                      <TextBlock Classes="secondary" VerticalAlignment="Center" Text="{Binding NextLabel}" />
-                      <ti:TablerIcon Icon="IconArrowRight" Brush="{StaticResource MutedBrush}" VerticalAlignment="Center" />
-                    </StackPanel>
+        <controls:Reveal IsOpen="{Binding Expert.Fold.Shown}">
+          <ItemsControl ItemsSource="{Binding Expert.Rows}" Margin="0,10,0,0">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:ExpertRow">
+                <StackPanel>
+                  <!-- A greyed row keeps its value and its reason, and opens onto nothing. -->
+                  <Button Theme="{StaticResource RowButton}" Command="{Binding Toggle}">
+                    <Grid ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,6">
+                      <TextBlock Grid.Column="0" Classes="secondary" VerticalAlignment="Center" Text="{Binding Field.Label}" />
+                      <ContentControl Grid.Column="1"
+                                      HorizontalAlignment="Left"
+                                      IsVisible="{Binding Field.HasComparison}"
+                                      Content="{Binding Field}"
+                                      ContentTemplate="{StaticResource ComparisonGlyph}" />
+                      <!-- The open control shows the value itself. -->
+                      <TextBlock Grid.Column="2"
+                                 Margin="10,0,0,0"
+                                 VerticalAlignment="Center"
+                                 Classes="value"
+                                 Classes.open="{Binding IsOpen}"
+                                 FontFeatures="{StaticResource FigureFeatures}"
+                                 Text="{Binding Field.PickedLabel}" />
+                      <ti:TablerIcon Grid.Column="3"
+                                     Classes="fold"
+                                     Classes.open="{Binding IsOpen}"
+                                     Margin="8,0,0,0"
+                                     Icon="IconChevronDown"
+                                     Brush="{StaticResource MutedBrush}"
+                                     IsVisible="{Binding Field.IsEnabled}"
+                                     VerticalAlignment="Center" />
+                    </Grid>
                   </Button>
-                </Grid>
-              </StackPanel>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
+                  <SelectableTextBlock Classes="reason"
+                                       Margin="7,0,0,6"
+                                       IsVisible="{Binding !Field.IsEnabled}"
+                                       Text="{Binding Field.Reason}" />
+                  <!-- The open control draws its own lines under it. -->
+                  <controls:Reveal IsOpen="{Binding !IsOpen}">
+                    <ItemsControl Margin="7,0,0,0" ItemsSource="{Binding Field.Diagnostics}">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="fields:Impact">
+                          <controls:CheckItem Margin="0,0,0,7" Text="{Binding Text}" State="{Binding State}" />
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </controls:Reveal>
+                  <controls:Reveal IsOpen="{Binding IsOpen}">
+                    <ContentControl Classes="expert"
+                                    Margin="7,4,0,0"
+                                    Content="{Binding Field}"
+                                    ContentTemplate="{StaticResource FieldRow}" />
+                  </controls:Reveal>
+                  <controls:Reveal IsOpen="{Binding IsOpen}">
+                    <Grid ColumnDefinitions="*,Auto" Margin="7,8,0,8">
+                      <ItemsControl Grid.Column="0" VerticalAlignment="Center" ItemsSource="{Binding Pips}">
+                        <ItemsControl.ItemsPanel>
+                          <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="4" />
+                          </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                          <DataTemplate x:DataType="x:Boolean">
+                            <Border Classes="pip" Classes.current="{Binding}" />
+                          </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                      </ItemsControl>
+                      <Button Grid.Column="1"
+                              Theme="{StaticResource LinkButton}"
+                              IsVisible="{Binding HasNext}"
+                              Command="{Binding Next}">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                          <TextBlock Classes="secondary" VerticalAlignment="Center" Text="{Binding NextLabel}" />
+                          <ti:TablerIcon Icon="IconArrowRight" Brush="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                        </StackPanel>
+                      </Button>
+                    </Grid>
+                  </controls:Reveal>
+                </StackPanel>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </controls:Reveal>
       </StackPanel>
     </Border>
   </StackPanel>

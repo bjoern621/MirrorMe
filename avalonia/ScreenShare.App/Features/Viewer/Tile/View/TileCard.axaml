@@ -188,6 +188,35 @@
       <Setter Property="IsVisible" Value="True" />
     </Style>
 
+    <!-- The panel grows out of the corner it stands in, as a menu grows out of its anchor. -->
+    <Style Selector="Panel.stats[IsVisible=True] > Border">
+      <Setter Property="RenderTransformOrigin" Value="100%,0%" />
+      <Style.Animations>
+        <Animation Duration="{StaticResource MotionMount}" Easing="{StaticResource MotionEase}">
+          <KeyFrame Cue="0%">
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="RenderTransform" Value="scale(0.94)" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="RenderTransform" Value="none" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+
+    <!-- A heading's figure fades as its block opens, the rows unrolling under it taking over. -->
+    <Style Selector="Panel.stats TextBlock.lead">
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Panel.stats TextBlock.lead.open">
+      <Setter Property="Opacity" Value="0" />
+    </Style>
+
     <!--
       A loss or drop above zero. Weight and full strength carry it, no hue:
       the panel stands over the picture (docs/design-language.md, "Video surfaces").
@@ -514,14 +543,16 @@
                     <StackPanel>
                       <Button Theme="{StaticResource RowButton}" Command="{Binding Toggle}">
                         <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{StaticResource GapControl}" Margin="0,4">
-                          <ti:TablerIcon Grid.Column="0" Icon="{Binding Glyph}" Brush="{StaticResource MutedBrush}"
+                          <ti:TablerIcon Grid.Column="0" Classes="disclosure" Classes.open="{Binding IsOpen}"
+                                         Icon="IconChevronRight" Brush="{StaticResource MutedBrush}"
                                          VerticalAlignment="Center" />
                           <TextBlock Grid.Column="1" Classes="caption" Classes.alarm="{Binding HasAlarm}"
                                      Text="{Binding Heading}" ToolTip.Tip="{Binding Tip}"
                                      VerticalAlignment="Center" />
                           <!-- The open block prints the figure in its own row. -->
-                          <TextBlock Grid.Column="2" Classes="figure" Classes.alarm="{Binding Lead.Alarm}"
-                                     Text="{Binding Lead.Value}" IsVisible="{Binding !IsOpen}"
+                          <TextBlock Grid.Column="2" Classes="figure lead" Classes.alarm="{Binding Lead.Alarm}"
+                                     Classes.open="{Binding IsOpen}"
+                                     Text="{Binding Lead.Value}"
                                      TextWrapping="Wrap" TextAlignment="Right" VerticalAlignment="Center" />
                         </Grid>
                       </Button>
@@ -533,19 +564,21 @@
                         so a long reading sized first would squeeze its label to one letter per line.
                         The tip sits on the label, the reading being the half that changes under the pointer.
                       -->
-                      <ItemsControl ItemsSource="{Binding Lines}" IsVisible="{Binding IsOpen}" Margin="7,2,3,8">
-                        <ItemsControl.ItemTemplate>
-                          <DataTemplate x:DataType="model:StatLine">
-                            <Grid ColumnDefinitions="Auto,*"
-                                  ColumnSpacing="{StaticResource GapControl}">
-                              <TextBlock Grid.Column="0" Classes="hint" Classes.alarm="{Binding Alarm}"
-                                         Text="{Binding Label}" ToolTip.Tip="{Binding Tip}" />
-                              <TextBlock Grid.Column="1" Classes="figure" Classes.alarm="{Binding Alarm}"
-                                         Text="{Binding Value}" TextWrapping="Wrap" TextAlignment="Right" />
-                            </Grid>
-                          </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                      </ItemsControl>
+                      <controls:Reveal IsOpen="{Binding IsOpen}">
+                        <ItemsControl ItemsSource="{Binding Lines}" Margin="7,2,3,8">
+                          <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="model:StatLine">
+                              <Grid ColumnDefinitions="Auto,*"
+                                    ColumnSpacing="{StaticResource GapControl}">
+                                <TextBlock Grid.Column="0" Classes="hint" Classes.alarm="{Binding Alarm}"
+                                           Text="{Binding Label}" ToolTip.Tip="{Binding Tip}" />
+                                <TextBlock Grid.Column="1" Classes="figure" Classes.alarm="{Binding Alarm}"
+                                           Text="{Binding Value}" TextWrapping="Wrap" TextAlignment="Right" />
+                              </Grid>
+                            </DataTemplate>
+                          </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                      </controls:Reveal>
                     </StackPanel>
                   </DataTemplate>
                 </ItemsControl.ItemTemplate>

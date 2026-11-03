@@ -400,7 +400,8 @@ One duration per kind of change, so a hover reads alike on every control:
 | Menu, dropdown, tooltip opening | about 150 ms | fades in, growing from 96 % |
 | Menu or dropdown closing | about 110 ms | fades out, shrinking, before it goes |
 | Tick or mark appearing | about 200 ms | pops in from 40 % |
-| Card, dialog, side panel, tile | about 260 ms | card rises, dialog grows, panel slides in from its edge, tile fades in with a slight zoom |
+| Fold opening or closing | about 220 ms | body unrolls to its height as it fades in, rows under it move along, chevron turns, the figure on its heading fades out |
+| Card, dialog, side panel, tile | about 260 ms | card rises, dialog grows, panel slides in from its edge, stats panel grows out of its corner, tile fades in with a slight zoom |
 | Picture arriving | 500 ms | fades in over the tile |
 
 Caption buttons hold still under the press, as the platform's own do.

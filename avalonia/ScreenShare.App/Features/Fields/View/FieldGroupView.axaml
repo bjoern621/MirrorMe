@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:ScreenShare.App.Controls"
              xmlns:copy="using:ScreenShare.App.Copy"
              xmlns:ti="using:TablerIcons"
              xmlns:vm="using:ScreenShare.App.Features.Fields.ViewModel"
@@ -42,10 +43,11 @@
       <!-- The step's fold: what the floor leaves out, behind a closed disclosure (Setup/Model/FloorLayout.cs). -->
       <ContentControl IsVisible="{Binding Fold.HasAny}" Content="{Binding Fold}" ContentTemplate="{StaticResource FoldDisclosure}" />
 
-      <ItemsControl ItemsSource="{Binding Folded}"
-                    ItemTemplate="{StaticResource FieldRow}"
-                    IsVisible="{Binding Fold.Shown}"
-                    Margin="0,12,0,0" />
+      <controls:Reveal IsOpen="{Binding Fold.Shown}">
+        <ItemsControl ItemsSource="{Binding Folded}"
+                      ItemTemplate="{StaticResource FieldRow}"
+                      Margin="0,12,0,0" />
+      </controls:Reveal>
     </StackPanel>
   </Border>
 

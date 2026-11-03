@@ -7,7 +7,6 @@ using ScreenShare.App.Contracts;
 using ScreenShare.App.Copy;
 using ScreenShare.App.Features.Fields.Model;
 using ScreenShare.App.Mvvm;
-using TablerIcons;
 
 namespace ScreenShare.App.Features.Fields.ViewModel;
 
@@ -315,7 +314,6 @@ public sealed class FieldViewModel : Observable
     private bool _actionNoticeIsFailure;
     private bool _hasRefused;
     private string _refusedCount = "";
-    private Icons _refusedGlyph = Icons.IconChevronRight;
 
     /// <summary>
     /// Entries of a select, a radio or a number carrying a ladder.
@@ -486,8 +484,6 @@ public sealed class FieldViewModel : Observable
 
     /// <summary>Entries the disclosure covers. Empty where it covers none.</summary>
     public string RefusedCount { get => _refusedCount; private set => Set(ref _refusedCount, value); }
-
-    public Icons RefusedGlyph { get => _refusedGlyph; private set => Set(ref _refusedGlyph, value); }
 
     public bool IsEnabled { get => _isEnabled; private set => Set(ref _isEnabled, value); }
 
@@ -705,7 +701,6 @@ public sealed class FieldViewModel : Observable
         // so a control whose last refused entry became reachable stops drawing a disclosure over nothing.
         HasRefused = Refused.Count > 0;
         RefusedCount = HasRefused ? Copy.Fields.OptionCount(Refused.Count) : "";
-        RefusedGlyph = RefusedShown ? Icons.IconChevronDown : Icons.IconChevronRight;
         Reconcile.Onto(MenuRows, MenuRowsOf());
 
         // A control the same evaluation left nothing to pick on:

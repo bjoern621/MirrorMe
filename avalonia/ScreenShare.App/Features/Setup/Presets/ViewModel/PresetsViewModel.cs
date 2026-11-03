@@ -94,11 +94,7 @@ public sealed class PresetsViewModel : Observable
         Builtin = [];
         SaveCommand = new PendingCommand(() => Start(SaveAsync), dispatch, () => CanSave);
         RereadCommand = new PendingCommand(() => Start(ReadAsync), dispatch);
-        ToggleSaved = new DelegateCommand(() =>
-        {
-            SavedShown = !SavedShown;
-            OnPropertyChanged(nameof(SavedGlyph));
-        });
+        ToggleSaved = new DelegateCommand(() => SavedShown = !SavedShown);
 
         // Rendered before the store is asked for, so the first list is a later pass rather than a precondition.
         Apply();
@@ -137,8 +133,6 @@ public sealed class PresetsViewModel : Observable
 
     /// <summary>Opens the saved presets, or closes them again. Two presses are two states.</summary>
     public DelegateCommand ToggleSaved { get; }
-
-    public TablerIcons.Icons SavedGlyph => SavedShown ? TablerIcons.Icons.IconChevronDown : TablerIcons.Icons.IconChevronRight;
 
     // --- Outputs ------------------------------------------------------------------
 
