@@ -65,6 +65,11 @@
                   Background="{TemplateBinding Background}"
                   CornerRadius="{TemplateBinding CornerRadius}"
                   Padding="{TemplateBinding Padding}">
+            <Border.Transitions>
+              <Transitions>
+                <BrushTransition Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              </Transitions>
+            </Border.Transitions>
             <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
 
               <ContentPresenter Name="Icon"
@@ -72,7 +77,14 @@
                                 Content="{TemplateBinding Icon}"
                                 Margin="0,0,9,0"
                                 VerticalAlignment="Center"
-                                IsVisible="False" />
+                                IsVisible="False"
+                                RenderTransform="none">
+                <ContentPresenter.Transitions>
+                  <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="{StaticResource MotionMove}" Easing="{StaticResource MotionEase}" />
+                  </Transitions>
+                </ContentPresenter.Transitions>
+              </ContentPresenter>
 
               <!--
                 ContentTemplate is what an ItemTemplate travels through.
@@ -153,8 +165,34 @@
       <Setter Property="IsVisible" Value="False" />
     </Style>
 
+    <!-- The tick pops in as its state takes hold, and each time the menu opens on a held state. -->
     <Style Selector="^:checked /template/ ti|TablerIcon#Tick">
       <Setter Property="IsVisible" Value="True" />
+      <Style.Animations>
+        <Animation Duration="{StaticResource MotionMark}" Easing="{StaticResource MotionEase}">
+          <KeyFrame Cue="0%">
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="RenderTransform" Value="scale(0.4)" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="RenderTransform" Value="none" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+
+    <!-- The row's glyph lifts under the pointer, as a button's does (Design/Icons.axaml). -->
+    <Style Selector="^:pointerover:not(:disabled) /template/ ContentPresenter#Icon">
+      <Setter Property="RenderTransform" Value="scale(1.12)" />
+    </Style>
+
+    <!-- A submenu's chevron leans toward the side it opens on. -->
+    <Style Selector="^:pointerover /template/ ti|TablerIcon#Chevron">
+      <Setter Property="RenderTransform" Value="translateX(2px)" />
+    </Style>
+    <Style Selector="^:open /template/ ti|TablerIcon#Chevron">
+      <Setter Property="RenderTransform" Value="translateX(2px)" />
     </Style>
 
     <!--

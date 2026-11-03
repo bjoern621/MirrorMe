@@ -26,7 +26,7 @@
   </UserControl.KeyBindings>
 
   <!-- Dimmed rather than covered: the window stays readable behind what is being decided over it. -->
-  <Border Background="{StaticResource ScrimBrush}"
+  <Border Classes="scrim"
           IsVisible="{Binding IsOpen}"
           PointerPressed="ScrimPressed">
 

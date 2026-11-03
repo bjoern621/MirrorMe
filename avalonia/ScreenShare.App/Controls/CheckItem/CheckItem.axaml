@@ -26,6 +26,11 @@
                 CornerRadius="{StaticResource RadiusControl}"
                 Padding="6,4"
                 Margin="-6,-4">
+          <Border.Transitions>
+            <Transitions>
+              <BrushTransition Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+            </Transitions>
+          </Border.Transitions>
           <Grid ColumnDefinitions="Auto,*">
             <!-- The badge is even, so the 12px glyph's slack splits into whole pixels and the ink lands centred. -->
             <Border Name="Badge"
@@ -37,6 +42,13 @@
                     BorderBrush="Transparent"
                     VerticalAlignment="Top"
                     Margin="0,1,0,0">
+              <!-- A line changing verdict recolours its badge over a moment, so the change itself is seen. -->
+              <Border.Transitions>
+                <Transitions>
+                  <BrushTransition Property="Background" Duration="{StaticResource MotionMark}" Easing="{StaticResource MotionEase}" />
+                  <BrushTransition Property="BorderBrush" Duration="{StaticResource MotionMark}" Easing="{StaticResource MotionEase}" />
+                </Transitions>
+              </Border.Transitions>
               <ti:TablerIcon Name="Glyph"
                              Classes="badge"
                              Icon="{Binding $parent[controls:CheckItem].State, Converter={x:Static controls:CheckGlyphConverter.Instance}}"

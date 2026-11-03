@@ -7,8 +7,9 @@
 
   <!-- Rises from the foot over a dimmed window (docs/design-language.md, "Narrow windows"). -->
   <Grid>
-    <Border Background="{StaticResource ScrimBrush}" PointerPressed="ScrimPressed" />
-    <Border VerticalAlignment="Bottom"
+    <Border Classes="scrim" PointerPressed="ScrimPressed" />
+    <Border Classes="risingsheet"
+            VerticalAlignment="Bottom"
             Padding="{StaticResource InsetPanel}"
             Background="{StaticResource ChromeBrush}"
             BorderBrush="{StaticResource ControlBorderBrush}"

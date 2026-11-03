@@ -259,6 +259,18 @@
     <Setter Property="Foreground" Value="{DynamicResource SecondaryBrush}" />
   </Style>
 
+  <!--
+    Text inside a button, and a caption under a picture, takes its colour from a pick or a pointer.
+    The colour eases with the fill behind it, so the two never part for a frame.
+  -->
+  <Style Selector="Button :is(TextBlock), :is(TextBlock).cropcaption">
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Foreground" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+      </Transitions>
+    </Setter>
+  </Style>
+
   <!-- Picked. The card's fill turns light, so its text turns dark to stay on it. -->
   <Style Selector="Button.picked :is(TextBlock).impact">
     <Setter Property="Foreground" Value="{DynamicResource OnSelectedMutedBrush}" />

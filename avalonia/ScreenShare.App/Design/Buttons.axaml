@@ -27,13 +27,28 @@
     <Setter Property="HorizontalContentAlignment" Value="Center" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="Cursor" Value="Hand" />
+    <!-- The label's colour moves with the fill, and a glyph bound to it follows. -->
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Foreground" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+      </Transitions>
+    </Setter>
     <Setter Property="Template">
       <ControlTemplate>
         <Border Name="Root"
                 Background="{TemplateBinding Background}"
                 BorderBrush="{TemplateBinding BorderBrush}"
                 BorderThickness="{TemplateBinding BorderThickness}"
-                CornerRadius="{TemplateBinding CornerRadius}">
+                CornerRadius="{TemplateBinding CornerRadius}"
+                RenderTransform="none">
+          <Border.Transitions>
+            <Transitions>
+              <BrushTransition Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              <BrushTransition Property="BorderBrush" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              <DoubleTransition Property="Opacity" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              <TransformOperationsTransition Property="RenderTransform" Duration="{StaticResource MotionPress}" Easing="{StaticResource MotionEase}" />
+            </Transitions>
+          </Border.Transitions>
           <ContentPresenter Name="PART_ContentPresenter"
                             Content="{TemplateBinding Content}"
                             ContentTemplate="{TemplateBinding ContentTemplate}"
@@ -49,6 +64,10 @@
     </Style>
     <Style Selector="^:pressed /template/ Border#Root">
       <Setter Property="Background" Value="{StaticResource ControlPressedBrush}" />
+    </Style>
+    <!-- Every button gives under the press. -->
+    <Style Selector="^:pressed:not(:disabled) /template/ Border#Root">
+      <Setter Property="RenderTransform" Value="scale(0.96)" />
     </Style>
     <Style Selector="^:disabled">
       <Setter Property="Foreground" Value="{StaticResource DisabledBrush}" />
@@ -230,6 +249,10 @@
     <Style Selector="^:pointerover /template/ Border#Root">
       <Setter Property="Background" Value="{StaticResource ControlBrush}" />
     </Style>
+    <!-- A row as wide as its list gives less under the press, the same squeeze reading larger there. -->
+    <Style Selector="^:pressed:not(:disabled) /template/ Border#Root">
+      <Setter Property="RenderTransform" Value="scale(0.985)" />
+    </Style>
     <Style Selector="^:disabled /template/ Border#Root">
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderBrush" Value="Transparent" />
@@ -263,6 +286,10 @@
     <Style Selector="^:pressed /template/ Border#Root">
       <Setter Property="Background" Value="{StaticResource ControlPressedBrush}" />
     </Style>
+    <!-- Holds still under the press, as the platform's own caption buttons do. -->
+    <Style Selector="^:pressed:not(:disabled) /template/ Border#Root">
+      <Setter Property="RenderTransform" Value="none" />
+    </Style>
   </ControlTheme>
 
   <!--
@@ -291,6 +318,9 @@
     </Style>
     <Style Selector="^.picked:pointerover /template/ Border#Root">
       <Setter Property="Background" Value="{StaticResource ControlForegroundBrush}" />
+    </Style>
+    <Style Selector="^:pressed:not(:disabled) /template/ Border#Root">
+      <Setter Property="RenderTransform" Value="scale(0.985)" />
     </Style>
 
     <Style Selector="^:disabled /template/ Border#Root">
@@ -325,6 +355,9 @@
     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
     <Setter Property="VerticalContentAlignment" Value="Top" />
 
+    <Style Selector="^:pressed:not(:disabled) /template/ Border#Root">
+      <Setter Property="RenderTransform" Value="scale(0.985)" />
+    </Style>
     <Style Selector="^:disabled /template/ Border#Root">
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderBrush" Value="Transparent" />

@@ -18,13 +18,30 @@
                 Background="{StaticResource ControlBrush}"
                 BorderThickness="1"
                 BorderBrush="{StaticResource ChipBorderBrush}">
-          <!-- Even against the track's 16px inner box, so the inset around the knob is a whole 2px. -->
+          <Border.Transitions>
+            <Transitions>
+              <BrushTransition Property="Background" Duration="{StaticResource MotionMove}" Easing="{StaticResource MotionEase}" />
+              <BrushTransition Property="BorderBrush" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+            </Transitions>
+          </Border.Transitions>
+          <!--
+            Even against the track's 16px inner box, so the inset around the knob is a whole 2px.
+            Pinned left and moved by a translation, which slides where a change of alignment would jump.
+          -->
           <Ellipse Name="Knob"
                    Width="12" Height="12"
                    Margin="3,0"
                    Fill="{StaticResource MutedBrush}"
                    HorizontalAlignment="Left"
-                   VerticalAlignment="Center" />
+                   VerticalAlignment="Center"
+                   RenderTransform="none">
+            <Ellipse.Transitions>
+              <Transitions>
+                <BrushTransition Property="Fill" Duration="{StaticResource MotionMove}" Easing="{StaticResource MotionEase}" />
+                <TransformOperationsTransition Property="RenderTransform" Duration="{StaticResource MotionMove}" Easing="{StaticResource MotionEase}" />
+              </Transitions>
+            </Ellipse.Transitions>
+          </Ellipse>
         </Border>
       </ControlTemplate>
     </Setter>
@@ -33,9 +50,10 @@
       <Setter Property="Background" Value="{StaticResource SelectedBrush}" />
       <Setter Property="BorderBrush" Value="{StaticResource SelectedBrush}" />
     </Style>
+    <!-- The 32px inner box, less the knob and its two 3px margins. -->
     <Style Selector="^:checked /template/ Ellipse#Knob">
       <Setter Property="Fill" Value="{StaticResource OnSelectedBrush}" />
-      <Setter Property="HorizontalAlignment" Value="Right" />
+      <Setter Property="RenderTransform" Value="translateX(14px)" />
     </Style>
 
     <Style Selector="^:pointerover /template/ Border#Track">

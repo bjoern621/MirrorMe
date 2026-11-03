@@ -37,6 +37,12 @@
                 BorderBrush="{TemplateBinding BorderBrush}"
                 BorderThickness="{TemplateBinding BorderThickness}"
                 CornerRadius="{TemplateBinding CornerRadius}">
+          <Border.Transitions>
+            <Transitions>
+              <BrushTransition Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              <BrushTransition Property="BorderBrush" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+            </Transitions>
+          </Border.Transitions>
           <!--
             The trailing slot a control drawn inside the box lands in, the text keeping the column left of it
             (Controls/CopyButton).
@@ -134,9 +140,25 @@
         <Ellipse Name="Knob"
                  Fill="{StaticResource ForegroundBrush}"
                  Stroke="{StaticResource CardBrush}"
-                 StrokeThickness="3" />
+                 StrokeThickness="3"
+                 RenderTransform="none">
+          <Ellipse.Transitions>
+            <Transitions>
+              <BrushTransition Property="Fill" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              <TransformOperationsTransition Property="RenderTransform" Duration="{StaticResource MotionPress}" Easing="{StaticResource MotionEase}" />
+            </Transitions>
+          </Ellipse.Transitions>
+        </Ellipse>
       </ControlTemplate>
     </Setter>
+
+    <!-- The knob swells under the pointer and grows again while dragged. -->
+    <Style Selector="^:pointerover:not(:disabled) /template/ Ellipse#Knob">
+      <Setter Property="RenderTransform" Value="scale(1.15)" />
+    </Style>
+    <Style Selector="^:pressed:not(:disabled) /template/ Ellipse#Knob">
+      <Setter Property="RenderTransform" Value="scale(1.3)" />
+    </Style>
 
     <Style Selector="^:disabled">
       <Setter Property="Cursor" Value="Arrow" />
@@ -155,7 +177,13 @@
                 Height="6"
                 VerticalAlignment="Center"
                 CornerRadius="{StaticResource RadiusSegment}"
-                Background="{StaticResource ForegroundBrush}" />
+                Background="{StaticResource ForegroundBrush}">
+          <Border.Transitions>
+            <Transitions>
+              <BrushTransition Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+            </Transitions>
+          </Border.Transitions>
+        </Border>
       </ControlTemplate>
     </Setter>
 

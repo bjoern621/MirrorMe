@@ -14,6 +14,70 @@
   </Style>
 
   <!--
+    A card rises into place each time it is shown: as its step opens, and as the form brings it back.
+    Matched on IsVisible, so the animation replays on every showing and not on the first one alone.
+  -->
+  <Style Selector="Border.card[IsVisible=True]">
+    <Style.Animations>
+      <Animation Duration="{StaticResource MotionMount}" Easing="{StaticResource MotionEase}">
+        <KeyFrame Cue="0%">
+          <Setter Property="Opacity" Value="0" />
+          <Setter Property="RenderTransform" Value="translateY(6px)" />
+        </KeyFrame>
+        <KeyFrame Cue="100%">
+          <Setter Property="Opacity" Value="1" />
+          <Setter Property="RenderTransform" Value="none" />
+        </KeyFrame>
+      </Animation>
+    </Style.Animations>
+  </Style>
+
+  <!--
+    The dimmed ground a dialog stands on, over the whole window.
+    It fades in as the dialog opens, and the dialog's panel grows into place on it.
+  -->
+  <Style Selector="Border.scrim">
+    <Setter Property="Background" Value="{DynamicResource ScrimBrush}" />
+  </Style>
+  <Style Selector="Border.scrim[IsVisible=True]">
+    <Style.Animations>
+      <Animation Duration="{StaticResource MotionOpen}" Easing="{StaticResource MotionEase}">
+        <KeyFrame Cue="0%">
+          <Setter Property="Opacity" Value="0" />
+        </KeyFrame>
+        <KeyFrame Cue="100%">
+          <Setter Property="Opacity" Value="1" />
+        </KeyFrame>
+      </Animation>
+    </Style.Animations>
+  </Style>
+  <!-- A sheet on a narrow window rises from the foot it is pinned to. -->
+  <Style Selector="Border.risingsheet[IsVisible=True]">
+    <Style.Animations>
+      <Animation Duration="{StaticResource MotionMount}" Easing="{StaticResource MotionEase}">
+        <KeyFrame Cue="0%">
+          <Setter Property="RenderTransform" Value="translateY(48px)" />
+        </KeyFrame>
+        <KeyFrame Cue="100%">
+          <Setter Property="RenderTransform" Value="none" />
+        </KeyFrame>
+      </Animation>
+    </Style.Animations>
+  </Style>
+  <Style Selector="Border.scrim[IsVisible=True] > Border.panel">
+    <Style.Animations>
+      <Animation Duration="{StaticResource MotionMount}" Easing="{StaticResource MotionEase}">
+        <KeyFrame Cue="0%">
+          <Setter Property="RenderTransform" Value="scale(0.96)" />
+        </KeyFrame>
+        <KeyFrame Cue="100%">
+          <Setter Property="RenderTransform" Value="none" />
+        </KeyFrame>
+      </Animation>
+    </Style.Animations>
+  </Style>
+
+  <!--
     A question on the step column: on the surface itself, no fill and no edge,
     so the picked choice is the brightest thing on screen.
   -->
@@ -24,6 +88,18 @@
   </Style>
 
   <!-- A word pinned to a card, such as Recommended: a capsule that inverts with the card it sits on. -->
+  <!-- The marks that follow a pick or a step ease into their new fill and edge. -->
+  <Style Selector="Border.tag, Border.crop, Border.pip, Border.impact">
+    <Setter Property="RenderTransform" Value="none" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+        <BrushTransition Property="BorderBrush" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+        <TransformOperationsTransition Property="RenderTransform" Duration="{StaticResource MotionMove}" Easing="{StaticResource MotionEase}" />
+      </Transitions>
+    </Setter>
+  </Style>
+
   <Style Selector="Border.tag">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderBrush" Value="{DynamicResource ChipBorderBrush}" />
@@ -56,6 +132,7 @@
   </Style>
   <Style Selector="Border.pip.current">
     <Setter Property="Background" Value="{DynamicResource ForegroundBrush}" />
+    <Setter Property="RenderTransform" Value="scale(1.35)" />
   </Style>
 
   <!-- What a choice raises, a glyph and a few words under its sentence. Inverts with the card it sits on. -->

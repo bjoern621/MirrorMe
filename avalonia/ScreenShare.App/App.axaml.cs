@@ -6,6 +6,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Threading;
 using ScreenShare.App.Contracts;
+using ScreenShare.App.Controls;
 using ScreenShare.App.Features.Shell.Model;
 using ScreenShare.App.Features.Shell.Update.View;
 using ScreenShare.App.Features.Shell.View;
@@ -27,6 +28,8 @@ public sealed partial class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         AssertMonoFaceLoads();
+        TransformKeyFrames.Register();
+        PopupMotion.Install();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {

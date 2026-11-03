@@ -384,8 +384,22 @@ They are absent on Linux rather than redrawn: the comparison has no fixed answer
 
 ## Motion
 
-Subtle and short.
-Hover and opacity transitions around 200ms, video fade-in 500ms, tiles mount with a fade and slight zoom.
+Every change of state moves, subtle and short, easing out.
+One duration per kind of change, so a hover reads alike on every control:
+
+| Change | Duration | Motion |
+| --- | --- | --- |
+| Hover, focus, a pick | about 150 ms | fill, edge and text colour ease to the new state |
+| Press | about 90 ms | control gives a few percent, a full-width row less |
+| Knob, chevron, glyph | about 180 ms | knob slides, chevron leans, glyph lifts under the pointer |
+| Menu, dropdown, tooltip opening | about 150 ms | fades in, growing from 96 % |
+| Menu or dropdown closing | about 110 ms | fades out, shrinking, before it goes |
+| Tick or mark appearing | about 200 ms | pops in from 40 % |
+| Card, dialog, side panel, tile | about 260 ms | card rises, dialog grows, panel slides in from its edge, tile fades in with a slight zoom |
+| Picture arriving | 500 ms | fades in over the tile |
+
+Caption buttons hold still under the press, as the platform's own do.
+A dialog, a submenu and a tooltip close in one frame.
 
 One named animation: `spin`, a 1s linear rotation, which turns the arc a waiting control wears.
 

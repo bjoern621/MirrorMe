@@ -149,4 +149,24 @@
   -->
   <sys:Double x:Key="StripTileHeight">112</sys:Double>
 
+  <!--
+    Motion (docs/design-language.md, "Motion").
+    One duration per kind of change, so a hover reads alike on every control.
+    Every transition eases out: the change lands fast and settles.
+  -->
+  <sys:TimeSpan x:Key="MotionHover">0:0:0.16</sys:TimeSpan>
+  <!-- Short, so a quick click still shows the button going in and coming back. -->
+  <sys:TimeSpan x:Key="MotionPress">0:0:0.09</sys:TimeSpan>
+  <!-- A knob or a chevron moving between two places. -->
+  <sys:TimeSpan x:Key="MotionMove">0:0:0.18</sys:TimeSpan>
+  <!-- A floating surface coming in, and going out a little faster than it came. -->
+  <sys:TimeSpan x:Key="MotionOpen">0:0:0.16</sys:TimeSpan>
+  <sys:TimeSpan x:Key="MotionClose">0:0:0.11</sys:TimeSpan>
+  <!-- A glyph or a mark appearing on a state change. -->
+  <sys:TimeSpan x:Key="MotionMark">0:0:0.2</sys:TimeSpan>
+  <!-- A tile taking its place, and a picture fading in over it once frames arrive. -->
+  <sys:TimeSpan x:Key="MotionMount">0:0:0.26</sys:TimeSpan>
+  <sys:TimeSpan x:Key="MotionPicture">0:0:0.5</sys:TimeSpan>
+  <CubicEaseOut x:Key="MotionEase" />
+
 </ResourceDictionary>

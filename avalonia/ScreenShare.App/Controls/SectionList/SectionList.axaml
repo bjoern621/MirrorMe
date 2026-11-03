@@ -26,12 +26,22 @@
     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
     <Setter Property="CornerRadius" Value="{StaticResource RadiusSegment}" />
     <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Foreground" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+      </Transitions>
+    </Setter>
     <Setter Property="Template">
       <ControlTemplate>
         <Border Name="Root"
                 Background="{TemplateBinding Background}"
                 CornerRadius="{TemplateBinding CornerRadius}"
                 Padding="{TemplateBinding Padding}">
+          <Border.Transitions>
+            <Transitions>
+              <BrushTransition Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+            </Transitions>
+          </Border.Transitions>
           <ContentPresenter Content="{TemplateBinding Content}"
                             ContentTemplate="{TemplateBinding ContentTemplate}"
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"

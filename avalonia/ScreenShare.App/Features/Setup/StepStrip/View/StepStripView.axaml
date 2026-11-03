@@ -43,6 +43,11 @@
       <Setter Property="Height" Value="18" />
       <Setter Property="CornerRadius" Value="9" />
       <Setter Property="Background" Value="{StaticResource DividerBrush}" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <BrushTransition Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+        </Transitions>
+      </Setter>
     </Style>
     <Style Selector="Button.done Border.chipbadge">
       <Setter Property="Background" Value="{StaticResource HintBrush}" />
@@ -82,6 +87,21 @@
       <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
       <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="Foreground" Value="{StaticResource OnSelectedBrush}" />
+    </Style>
+    <!-- The step's name slides out of its badge as the reader arrives on it. -->
+    <Style Selector="TextBlock.chiplabel[IsVisible=True]">
+      <Style.Animations>
+        <Animation Duration="{StaticResource MotionMove}" Easing="{StaticResource MotionEase}">
+          <KeyFrame Cue="0%">
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="RenderTransform" Value="translateX(-6px)" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="RenderTransform" Value="none" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
     </Style>
 
     <Style Selector="Border.connector">

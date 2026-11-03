@@ -18,6 +18,29 @@
     <Setter Property="StrokeWidth" Value="{DynamicResource IconStroke}" />
     <Setter Property="Brush" Value="{DynamicResource GlyphBrush}" />
     <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="RenderTransform" Value="none" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Brush" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+        <DoubleTransition Property="Opacity" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+        <TransformOperationsTransition Property="RenderTransform" Duration="{StaticResource MotionMove}" Easing="{StaticResource MotionEase}" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!--
+    A glyph lifts under the pointer of the button carrying it, and sinks back under the press.
+    A greyed control holds its glyph still, having no press to promise.
+    A menu row lifts its own glyph (Design/Menus.axaml).
+  -->
+  <Style Selector="Button:pointerover:not(:disabled) ti|TablerIcon">
+    <Setter Property="RenderTransform" Value="scale(1.12)" />
+  </Style>
+  <Style Selector="Button:pressed:not(:disabled) ti|TablerIcon">
+    <Setter Property="RenderTransform" Value="scale(0.94)" />
+  </Style>
+  <Style Selector="ToggleButton:pointerover:not(:disabled) ti|TablerIcon">
+    <Setter Property="RenderTransform" Value="scale(1.12)" />
   </Style>
 
   <Style Selector="ti|TablerIcon.badge">
@@ -51,6 +74,12 @@
     <Setter Property="Stroke" Value="{DynamicResource HintBrush}" />
     <Setter Property="StrokeThickness" Value="1" />
     <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Stroke" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+        <DoubleTransition Property="StrokeThickness" Duration="{StaticResource MotionMove}" Easing="{StaticResource MotionEase}" />
+      </Transitions>
+    </Setter>
   </Style>
   <Style Selector="Button.picked Ellipse.radiodot">
     <Setter Property="Stroke" Value="{DynamicResource OnSelectedBrush}" />

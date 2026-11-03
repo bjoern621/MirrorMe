@@ -8,7 +8,8 @@
              xmlns:tiles="using:ScreenShare.App.Features.Viewer.Tile.View"
              x:Class="ScreenShare.App.Features.Viewer.Tile.View.TileCard"
              x:DataType="tile:TileViewModel"
-             Classes.filling="{Binding IsFullscreen}">
+             Classes.filling="{Binding IsFullscreen}"
+             Classes.dark="{Binding HasNotice}">
 
   <!--
     One tile for every host that draws one: a grid cell, the focus arrangement's stage, a window of its own,
@@ -35,7 +36,7 @@
       <Setter Property="Padding" Value="7,4" />
       <Setter Property="Transitions">
         <Transitions>
-          <DoubleTransition Property="Opacity" Duration="0:0:0.12" />
+          <DoubleTransition Property="Opacity" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
         </Transitions>
       </Setter>
     </Style>
@@ -72,10 +73,30 @@
     <Style Selector="Border.nameplate ti|TablerIcon.muted">
       <Setter Property="Brush" Value="{StaticResource ForegroundBrush}" />
     </Style>
+    <!-- The mark pops in as the stream goes quiet, so a mute pressed by key is seen to land. -->
+    <Style Selector="Border.nameplate ti|TablerIcon.muted[IsVisible=True]">
+      <Style.Animations>
+        <Animation Duration="{StaticResource MotionMark}" Easing="{StaticResource MotionEase}">
+          <KeyFrame Cue="0%">
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="RenderTransform" Value="scale(0.4)" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="RenderTransform" Value="none" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
 
     <!-- A muted stream's meter dims to the grey of a reading, the level still moving under it. -->
     <Style Selector="Border.level">
       <Setter Property="Background" Value="{StaticResource ForegroundBrush}" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <BrushTransition Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+        </Transitions>
+      </Setter>
     </Style>
     <Style Selector="Border.level.muted">
       <Setter Property="Background" Value="{StaticResource MutedBrush}" />
@@ -113,6 +134,35 @@
     <Style Selector="tiles|TileCard[PictureElsewhere=True] tiles|StreamTile">
       <Setter Property="Source" Value="{x:Null}" />
       <Setter Property="IsVisible" Value="False" />
+    </Style>
+
+    <!--
+      A tile takes its place with a fade and a slight zoom (docs/design-language.md, "Motion").
+      The picture fades in over it once frames arrive, and out again while the tile is dark.
+    -->
+    <Style Selector="tiles|TileCard">
+      <Style.Animations>
+        <Animation Duration="{StaticResource MotionMount}" Easing="{StaticResource MotionEase}">
+          <KeyFrame Cue="0%">
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="RenderTransform" Value="scale(0.97)" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="RenderTransform" Value="none" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+    <Style Selector="tiles|TileCard tiles|StreamTile">
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="{StaticResource MotionPicture}" Easing="{StaticResource MotionEase}" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="tiles|TileCard.dark tiles|StreamTile">
+      <Setter Property="Opacity" Value="0" />
     </Style>
 
     <Style Selector="tiles|TileCard Border.plate">
