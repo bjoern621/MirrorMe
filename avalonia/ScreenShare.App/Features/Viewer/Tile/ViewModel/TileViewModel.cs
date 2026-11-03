@@ -56,6 +56,7 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
 
         _source = source;
         _backend = backend;
+        _statsFold = new StatsFold(Stats);
         _dispatch = dispatch;
 
         ToggleFocus = new DelegateCommand(() => arrange(TileIntent.Focus));
@@ -99,6 +100,7 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
     private bool _isPoppedOut;
     private bool _isFullscreen;
     private bool _showStats;
+    private readonly StatsFold _statsFold;
     private bool _hasAudio;
     private bool _muted;
     private double _volume = 1;
@@ -414,6 +416,7 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
         HasFigure = Figure.Length > 0;
 
         TileStats.Merge(Stats, ShowStats ? TileStats.Of(sample, _report) : []);
+        _statsFold.Apply();
 
         // A pipeline that is gone leaves the controls at their defaults, never at the last one's values:
         // the next decode of this stream starts unchanged and unmuted,

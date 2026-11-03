@@ -8,62 +8,6 @@ using ScreenShare.App.Mvvm;
 namespace ScreenShare.App.Features.Viewer.Tile.Model;
 
 /// <summary>
-/// One row of the stats panel: the figure's name, its reading, and what it means.
-/// Name and meaning are fixed and only the reading moves, so a row is a live object rather than a record replaced
-/// per sample.
-/// Replacing a row once a second closes its tooltip once a second, and the tooltip is why the panel exists.
-/// </summary>
-public sealed class StatLine : Observable
-{
-    private string _value;
-
-    public StatLine(string label, string value, string tip)
-    {
-        Assert.That(label.Length > 0, "a row names the figure it prints");
-
-        Label = label;
-        Tip = tip;
-        _value = value;
-    }
-
-    public string Label { get; }
-
-    /// <summary>What a reading of it is evidence of, shown on the row's tooltip.</summary>
-    public string Tip { get; }
-
-    /// <summary>
-    /// What it reads, or <see cref="Figure.NoValue"/> where nothing has measured it.
-    /// A zero never stands in for an absence.
-    /// </summary>
-    public string Value { get => _value; set => Set(ref _value, value); }
-}
-
-/// <summary>
-/// One block of the panel: one stage of the pipeline and the figures read off it.
-/// Rows are converged rather than replaced, as a reading is written rather than rebuilt.
-/// Which rows a block holds moves only when the pipeline negotiates something it had not.
-/// </summary>
-public sealed class StatSection
-{
-    public StatSection(string heading, string tip, IEnumerable<StatLine> lines)
-    {
-        Assert.That(heading.Length > 0, "a block names the stage it describes");
-
-        Heading = heading;
-        Tip = tip;
-        Lines = [.. lines];
-    }
-
-    public string Heading { get; }
-
-    /// <summary>What this stage of the pipeline does, shown on the heading.</summary>
-    public string Tip { get; }
-
-    /// <summary>Figures, in the order they are read off the pipeline.</summary>
-    public ObservableCollection<StatLine> Lines { get; }
-}
-
-/// <summary>
 /// The panel, composed from one sample of a decode and the report of the window drawing it.
 ///
 /// <see cref="Of"/> holds nothing: a panel is the whole of what two readings say, built again per pass,
@@ -81,6 +25,28 @@ public sealed class StatSection
 /// </summary>
 public static class TileStats
 {
+    /// <summary>Row that a closed block prints beside its heading, keyed on the heading's id or the element's factory.</summary>
+    private static readonly Dictionary<string, string> Leads = new()
+    {
+        ["section.stream"] = "video_mbps",
+        ["section.picture"] = "picture_size",
+        ["section.decode"] = "decoder",
+        ["section.render"] = "render_fps",
+        ["section.delay"] = "delay.total",
+        ["section.clock"] = "uptime_sec",
+        ["section.audio"] = "audio_kbps",
+        ["section.window"] = "window.dropped",
+        ["srtsrc"] = "packets-received-lost",
+        ["rtpjitterbuffer"] = "num-lost",
+    };
+
+    /// <summary>Rows where any reading above zero means lost picture or a slow stage, so the row stands out.</summary>
+    private static readonly HashSet<string> Alarms =
+    [
+        "discarded_fps", "sink_dropped", "window.dropped",
+        "packets-received-lost", "packets-received-dropped", "num-lost", "num-late",
+    ];
+
     /// <summary>
     /// One tile's panel.
     /// <paramref name="sample"/> is null on an unsampled decode and on a tile drawing no relay decode, both
@@ -115,20 +81,20 @@ public static class TileStats
         return sections;
     }
 
+
     /// <summary>
     /// Converges the panel a tile holds onto the one its newest readings describe.
+    /// Readings get written into the rows that are there, so a row under the pointer keeps its tooltip.
     ///
-    /// Readings are written into the rows that are there rather than replacing them, only the figure moving
-    /// between two samples of one pipeline.
+    /// The headings and labels decide between writing and replacing.
+    /// They move when a pipeline negotiates something new, such as an audio branch coming up
+    /// or a transport element starting to count.
+    /// A changed heading list replaces the panel, a changed label list replaces that block.
     ///
-    /// Converging or replacing is decided on the shape, the headings and the labels.
-    /// The shape moves when a pipeline negotiates something it had not, an audio branch coming up or a transport
-    /// element starting to keep counters, and the block or the panel is rebuilt once and holds still.
-    ///
-    /// A row the newest reading measured nothing for keeps what the last one measured.
-    /// A second is short enough for a healthy decode to measure none of a per-interval figure, and a column
-    /// alternating between a number and an ellipsis is one nobody can read.
-    /// What ends a held value is the shape moving, what a decode that stopped or was rebuilt does to the panel.
+    /// A row that the newest reading measured nothing for keeps the last measurement.
+    /// A second is short enough for a healthy decode to measure none of a per-interval figure,
+    /// and a column flipping between a number and an ellipsis cannot be read.
+    /// A held value ends once the shape moves, as it does when a decode stops or gets rebuilt.
     /// </summary>
     public static void Merge(ObservableCollection<StatSection> held, IReadOnlyList<StatSection> built)
     {
@@ -148,38 +114,34 @@ public static class TileStats
 
         for (var i = 0; i < held.Count; i++)
         {
+            if (!held[i].Lines.Select(line => line.Label).SequenceEqual(built[i].Lines.Select(line => line.Label)))
+            {
+                held[i] = built[i];
+                continue;
+            }
+
             MergeLines(held[i].Lines, built[i].Lines);
         }
 
         Assert.That(held.Count == built.Count, "a block per block the readings describe", held.Count, built.Count);
     }
 
-    private static void MergeLines(ObservableCollection<StatLine> held, IReadOnlyList<StatLine> built)
+    private static void MergeLines(IReadOnlyList<StatLine> held, IReadOnlyList<StatLine> built)
     {
-        if (!held.Select(line => line.Label).SequenceEqual(built.Select(line => line.Label)))
-        {
-            held.Clear();
-            foreach (var line in built)
-            {
-                held.Add(line);
-            }
-
-            return;
-        }
-
         for (var i = 0; i < held.Count; i++)
         {
             if (built[i].Value != Figure.NoValue)
             {
                 held[i].Value = built[i].Value;
+                held[i].Alarm = built[i].Alarm;
             }
         }
     }
 
     /// <summary>
-    /// Adds one block, and nothing where the stage it describes reported no figure at all.
-    /// A heading over an empty block says a stage exists and refuses to describe it: the audio block is absent
-    /// where there is no track.
+    /// Adds one block, and nothing where the stage reported no figure at all.
+    /// A heading over an empty block would name a stage and say nothing about it,
+    /// so a stream without a track has no audio block.
     /// </summary>
     private static void Add(List<StatSection> sections, string id, IReadOnlyList<StatLine> lines)
     {
@@ -189,7 +151,7 @@ public static class TileStats
         }
 
         var heading = Counters.Heading(id);
-        sections.Add(new StatSection(heading.Label, heading.Tip, lines));
+        sections.Add(new StatSection(heading.Label, heading.Tip, lines, Leads.GetValueOrDefault(id, "")));
     }
 
     private static IReadOnlyList<StatLine> Arriving(ReceiveStreamStats s) =>
@@ -227,7 +189,7 @@ public static class TileStats
 
         // In the block naming the stage that does it, ahead of Render,
         // so the panel reads as the funnel it is: arriving, shed here, drawn.
-        Line("discarded_fps", s.HasDiscardedFps ? $"{s.DiscardedFps:0.0} /s" : ""),
+        Line("discarded_fps", s.HasDiscardedFps ? $"{s.DiscardedFps:0.0} /s" : "", s.HasDiscardedFps ? s.DiscardedFps : 0),
 
         // What the pipeline was built with, never what was asked for.
         // Printed in both directions: a row that vanished on "off" would leave two tiles of one HDR stream
@@ -243,7 +205,7 @@ public static class TileStats
         Line("render_size", Pixels(s.RenderWidth, s.RenderHeight)),
         Line("render_fps", s.HasRenderFps ? $"{s.RenderFps:0.0} /s" : ""),
         Line("rendered", Count(s.Rendered)),
-        Line("sink_dropped", Count(s.Dropped)),
+        Line("sink_dropped", Count(s.Dropped), s.Dropped),
     ];
 
     /// <summary>
@@ -338,7 +300,7 @@ public static class TileStats
     [
         Line("window.size", Pixels(report.Width, report.Height)),
         Line("window.frames", Count(report.Frames)),
-        Line("window.dropped", Count(report.Dropped)),
+        Line("window.dropped", Count(report.Dropped), report.Dropped),
     ];
 
     /// <summary>One element of the transport and the counters it keeps, in the element's own order.</summary>
@@ -353,22 +315,25 @@ public static class TileStats
         return new StatSection(
             $"{element.Label} · {group.Element}",
             element.Tip,
-            group.Values.Select(Line));
+            group.Values.Select(Line),
+            Leads.GetValueOrDefault(group.Factory, ""));
     }
 
     /// <summary>
     /// One figure's row.
-    /// An empty value is a figure nothing measured, printed as absent rather than as a zero: the pads negotiate
+    /// An empty value means nothing measured the figure, printed as absent and never as a zero: the pads negotiate
     /// after the pipeline is built, so every field here is empty for a moment on every decode.
     /// </summary>
-    private static StatLine Line(string key, string value)
+    private static StatLine Line(string key, string value, double reading = 0)
     {
         var counter = Counters.Field(key);
-        return new StatLine(counter.Label, value.Length > 0 ? value : Figure.NoValue, counter.Tip);
+        return new StatLine(
+            key, counter.Label, value.Length > 0 ? value : Figure.NoValue, counter.Tip, Alarms.Contains(key) && reading > 0);
     }
 
     /// <summary>One transport counter, keyed as the element names it.</summary>
-    private static StatLine Line(ReceiveStatValue value) => Line(value.Key, Counter(value.Key, value.Value));
+    private static StatLine Line(ReceiveStatValue value) =>
+        Line(value.Key, Counter(value.Key, value.Value), value.Value);
 
     /// <summary>
     /// One of an element's counters, the unit read off the key:

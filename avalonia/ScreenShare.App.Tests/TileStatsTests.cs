@@ -393,6 +393,67 @@ public sealed class TileStatsTests
         Assert.Equal("24.50 Mb/s", Value(panel, "Arriving", "Bitrate"));
     }
 
+    /// <summary>A closed block still answers the one question a glance asks of its stage.</summary>
+    [Fact]
+    public void EveryBlockLeadsWithOneFigure()
+    {
+        var sample = Sample();
+        sample.Groups.Add(SrtGroup());
+
+        var panel = TileStats.Of(sample, Report());
+
+        Assert.Equal("24.50 Mb/s", Section(panel, "Arriving").Lead?.Value);
+        Assert.Equal("468 ms", Section(panel, "Delay").Lead?.Value);
+        Assert.Equal("3", Section(panel, "This window").Lead?.Value);
+        Assert.Equal("41", panel[^1].Lead?.Value);
+        Assert.All(panel, section => Assert.NotNull(section.Lead));
+    }
+
+    /// <summary>A reader scans the panel for a loss or a drop. One above zero stands out, and so does its block.</summary>
+    [Fact]
+    public void ALossAboveZeroStandsOutAndMarksItsBlock()
+    {
+        var sample = Sample();
+        sample.Groups.Add(SrtGroup());
+
+        var panel = TileStats.Of(sample, Report());
+        var link = panel[^1];
+
+        Assert.True(link.Lines.Single(line => line.Label == "Lost").Alarm);
+        Assert.False(link.Lines.Single(line => line.Label == "Round trip").Alarm);
+        Assert.True(link.HasAlarm);
+        Assert.False(Section(panel, "Arriving").HasAlarm);
+    }
+
+    [Fact]
+    public void ADropCountAtZeroStaysQuiet()
+    {
+        var panel = TileStats.Of(null, Report() with { Dropped = 0 });
+
+        Assert.False(Section(panel, "This window").HasAlarm);
+    }
+
+    /// <summary>The first loss lands on a row already on screen, which has to start standing out where it is.</summary>
+    [Fact]
+    public void ARowStartsStandingOutOnTheSampleThatLosesSomething()
+    {
+        var clean = Sample();
+        clean.Groups.Add(SrtGroup());
+        clean.Groups[0].Values[1].Value = 0;
+
+        var panel = new ObservableCollection<StatSection>();
+        TileStats.Merge(panel, TileStats.Of(clean, Report()));
+        var link = panel[^1];
+        Assert.False(link.HasAlarm);
+
+        var lossy = Sample();
+        lossy.Groups.Add(SrtGroup());
+        TileStats.Merge(panel, TileStats.Of(lossy, Report()));
+
+        Assert.Same(link, panel[^1]);
+        Assert.True(link.HasAlarm);
+    }
+
     /// <summary>A decode that stopped is a different panel, so nothing it measured stands under the next.</summary>
     [Fact]
     public void ADecodeThatStoppedKeepsNothing()
