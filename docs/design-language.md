@@ -225,6 +225,11 @@ The badge is neutral except on this machine's own outgoing stream, which wears t
 A struggling stream wears the same neutral badge, names itself in words, and prints its drop count at a heavier weight.
 The hues stay off the picture: a colour over arbitrary video is a colour against an unknown background, so a fault on a video surface is read rather than spotted.
 
+A tile's stats panel shows one block at a time.
+It opens with every block closed, each heading carrying the one figure that block leads with.
+A press on a heading opens that block and closes the one open before it.
+A loss or drop counter above zero prints semibold at full text strength, on its row and on its block's heading.
+
 Hiding a stream tears the decoder down, so the surface offering the toggle also reports the bandwidth and decode load that frees.
 
 ## Status language

@@ -17,6 +17,7 @@ Read the page before guessing, and put a new fact on the page that owns it.
 
 | Page | Answers |
 | --- | --- |
+| [architecture.md](architecture.md) | which program does what, where it runs, and how the programs meet |
 | [network-architecture.md](network-architecture.md) | what travels between which machines, over which leg, encrypted with what |
 | [membership.md](membership.md) | who is in a group, and what the relay does about anybody else |
 | [auth-flow.md](auth-flow.md) | what a group key is, what a token grants, and what a leak costs |
@@ -43,6 +44,7 @@ Read the page before guessing, and put a new fact on the page that owns it.
 | Page | Answers |
 | --- | --- |
 | [development-principles.md](development-principles.md) | how the code may be shaped, which governs every change |
+| [design-principles.md](design-principles.md) | the rules every screen follows: one thing at a time, what needs the reader stands out |
 | [design-language.md](design-language.md) | one visual language, and the tokens that are its reference implementation |
 | [tooltips.md](tooltips.md) | what a tooltip teaches, on which fields and options |
 | [readme-audience.md](readme-audience.md) | who the root `README.md` is written for, and what a sentence in it may assume |
