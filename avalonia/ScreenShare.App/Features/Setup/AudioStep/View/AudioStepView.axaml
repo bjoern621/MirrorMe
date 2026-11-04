@@ -209,7 +209,12 @@
             <DataTemplate x:DataType="fields:FieldViewModel">
               <StackPanel Spacing="6" Margin="0,0,0,18">
                 <Grid ColumnDefinitions="*,Auto,Auto">
-                  <TextBlock Grid.Column="0" Classes="secondary" Text="{Binding Label}" />
+                  <TextBlock Grid.Column="0" Classes="secondary" TextWrapping="Wrap" TextTrimming="None">
+                    <Run Text="{Binding Label}" />
+                    <InlineUIContainer BaselineAlignment="TextBottom">
+                      <ContentControl IsVisible="{Binding HasHelp}" Content="{Binding Help}" ContentTemplate="{StaticResource HelpGlyph}" />
+                    </InlineUIContainer>
+                  </TextBlock>
                   <TextBlock Grid.Column="1"
                              Classes="hint"
                              Margin="8,0,0,0"
@@ -218,12 +223,6 @@
                              Text="{Binding LiveNotice}" />
                   <TextBlock Grid.Column="2" Classes="figure" IsVisible="{Binding HasUnit}" Text="{Binding Unit}" />
                 </Grid>
-
-                <TextBlock Classes="hint"
-                           TextWrapping="Wrap"
-                           TextTrimming="None"
-                           IsVisible="{Binding HasHelp}"
-                           Text="{Binding Help}" />
 
                 <TextBox IsVisible="{Binding IsText}"
                          IsEnabled="{Binding IsEnabled}"

@@ -2,6 +2,9 @@
 
 Every settings field and every option a control offers can carry a tooltip.
 A tooltip teaches the encoding model the form is configuring, so it carries what the label cannot.
+A control's help opens from an info glyph beside its name, and a card's paragraph opens on hover over the card.
+The screen keeps to names, figures, chips and reasons.
+A step's one-line lead under its question stays on screen.
 
 **Every word of a tooltip is the shell's.**
 The backend sends a field, its options and, where something is inert, a code naming the fact that made it so.
@@ -60,7 +63,7 @@ A note about it stays a chip there, and the picked card's chips are not repeated
 
 ## Comparison crops
 
-A field whose entries change what the picture looks like carries an info glyph beside its name, and the tip it opens sets crops of one test picture side by side.
+A field whose entries change what the picture looks like carries a picture glyph beside its name, and the tip it opens sets crops of one test picture side by side.
 Each crop went through the real encoder at the settings its caption names, then was cut from the same spot and enlarged without smoothing.
 The pictures stand in the tip alone, so a choice card keeps to its name, its figure and its chips.
 

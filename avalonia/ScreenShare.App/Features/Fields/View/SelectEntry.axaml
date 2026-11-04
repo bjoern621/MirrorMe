@@ -1,5 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:copy="using:ScreenShare.App.Copy"
                     xmlns:fields="using:ScreenShare.App.Features.Fields.ViewModel"
                     xmlns:ti="using:TablerIcons">
 
@@ -18,7 +19,12 @@
   -->
 
   <DataTemplate x:Key="SelectEntry" x:DataType="fields:OptionViewModel">
-    <StackPanel MinWidth="260" MaxWidth="380" Spacing="2">
+    <StackPanel MinWidth="260"
+                MaxWidth="380"
+                Spacing="2"
+                Background="Transparent"
+                ToolTip.Tip="{Binding Detail}"
+                ToolTip.ServiceEnabled="{Binding HasDetail}">
       <Grid ColumnDefinitions="Auto,*,Auto">
         <!--
           The mark rides beside the name rather than in the note column, which carries what an entry
@@ -29,7 +35,7 @@
                      Text="{Binding Label}"
                      VerticalAlignment="Center" />
           <TextBlock Classes="mark"
-                     Text="Recommended"
+                     Text="{x:Static copy:Cards.Recommended}"
                      IsVisible="{Binding IsRecommended}"
                      VerticalAlignment="Center" />
         </StackPanel>
@@ -50,9 +56,6 @@
       <SelectableTextBlock Classes="reason"
                            IsVisible="{Binding HasReason}"
                            Text="{Binding Reason}" />
-      <TextBlock Classes="cardbody"
-                 IsVisible="{Binding HasDetail}"
-                 Text="{Binding Detail}" />
     </StackPanel>
   </DataTemplate>
 

@@ -20,7 +20,9 @@
               Classes.picked="{Binding IsSelected}"
               Margin="0,0,0,8"
               IsEnabled="{Binding IsEnabled}"
-              Command="{Binding Choose}">
+              Command="{Binding Choose}"
+              ToolTip.Tip="{Binding Detail}"
+              ToolTip.ServiceEnabled="{Binding HasDetail}">
         <StackPanel Spacing="4">
           <Grid ColumnDefinitions="Auto,*">
             <Ellipse Grid.Column="0" Classes="radiodot" />
@@ -34,7 +36,6 @@
                                TextWrapping="Wrap"
                                IsVisible="{Binding HasReason}"
                                Text="{Binding Reason}" />
-          <TextBlock Classes="cardbody" Text="{Binding Detail}" />
           <ItemsControl ItemsSource="{Binding Impacts}"
                         IsVisible="{Binding HasImpacts}"
                         Margin="0,2,0,0"
@@ -52,8 +53,12 @@
                  Classes="heading"
                  VerticalAlignment="Center"
                  TextWrapping="Wrap"
-                 TextTrimming="None"
-                 Text="{Binding Group.Heading}" />
+                 TextTrimming="None">
+        <Run Text="{Binding Group.Heading}" />
+        <InlineUIContainer BaselineAlignment="TextBottom">
+          <ContentControl IsVisible="{Binding Group.HasHelp}" Content="{Binding Group.Help}" ContentTemplate="{StaticResource HelpGlyph}" />
+        </InlineUIContainer>
+      </TextBlock>
       <Button Grid.Column="1"
               Theme="{StaticResource IconButton}"
               Command="{Binding CloseCommand}"
@@ -65,13 +70,6 @@
     <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
       <StackPanel>
         <ItemsControl ItemsSource="{Binding Arrivals}" ItemTemplate="{StaticResource ArrivalCard}" />
-
-        <TextBlock Classes="hint"
-                   TextWrapping="Wrap"
-                   TextTrimming="None"
-                   Margin="0,0,0,8"
-                   IsVisible="{Binding Group.HasHelp}"
-                   Text="{Binding Group.Help}" />
 
         <!-- Backend's own sentence about the last write, unrewritten. -->
         <SelectableTextBlock Classes="reason"

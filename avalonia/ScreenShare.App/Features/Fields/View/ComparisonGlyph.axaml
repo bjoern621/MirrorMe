@@ -6,7 +6,7 @@
                     xmlns:vm="using:ScreenShare.App.Features.Fields.ViewModel">
 
   <!--
-    Info glyph beside a control's name, opening the comparison on hover and on a press,
+    Picture glyph beside a control's name, opening the comparison on hover and on a press,
     the press serving a touch screen. The pictures appear here alone,
     so the cards stay one line of name and one of figure.
   -->
@@ -56,7 +56,7 @@
           <ContentControl Width="356" Content="{Binding Comparison}" ContentTemplate="{StaticResource ComparisonTip}" />
         </Flyout>
       </Button.Flyout>
-      <ti:TablerIcon Icon="IconInfoCircle" Brush="{StaticResource MutedBrush}" />
+      <ti:TablerIcon Icon="IconPhoto" Brush="{StaticResource MutedBrush}" />
     </view:ComparisonButton>
   </DataTemplate>
 

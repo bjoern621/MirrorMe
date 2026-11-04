@@ -32,9 +32,9 @@
         A flag is the switch and never a CheckBox.
         One domain concept rendered two ways is the defect the shared control exists to prevent
         (docs/design-language.md, "Selection").
-        It stands at the row's trailing edge, beside the name and the paragraph it answers.
+        It stands at the row's trailing edge, beside the name it answers.
       -->
-      <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+      <Grid ColumnDefinitions="*,Auto">
         <Grid Grid.Row="0" Grid.Column="0" ColumnDefinitions="*,Auto,Auto">
           <TextBlock Grid.Column="0"
                      Classes="secondary fieldlabel"
@@ -44,6 +44,9 @@
             <Run Text="{Binding Label}" />
             <InlineUIContainer BaselineAlignment="TextBottom">
               <ContentControl IsVisible="{Binding HasComparison}" Content="{Binding}" ContentTemplate="{StaticResource ComparisonGlyph}" />
+            </InlineUIContainer>
+            <InlineUIContainer BaselineAlignment="TextBottom">
+              <ContentControl IsVisible="{Binding HasHelp}" Content="{Binding Help}" ContentTemplate="{StaticResource HelpGlyph}" />
             </InlineUIContainer>
           </TextBlock>
           <TextBlock Grid.Column="1"
@@ -61,15 +64,7 @@
                      Text="{Binding Unit}" />
         </Grid>
 
-        <TextBlock Grid.Row="1" Grid.Column="0"
-                   Classes="hint"
-                   Margin="0,6,0,0"
-                   TextWrapping="Wrap"
-                   TextTrimming="None"
-                   IsVisible="{Binding HasHelp}"
-                   Text="{Binding Help}" />
-
-        <ToggleButton Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
+        <ToggleButton Grid.Column="1"
                       Margin="16,0,0,0"
                       VerticalAlignment="Center"
                       IsVisible="{Binding IsToggle}"

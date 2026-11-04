@@ -1,0 +1,26 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="using:System"
+                    xmlns:ti="using:TablerIcons">
+
+  <!--
+    Info glyph beside a control's name, holding the control's help.
+    Hover opens it and a press opens it too, the press serving a touch screen.
+    The screen keeps to names, figures and chips, and the sentence teaching the setting waits here.
+  -->
+  <DataTemplate x:Key="HelpGlyph" x:DataType="sys:String">
+    <Button Theme="{StaticResource IconButton}"
+            Width="24"
+            Height="24"
+            VerticalAlignment="Center"
+            ToolTip.Tip="{Binding}">
+      <Button.Flyout>
+        <Flyout Placement="BottomEdgeAlignedLeft">
+          <TextBlock Classes="tipbody" MaxWidth="320" TextWrapping="Wrap" Text="{Binding}" />
+        </Flyout>
+      </Button.Flyout>
+      <ti:TablerIcon Icon="IconInfoCircle" Brush="{StaticResource MutedBrush}" />
+    </Button>
+  </DataTemplate>
+
+</ResourceDictionary>

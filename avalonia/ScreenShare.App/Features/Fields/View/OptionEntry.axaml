@@ -28,7 +28,9 @@
             Classes.picked="{Binding IsSelected}"
             Margin="0,0,0,4"
             IsEnabled="{Binding IsEnabled}"
-            Command="{Binding Choose}">
+            Command="{Binding Choose}"
+            ToolTip.Tip="{Binding Detail}"
+            ToolTip.ServiceEnabled="{Binding HasDetail}">
       <StackPanel Spacing="4">
         <!--
           A column each, so a long title wraps inside its own and never runs under the note or the tag.
@@ -65,9 +67,6 @@
         <SelectableTextBlock Classes="reason"
                              IsVisible="{Binding HasReason}"
                              Text="{Binding Reason}" />
-        <TextBlock Classes="cardbody"
-                   IsVisible="{Binding HasDetail}"
-                   Text="{Binding Detail}" />
         <ItemsControl IsVisible="{Binding HasImpacts}"
                       ItemsSource="{Binding Impacts}"
                       ItemsPanel="{StaticResource ChipPanel}"
