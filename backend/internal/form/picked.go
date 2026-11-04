@@ -90,7 +90,7 @@ type pickImpact struct {
 }
 
 // pickFigureClaims are the statements whose figure is what they claim:
-// "0.4 s behind" and "2.7 s behind" tell two entries apart.
+// "0.4 s behind" and "3.4 s behind" tell two entries apart.
 var pickFigureClaims = []screensharev1.TextCode{watchDelay}
 
 func pickImpactOf(w *screensharev1.Diagnostic) pickImpact {
