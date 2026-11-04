@@ -30,7 +30,7 @@ public readonly record struct TileChrome(bool Stats, bool StatsFits, bool StatsT
         // Figures belong to the card drawing the picture they describe,
         // so a slot whose stream popped out is a picture again and rests like one.
         // Its own shape decides nothing about a panel drawn in another window.
-        // A narrow upright card would sit almost wholly under the panel.
+        // A narrow card would sit almost wholly under the panel, whatever its shape.
         // The tile keeps its overlay on, which returns once the card widens.
         var fits = pictureElsewhere || !Cramped(card);
         var stats = showStats && !pictureElsewhere && fits;
@@ -39,5 +39,5 @@ public readonly record struct TileChrome(bool Stats, bool StatsFits, bool StatsT
     }
 
     private static bool Cramped(Size card)
-        => card.Height > card.Width && card.Width < NavWidth.LabelsMinWidth;
+        => card.Width > 0 && card.Width < NavWidth.LabelsMinWidth;
 }

@@ -100,12 +100,14 @@ public sealed class TileChromeTests
         Assert.True(chrome.StatsTicked);
     }
 
+    /// <summary>A strip tile in a portrait window, two to a row, sits as wide as the panel.</summary>
     [Fact]
-    public void ANarrowWideCardKeepsTheOverlay()
+    public void ANarrowWideCardHidesTheOverlay()
     {
-        var chrome = TileChrome.Of(pointerResting: false, showStats: true, pictureElsewhere: false, card: new Size(480, 270));
+        var chrome = TileChrome.Of(pointerResting: false, showStats: true, pictureElsewhere: false, card: new Size(270, 152));
 
-        Assert.True(chrome.Stats);
+        Assert.False(chrome.Stats);
+        Assert.False(chrome.StatsFits);
     }
 
     [Fact]
