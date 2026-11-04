@@ -392,7 +392,8 @@
         Last and behind its own divider, the one row that ends the decode rather than arranging the tile.
         No tick: a stopped stream has no tile to open this menu on.
       -->
-      <MenuItem Header="{x:Static copy:Cards.StopWatching}" Command="{Binding Close}">
+      <MenuItem Header="{x:Static copy:Cards.StopWatching}" Command="{Binding Close}"
+                InputGesture="{x:Static tiles:TileKeys.StopWatching}">
         <MenuItem.Icon>
           <ti:TablerIcon Icon="IconPlayerStop" />
         </MenuItem.Icon>
@@ -501,17 +502,6 @@
           </MultiBinding>
         </Border.IsVisible>
         <TextBlock Classes="figure" Text="{Binding Figure}" FontFeatures="{StaticResource FigureFeatures}" />
-      </Border>
-
-      <!-- The stop takes its own tap, a tap on the card being a request for the stage. -->
-      <Border Classes="chrome" VerticalAlignment="Top" HorizontalAlignment="Left"
-              Margin="{StaticResource InsetTight}" Padding="2">
-        <StackPanel Orientation="Horizontal">
-          <Button Theme="{StaticResource IconButton}" Command="{Binding Close}" Tapped="OnClickTaken"
-                  ToolTip.Tip="{x:Static copy:Cards.StopWatchingTip}">
-            <ti:TablerIcon Classes="button" Icon="IconPlayerStop" />
-          </Button>
-        </StackPanel>
       </Border>
 
       <!--

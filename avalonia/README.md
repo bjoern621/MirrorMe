@@ -348,6 +348,7 @@ The keys are the tile's own rather than the window's, and each names a state the
 | `M` | silenced |
 | `S` | the stats overlay |
 | `+` and `-` | the level the decode plays at |
+| `X` | stopped, waiting in the strip |
 
 A shortcut on the window would have to invent a rule for which tile it meant, and each candidate for that rule is a second arrangement state to keep.
 Hanging them off the tile makes the pointer the rule, so each card listens for keys on the window it is drawn in and answers only while the pointer is over it (`Features/Viewer/Tile/View/TileKeys.cs`).

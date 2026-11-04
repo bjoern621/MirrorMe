@@ -159,8 +159,6 @@ public static class Cards
 
     public const string StopWatching = "Stop watching";
 
-    public const string StopWatchingTip = "Closes this stream. It waits in the strip until you play it again.";
-
     public const string JoinTitle = "Join a group to watch and share";
 
     public const string JoinBody = "Everyone in a group sees the others' streams.";

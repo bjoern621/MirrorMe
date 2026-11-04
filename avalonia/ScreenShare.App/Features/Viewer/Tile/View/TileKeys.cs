@@ -13,7 +13,7 @@ namespace ScreenShare.App.Features.Viewer.Tile.View;
 /// A gesture in the markup with a switch over <see cref="Key"/> beside it would be two answers to what F does,
 /// and the menu would keep printing the stale one until somebody compared them.
 ///
-/// Each key names a state, so pressing it twice is a round trip.
+/// Each key but the stop names a state, so pressing it twice is a round trip.
 /// The tone-map row carries none: it rebuilds the decode and blanks the tile for as long as that takes,
 /// too much for one letter under a resting pointer.
 /// </summary>
@@ -38,6 +38,12 @@ public static class TileKeys
     public static KeyGesture Quieter { get; } = new(Key.OemMinus);
 
     /// <summary>
+    /// Ends the decode, the stream waiting in the strip for a click to play it again.
+    /// A second press lands on whichever tile the grid moved under the pointer.
+    /// </summary>
+    public static KeyGesture StopWatching { get; } = new(Key.X);
+
+    /// <summary>
     /// Same key where the layout prints + above =, so the character costs a Shift.
     /// Modifiers are part of a gesture, so a shifted press is a different gesture:
     /// without this entry + works on a German keyboard and does nothing on an American one.
@@ -55,6 +61,7 @@ public static class TileKeys
         (Louder, tile => tile.Louder),
         (ShiftedLouder, tile => tile.Louder),
         (Quieter, tile => tile.Quieter),
+        (StopWatching, tile => tile.Close),
     ];
 
     /// <summary>
