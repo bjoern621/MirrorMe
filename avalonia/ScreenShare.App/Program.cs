@@ -36,11 +36,15 @@ internal static class Program
     /// could look at it.
     /// A Wayland client draws at the output's own scale instead.
     ///
-    /// EGL before GLX on X11 is the frame channel's requirement rather than a preference.
+    /// EGL before GLX on X11 is the frame channel's requirement.
     /// A decoded frame reaches a tile as a dmabuf descriptor on this platform and the import for one is EGL's, so
     /// a window rendering through GLX draws every tile as a notice saying the frames cannot be opened
     /// (<c>Features/Viewer/Tile/View/DmaBufSurface.cs</c>).
     /// GLX stays behind it: a machine whose EGL will not come up still draws the rest of the app.
+    ///
+    /// UseOpacitySaveLayer fades a control as one layer.
+    /// Without it each paint carries the opacity itself.
+    /// TablerIcon paints straight through Skia and skips that opacity, so its glyph holds full ink through a fade.
     /// </remarks>
     public static AppBuilder BuildAvaloniaApp() => AppBuilder
         .Configure<App>()
@@ -49,6 +53,7 @@ internal static class Program
         {
             RenderingMode = [X11RenderingMode.Egl, X11RenderingMode.Glx, X11RenderingMode.Software],
         })
+        .With(new SkiaOptions { UseOpacitySaveLayer = true })
         .UseWaylandWithFallback()
         .WithInterFont()
         .LogToTrace();
