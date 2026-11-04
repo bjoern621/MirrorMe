@@ -10,7 +10,7 @@ namespace ScreenShare.App.Controls;
 public static class WheelScroll
 {
     /// <summary>How far one wheel notch moves a view, in device-independent pixels.</summary>
-    public const double NotchStep = 75;
+    public const double NotchStep = 50;
 
     /// <summary>How far one unit of a touchpad's smooth scroll moves a view, in device-independent pixels.</summary>
     public const double SmoothStep = 25;
