@@ -209,7 +209,9 @@ The picture is the whole window, dragged by the picture and resized by the platf
 The viewer puts one stream on the stage and lines the strip up beside it: the other streams, a stopped one waiting for its press, a dashed line per member sharing nothing, and the Grid switch.
 A press on a strip tile puts that stream on the stage.
 A window too narrow for the strip beside the stage stacks it under the stage, two to a row, and lists the member lines under it.
-Hover chrome on the stage: an arrow at either side stepping through the playing streams, and a chevron at the foot hiding the strip.
+Each side edge of the stage steps through the playing streams on a press anywhere along it.
+An edge shows nothing until the pointer enters it, then darkens from its side under a chevron.
+A chevron at the foot of the stage hides the strip.
 A hidden strip leaves the stage alone in the space, and the same chevron brings the strip back.
 
 A grid is equal cells, and the arrangement is derived: the one with the largest fitted picture wins, and a short last row centres itself.

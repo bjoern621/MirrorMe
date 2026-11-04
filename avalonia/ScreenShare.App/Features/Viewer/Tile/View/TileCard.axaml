@@ -81,6 +81,20 @@
       <Setter Property="Margin" Value="{StaticResource InsetTight}" />
     </Style>
 
+    <!--
+      A resting pointer clears a stage edge as it clears the chrome, the edge still taking a press.
+      The edge's own hand cursor would otherwise outlast the card's hidden one.
+    -->
+    <Style Selector="tiles|TileCard:resting Button.edge">
+      <Setter Property="Cursor" Value="None" />
+    </Style>
+    <Style Selector="tiles|TileCard:resting Button.edge /template/ Border#Root">
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="tiles|TileCard:resting Button.edge /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Opacity" Value="0" />
+    </Style>
+
     <Style Selector="Border.nameplate">
       <Setter Property="Background" Value="{StaticResource ScrimBrush}" />
       <Setter Property="CornerRadius" Value="5" />
@@ -551,32 +565,32 @@
         They arrange the grid, so a card in a window of its own or on a filled screen draws none.
         Each takes its own click, a tap reaching the card meaning focus.
       -->
-      <Border Classes="chrome stage" HorizontalAlignment="Left" VerticalAlignment="Center">
-        <Border.IsVisible>
+      <!--
+        Each side edge steps the stage, the whole edge taking the press and showing nothing until the pointer enters it.
+        A drag of a zoomed picture starts outside the edges.
+      -->
+      <Button Classes="edge" Theme="{StaticResource EdgeButtonLeft}" Command="{Binding StagePrevious}"
+              Tapped="OnClickTaken" ToolTip.Tip="{x:Static copy:Cards.StagePreviousTip}">
+        <Button.IsVisible>
           <MultiBinding Converter="{x:Static BoolConverters.And}">
             <Binding Path="CanStep" />
             <Binding Path="$parent[tiles:TileCard].InGrid" />
             <Binding Path="!PictureElsewhere" />
           </MultiBinding>
-        </Border.IsVisible>
-        <Button Theme="{StaticResource IconButton}" Command="{Binding StagePrevious}" Tapped="OnClickTaken"
-                ToolTip.Tip="{x:Static copy:Cards.StagePreviousTip}">
-          <ti:TablerIcon Classes="button" Icon="IconChevronLeft" />
-        </Button>
-      </Border>
-      <Border Classes="chrome stage" HorizontalAlignment="Right" VerticalAlignment="Center">
-        <Border.IsVisible>
+        </Button.IsVisible>
+        <ti:TablerIcon Classes="button" Icon="IconChevronLeft" Brush="{Binding $parent[Button].Foreground, Mode=OneWay}" />
+      </Button>
+      <Button Classes="edge" Theme="{StaticResource EdgeButtonRight}" Command="{Binding StageNext}"
+              Tapped="OnClickTaken" ToolTip.Tip="{x:Static copy:Cards.StageNextTip}">
+        <Button.IsVisible>
           <MultiBinding Converter="{x:Static BoolConverters.And}">
             <Binding Path="CanStep" />
             <Binding Path="$parent[tiles:TileCard].InGrid" />
             <Binding Path="!PictureElsewhere" />
           </MultiBinding>
-        </Border.IsVisible>
-        <Button Theme="{StaticResource IconButton}" Command="{Binding StageNext}" Tapped="OnClickTaken"
-                ToolTip.Tip="{x:Static copy:Cards.StageNextTip}">
-          <ti:TablerIcon Classes="button" Icon="IconChevronRight" />
-        </Button>
-      </Border>
+        </Button.IsVisible>
+        <ti:TablerIcon Classes="button" Icon="IconChevronRight" Brush="{Binding $parent[Button].Foreground, Mode=OneWay}" />
+      </Button>
       <Border Classes="chrome stage" HorizontalAlignment="Center" VerticalAlignment="Bottom">
         <Border.IsVisible>
           <MultiBinding Converter="{x:Static BoolConverters.And}">

@@ -72,6 +72,8 @@
   <Thickness x:Key="InnerContentGap">6,0,4,0</Thickness>
   <!-- Taller than a control: the row is the target, not a control at the end of it. -->
   <sys:Double x:Key="RowButtonHeight">36</sys:Double>
+  <!-- The stage's side edge a pointer steps from, the full height of the stage. -->
+  <sys:Double x:Key="StageEdgeWidth">72</sys:Double>
 
   <!-- Setup's one column on a wide window: a choice row three cards across, and no line too long to read. -->
   <sys:Double x:Key="StepColumnWidth">640</sys:Double>

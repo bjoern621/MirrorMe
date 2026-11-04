@@ -119,4 +119,26 @@
   -->
   <SolidColorBrush x:Key="ZoomWindowBrush" Color="#55FFFFFF" />
 
+  <!--
+    Under a pointer at the stage's side edge: black fading in from that edge,
+    so the picture darkens where the press lands and keeps its hue.
+    The pressed pair darkens further, every press answering with a darker fill.
+  -->
+  <LinearGradientBrush x:Key="StageEdgeLeftBrush" StartPoint="0%,50%" EndPoint="100%,50%">
+    <GradientStop Offset="0" Color="#73000000" />
+    <GradientStop Offset="1" Color="#00000000" />
+  </LinearGradientBrush>
+  <LinearGradientBrush x:Key="StageEdgeLeftPressedBrush" StartPoint="0%,50%" EndPoint="100%,50%">
+    <GradientStop Offset="0" Color="#A6000000" />
+    <GradientStop Offset="1" Color="#00000000" />
+  </LinearGradientBrush>
+  <LinearGradientBrush x:Key="StageEdgeRightBrush" StartPoint="100%,50%" EndPoint="0%,50%">
+    <GradientStop Offset="0" Color="#73000000" />
+    <GradientStop Offset="1" Color="#00000000" />
+  </LinearGradientBrush>
+  <LinearGradientBrush x:Key="StageEdgeRightPressedBrush" StartPoint="100%,50%" EndPoint="0%,50%">
+    <GradientStop Offset="0" Color="#A6000000" />
+    <GradientStop Offset="1" Color="#00000000" />
+  </LinearGradientBrush>
+
 </ResourceDictionary>
