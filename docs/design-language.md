@@ -234,7 +234,7 @@ The hues stay off the picture: a colour over arbitrary video is a colour against
 
 A tile's stats panel shows one block at a time.
 It opens with every block closed, each heading carrying the one figure that block leads with.
-A tile narrower than 520 px holds the panel back until it widens.
+A tile narrower than 520 px turns its panel off, so a tile back on the stage after a turn in the strip opens without it.
 Its menu row greys there, drops its tick and says why.
 A press on a heading opens that block and closes the one open before it.
 A loss or drop counter above zero prints semibold at full text strength, on its row and on its block's heading.

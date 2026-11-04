@@ -221,6 +221,11 @@ public partial class TileCard : UserControl
     private void Draw()
     {
         var chrome = Chrome();
+        if (chrome.ClosesStats)
+        {
+            _watched?.HideStats();
+            chrome = Chrome();
+        }
 
         if (this.FindControl<Overlay>("Stats") is { } stats)
         {

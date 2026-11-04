@@ -68,6 +68,40 @@ public sealed class TileChromeTests
         Assert.True(chrome.HidesCursor);
     }
 
+    /// <summary>A tile staged again after a turn in the strip comes back without the panel it had.</summary>
+    [Fact]
+    public void ANarrowCardTurnsTheOverlayOff()
+    {
+        var chrome = TileChrome.Of(pointerResting: false, showStats: true, pictureElsewhere: false, card: new Size(270, 152));
+
+        Assert.True(chrome.ClosesStats);
+    }
+
+    [Fact]
+    public void ARoomyCardLeavesTheOverlayOn()
+    {
+        var chrome = TileChrome.Of(pointerResting: false, showStats: true, pictureElsewhere: false, card: Wide);
+
+        Assert.False(chrome.ClosesStats);
+    }
+
+    /// <summary>The window a stream popped out to draws its figures, so a narrow slot left behind turns nothing off.</summary>
+    [Fact]
+    public void ANarrowSlotWhosePictureMovedLeavesTheOverlayOn()
+    {
+        var chrome = TileChrome.Of(pointerResting: false, showStats: true, pictureElsewhere: true, card: new Size(270, 152));
+
+        Assert.False(chrome.ClosesStats);
+    }
+
+    [Fact]
+    public void ANarrowCardWithTheOverlayOffClosesNothing()
+    {
+        var chrome = TileChrome.Of(pointerResting: false, showStats: false, pictureElsewhere: false, card: new Size(270, 152));
+
+        Assert.False(chrome.ClosesStats);
+    }
+
     /// <summary>The menu row greys and drops its tick, so it never claims a panel nobody can see.</summary>
     [Fact]
     public void ANarrowUprightCardGreysTheMenuRow()

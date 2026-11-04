@@ -14,9 +14,10 @@ namespace ScreenShare.App.Features.Viewer.Tile.View;
 /// <param name="Stats">Whether this card draws the stats overlay.</param>
 /// <param name="StatsFits">Whether the card has room for the overlay, which enables its menu row and key.</param>
 /// <param name="StatsTicked">Whether the overlay's menu row carries its tick.</param>
+/// <param name="ClosesStats">Whether the card turns the tile's overlay off, having no room for it.</param>
 /// <param name="Resting">Whether the plates and the hover chrome come off.</param>
 /// <param name="HidesCursor">Whether the cursor comes off.</param>
-public readonly record struct TileChrome(bool Stats, bool StatsFits, bool StatsTicked, bool Resting, bool HidesCursor)
+public readonly record struct TileChrome(bool Stats, bool StatsFits, bool StatsTicked, bool ClosesStats, bool Resting, bool HidesCursor)
 {
     /// <summary>
     /// Reads a card's state.
@@ -31,11 +32,11 @@ public readonly record struct TileChrome(bool Stats, bool StatsFits, bool StatsT
         // so a slot whose stream popped out is a picture again and rests like one.
         // Its own shape decides nothing about a panel drawn in another window.
         // A narrow card would sit almost wholly under the panel, whatever its shape.
-        // The tile keeps its overlay on, which returns once the card widens.
+        // The card turns the overlay off, so a tile staged again after a turn in the strip comes back without it.
         var fits = pictureElsewhere || !Cramped(card);
         var stats = showStats && !pictureElsewhere && fits;
 
-        return new TileChrome(stats, fits, showStats && fits, pointerResting, pointerResting && !stats);
+        return new TileChrome(stats, fits, showStats && fits, showStats && !fits, pointerResting, pointerResting && !stats);
     }
 
     private static bool Cramped(Size card)

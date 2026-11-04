@@ -160,7 +160,7 @@ public static class Cards
     public const string StopWatching = "Stop watching";
 
     /// <summary>Under the stats overlay's greyed menu row, on a tile too narrow for the panel.</summary>
-    public const string StatsNoRoom = "This tile is too narrow for it. Widen the window to show it.";
+    public const string StatsNoRoom = "This tile is too narrow for it. Widen the window to turn it on.";
 
     public const string HideStrip = "Hide other streams";
 

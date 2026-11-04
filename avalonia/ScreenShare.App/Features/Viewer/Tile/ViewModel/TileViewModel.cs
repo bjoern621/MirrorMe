@@ -253,6 +253,18 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
     /// </summary>
     public bool ShowStats { get => _showStats; private set => Set(ref _showStats, value); }
 
+    /// <summary>Turns the stats overlay off. An overlay already off changes nothing.</summary>
+    public void HideStats()
+    {
+        if (!ShowStats)
+        {
+            return;
+        }
+
+        ShowStats = false;
+        Changed?.Invoke();
+    }
+
     /// <summary>Stream and leg, as the heading prints them.</summary>
     public string Title { get => _title; private set => Set(ref _title, value); }
 
