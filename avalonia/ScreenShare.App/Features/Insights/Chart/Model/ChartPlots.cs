@@ -10,7 +10,7 @@ namespace ScreenShare.App.Features.Insights.Chart.Model;
 public sealed record ChartMark(double At, string Label);
 
 /// <summary>What the chart header states for the span drawn. Worst: the low of a frame rate, the peak of the rest.</summary>
-public sealed record ChartSummary(double? Average, double? Worst, double PastLimitSeconds);
+public sealed record ChartSummary(double? Average, double? Worst);
 
 /// <summary>
 /// One figure over one span.
@@ -27,7 +27,7 @@ public sealed record ChartPlot(
     ChartSummary Summary,
     IReadOnlyList<ChartMark> Marks)
 {
-    public static readonly ChartPlot Empty = new([], [], ChartPlots.MinimumSpanSeconds, 0, 1, null, new(null, null, 0), []);
+    public static readonly ChartPlot Empty = new([], [], ChartPlots.MinimumSpanSeconds, 0, 1, null, new(null, null), []);
 }
 
 /// <summary>Every card's figure at one reading, the one place the three meet.</summary>
@@ -41,9 +41,6 @@ public static class ChartPlots
 {
     /// <summary>Narrowest span drawn, s. A run younger than this fills the right of the chart.</summary>
     public const double MinimumSpanSeconds = 60;
-
-    /// <summary>Gap between readings counted past a limit at most, s. A longer one went unmeasured.</summary>
-    private const double MaxIntervalSeconds = 5;
 
     public static ChartPlot Of(
         IReadOnlyList<PublishReading> readings,
@@ -65,8 +62,6 @@ public static class ChartPlots
 
         var points = new List<Point>(readings.Count);
         var pastAt = new List<bool>(readings.Count);
-        var past = 0.0;
-        DateTimeOffset? previous = null;
         foreach (var reading in readings)
         {
             if (reading.At < start || metric.Read(reading.Stats) is not { } value)
@@ -75,12 +70,6 @@ public static class ChartPlots
             }
 
             var isPast = limit is { } bound && metric.IsPast(value, bound);
-            if (isPast && previous is { } before)
-            {
-                past += Math.Min((reading.At - before).TotalSeconds, MaxIntervalSeconds);
-            }
-
-            previous = reading.At;
             points.Add(new Point((reading.At - start).TotalSeconds, value));
             pastAt.Add(isPast);
         }
@@ -88,8 +77,7 @@ public static class ChartPlots
         var values = points.Select(point => point.Y).ToList();
         var summary = new ChartSummary(
             values.Count == 0 ? null : values.Average(),
-            values.Count == 0 ? null : metric.LowIsBad ? values.Min() : values.Max(),
-            past);
+            values.Count == 0 ? null : metric.LowIsBad ? values.Min() : values.Max());
         var (bottom, top) = Axis(values, limit);
 
         var plot = new ChartPlot(points, pastAt, span, bottom, top, limit, summary, Marks(events, start, span));

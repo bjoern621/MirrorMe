@@ -33,9 +33,6 @@ public sealed record Metric
     /// <summary>Word before the worst reading in the chart header: "low" or "peak".</summary>
     public required string WorstWord { get; init; }
 
-    /// <summary>Phrase before the time spent past the limit: "below target".</summary>
-    public required string PastWord { get; init; }
-
     public required string Format { get; init; }
 
     /// <summary>Whether a reading under the limit is the bad side, as a frame rate is.</summary>
@@ -67,7 +64,6 @@ public static class Metrics
             Unit = "fps",
             LimitWord = "target",
             WorstWord = "low",
-            PastWord = "below target",
             Format = "0",
             LowIsBad = true,
             Read = stats => stats.HasFps ? stats.Fps : null,
@@ -80,7 +76,6 @@ public static class Metrics
             Unit = "ms",
             LimitWord = "budget",
             WorstWord = "peak",
-            PastWord = "over budget",
             Format = "0",
             LowIsBad = false,
             Read = stats => stats.HasTransitMs ? stats.TransitMs : null,
@@ -94,7 +89,6 @@ public static class Metrics
             Unit = "Mb/s",
             LimitWord = "cap",
             WorstWord = "peak",
-            PastWord = "over cap",
             Format = "0.0",
             LowIsBad = false,
             Read = stats => stats.HasInstMbps ? stats.InstMbps : null,

@@ -1,4 +1,3 @@
-using System.Globalization;
 using Avalonia;
 using ScreenShare.Api.V1;
 using ScreenShare.App.Backend;
@@ -38,8 +37,6 @@ public sealed class ChartViewModel : Observable
     private string _average = "";
     private string _worstWord = "";
     private string _worst = "";
-    private string _pastWord = "";
-    private string _past = "";
     private bool _isPast;
     private double _hover = double.NaN;
     private Readout? _readout;
@@ -91,11 +88,7 @@ public sealed class ChartViewModel : Observable
 
     public string Worst { get => _worst; private set => Set(ref _worst, value); }
 
-    public string PastWord { get => _pastWord; private set => Set(ref _pastWord, value); }
-
-    public string Past { get => _past; private set => Set(ref _past, value); }
-
-    /// <summary>Whether any time of the span sat past the limit, which the header draws in amber.</summary>
+    /// <summary>Whether a reading of the span sits past the limit. The header then draws its low or peak in amber.</summary>
     public bool IsPast { get => _isPast; private set => Set(ref _isPast, value); }
 
     /// <summary>
@@ -178,9 +171,7 @@ public sealed class ChartViewModel : Observable
         Average = metric.Number(summary.Average);
         WorstWord = metric.WorstWord;
         Worst = metric.Number(summary.Worst);
-        PastWord = Plot.Limit is null ? "" : metric.PastWord;
-        Past = Plot.Limit is null ? "" : $"{summary.PastLimitSeconds.ToString("0", CultureInfo.CurrentCulture)} s";
-        IsPast = summary.PastLimitSeconds > 0;
+        IsPast = Plot.Past.Contains(true);
         Readout = ChartPlots.ReadoutAt(_readings, SelectedRange.Value, HoverSeconds);
 
         Assert.That(Cards.Count(card => card.IsPicked) == 1, "one card picks the chart", Picked);

@@ -49,7 +49,7 @@ public sealed class InsightsChartTests
     }
 
     [Fact]
-    public void TheSummaryCountsTheTimeUnderTarget()
+    public void TheSummaryStatesTheAverageAndTheLow()
     {
         var readings = new[] { Read(0, 60), Read(1, 48), Read(2, 50), Read(3, 60) };
 
@@ -57,7 +57,6 @@ public sealed class InsightsChartTests
 
         Assert.Equal(54.5, summary.Average);
         Assert.Equal(48, summary.Worst);
-        Assert.Equal(2, summary.PastLimitSeconds);
     }
 
     [Fact]
@@ -75,7 +74,7 @@ public sealed class InsightsChartTests
             AtSixty with { CeilingMbps = null }, ChartRange.OneMinute, []);
 
         Assert.Null(plot.Limit);
-        Assert.Equal(0, plot.Summary.PastLimitSeconds);
+        Assert.DoesNotContain(true, plot.Past);
     }
 
     [Fact]

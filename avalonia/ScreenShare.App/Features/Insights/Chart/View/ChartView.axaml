@@ -52,10 +52,6 @@
             <TextBlock Classes="hint" Text="{Binding WorstWord}" />
             <TextBlock Classes="stat" Classes.past="{Binding IsPast}" Text="{Binding Worst}" />
           </StackPanel>
-          <StackPanel Orientation="Horizontal" Spacing="5" IsVisible="{Binding PastWord, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
-            <TextBlock Classes="hint" Text="{Binding PastWord}" />
-            <TextBlock Classes="stat" Classes.past="{Binding IsPast}" Text="{Binding Past}" />
-          </StackPanel>
         </WrapPanel>
       </DockPanel>
 
