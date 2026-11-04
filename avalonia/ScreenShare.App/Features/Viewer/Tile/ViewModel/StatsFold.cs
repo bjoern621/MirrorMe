@@ -10,7 +10,7 @@ namespace ScreenShare.App.Features.Viewer.Tile.ViewModel;
 ///
 /// The open block belongs to the reader and holds the one state kept here.
 /// It clears once its heading leaves the panel, so a block that returns comes back closed.
-/// A panel that goes down clears it the same way, and the next one opens with every block closed.
+/// A panel going up again starts empty, which clears it the same way.
 /// </summary>
 public sealed class StatsFold
 {

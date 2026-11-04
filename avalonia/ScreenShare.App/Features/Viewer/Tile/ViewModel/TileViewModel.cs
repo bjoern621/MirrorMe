@@ -70,8 +70,14 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
         StagePrevious = new DelegateCommand(() => arrange(TileIntent.StagePrevious), () => CanStep);
         // The panel composes on the render pass and only while up, so turning it on has to reach one.
         // Without the notification it opens empty until the next sample lands.
+        // Emptied before it goes up, so it never opens on the last panel's rows and every block starts closed.
         ToggleStats = new DelegateCommand(() =>
         {
+            if (!ShowStats)
+            {
+                Stats.Clear();
+                _statsFold.Apply();
+            }
             ShowStats = !ShowStats;
             Changed?.Invoke();
         });
@@ -259,7 +265,8 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
 
     /// <summary>
     /// Every stage of the pipeline and the figures read off it, in the order frames pass through.
-    /// Empty while the panel is down, so no tile composes a panel's worth of rows per sample to draw none of them.
+    /// Held at its last reading while the panel is down, so no tile composes rows per sample to draw none of them
+    /// and the overlay fades out over the panel the reader last saw.
     /// Converged rather than replaced per pass, so a row keeps its identity, and its open tooltip,
     /// while the pipeline reports the same figures (<see cref="Features.Viewer.Tile.Model.TileStats.Merge"/>).
     /// </summary>
@@ -474,8 +481,11 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
         Figure = sample is { Height: > 0 } s ? TileFigure.Of(s.Height, s.HasVideoFps ? s.VideoFps : null) : "";
         HasFigure = Figure.Length > 0;
 
-        TileStats.Merge(Stats, ShowStats ? TileStats.Of(sample, _report) : []);
-        _statsFold.Apply();
+        if (ShowStats)
+        {
+            TileStats.Merge(Stats, TileStats.Of(sample, _report));
+            _statsFold.Apply();
+        }
 
         // A pipeline that is gone leaves the controls at their defaults, never at the last one's values.
         // A slider showing the last one's would describe a pipeline nothing is running.

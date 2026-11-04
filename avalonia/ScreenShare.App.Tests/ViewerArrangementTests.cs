@@ -385,11 +385,11 @@ public sealed class ViewerArrangementTests
     }
 
     /// <summary>
-    /// Composing it while it is down costs rows per tile per sample for a panel nobody opened.
     /// Composing it on the next sample opens it empty for as long as a second, reading as a decode reporting nothing.
+    /// Emptying it on close drops every block in one frame, leaving the title to fade out alone.
     /// </summary>
     [Fact]
-    public void TheStatsPanelIsComposedOnlyWhileItIsUp()
+    public void TheStatsPanelFillsAsItOpensAndKeepsItsRowsAsItCloses()
     {
         var tile = Tile(Grid("one"), "one");
 
@@ -399,7 +399,23 @@ public sealed class ViewerArrangementTests
         Assert.NotEmpty(tile.Stats);
 
         tile.ToggleStats.Execute(null);
-        Assert.Empty(tile.Stats);
+        Assert.NotEmpty(tile.Stats);
+    }
+
+    /// <summary>A block opened on the last panel belongs to that reading, so the next panel starts at one heading per stage.</summary>
+    [Fact]
+    public void TheStatsPanelOpensAgainWithEveryBlockClosed()
+    {
+        var tile = Tile(Grid("one"), "one");
+
+        tile.ToggleStats.Execute(null);
+        tile.Stats[0].Toggle!.Execute(null);
+        Assert.True(tile.Stats[0].IsOpen);
+
+        tile.ToggleStats.Execute(null);
+        tile.ToggleStats.Execute(null);
+        Assert.NotEmpty(tile.Stats);
+        Assert.DoesNotContain(tile.Stats, section => section.IsOpen);
     }
 
     /// <summary>
