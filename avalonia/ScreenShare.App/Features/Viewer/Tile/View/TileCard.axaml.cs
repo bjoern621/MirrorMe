@@ -220,7 +220,7 @@ public partial class TileCard : UserControl
     /// </summary>
     private void Draw()
     {
-        var chrome = TileChrome.Of(_resting, _watched is { ShowStats: true }, PictureElsewhere);
+        var chrome = TileChrome.Of(_resting, _watched is { ShowStats: true }, PictureElsewhere, Bounds.Size);
 
         if (this.FindControl<Overlay>("Stats") is { } stats)
         {
