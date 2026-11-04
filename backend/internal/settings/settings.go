@@ -552,6 +552,9 @@ type Viewer struct {
 	// and takes a reader slot for it, where the local route reads a copy that stays here.
 	// A preset is a publish group, so applying one leaves the picture where the reader put it.
 	PreviewRoute string `json:"previewRoute"`
+	// ConstantVolume brings every received stream to one loudness before its own volume applies,
+	// so two streams at one slider position play at about one level (receive/leveller.go).
+	ConstantVolume bool `json:"constantVolume"`
 }
 
 // Name is the stream's own name, past whatever this machine is known by in its group (Settings.StreamName):
@@ -736,6 +739,8 @@ func Defaults() Settings {
 			// The picture that costs nothing beyond one decode here:
 			// no uplink, no reader slot, and viewer figures that describe viewers.
 			PreviewRoute: PreviewLocal,
+			// On, as a music service levels its tracks: a stream far too loud reaches a reader before the switch does.
+			ConstantVolume: true,
 		},
 		App: App{
 			// All on, which is what the app did before any of them was answerable:

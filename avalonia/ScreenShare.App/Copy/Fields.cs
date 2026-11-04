@@ -260,6 +260,10 @@ public static class Fields
             "How frames are converted",
             "What turns decoded frames into the picture a tile draws. The graphics-card routes convert for free on the card. The system-memory route pulls every frame across and converts on the CPU. Some routes state their color exactly, some leave it to the driver. A route this computer has no elements for is grayed with the missing one named."),
 
+        ["viewer.constant_volume"] = new(
+            "Constant volume",
+            "Plays every stream at about the same loudness, so two streams at the same volume sound alike. Each stream's own volume still turns it up or down."),
+
         ["relay.srt_port"] = new("SRT port", "The relay's SRT port. The default is 8890."),
         ["relay.rtsp_port"] = new("RTSP port", "The relay's RTSP port. On an encrypted relay the session rides inside TLS, so the default is 8322 rather than the cleartext port."),
         ["relay.webrtc_port"] = new("WebRTC port", "The relay's WebRTC port, which serves both sending and watching. The default is 8889."),

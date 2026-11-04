@@ -55,6 +55,7 @@ func (a *App) SaveSettings(s settings.Settings) error {
 	// Run off every write rather than off the toggle alone:
 	// a machine that joins a group can publish what it was refused a moment earlier.
 	go a.convergeTestStreams()
+	a.levelReceivers(s.Viewer.ConstantVolume)
 
 	a.emitPublishState()
 	a.emit(wire.SettingsChangedEvent())

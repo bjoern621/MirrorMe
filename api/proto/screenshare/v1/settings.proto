@@ -445,6 +445,11 @@ message ViewerSettings {
   // so a card opens on the route it was left on.
   // A stored value no route carries is repaired as the file is read.
   string preview_route = 7;
+
+  // Whether every received stream is brought to one loudness before its own volume applies,
+  // so two streams at one slider position play at about one level
+  // (docs/viewer-architecture.md, "Constant volume").
+  bool constant_volume = 8;
 }
 
 // AudioSource is one thing the second track is mixed from.

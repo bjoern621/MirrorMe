@@ -430,6 +430,12 @@ var fieldTable = []field{
 		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Viewer.RenderChain) },
 		options: optionRenderChains,
 	},
+	{
+		key:     KeyConstantVolume,
+		group:   GroupWatch,
+		control: screensharev1.ControlKind_CONTROL_KIND_TOGGLE,
+		value:   func(s settings.Settings) *screensharev1.FieldValue { return flag(s.Viewer.ConstantVolume) },
+	},
 
 	// The relay: which machine carries the stream, then one port per listener it serves on.
 	// The address leads the ports because they are that machine's,

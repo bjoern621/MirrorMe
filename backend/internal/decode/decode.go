@@ -89,6 +89,8 @@ type State struct {
 	Volume   float64
 	Muted    bool
 	HasAudio bool
+	// Levelled is whether the constant-volume gain applies on top of Volume.
+	Levelled bool
 
 	PeakDB   float64
 	RMSDB    float64

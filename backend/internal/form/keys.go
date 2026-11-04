@@ -94,7 +94,8 @@ const (
 	KeySrtWatchLatencyMs  = "viewer.srt_watch_latency_ms"
 	KeyRtspWatchLatencyMs = "viewer.rtsp_watch_latency_ms"
 
-	KeyRenderChain = "viewer.render_chain"
+	KeyRenderChain    = "viewer.render_chain"
+	KeyConstantVolume = "viewer.constant_volume"
 
 	// What the app does for itself, which is about no stream.
 	KeySendCrashReports    = "app.send_crash_reports"

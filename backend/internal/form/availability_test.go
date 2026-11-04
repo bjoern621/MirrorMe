@@ -34,7 +34,7 @@ var availabilityAllKeys = []string{
 	KeySrtPublishLatencyMs, KeySrtWatchLatencyMs,
 	KeyRtspPublishProtocol, KeyRtspWatchProtocol,
 	KeyUplinkMbps, KeyOutputResolution,
-	KeyTileWatchTransport, KeyRtspWatchLatencyMs, KeyRenderChain,
+	KeyTileWatchTransport, KeyRtspWatchLatencyMs, KeyRenderChain, KeyConstantVolume,
 	KeySendCrashReports, KeyCheckUpdatesOnStart, KeyTrayIcon, KeyTestStreams,
 }
 

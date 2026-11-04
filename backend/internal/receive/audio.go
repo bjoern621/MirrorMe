@@ -25,6 +25,8 @@ import (
 // Behind, a muted stream would meter silent, leaving a reader who muted one unable to see it start
 // making noise again, which is the question a meter beside a mute button answers.
 // So the measurement is of what the stream carries, never of what the speakers were handed.
+// The constant-volume gain reads the same measurement (leveller.go) and folds into volume,
+// so it never measures its own output.
 //
 // A sink of its own ends the branch instead of a trip to the shell.
 // Audio is small enough to play where it decodes, and shell and backend share a machine
@@ -167,11 +169,33 @@ func (r *Receiver) Audio() (volume float64, muted bool, has bool) {
 	return r.wantVolume, r.wantMuted, r.volume != nil
 }
 
+// SetLevelling turns the constant-volume gain on or off, which brings the stream to the loudness
+// every levelled stream plays at before the reader's own volume applies on top of it.
+// Repeatable and safe before the branch exists, as SetAudio is.
+func (r *Receiver) SetLevelling(on bool) {
+	r.mu.Lock()
+	r.wantLevelled = on
+	r.mu.Unlock()
+
+	r.applyAudio()
+}
+
+// Levelling is what SetLevelling last asked for.
+func (r *Receiver) Levelling() bool {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	return r.wantLevelled
+}
+
 // applyAudio writes the held loudness onto the branch, and does nothing until there is one.
 // Repeatable: values are written, nothing is toggled.
 func (r *Receiver) applyAudio() {
 	r.mu.Lock()
 	vol, volume, muted := r.volume, r.wantVolume, r.wantMuted
+	if r.wantLevelled {
+		volume *= math.Pow(10, r.levelling.GainDB()/20)
+	}
 	r.mu.Unlock()
 
 	if vol == nil {
@@ -214,6 +238,15 @@ func (r *Receiver) onLevelMessage(msg *gst.Message) {
 	r.peakDB.Store(math.Float64bits(peak))
 	r.rmsDB.Store(math.Float64bits(rms))
 	r.hasLevel.Store(true)
+
+	r.mu.Lock()
+	r.levelling.Measure(peak, rms)
+	levelled := r.wantLevelled
+	r.mu.Unlock()
+
+	if levelled {
+		r.applyAudio()
+	}
 }
 
 // loudest is the maximum across the channels of one of the level element's arrays.

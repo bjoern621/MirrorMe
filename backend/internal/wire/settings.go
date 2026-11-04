@@ -121,6 +121,8 @@ func ViewerSettings(v settings.Viewer) *screensharev1.ViewerSettings {
 
 		RenderChain:  v.RenderChain,
 		PreviewRoute: v.PreviewRoute,
+
+		ConstantVolume: v.ConstantVolume,
 	}
 }
 
@@ -236,6 +238,8 @@ func ToViewer(m *screensharev1.ViewerSettings) settings.Viewer {
 
 		RenderChain:  m.GetRenderChain(),
 		PreviewRoute: m.GetPreviewRoute(),
+
+		ConstantVolume: m.GetConstantVolume(),
 	}
 }
 

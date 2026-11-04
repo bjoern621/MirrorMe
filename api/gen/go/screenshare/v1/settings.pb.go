@@ -878,9 +878,13 @@ type ViewerSettings struct {
 	// The card's toggle is the one control over it and stores what it writes,
 	// so a card opens on the route it was left on.
 	// A stored value no route carries is repaired as the file is read.
-	PreviewRoute  string `protobuf:"bytes,7,opt,name=preview_route,json=previewRoute,proto3" json:"preview_route,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	PreviewRoute string `protobuf:"bytes,7,opt,name=preview_route,json=previewRoute,proto3" json:"preview_route,omitempty"`
+	// Whether every received stream is brought to one loudness before its own volume applies,
+	// so two streams at one slider position play at about one level
+	// (docs/viewer-architecture.md, "Constant volume").
+	ConstantVolume bool `protobuf:"varint,8,opt,name=constant_volume,json=constantVolume,proto3" json:"constant_volume,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *ViewerSettings) Reset() {
@@ -953,6 +957,13 @@ func (x *ViewerSettings) GetPreviewRoute() string {
 		return x.PreviewRoute
 	}
 	return ""
+}
+
+func (x *ViewerSettings) GetConstantVolume() bool {
+	if x != nil {
+		return x.ConstantVolume
+	}
+	return false
 }
 
 // AudioSource is one thing the second track is mixed from.
@@ -1178,14 +1189,15 @@ const file_screenshare_v1_settings_proto_rawDesc = "" +
 	"J\x04\b\v\x10\fJ\x04\b\x18\x10\x19J\x04\b\x1e\x10\x1fJ\x04\b \x10!J\x04\b!\x10\"J\x04\b#\x10$J\x04\b$\x10%R\x04nameR\x05audioR\x05codecR\n" +
 	"relay_hostR\n" +
 	"relay_portR\bapi_portR\trtsp_portR\vwebrtc_portR\trtmp_portR\bhls_portR\bmoq_portR\ttransportR\n" +
-	"enc_presetR\x14srt_watch_latency_msR\x13rtsp_watch_protocolR\x15rtsp_watch_latency_msR\x0fwatch_transportR\x0egrid_transport\"\xbc\x02\n" +
+	"enc_presetR\x14srt_watch_latency_msR\x13rtsp_watch_protocolR\x15rtsp_watch_latency_msR\x0fwatch_transportR\x0egrid_transport\"\xe5\x02\n" +
 	"\x0eViewerSettings\x120\n" +
 	"\x14tile_watch_transport\x18\x02 \x01(\tR\x12tileWatchTransport\x12.\n" +
 	"\x13rtsp_watch_protocol\x18\x03 \x01(\tR\x11rtspWatchProtocol\x12/\n" +
 	"\x14srt_watch_latency_ms\x18\x04 \x01(\x05R\x11srtWatchLatencyMs\x121\n" +
 	"\x15rtsp_watch_latency_ms\x18\x05 \x01(\x05R\x12rtspWatchLatencyMs\x12!\n" +
 	"\frender_chain\x18\x06 \x01(\tR\vrenderChain\x12#\n" +
-	"\rpreview_route\x18\a \x01(\tR\fpreviewRouteJ\x04\b\x01\x10\x02R\x16player_watch_transport\"s\n" +
+	"\rpreview_route\x18\a \x01(\tR\fpreviewRoute\x12'\n" +
+	"\x0fconstant_volume\x18\b \x01(\bR\x0econstantVolumeJ\x04\b\x01\x10\x02R\x16player_watch_transport\"s\n" +
 	"\vAudioSource\x12\x16\n" +
 	"\x06source\x18\x01 \x01(\tR\x06source\x12\x16\n" +
 	"\x06device\x18\x02 \x01(\tR\x06device\x12\x17\n" +

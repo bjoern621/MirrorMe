@@ -169,6 +169,10 @@ type Receiver struct {
 	// it was sent.
 	wantVolume float64
 	wantMuted  bool
+	// wantLevelled is what SetLevelling last asked for, and levelling the stream's loudness measured so far.
+	// The leveller measures while levelling is off as well, so switching it on lands at the right gain at once.
+	wantLevelled bool
+	levelling    leveller
 	// stats are the transport's elements statSources matched, in the order they turned up.
 	stats []elementStats
 	// subs are the consumers frames are handed to, each with a pool of its own

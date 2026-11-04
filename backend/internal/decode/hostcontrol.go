@@ -34,6 +34,8 @@ func (h *Host) apply(req request) response {
 		return response{}
 	case opSetAudio:
 		return h.applySetAudio(req)
+	case opSetLevelling:
+		return h.applySetLevelling(req)
 	case opSnapshot:
 		return response{States: h.snapshot()}
 	default:
@@ -109,6 +111,19 @@ func (h *Host) applySetAudio(req request) response {
 	return response{}
 }
 
+// applySetLevelling refuses a decode that is not open, as applySetAudio does.
+func (h *Host) applySetLevelling(req request) response {
+	h.mu.Lock()
+	entry, present := h.decoders[req.ID]
+	h.mu.Unlock()
+
+	if !present || entry.ended {
+		return response{Fail: failureOf(nothingDecoding(req.ID))}
+	}
+	entry.decoder.SetLevelling(req.Levelled)
+	return response{}
+}
+
 // snapshot reads every decode the host holds.
 // Read off the decoders on the call rather than accumulated, the rule the receive state follows.
 func (h *Host) snapshot() map[ID]State {
@@ -126,6 +141,7 @@ func (h *Host) snapshot() map[ID]State {
 			state.Stats = entry.decoder.Stats()
 			state.ToneMap = entry.decoder.ToneMap()
 			state.Volume, state.Muted, state.HasAudio = entry.decoder.Audio()
+			state.Levelled = entry.decoder.Levelling()
 			state.PeakDB, state.RMSDB, state.HasLevel = entry.decoder.Level()
 			state.Pointer, state.HasPointer = entry.decoder.Pointer()
 		}

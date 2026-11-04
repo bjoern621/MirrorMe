@@ -27,5 +27,10 @@ func (h *Handle) SetAudio(volume float64, muted bool) error {
 	return h.client.SetAudio(h.id, volume, muted)
 }
 
+// SetLevelling turns the decode's constant-volume gain on or off, and refuses a decode that is not open.
+func (h *Handle) SetLevelling(on bool) error {
+	return h.client.SetLevelling(h.id, on)
+}
+
 // Subscribe opens one consumer's view of this decode's frames.
 func (h *Handle) Subscribe() (Subscription, error) { return h.client.Subscribe(h.id) }

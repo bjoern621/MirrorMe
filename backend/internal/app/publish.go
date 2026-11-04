@@ -73,6 +73,7 @@ func (a *App) StartPublish(s settings.Settings) error {
 	a.settingsMu.Lock()
 	a.settings = s
 	a.settingsMu.Unlock()
+	a.levelReceivers(s.Viewer.ConstantVolume)
 
 	if err := settings.Save(s); err != nil {
 		logger.Warnf("Cannot persist settings: %v", err)
@@ -205,6 +206,7 @@ func (a *App) Republish(s settings.Settings) error {
 	a.settingsMu.Lock()
 	a.settings = s
 	a.settingsMu.Unlock()
+	a.levelReceivers(s.Viewer.ConstantVolume)
 
 	if err := settings.Save(s); err != nil {
 		logger.Warnf("Cannot persist settings: %v", err)

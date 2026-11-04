@@ -125,6 +125,8 @@ func (a *App) StartReceive(streamName, transportName string, toneMap bool) error
 	}
 
 	a.receivers[ref] = receiver
+	// Read after the decode joins the map, so a save landing meanwhile either finds it there or is read here.
+	a.levelReceiver(receiver, a.GetSettings().Viewer.ConstantVolume)
 	logger.Infof("receiving '%s' over %s", streamName, transportName)
 	return nil
 }

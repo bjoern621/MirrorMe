@@ -945,3 +945,21 @@ func TestAFileFromBeforeTheTrayToggleKeepsTheIcon(t *testing.T) {
 		t.Errorf("app settings = %+v, want the tray icon a fresh installation holds", got.App)
 	}
 }
+
+// A file written before the constant-volume toggle does not name it.
+// Load decodes over the defaults, so every install plays its streams at one loudness.
+func TestAFileFromBeforeConstantVolumePlaysAtOneLoudness(t *testing.T) {
+	isolateConfig(t)
+
+	path := mustSettingsPath(t)
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		t.Fatalf("MkdirAll: %v", err)
+	}
+	if err := os.WriteFile(path, []byte(`{"viewer":{"renderChain":"system"}}`), 0o600); err != nil {
+		t.Fatalf("WriteFile: %v", err)
+	}
+
+	if got := mustLoad(t); !got.Viewer.ConstantVolume {
+		t.Errorf("viewer settings = %+v, want the constant volume a fresh installation holds", got.Viewer)
+	}
+}

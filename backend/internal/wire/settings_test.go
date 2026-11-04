@@ -76,6 +76,7 @@ func populatedSettings() settings.Settings {
 			RtspWatchLatencyMs: 777,
 			RenderChain:        "d3d11",
 			PreviewRoute:       settings.PreviewEndToEnd,
+			ConstantVolume:     true,
 		},
 		App: settings.App{
 			SendCrashReports:    true,

@@ -84,6 +84,7 @@ type fakeDecoder struct {
 	stats   receive.Stats
 	volume  float64
 	muted   bool
+	level   bool
 	spot    pointer.Spot
 	hasSpot bool
 	stopped bool
@@ -116,6 +117,18 @@ func (d *fakeDecoder) SetAudio(volume float64, muted bool) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	d.volume, d.muted = volume, muted
+}
+
+func (d *fakeDecoder) Levelling() bool {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	return d.level
+}
+
+func (d *fakeDecoder) SetLevelling(on bool) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	d.level = on
 }
 
 func (d *fakeDecoder) Subscribe() Subscription {

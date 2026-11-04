@@ -39,6 +39,7 @@ const (
 	opOpen op = iota + 1
 	opStop
 	opSetAudio
+	opSetLevelling
 	// opSnapshot reads every decode the host holds, which is the whole of what the backend reads.
 	opSnapshot
 )
@@ -47,12 +48,13 @@ const (
 // One shape for every op rather than one per call: gob writes no field that is zero, so the unused
 // half of a request costs nothing on the wire.
 type request struct {
-	Op     op
-	ID     ID
-	Stream receive.Stream
-	Open   receive.Open
-	Volume float64
-	Muted  bool
+	Op       op
+	ID       ID
+	Stream   receive.Stream
+	Open     receive.Open
+	Volume   float64
+	Muted    bool
+	Levelled bool
 }
 
 // response answers one control call.

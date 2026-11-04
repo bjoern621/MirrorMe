@@ -394,7 +394,8 @@ var availabilityRules = map[string]func(availability) state{
 
 	// The render chain is live whatever leg is chosen: what a decode converts its frames
 	// with is a property of this machine's GStreamer rather than of the protocol they arrived over.
-	KeyRenderChain: func(availability) state { return availabilityLive() },
+	KeyRenderChain:    func(availability) state { return availabilityLive() },
+	KeyConstantVolume: func(availability) state { return availabilityLive() },
 
 	// What refuses an output resolution is one entry rather than the control,
 	// so a frame path that resizes nothing leaves the source size standing (outputResolutionReason).

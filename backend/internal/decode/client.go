@@ -132,6 +132,18 @@ func (c *Client) SetAudio(id ID, volume float64, muted bool) error {
 	return nil
 }
 
+// SetLevelling turns one decode's constant-volume gain on or off, and refuses a decode that is not open.
+func (c *Client) SetLevelling(id ID, on bool) error {
+	res, err := c.call(request{Op: opSetLevelling, ID: id, Levelled: on})
+	if err != nil {
+		return err
+	}
+	if res.Fail != nil {
+		return res.Fail.err()
+	}
+	return nil
+}
+
 // Snapshot is every decode the host holds, read through on the call.
 // A host that is not running holds none, which is what an empty answer says.
 func (c *Client) Snapshot() map[ID]State {

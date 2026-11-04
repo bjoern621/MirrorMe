@@ -112,6 +112,20 @@ Levels leave on a subscription of their own rather than as an event kind.
 The event stream carries whole states when something changed, where a level changes continuously, so folding it in would push the receive state at metering rate.
 One tick is fifteen a second and carries the whole set, a decode with no audio track having no entry and a silent one reading negative infinity.
 
+### Constant volume
+
+Brings every decode to one target loudness before the reader's own volume multiplies on top.
+Two streams at 50 % then play at about one level, the way a music service levels its tracks.
+Gain: derived from the same pre-volume measurement and folded into the volume element, so it never measures its own output.
+A louder stream gets turned down within a second.
+A quieter one gets turned up over several.
+Silence moves nothing, so a pause never comes back as a blast.
+Boost and cut stay bounded.
+Boosted peaks stay under full scale.
+Target, bounds and timings: `backend/internal/receive/leveller.go`.
+`audioloudnorm` stays out of the chain, its lookahead adding seconds of delay to the sound.
+One setting for every decode on the machine (`viewer.constant_volume`), on by default.
+
 ## The HLS tile's two detours
 
 Every other watch leg writes its source from settings.

@@ -103,6 +103,30 @@ func TestSetAudioReachesTheDecoder(t *testing.T) {
 	}
 }
 
+func TestSetLevellingRefusesADecodeThatIsNotOpen(t *testing.T) {
+	h := newHarness(t)
+
+	if err := h.client.SetLevelling(StreamID("desk", "rtsp"), true); err == nil {
+		t.Fatal("levelling a decode nothing is running succeeded")
+	}
+}
+
+func TestSetLevellingReachesTheDecoder(t *testing.T) {
+	h := newHarness(t)
+	id := StreamID("desk", "rtsp")
+
+	h.open(t, id, "desk", Events{})
+	for range 2 {
+		if err := h.client.SetLevelling(id, true); err != nil {
+			t.Fatalf("levelling the decode: %v", err)
+		}
+	}
+
+	if !h.client.Snapshot()[id].Levelled {
+		t.Error("the decode plays unlevelled after levelling was asked for twice")
+	}
+}
+
 func TestADecodeThatEndsKeepsItsReasonUntilItIsStopped(t *testing.T) {
 	h := newHarness(t)
 	id := StreamID("desk", "rtsp")

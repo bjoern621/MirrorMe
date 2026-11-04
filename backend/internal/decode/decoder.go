@@ -15,6 +15,8 @@ type Decoder interface {
 	Level() (peakDB, rmsDB float64, ok bool)
 	Pointer() (pointer.Spot, bool)
 	SetAudio(volume float64, muted bool)
+	Levelling() bool
+	SetLevelling(on bool)
 	Subscribe() Subscription
 	Stop() bool
 }
