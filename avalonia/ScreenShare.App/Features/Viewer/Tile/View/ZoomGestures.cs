@@ -28,7 +28,7 @@ internal sealed class ZoomGestures
     private const double DragThreshold = 4;
 
     /// <summary>Card pixels a pan moves per unit of a finger scroll, which Wayland sends without the pointer's acceleration.</summary>
-    private const double PanPerScrollUnit = 3;
+    private const double PanPerScrollUnit = 6;
 
     private readonly Control _frame;
     private readonly Func<bool> _zoomable;
