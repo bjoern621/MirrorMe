@@ -98,6 +98,7 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
     private bool _isConnecting;
     private bool _isFocused;
     private bool _isPoppedOut;
+    private bool _namedByDiscord;
     private bool _isFullscreen;
     private bool _showStats;
     private readonly StatsFold _statsFold;
@@ -137,6 +138,12 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
     /// At most one tile carries it, and a tile cannot see what the others are doing.
     /// </summary>
     public bool IsFocused { get => _isFocused; set => Set(ref _isFocused, value); }
+
+    /// <summary>
+    /// Whether the name comes off a Discord voice channel, the group following one.
+    /// Written by the screen that reads the settings, like <see cref="IsFocused"/>.
+    /// </summary>
+    public bool NamedByDiscord { get => _namedByDiscord; set => Set(ref _namedByDiscord, value); }
 
     /// <summary>
     /// Whether this stream is drawn in a window of its own.

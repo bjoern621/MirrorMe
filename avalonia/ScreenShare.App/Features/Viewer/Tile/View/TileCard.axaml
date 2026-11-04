@@ -70,7 +70,7 @@
     <Style Selector="Border.nameplate TextBlock.figure">
       <Setter Property="FontWeight" Value="Normal" />
     </Style>
-    <Style Selector="Border.nameplate ti|TablerIcon.muted">
+    <Style Selector="Border.nameplate ti|TablerIcon.badge">
       <Setter Property="Brush" Value="{StaticResource ForegroundBrush}" />
     </Style>
     <!-- The mark pops in as the stream goes quiet, so a mute pressed by key is seen to land. -->
@@ -449,7 +449,8 @@
 
       <!--
         Off with the picture it names, the plate standing in for both.
-        The mute mark sits beside the name, every decode opening muted.
+        The Discord mark leads a name taken from a voice channel.
+        The mute mark sits after it, every decode opening muted.
         A stream without an audio track wears none, having nothing to mute.
       -->
       <Border Classes="nameplate" VerticalAlignment="Bottom" HorizontalAlignment="Left"
@@ -457,6 +458,7 @@
         <StackPanel Orientation="Horizontal" Spacing="6">
           <Ellipse Width="6" Height="6" Fill="{StaticResource GoBrush}" VerticalAlignment="Center"
                    IsVisible="{Binding !HasNotice}" />
+          <ti:TablerIcon Classes="badge" Icon="IconBrandDiscord" IsVisible="{Binding NamedByDiscord}" />
           <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
           <ti:TablerIcon Classes="badge muted" Icon="IconVolumeOff">
             <ti:TablerIcon.IsVisible>

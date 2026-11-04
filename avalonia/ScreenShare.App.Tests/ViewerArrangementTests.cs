@@ -89,6 +89,25 @@ public sealed class ViewerArrangementTests
         Assert.False(viewer.ShowsGridToggle);
     }
 
+    /// <summary>In Discord mode each stream takes its publisher's Discord nickname as its name.</summary>
+    [Fact]
+    public void ATileNamedByDiscordSaysSo()
+    {
+        var backend = new ViewerBackend("Björn");
+        backend.Seed.FollowDiscord = true;
+        var (viewer, _) = Flows.Watching(backend);
+
+        Assert.True(Tile(viewer, "Björn").NamedByDiscord);
+    }
+
+    [Fact]
+    public void ATileInAKeyedGroupCarriesNoDiscordMark()
+    {
+        var viewer = Grid("Björn");
+
+        Assert.False(Tile(viewer, "Björn").NamedByDiscord);
+    }
+
     /// <summary>No state holds two staged tiles, so none needs the stage given up first.</summary>
     [Fact]
     public void AStripTileSwapsOntoTheStage()

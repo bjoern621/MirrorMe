@@ -219,6 +219,7 @@ One struggling stream never becomes the loudest thing on a screen someone is sca
 
 What a stream is doing is said on its face, over the picture and at no cost to layout: a name plate with a small presence dot lower left, a status badge upper right, the figure lower right.
 A stream opens muted.
+In Discord mode the Discord glyph leads the name.
 While it plays muted, its name plate carries the volume-off glyph after the name and its level meter dims to grey.
 A stream without sound carries neither.
 The badge is neutral except on this machine's own outgoing stream, which wears the filled red one.

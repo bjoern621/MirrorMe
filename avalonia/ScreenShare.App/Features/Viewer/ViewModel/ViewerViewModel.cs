@@ -518,6 +518,8 @@ public sealed class ViewerViewModel : Observable
             : _tiles.ContainsKey(_staged) ? _staged
             : Tiles[0].Name;
 
+        var discordMode = _form.Stored?.Relay?.GroupSource == "discord";
+
         // Rendered from the backend's decode list, joined on the pair the contract keys a decode by.
         // A tile whose decode is not in it draws its own reason rather than disappearing:
         // the reader put it there.
@@ -526,6 +528,7 @@ public sealed class ViewerViewModel : Observable
             tile.Apply(TilePipeline.Of(DecodeOf(tile)), _session.StatsOf(tile.Name, tile.Transport));
             tile.IsFocused = tile.Name == Focused;
             tile.IsPoppedOut = _popped.Contains(tile.Name);
+            tile.NamedByDiscord = discordMode;
 
             // Which window a stream is drawn in decides which fullscreen state answers for it.
             // Derived here rather than kept on the tile,
@@ -571,8 +574,6 @@ public sealed class ViewerViewModel : Observable
         HasFullscreen = FullscreenTile is not null;
 
         // The way into a group, which the card and the stage each name in their own sentence.
-        var discordMode = _form.Stored?.Relay?.GroupSource == "discord";
-
         GridEmptyLine = GridEmpty.For(
             _session.Members, _session.Discord, discordMode, Strip.Count, relay?.Reachable == true);
         ShowsGridEmpty = GridEmptyLine.Length > 0;
