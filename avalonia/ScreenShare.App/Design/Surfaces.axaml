@@ -35,12 +35,13 @@
 
   <!--
     The dimmed ground a dialog stands on, over the whole window.
-    It fades in as the dialog opens, and the dialog's panel grows into place on it.
+    The Overlay around it fades it in and out (Controls/Overlay/Overlay.cs), and the dialog's panel grows into place on it.
+    A sheet mounted for one showing has no Overlay and fades in on its own.
   -->
   <Style Selector="Border.scrim">
     <Setter Property="Background" Value="{DynamicResource ScrimBrush}" />
   </Style>
-  <Style Selector="Border.scrim[IsVisible=True]">
+  <Style Selector="Border.scrim.mounting[IsVisible=True]">
     <Style.Animations>
       <Animation Duration="{StaticResource MotionOpen}" Easing="{StaticResource MotionEase}">
         <KeyFrame Cue="0%">

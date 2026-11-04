@@ -7,7 +7,7 @@ using ScreenShare.App.Features.Shell.Settings.ViewModel;
 namespace ScreenShare.App.Features.Shell.Settings.View;
 
 /// <summary>
-/// Three things the markup cannot state: two dismissals and a section opening at its top.
+/// Two things the markup cannot state: the press on the dimmed ground and a section opening at its top.
 /// Every setting the dialog draws writes through its own binding.
 /// </summary>
 public sealed partial class AppSettingsView : UserControl
@@ -19,25 +19,13 @@ public sealed partial class AppSettingsView : UserControl
     {
         InitializeComponent();
 
-        // Escape is bound here and on the window, which uses it to leave a filled viewer.
-        // A key event starts at the focus and travels outward, so the focus moving here as the dialog opens
-        // is what puts this binding first.
-        PropertyChanged += (_, change) =>
-        {
-            if (change.Property == IsVisibleProperty && IsVisible)
-            {
-                Focus();
-            }
-        };
-
         DataContextChanged += (_, _) => Follow(DataContext as AppSettingsViewModel);
-
     }
 
     /// <summary>
     /// Takes the dialog's news, dropping the last one's.
     /// The scroll follows the model rather than this control's own visibility:
-    /// the scrim carries whether the dialog is drawn, and this control is in the tree either way.
+    /// the Overlay carries whether the dialog is drawn, and this control is in the tree either way.
     /// </summary>
     private void Follow(AppSettingsViewModel? settings)
     {

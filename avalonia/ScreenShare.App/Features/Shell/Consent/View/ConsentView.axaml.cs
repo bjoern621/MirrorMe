@@ -5,7 +5,7 @@ using ScreenShare.App.Features.Shell.Consent.ViewModel;
 namespace ScreenShare.App.Features.Shell.Consent.View;
 
 /// <summary>
-/// Two gestures the markup cannot state, both of them the answer.
+/// The press on the dimmed ground, which the markup cannot state and which answers.
 /// The toggle the question is answered on writes through its own binding.
 /// </summary>
 public sealed partial class ConsentView : UserControl
@@ -13,17 +13,6 @@ public sealed partial class ConsentView : UserControl
     public ConsentView()
     {
         InitializeComponent();
-
-        // Escape is bound here and on the window, which uses it to leave a filled viewer.
-        // A key event starts at the focus and travels outward, so the focus moving here as the question opens
-        // is what puts this binding first.
-        PropertyChanged += (_, change) =>
-        {
-            if (change.Property == IsVisibleProperty && IsVisible)
-            {
-                Focus();
-            }
-        };
     }
 
     /// <summary>

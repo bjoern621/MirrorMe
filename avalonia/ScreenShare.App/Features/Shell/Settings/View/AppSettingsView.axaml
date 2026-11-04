@@ -21,8 +21,8 @@
 
   <UserControl.KeyBindings>
     <!--
-      The dialog takes Escape before the window does, the event starting at the focus inside it
-      and the code-behind putting the focus here as it opens.
+      The dialog takes Escape before the window does, the event starting at the focus
+      that the Overlay takes as the dialog opens.
     -->
     <KeyBinding Gesture="Escape" Command="{Binding CloseCommand}" />
   </UserControl.KeyBindings>
@@ -83,227 +83,228 @@
   </UserControl.Styles>
 
   <!-- Dimmed rather than covered: the window stays readable behind what is being decided over it. -->
-  <Border Classes="scrim"
-          IsVisible="{Binding IsOpen}"
-          PointerPressed="ScrimPressed">
+  <controls:Overlay IsOpen="{Binding IsOpen}">
+    <Border Classes="scrim"
+            PointerPressed="ScrimPressed">
 
-    <Border Classes="panel dialog"
-            Classes.compact="{Binding IsCompact}"
-            Padding="0"
-            BoxShadow="{StaticResource MenuShadow}">
+      <Border Classes="panel dialog"
+              Classes.compact="{Binding IsCompact}"
+              Padding="0"
+              BoxShadow="{StaticResource MenuShadow}">
 
-      <Grid RowDefinitions="Auto,*">
+        <Grid RowDefinitions="Auto,*">
 
-        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="12,10,10,10">
-          <Button Grid.Column="0"
-                  Theme="{StaticResource IconButton}"
-                  Margin="0,0,6,0"
-                  IsVisible="{Binding ShowsBack}"
-                  Command="{Binding BackCommand}"
-                  ToolTip.Tip="{x:Static model:AppSettingsCopy.BackTip}">
-            <ti:TablerIcon Classes="button" Icon="IconArrowLeft" />
-          </Button>
+          <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="12,10,10,10">
+            <Button Grid.Column="0"
+                    Theme="{StaticResource IconButton}"
+                    Margin="0,0,6,0"
+                    IsVisible="{Binding ShowsBack}"
+                    Command="{Binding BackCommand}"
+                    ToolTip.Tip="{x:Static model:AppSettingsCopy.BackTip}">
+              <ti:TablerIcon Classes="button" Icon="IconArrowLeft" />
+            </Button>
 
-          <TextBlock Grid.Column="1"
-                     Classes="heading"
-                     Margin="4,0,0,0"
-                     VerticalAlignment="Center"
-                     Text="{Binding Heading}" />
+            <TextBlock Grid.Column="1"
+                       Classes="heading"
+                       Margin="4,0,0,0"
+                       VerticalAlignment="Center"
+                       Text="{Binding Heading}" />
 
-          <Button Grid.Column="2"
-                  Theme="{StaticResource IconButton}"
-                  Command="{Binding CloseCommand}"
-                  ToolTip.Tip="{x:Static model:AppSettingsCopy.CloseTip}">
-            <ti:TablerIcon Classes="button" Icon="IconX" />
-          </Button>
-        </Grid>
-        <Border Grid.Row="0" Classes="dividerh" VerticalAlignment="Bottom" />
+            <Button Grid.Column="2"
+                    Theme="{StaticResource IconButton}"
+                    Command="{Binding CloseCommand}"
+                    ToolTip.Tip="{x:Static model:AppSettingsCopy.CloseTip}">
+              <ti:TablerIcon Classes="button" Icon="IconX" />
+            </Button>
+          </Grid>
+          <Border Grid.Row="0" Classes="dividerh" VerticalAlignment="Bottom" />
 
-        <!--
-          One section on screen, picked from the list beside it (Model/SettingsSection.cs).
-          A window too narrow for both shows the list, then the section picked from it (Model/SettingsPlace.cs).
-        -->
-        <Grid Grid.Row="1" ColumnDefinitions="Auto,*">
+          <!--
+            One section on screen, picked from the list beside it (Model/SettingsSection.cs).
+            A window too narrow for both shows the list, then the section picked from it (Model/SettingsPlace.cs).
+          -->
+          <Grid Grid.Row="1" ColumnDefinitions="Auto,*">
 
-          <Border Grid.Column="0" Classes="sectionlist" IsVisible="{Binding ShowsList}">
-            <StackPanel>
-              <ListBox Theme="{StaticResource SectionListTheme}"
-                       ItemContainerTheme="{StaticResource SectionItemTheme}"
-                       ItemsSource="{Binding MainTabs}"
-                       ItemTemplate="{DynamicResource SettingsTabEntry}"
-                       SelectedItem="{Binding SelectedTab, Mode=TwoWay}" />
-              <Border Classes="dividerh" Margin="0,8" />
-              <!-- A second list for the entries under the divider, both writing the one section. -->
-              <ListBox Classes="apart"
-                       Theme="{StaticResource SectionListTheme}"
-                       ItemContainerTheme="{StaticResource SectionItemTheme}"
-                       ItemsSource="{Binding ApartTabs}"
-                       ItemTemplate="{DynamicResource SettingsTabEntry}"
-                       SelectedItem="{Binding SelectedTab, Mode=TwoWay}" />
-            </StackPanel>
-          </Border>
-
-          <ScrollViewer Grid.Column="1"
-                        Name="Sections"
-                        IsVisible="{Binding ShowsSection}"
-                        HorizontalScrollBarVisibility="Disabled">
-            <StackPanel Margin="16,14" Spacing="{StaticResource GapSection}">
-
-              <StackPanel Spacing="6">
-                <TextBlock Classes="cardtitle" TextWrapping="Wrap" TextTrimming="None" Text="{Binding Question}" />
-                <TextBlock Classes="muted" TextWrapping="Wrap" TextTrimming="None" Text="{Binding Lead}" />
+            <Border Grid.Column="0" Classes="sectionlist" IsVisible="{Binding ShowsList}">
+              <StackPanel>
+                <ListBox Theme="{StaticResource SectionListTheme}"
+                         ItemContainerTheme="{StaticResource SectionItemTheme}"
+                         ItemsSource="{Binding MainTabs}"
+                         ItemTemplate="{DynamicResource SettingsTabEntry}"
+                         SelectedItem="{Binding SelectedTab, Mode=TwoWay}" />
+                <Border Classes="dividerh" Margin="0,8" />
+                <!-- A second list for the entries under the divider, both writing the one section. -->
+                <ListBox Classes="apart"
+                         Theme="{StaticResource SectionListTheme}"
+                         ItemContainerTheme="{StaticResource SectionItemTheme}"
+                         ItemsSource="{Binding ApartTabs}"
+                         ItemTemplate="{DynamicResource SettingsTabEntry}"
+                         SelectedItem="{Binding SelectedTab, Mode=TwoWay}" />
               </StackPanel>
+            </Border>
 
-              <Panel>
+            <ScrollViewer Grid.Column="1"
+                          Name="Sections"
+                          IsVisible="{Binding ShowsSection}"
+                          HorizontalScrollBarVisibility="Disabled">
+              <StackPanel Margin="16,14" Spacing="{StaticResource GapSection}">
 
-                <StackPanel Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Window}}">
-                  <!--
-                    Pulled off the app group by key, so the write path stays the field's own (AppSettingsViewModel.Apply).
-                    Margin cancels the row's own trailing 18px (FieldRow.axaml), built for an unspaced list,
-                    so every pair in this dialog reads as the same gap.
-                  -->
-                  <ContentControl Content="{Binding TrayIcon}"
-                                  ContentTemplate="{StaticResource FieldRow}"
-                                  Margin="0,0,0,-18"
-                                  IsVisible="{Binding TrayIcon, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                <StackPanel Spacing="6">
+                  <TextBlock Classes="cardtitle" TextWrapping="Wrap" TextTrimming="None" Text="{Binding Question}" />
+                  <TextBlock Classes="muted" TextWrapping="Wrap" TextTrimming="None" Text="{Binding Lead}" />
                 </StackPanel>
 
-                <StackPanel Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Logs}}">
-                  <Button Theme="{StaticResource PrimaryButton}"
-                          HorizontalAlignment="Left"
-                          Content="{x:Static model:AppSettingsCopy.SendReport}"
-                          Command="{Binding SendReport}"
-                          controls:Pending.IsActive="{Binding SendReport.IsRunning}"
-                          ToolTip.Tip="{x:Static model:AppSettingsCopy.SendReportTip}" />
+                <Panel>
 
-                  <!--
-                    Selectable and wrapping, as the update band's line is:
-                    the stored name is what a reader carries into a bug report,
-                    and a refusal is what they carry into a message about the send.
-                  -->
-                  <SelectableTextBlock Classes="hint"
-                                       Classes.danger="{Binding ReportLineIsFailure}"
-                                       TextWrapping="Wrap"
-                                       TextTrimming="None"
-                                       IsVisible="{Binding ReportLine, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                       Text="{Binding ReportLine}" />
-
-                  <!-- Same cancelling margin as the row above. -->
-                  <ContentControl Content="{Binding CrashReports}"
-                                  ContentTemplate="{StaticResource FieldRow}"
-                                  Margin="0,0,0,-18"
-                                  IsVisible="{Binding CrashReports, Converter={x:Static ObjectConverters.IsNotNull}}" />
-
-                  <Button Theme="{StaticResource LinkButton}"
-                          HorizontalAlignment="Left"
-                          Content="{x:Static model:AppSettingsCopy.OpenLogsFolder}"
-                          Command="{Binding OpenLogsFolder}"
-                          controls:Pending.IsActive="{Binding OpenLogsFolder.IsRunning}"
-                          ToolTip.Tip="{x:Static model:AppSettingsCopy.OpenLogsFolderTip}" />
-                </StackPanel>
-
-                <StackPanel Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Updates}}">
-                  <!--
-                    One reason over the section, both controls under it being inert for that one fact.
-                    The toggle's own row prints none (AppSettingsViewModel.UpdatesRefusal).
-                  -->
-                  <SelectableTextBlock Classes="reason"
-                                       TextWrapping="Wrap"
-                                       TextTrimming="None"
-                                       IsVisible="{Binding UpdatesRefused}"
-                                       Text="{Binding UpdatesRefusal}" />
-
-                  <!-- Same cancelling margin as the crash-report row. -->
-                  <ContentControl Content="{Binding CheckUpdatesOnStart}"
-                                  ContentTemplate="{StaticResource FieldRow}"
-                                  Margin="0,0,0,-18"
-                                  IsVisible="{Binding CheckUpdatesOnStart, Converter={x:Static ObjectConverters.IsNotNull}}" />
-
-                  <!--
-                    The band's own answer, the same view model behind both
-                    (Features/Shell/Update/ViewModel/UpdateViewModel.cs).
-                    Selectable and wrapping, a failing check being what a reader carries into a message.
-                  -->
-                  <SelectableTextBlock Classes="hint"
-                                       Classes.danger="{Binding Updates.IsFailure}"
-                                       TextWrapping="Wrap"
-                                       TextTrimming="None"
-                                       IsVisible="{Binding Updates.ShowsLine}"
-                                       Text="{Binding Updates.Line}" />
-
-                  <Button HorizontalAlignment="Left"
-                          Content="{x:Static model:AppSettingsCopy.CheckNow}"
-                          Command="{Binding Updates.Check}"
-                          IsEnabled="{Binding Updates.CanCheck}"
-                          controls:Pending.IsActive="{Binding Updates.Check.IsRunning}" />
-                </StackPanel>
-
-                <StackPanel Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Discord}}">
-                  <!-- The account's picture stands where the sentence names the account. -->
-                  <Border Classes="card" Padding="12,10">
-                    <controls:AccountLine Classes="hint"
-                                          Classes.danger="{Binding DiscordLineIsFailure}"
-                                          TextWrapping="Wrap"
-                                          TextTrimming="None"
-                                          Sentence="{Binding DiscordLine}"
-                                          Picture="{Binding DiscordAvatar}" />
-                  </Border>
-
-                  <!-- Beside the button rather than only on its hover, as the update check's reason is. -->
-                  <SelectableTextBlock Classes="reason"
-                                       TextWrapping="Wrap"
-                                       TextTrimming="None"
-                                       IsVisible="{Binding LinkHint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                       Text="{Binding LinkHint}" />
-
-                  <!-- Same cancelling margin as the rows in the other sections. -->
-                  <ContentControl Content="{Binding RichPresence}"
-                                  ContentTemplate="{StaticResource FieldRow}"
-                                  Margin="0,0,0,-18"
-                                  IsVisible="{Binding RichPresence, Converter={x:Static ObjectConverters.IsNotNull}}" />
-
-                  <!--
-                    A link is one per computer and configures no stream, so it stands here rather than on the
-                    wizard step where a stream picks its group (docs/discord-mode.md, "Linking, once per install").
-                    The press opens the browser and takes as long as the person does, so the button waits on it.
-                  -->
-                  <StackPanel Orientation="Horizontal"
-                              HorizontalAlignment="Left"
-                              Spacing="{StaticResource GapTight}">
-                    <Button Content="{Binding LinkLabel}"
-                            Command="{Binding LinkDiscord}"
-                            controls:Pending.IsActive="{Binding LinkDiscord.IsRunning}"
-                            ToolTip.Tip="{Binding LinkTip}" />
-
-                    <!-- Beside a link alone: an install holding none has none to hand back. -->
-                    <Button Theme="{StaticResource DangerButton}"
-                            Content="{Binding UnlinkLabel}"
-                            Command="{Binding UnlinkDiscord}"
-                            controls:Pending.IsActive="{Binding UnlinkDiscord.IsRunning}"
-                            IsVisible="{Binding IsDiscordLinked}"
-                            ToolTip.Tip="{Binding UnlinkTip}" />
+                  <StackPanel Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Window}}">
+                    <!--
+                      Pulled off the app group by key, so the write path stays the field's own (AppSettingsViewModel.Apply).
+                      Margin cancels the row's own trailing 18px (FieldRow.axaml), built for an unspaced list,
+                      so every pair in this dialog reads as the same gap.
+                    -->
+                    <ContentControl Content="{Binding TrayIcon}"
+                                    ContentTemplate="{StaticResource FieldRow}"
+                                    Margin="0,0,0,-18"
+                                    IsVisible="{Binding TrayIcon, Converter={x:Static ObjectConverters.IsNotNull}}" />
                   </StackPanel>
-                </StackPanel>
 
-                <StackPanel Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Development}}">
-                  <!-- Same cancelling margin as the rows above. -->
-                  <ContentControl Content="{Binding TestStreams}"
-                                  ContentTemplate="{StaticResource FieldRow}"
-                                  Margin="0,0,0,-18"
-                                  IsVisible="{Binding TestStreams, Converter={x:Static ObjectConverters.IsNotNull}}" />
-                </StackPanel>
+                  <StackPanel Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Logs}}">
+                    <Button Theme="{StaticResource PrimaryButton}"
+                            HorizontalAlignment="Left"
+                            Content="{x:Static model:AppSettingsCopy.SendReport}"
+                            Command="{Binding SendReport}"
+                            controls:Pending.IsActive="{Binding SendReport.IsRunning}"
+                            ToolTip.Tip="{x:Static model:AppSettingsCopy.SendReportTip}" />
 
-                <StackPanel Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.About}}">
-                  <!-- Selectable: the build is what a bug report names. -->
-                  <SelectableTextBlock Classes="figure" Text="{Binding Version}" />
-                </StackPanel>
+                    <!--
+                      Selectable and wrapping, as the update band's line is:
+                      the stored name is what a reader carries into a bug report,
+                      and a refusal is what they carry into a message about the send.
+                    -->
+                    <SelectableTextBlock Classes="hint"
+                                         Classes.danger="{Binding ReportLineIsFailure}"
+                                         TextWrapping="Wrap"
+                                         TextTrimming="None"
+                                         IsVisible="{Binding ReportLine, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                         Text="{Binding ReportLine}" />
 
-              </Panel>
-            </StackPanel>
-          </ScrollViewer>
+                    <!-- Same cancelling margin as the row above. -->
+                    <ContentControl Content="{Binding CrashReports}"
+                                    ContentTemplate="{StaticResource FieldRow}"
+                                    Margin="0,0,0,-18"
+                                    IsVisible="{Binding CrashReports, Converter={x:Static ObjectConverters.IsNotNull}}" />
 
+                    <Button Theme="{StaticResource LinkButton}"
+                            HorizontalAlignment="Left"
+                            Content="{x:Static model:AppSettingsCopy.OpenLogsFolder}"
+                            Command="{Binding OpenLogsFolder}"
+                            controls:Pending.IsActive="{Binding OpenLogsFolder.IsRunning}"
+                            ToolTip.Tip="{x:Static model:AppSettingsCopy.OpenLogsFolderTip}" />
+                  </StackPanel>
+
+                  <StackPanel Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Updates}}">
+                    <!--
+                      One reason over the section, both controls under it being inert for that one fact.
+                      The toggle's own row prints none (AppSettingsViewModel.UpdatesRefusal).
+                    -->
+                    <SelectableTextBlock Classes="reason"
+                                         TextWrapping="Wrap"
+                                         TextTrimming="None"
+                                         IsVisible="{Binding UpdatesRefused}"
+                                         Text="{Binding UpdatesRefusal}" />
+
+                    <!-- Same cancelling margin as the crash-report row. -->
+                    <ContentControl Content="{Binding CheckUpdatesOnStart}"
+                                    ContentTemplate="{StaticResource FieldRow}"
+                                    Margin="0,0,0,-18"
+                                    IsVisible="{Binding CheckUpdatesOnStart, Converter={x:Static ObjectConverters.IsNotNull}}" />
+
+                    <!--
+                      The band's own answer, the same view model behind both
+                      (Features/Shell/Update/ViewModel/UpdateViewModel.cs).
+                      Selectable and wrapping, a failing check being what a reader carries into a message.
+                    -->
+                    <SelectableTextBlock Classes="hint"
+                                         Classes.danger="{Binding Updates.IsFailure}"
+                                         TextWrapping="Wrap"
+                                         TextTrimming="None"
+                                         IsVisible="{Binding Updates.ShowsLine}"
+                                         Text="{Binding Updates.Line}" />
+
+                    <Button HorizontalAlignment="Left"
+                            Content="{x:Static model:AppSettingsCopy.CheckNow}"
+                            Command="{Binding Updates.Check}"
+                            IsEnabled="{Binding Updates.CanCheck}"
+                            controls:Pending.IsActive="{Binding Updates.Check.IsRunning}" />
+                  </StackPanel>
+
+                  <StackPanel Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Discord}}">
+                    <!-- The account's picture stands where the sentence names the account. -->
+                    <Border Classes="card" Padding="12,10">
+                      <controls:AccountLine Classes="hint"
+                                            Classes.danger="{Binding DiscordLineIsFailure}"
+                                            TextWrapping="Wrap"
+                                            TextTrimming="None"
+                                            Sentence="{Binding DiscordLine}"
+                                            Picture="{Binding DiscordAvatar}" />
+                    </Border>
+
+                    <!-- Beside the button rather than only on its hover, as the update check's reason is. -->
+                    <SelectableTextBlock Classes="reason"
+                                         TextWrapping="Wrap"
+                                         TextTrimming="None"
+                                         IsVisible="{Binding LinkHint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                         Text="{Binding LinkHint}" />
+
+                    <!-- Same cancelling margin as the rows in the other sections. -->
+                    <ContentControl Content="{Binding RichPresence}"
+                                    ContentTemplate="{StaticResource FieldRow}"
+                                    Margin="0,0,0,-18"
+                                    IsVisible="{Binding RichPresence, Converter={x:Static ObjectConverters.IsNotNull}}" />
+
+                    <!--
+                      A link is one per computer and configures no stream, so it stands here rather than on the
+                      wizard step where a stream picks its group (docs/discord-mode.md, "Linking, once per install").
+                      The press opens the browser and takes as long as the person does, so the button waits on it.
+                    -->
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Left"
+                                Spacing="{StaticResource GapTight}">
+                      <Button Content="{Binding LinkLabel}"
+                              Command="{Binding LinkDiscord}"
+                              controls:Pending.IsActive="{Binding LinkDiscord.IsRunning}"
+                              ToolTip.Tip="{Binding LinkTip}" />
+
+                      <!-- Beside a link alone: an install holding none has none to hand back. -->
+                      <Button Theme="{StaticResource DangerButton}"
+                              Content="{Binding UnlinkLabel}"
+                              Command="{Binding UnlinkDiscord}"
+                              controls:Pending.IsActive="{Binding UnlinkDiscord.IsRunning}"
+                              IsVisible="{Binding IsDiscordLinked}"
+                              ToolTip.Tip="{Binding UnlinkTip}" />
+                    </StackPanel>
+                  </StackPanel>
+
+                  <StackPanel Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Development}}">
+                    <!-- Same cancelling margin as the rows above. -->
+                    <ContentControl Content="{Binding TestStreams}"
+                                    ContentTemplate="{StaticResource FieldRow}"
+                                    Margin="0,0,0,-18"
+                                    IsVisible="{Binding TestStreams, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                  </StackPanel>
+
+                  <StackPanel Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.About}}">
+                    <!-- Selectable: the build is what a bug report names. -->
+                    <SelectableTextBlock Classes="figure" Text="{Binding Version}" />
+                  </StackPanel>
+
+                </Panel>
+              </StackPanel>
+            </ScrollViewer>
+
+          </Grid>
         </Grid>
-      </Grid>
+      </Border>
     </Border>
-  </Border>
+  </controls:Overlay>
 </UserControl>

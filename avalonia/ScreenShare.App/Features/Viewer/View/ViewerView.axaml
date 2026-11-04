@@ -357,9 +357,9 @@
       A panel, never a flyout: a flyout would close on every click.
     -->
     <Panel IsVisible="{Binding WatchPanel.IsOpen}">
-      <Border Classes="scrim"
-              IsVisible="{Binding WatchPanel.IsSheet}"
-              PointerPressed="ScrimPressed" />
+      <controls:Overlay IsOpen="{Binding WatchPanel.IsSheet}">
+        <Border Classes="scrim" PointerPressed="ScrimPressed" />
+      </controls:Overlay>
       <Border Classes="overpanel" Classes.sheet="{Binding WatchPanel.IsSheet}">
         <watch:WatchSettingsView DataContext="{Binding Watch}" />
       </Border>

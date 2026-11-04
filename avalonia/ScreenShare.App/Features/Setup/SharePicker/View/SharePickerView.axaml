@@ -20,78 +20,79 @@
   <UserControl.KeyBindings>
     <!--
       Escape drops the press rather than starting on whatever the draft held,
-      the event starting at the focus inside the dialog and the code-behind putting the focus here.
+      the event starting at the focus that the Overlay takes as the dialog opens.
     -->
     <KeyBinding Gesture="Escape" Command="{Binding CancelCommand}" />
   </UserControl.KeyBindings>
 
   <!-- Dimmed rather than covered: the window stays readable behind what is being decided over it. -->
-  <Border Classes="scrim"
-          IsVisible="{Binding IsOpen}"
-          PointerPressed="ScrimPressed">
+  <controls:Overlay IsOpen="{Binding IsOpen}">
+    <Border Classes="scrim"
+            PointerPressed="ScrimPressed">
 
-    <Border Classes="panel"
-            MaxWidth="560"
-            MaxHeight="700"
-            Margin="{StaticResource InsetSection}"
-            BoxShadow="{StaticResource MenuShadow}"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center">
+      <Border Classes="panel"
+              MaxWidth="560"
+              MaxHeight="700"
+              Margin="{StaticResource InsetSection}"
+              BoxShadow="{StaticResource MenuShadow}"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center">
 
-      <Grid RowDefinitions="Auto,*,Auto,Auto" Margin="{StaticResource InsetSection}">
+        <Grid RowDefinitions="Auto,*,Auto,Auto" Margin="{StaticResource InsetSection}">
 
-        <StackPanel Grid.Row="0" Margin="0,0,0,14">
-          <TextBlock Classes="heading" Text="{x:Static model:SharePickerCopy.Title}" />
-          <TextBlock Classes="secondary"
-                     TextWrapping="Wrap"
-                     TextTrimming="None"
-                     Margin="0,3,0,0"
-                     Text="{x:Static model:SharePickerCopy.Help}" />
-        </StackPanel>
+          <StackPanel Grid.Row="0" Margin="0,0,0,14">
+            <TextBlock Classes="heading" Text="{x:Static model:SharePickerCopy.Title}" />
+            <TextBlock Classes="secondary"
+                       TextWrapping="Wrap"
+                       TextTrimming="None"
+                       Margin="0,3,0,0"
+                       Text="{x:Static model:SharePickerCopy.Help}" />
+          </StackPanel>
 
-        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
-          <sharequestion:ShareQuestionView DataContext="{Binding Question}" />
-        </ScrollViewer>
+          <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
+            <sharequestion:ShareQuestionView DataContext="{Binding Question}" />
+          </ScrollViewer>
 
-        <!--
-          What stands between these settings and the air, over the button that will not press.
-          Anchored nowhere: every screen fixing one of these is behind this dialog
-          (SharePicker/ViewModel/SharePickerViewModel.cs).
-        -->
-        <ItemsControl Grid.Row="2" ItemsSource="{Binding Blocking}" Margin="0,14,0,0">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate x:DataType="setup:PreflightCheckRow">
-              <controls:CheckItem Margin="0,0,0,9" Text="{Binding Text}" State="{Binding State}" />
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
+          <!--
+            What stands between these settings and the air, over the button that will not press.
+            Anchored nowhere: every screen fixing one of these is behind this dialog
+            (SharePicker/ViewModel/SharePickerViewModel.cs).
+          -->
+          <ItemsControl Grid.Row="2" ItemsSource="{Binding Blocking}" Margin="0,14,0,0">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="setup:PreflightCheckRow">
+                <controls:CheckItem Margin="0,0,0,9" Text="{Binding Text}" State="{Binding State}" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
 
-        <StackPanel Grid.Row="3"
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Right"
-                    Spacing="{StaticResource GapTight}"
-                    Margin="0,16,0,0">
+          <StackPanel Grid.Row="3"
+                      Orientation="Horizontal"
+                      HorizontalAlignment="Right"
+                      Spacing="{StaticResource GapTight}"
+                      Margin="0,16,0,0">
 
-          <Button Content="{x:Static model:SharePickerCopy.Cancel}"
-                  Command="{Binding CancelCommand}"
-                  ToolTip.Tip="{x:Static model:SharePickerCopy.CancelTip}" />
+            <Button Content="{x:Static model:SharePickerCopy.Cancel}"
+                    Command="{Binding CancelCommand}"
+                    ToolTip.Tip="{x:Static model:SharePickerCopy.CancelTip}" />
 
-          <Button Theme="{StaticResource PrimaryButton}"
-                  Command="{Binding ConfirmCommand}"
-                  IsEnabled="{Binding CanConfirm}">
-            <StackPanel Orientation="Horizontal" Spacing="8">
-              <!--
-                Brush read off the button rather than left at the icon default,
-                which is a light grey the near-white fill swallows and the greyed one keeps swallowing.
-              -->
-              <ti:TablerIcon Classes="button"
-                             Icon="IconScreenShare"
-                             Brush="{Binding $parent[Button].Foreground, Mode=OneWay}" />
-              <TextBlock Text="{x:Static model:SharePickerCopy.Confirm}" VerticalAlignment="Center" />
-            </StackPanel>
-          </Button>
-        </StackPanel>
-      </Grid>
+            <Button Theme="{StaticResource PrimaryButton}"
+                    Command="{Binding ConfirmCommand}"
+                    IsEnabled="{Binding CanConfirm}">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <!--
+                  Brush read off the button rather than left at the icon default,
+                  which is a light grey the near-white fill swallows and the greyed one keeps swallowing.
+                -->
+                <ti:TablerIcon Classes="button"
+                               Icon="IconScreenShare"
+                               Brush="{Binding $parent[Button].Foreground, Mode=OneWay}" />
+                <TextBlock Text="{x:Static model:SharePickerCopy.Confirm}" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
+          </StackPanel>
+        </Grid>
+      </Border>
     </Border>
-  </Border>
+  </controls:Overlay>
 </UserControl>
