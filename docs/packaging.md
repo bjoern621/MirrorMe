@@ -305,10 +305,10 @@ The model is the Flatpak's without the runtime: ffmpeg goes inside the image nex
 
 ### Container images
 
-The relay, the proxy and the group service, built by `nix build .#relay-image` and its two siblings under `packaging/nix/`.
+The relay, the proxy, the group service, the Discord manager and the viewer service, built by `nix build .#relay-image` and its siblings under `packaging/nix/`.
 Each writes a `docker-archive` tarball, which is the format `docker load` reads.
 
-`.github/workflows/images.yml` publishes them to `ghcr.io/bjoern621/screenshare-relay`, `-proxy` and `-groupd`.
+`.github/workflows/images.yml` publishes them to `ghcr.io/bjoern621/screenshare-relay`, `-proxy`, `-groupd`, `-discordd` and `-watchd`.
 The tag is the release's version, and only a published release pushes one, so a tag names a release and never moves.
 A cluster pins an exact tag against that.
 The release page carries the channels a person installs, so these are reached through the registry.

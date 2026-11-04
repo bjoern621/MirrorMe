@@ -16,7 +16,8 @@ backend/
   cmd/backend/     the process the shell starts: capture, encode, publish and decode
   cmd/groupd/      the key, token and index service, installed on the relay's machine
   cmd/discordd/    the Discord manager: voice channels as groups (docs/discord-mode.md)
-  internal/        what the three draw on
+  cmd/watchd/      the viewer service: each viewer's figures for the stream's publisher (docs/viewer-reports.md)
+  internal/        what the binaries draw on
   go.mod           module bjoernblessin.de/screenshare
 ```
 
@@ -29,6 +30,7 @@ The binaries land on different machines and ship as different packages (`packagi
 That separation is the `cmd/` directories.
 `discordd` stands beside `groupd` and speaks to it over its public routes alone,
 so the two share the wire and nothing else.
+`watchd` reads `groupd`'s published key set alone and verifies the tokens `groupd` signs.
 
 One module, because what they share is a contract rather than convenience code.
 `internal/group` derives a stream's path prefix from the group key, and both sides run that derivation.

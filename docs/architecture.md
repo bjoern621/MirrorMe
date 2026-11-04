@@ -12,6 +12,7 @@ No stream travels between two computers directly.
 │ shell              │        │ Caddy        │        │ shell              │
 │   control API      │        │ groupd       │        │   control API      │
 │   frame channel    │        │ discordd     │        │   frame channel    │
+│                    │        │ watchd       │        │                    │
 │ backend ───────────┼stream─►│ MediaMTX     ├stream─►│ backend            │
 └────────────────────┘        └──────────────┘        └────────────────────┘
 ```
@@ -41,6 +42,7 @@ The backend lends a frame to the shell, which draws it and hands it back.
 | MediaMTX | takes every stream in and serves it to each viewer over the protocol that viewer asked for | [network-architecture.md](network-architecture.md) |
 | groupd | makes group keys, signs tokens, lists a group's streams and holds members' presence leases | [auth-flow.md](auth-flow.md) |
 | discordd | turns a Discord voice channel into a group | [discord-mode.md](discord-mode.md) |
+| watchd | carries each viewer's own figures to the stream's publisher | [viewer-reports.md](viewer-reports.md) |
 | Caddy | terminates TLS for every HTTP leg on port 443 | [network-architecture.md](network-architecture.md) |
 
 A group key stays secret.

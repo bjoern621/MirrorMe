@@ -40,7 +40,8 @@ The group service that signs its tokens can mint one for any group.
                     │ HTTP leg on 443                       │
                     │   /groups /tokens /streams /members   │───MoQ────────► browser
                     │   /jwks.json ──► groupd, loopback     │   HTTP/3, not
-                    │   */whip */whep ──► MediaMTX WebRTC   │   through Caddy
+                    │   /viewers ──► watchd, loopback       │   through Caddy
+                    │   */whip */whep ──► MediaMTX WebRTC   │
                     │   /webrtc/* ──► its page, prefix cut  │
                     │   everything else ──► MediaMTX HLS    │
                     │                                       │

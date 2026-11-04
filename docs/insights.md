@@ -46,4 +46,5 @@ The chart's axis spans two round steps around the readings and the limit, and a 
 | encode time | one frame's duration at the target rate |
 | bitrate | the encode's rate ceiling, none where nothing bounds it |
 
-Viewers tab: a row per viewer the relay names, with round trip, loss and dropped wherever its leg measures them (`field-availability.md`).
+Viewers tab: a row per member whose app reports watching, with latency, fps and dropped off that viewer's own decode ([viewer-reports.md](viewer-reports.md)).
+Frames that viewer shed mark its row in amber.

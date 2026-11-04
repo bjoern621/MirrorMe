@@ -207,7 +207,7 @@ Everything above is about a *setting* the current combination rules out.
 A *figure* has the neighbouring problem and takes the same answer: a measurement that was not taken is shown as absent.
 
 A zero is a measurement.
-`0.00 % loss` says the relay watched this viewer and saw nothing go missing.
+`0` dropped says the viewer's decoder counted and shed nothing.
 `…` says nobody looked.
 A screen that printed the second as the first would certify every link it had never measured, the failure this rule exists to prevent.
 So the rule is that presence decides (`design-language.md`, "Wording").
@@ -215,11 +215,11 @@ So the rule is that presence decides (`design-language.md`, "Wording").
 **The row stays.**
 A figure a reader is looking for reads as unmeasured.
 A row that is gone reads as nothing to measure, and those are different facts about the app.
-A viewer over a leg that times nothing keeps its round trip and loss cells, each printing `…`.
+A viewer whose clock nothing could compare keeps its latency cell, printing `…`.
 
 **Where the measurement is per-something, the label names the something.**
-The relay measures round trip and loss per reader, so there is no such figure for a stream.
-Both sit in that reader's row and nowhere stream-wide.
+Each viewer measures its own latency and dropped frames, so there is no such figure for a stream.
+Both sit in that viewer's row and nowhere stream-wide.
 An average would be a figure no viewer is experiencing, and one struggling viewer among five is the case the screen exists for.
 
 ### What is measured, and by whom

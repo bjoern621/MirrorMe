@@ -31,7 +31,7 @@ The pod, the secrets, the certificate and those environment values belong to the
 task relay
 ```
 
-The relay and the group service come up together, and Ctrl+C ends both.
+The relay, the group service and the viewer service come up together, and Ctrl+C ends all three.
 Neither serves anything alone:
 the relay verifies every connection against the key set the service publishes,
 so a relay started by itself refuses every publisher.

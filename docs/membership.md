@@ -66,6 +66,7 @@ The answer is the whole group: every live member, what they are called, and whic
 Publishing is read off the relay's connection list on every answer rather than stated by anybody.
 A publish that dropped therefore stops showing without a second call.
 Who is watching what stays out of the answer, which is the line the stream index draws too.
+A publisher reads the viewers of its own streams from watchd instead ([viewer-reports.md](viewer-reports.md)).
 
 ## Closing connections
 

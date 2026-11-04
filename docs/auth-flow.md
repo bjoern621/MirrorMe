@@ -97,6 +97,8 @@ Membership is therefore enforced by closing connections, against the presence le
 | `POST /reconcile` | nothing, on loopback only | a path names a group and buys a run against the leases that group's own members stated, answered with no content |
 | publish | JWT | no, the grant is `~^prefix<member>/` and the relay matches it |
 | read | JWT | no, the grant is `~^prefix` and the relay matches it |
+| `PUT /viewers` | JWT | no, its read grant has to cover every path the statement names ([viewer-reports.md](viewer-reports.md)) |
+| `GET /viewers` | JWT | no, its publish grant has to cover the path, so a member reads the viewers of their own streams alone |
 
 ## What a leak costs
 
