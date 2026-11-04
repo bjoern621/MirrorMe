@@ -22,6 +22,10 @@
     <Style Selector="TextBlock.stat.past">
       <Setter Property="Foreground" Value="{StaticResource CautionBrush}" />
     </Style>
+    <Style Selector="TextBlock.sizer">
+      <Setter Property="Opacity" Value="0" />
+      <Setter Property="IsHitTestVisible" Value="False" />
+    </Style>
   </UserControl.Styles>
 
   <Border Classes="card" Padding="14,12">
@@ -82,21 +86,36 @@
                    VerticalAlignment="Center" />
       </Panel>
 
-      <!-- Every card's figure at the moment the pointer rests on, the one place the three meet. -->
-      <Border Classes="panel" Padding="12,8" IsVisible="{Binding HasReadout}">
+      <!--
+        Every card's figure at the moment the pointer rests on, the one place the three meet.
+        A sizer under each figure keeps the slot at its widest print, to keep the strip still as a pointer comes and goes.
+      -->
+      <Border Classes="panel" Padding="12,8">
         <WrapPanel ItemSpacing="{StaticResource GapSection}" LineSpacing="{StaticResource GapTight}">
-          <TextBlock Classes="stat" FontWeight="SemiBold" Text="{Binding Readout.Time, FallbackValue=''}" />
+          <Panel>
+            <TextBlock Classes="stat sizer" FontWeight="SemiBold" Text="{Binding WidestReadout.Time}" />
+            <TextBlock Classes="stat" FontWeight="SemiBold" Text="{Binding Readout.Time}" />
+          </Panel>
           <StackPanel Orientation="Horizontal" Spacing="6">
             <TextBlock Classes="hint" Text="{Binding FrameRateLabel}" />
-            <TextBlock Classes="stat" Text="{Binding Readout.FrameRate, FallbackValue=''}" />
+            <Panel>
+              <TextBlock Classes="stat sizer" Text="{Binding WidestReadout.FrameRate}" />
+              <TextBlock Classes="stat" Text="{Binding Readout.FrameRate}" />
+            </Panel>
           </StackPanel>
           <StackPanel Orientation="Horizontal" Spacing="6">
             <TextBlock Classes="hint" Text="{Binding EncodeTimeLabel}" />
-            <TextBlock Classes="stat" Text="{Binding Readout.EncodeTime, FallbackValue=''}" />
+            <Panel>
+              <TextBlock Classes="stat sizer" Text="{Binding WidestReadout.EncodeTime}" />
+              <TextBlock Classes="stat" Text="{Binding Readout.EncodeTime}" />
+            </Panel>
           </StackPanel>
           <StackPanel Orientation="Horizontal" Spacing="6">
             <TextBlock Classes="hint" Text="{Binding BitrateLabel}" />
-            <TextBlock Classes="stat" Text="{Binding Readout.Bitrate, FallbackValue=''}" />
+            <Panel>
+              <TextBlock Classes="stat sizer" Text="{Binding WidestReadout.Bitrate}" />
+              <TextBlock Classes="stat" Text="{Binding Readout.Bitrate}" />
+            </Panel>
           </StackPanel>
         </WrapPanel>
       </Border>

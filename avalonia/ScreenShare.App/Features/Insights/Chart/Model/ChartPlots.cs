@@ -3,6 +3,7 @@ using Avalonia;
 using ScreenShare.Api.V1;
 using ScreenShare.App.Backend;
 using ScreenShare.App.Contracts;
+using ScreenShare.App.Features.Insights.Model;
 
 namespace ScreenShare.App.Features.Insights.Chart.Model;
 
@@ -31,7 +32,11 @@ public sealed record ChartPlot(
 }
 
 /// <summary>Every card's figure at one reading, the one place the three meet.</summary>
-public sealed record Readout(string Time, string FrameRate, string EncodeTime, string Bitrate);
+public sealed record Readout(string Time, string FrameRate, string EncodeTime, string Bitrate)
+{
+    /// <summary>What the strip states with no reading under the pointer.</summary>
+    public static readonly Readout Unread = new(Figure.NoValue, Figure.NoValue, Figure.NoValue, Figure.NoValue);
+}
 
 /// <summary>
 /// Chart geometry and the header's summary, read out of the session's stamped readings.
@@ -41,6 +46,18 @@ public static class ChartPlots
 {
     /// <summary>Narrowest span drawn, s. A run younger than this fills the right of the chart.</summary>
     public const double MinimumSpanSeconds = 60;
+
+    private const string ClockFormat = "HH:mm:ss";
+
+    /// <summary>Reading the strip reserves room for. A wider one grows its slot.</summary>
+    private const double WidestValue = 999;
+
+    /// <summary>The print each slot of the strip keeps room for, to keep the strip still as readings land.</summary>
+    public static Readout WidestReadout => new(
+        DateTime.MinValue.ToString(ClockFormat, CultureInfo.CurrentCulture),
+        Metrics.Of(MetricKey.FrameRate).Print(WidestValue),
+        Metrics.Of(MetricKey.EncodeTime).Print(WidestValue),
+        Metrics.Of(MetricKey.Bitrate).Print(WidestValue));
 
     public static ChartPlot Of(
         IReadOnlyList<PublishReading> readings,
@@ -89,16 +106,16 @@ public static class ChartPlots
     }
 
     /// <summary>
-    /// Every figure of the reading nearest to a moment, null where the span holds none.
+    /// Every figure of the reading nearest to a moment, <see cref="Readout.Unread"/> where the span holds none.
     /// seconds: from the left edge, as the chart reports a pointer.
     /// </summary>
-    public static Readout? ReadoutAt(IReadOnlyList<PublishReading> readings, ChartRange range, double seconds)
+    public static Readout ReadoutAt(IReadOnlyList<PublishReading> readings, ChartRange range, double seconds)
     {
         Assert.NotNull(readings, "a readout reads the readings the session kept");
 
         if (readings.Count == 0 || double.IsNaN(seconds))
         {
-            return null;
+            return Readout.Unread;
         }
 
         var (start, _) = Window(readings, range);
@@ -108,11 +125,11 @@ public static class ChartPlots
             .MinBy(reading => Math.Abs((reading.At - at).TotalSeconds));
         if (nearest is null)
         {
-            return null;
+            return Readout.Unread;
         }
 
         return new Readout(
-            nearest.At.ToLocalTime().ToString("HH:mm:ss", CultureInfo.CurrentCulture),
+            nearest.At.ToLocalTime().ToString(ClockFormat, CultureInfo.CurrentCulture),
             Print(MetricKey.FrameRate, nearest.Stats),
             Print(MetricKey.EncodeTime, nearest.Stats),
             Print(MetricKey.Bitrate, nearest.Stats));

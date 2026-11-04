@@ -39,7 +39,7 @@ public sealed class ChartViewModel : Observable
     private string _worst = "";
     private bool _isPast;
     private double _hover = double.NaN;
-    private Readout? _readout;
+    private Readout _readout = Readout.Unread;
 
     public MetricKey Picked { get => _picked; private set => Set(ref _picked, value); }
 
@@ -82,6 +82,8 @@ public sealed class ChartViewModel : Observable
 
     public static string BitrateLabel => Metrics.Of(MetricKey.Bitrate).Label;
 
+    public static Readout WidestReadout => ChartPlots.WidestReadout;
+
     public string Average { get => _average; private set => Set(ref _average, value); }
 
     public string WorstWord { get => _worstWord; private set => Set(ref _worstWord, value); }
@@ -107,19 +109,7 @@ public sealed class ChartViewModel : Observable
         }
     }
 
-    public Readout? Readout
-    {
-        get => _readout;
-        private set
-        {
-            if (Set(ref _readout, value))
-            {
-                OnPropertyChanged(nameof(HasReadout));
-            }
-        }
-    }
-
-    public bool HasReadout => Readout is not null;
+    public Readout Readout { get => _readout; private set => Set(ref _readout, value); }
 
     private Limits _limits = new(null, null);
     private IReadOnlyList<StreamEvent> _events = [];

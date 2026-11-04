@@ -1,6 +1,7 @@
 using ScreenShare.Api.V1;
 using ScreenShare.App.Backend;
 using ScreenShare.App.Features.Insights.Chart.Model;
+using ScreenShare.App.Features.Insights.Chart.ViewModel;
 using Xunit;
 
 namespace ScreenShare.App.Tests;
@@ -127,9 +128,41 @@ public sealed class InsightsChartTests
 
         var readout = ChartPlots.ReadoutAt(readings, ChartRange.OneMinute, seconds: 59.2);
 
-        Assert.NotNull(readout);
         Assert.Equal("48 fps", readout.FrameRate);
         Assert.Equal("21 ms", readout.EncodeTime);
         Assert.Equal("14.2 Mb/s", readout.Bitrate);
+    }
+
+    [Fact]
+    public void TheReadoutPrintsAnEllipsisForEveryFigureWhileThePointerRestsNowhere()
+    {
+        var readout = ChartPlots.ReadoutAt([Read(0, 60)], ChartRange.OneMinute, double.NaN);
+
+        Assert.Equal(new Readout("…", "…", "…", "…"), readout);
+    }
+
+    [Fact]
+    public void TheReadoutPrintsAnEllipsisForEveryFigureWithNoReadings()
+    {
+        var readout = ChartPlots.ReadoutAt([], ChartRange.OneMinute, seconds: 30);
+
+        Assert.Equal(new Readout("…", "…", "…", "…"), readout);
+    }
+
+    [Fact]
+    public void TheChartOpensOnAReadoutOfEllipses()
+    {
+        Assert.Equal(new Readout("…", "…", "…", "…"), new ChartViewModel().Readout);
+    }
+
+    [Fact]
+    public void TheWidestReadoutHoldsThreeDigitsOfEveryFigure()
+    {
+        var widest = ChartPlots.WidestReadout;
+
+        Assert.Equal(8, widest.Time.Length);
+        Assert.Equal("999 fps", widest.FrameRate);
+        Assert.Equal("999 ms", widest.EncodeTime);
+        Assert.Equal("999.0 Mb/s", widest.Bitrate);
     }
 }
