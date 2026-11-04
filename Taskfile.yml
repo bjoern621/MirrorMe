@@ -31,9 +31,10 @@ tasks:
 
   relay:
     desc: Run the relay and the group service beside it, on deploy/mediamtx-groups.yml
-    # A script and not a command: three things come up together.
+    # A script and not a command: several things come up together.
     # A self-signed certificate for the TLS listeners where none is drawn.
-    # The group service every token is verified against.
+    # The group service that verifies every token.
+    # watchd, which collects the figures that viewers report.
     # The relay itself, the deployment's certificate and hook paths overridden
     # through MediaMTX's environment.
     #
