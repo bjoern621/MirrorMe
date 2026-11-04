@@ -21,7 +21,7 @@ public static class InsightsCopy
 
     public const string NoReadings = "Nothing to chart yet. The encoder reports once a second while sharing.";
 
-    public const string ViewersNote = "Round trip and loss come from the relay, on SRT connections.";
+    public const string ViewersNote = "Latency and frame rate come from each viewer's own app. A browser or an external player sends neither.";
 
     /// <summary>Card caption for a bitrate held to nothing.</summary>
     public const string NoCap = "no cap";

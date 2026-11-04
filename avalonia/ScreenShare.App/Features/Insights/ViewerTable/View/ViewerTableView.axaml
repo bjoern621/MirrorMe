@@ -63,8 +63,8 @@
               IsVisible="{Binding HasRows}">
         <Grid ColumnDefinitions="*,88,64,72">
           <TextBlock Grid.Column="0" Classes="cell colhead" Text="Viewer" />
-          <TextBlock Grid.Column="1" Classes="cell colhead" Text="Round trip" TextAlignment="Right" />
-          <TextBlock Grid.Column="2" Classes="cell colhead" Text="Loss" TextAlignment="Right" />
+          <TextBlock Grid.Column="1" Classes="cell colhead" Text="Latency" TextAlignment="Right" />
+          <TextBlock Grid.Column="2" Classes="cell colhead" Text="fps" TextAlignment="Right" />
           <TextBlock Grid.Column="3" Classes="cell colhead" Text="Dropped" TextAlignment="Right" />
         </Grid>
       </Border>
@@ -81,12 +81,12 @@
                                Classes.hot="{Binding IsStruggling}" Classes.strong="{Binding IsStruggling}" />
                     <TextBlock Classes="ident dim" Text="{Binding Via}" />
                   </StackPanel>
-                  <TextBlock Grid.Column="1" Classes="ident cell" Text="{Binding Rtt}" TextAlignment="Right"
+                  <TextBlock Grid.Column="1" Classes="ident cell" Text="{Binding Latency}" TextAlignment="Right"
                              Classes.hot="{Binding IsStruggling}" />
-                  <TextBlock Grid.Column="2" Classes="ident cell" Text="{Binding Loss}" TextAlignment="Right"
-                             Classes.alarm="{Binding IsStruggling}" />
+                  <TextBlock Grid.Column="2" Classes="ident cell" Text="{Binding Fps}" TextAlignment="Right"
+                             Classes.hot="{Binding IsStruggling}" />
                   <TextBlock Grid.Column="3" Classes="ident cell" Text="{Binding Dropped}" TextAlignment="Right"
-                             Classes.hot="{Binding IsStruggling}" />
+                             Classes.alarm="{Binding IsStruggling}" />
                 </Grid>
               </Border>
               <Border Classes="rowrule" IsVisible="{Binding !IsLast}" />

@@ -4,123 +4,67 @@ using ScreenShare.App.Contracts;
 namespace ScreenShare.App.Features.Insights.Model;
 
 /// <summary>
-/// One viewer of this stream, as the relay reports it.
+/// One viewer of this stream, as that viewer's own app reported it (<c>docs/viewer-reports.md</c>).
 ///
-/// <b>Filled from the relay's reader roster, cell for cell.</b> The relay names each reader by the protocol it
-/// watches over and joins it to that protocol's connection list, so a row holds an address and whatever
-/// the leg is instrumented for.
-/// SRT is the one leg the relay times a round trip and states a loss rate on.
-/// The rest report what was sent to them and what the relay's own queue threw away.
-/// A cell with no measurement behind it prints <see cref="Figure.NoValue"/> and never a zero, so a viewer
-/// on an untimed leg never reads as a perfect one.
+/// <b>Filled from the viewer report, cell for cell.</b> Every figure comes off the viewer's own decode, so every
+/// leg carries the same ones.
+/// A cell with no measurement behind it prints <see cref="Figure.NoValue"/> and never a zero, so a viewer whose
+/// clock could not be compared never reads as one with no latency.
 ///
 /// <see cref="IsLast"/> is nobody's measurement: the render function derives it, the last row sitting flush
 /// against the card's rounded edge and carrying no separator.
 /// </summary>
-/// <param name="Name">Address the relay saw, or its handle on the connection.</param>
-/// <param name="Rtt">Round trip in ms, absent on every leg but SRT.</param>
-/// <param name="Loss">Send-side loss in percent, absent on every leg but SRT.</param>
-/// <param name="Dropped">What went out incomplete: packets given up on, or frames the relay's queue discarded.</param>
+/// <param name="Name">Name the group lists this viewer by.</param>
+/// <param name="Latency">ms from this computer's encoder to the viewer's decoder.</param>
+/// <param name="Fps">Frames a second reaching the viewer's window.</param>
+/// <param name="Dropped">Frames a second the viewer's decoder shed to keep up.</param>
 /// <param name="Via">Leg this viewer watches over, in the transport vocabulary.</param>
 /// <param name="IsStruggling">Whether a measured figure reached a limit in <see cref="Strain"/>.</param>
 public sealed record ViewerRow(
     string Name,
-    string Rtt,
-    string Loss,
+    string Latency,
+    string Fps,
     string Dropped,
     string Via,
     bool IsStruggling)
 {
     /// <summary>
-    /// Percent. Loss at or above this reads as a viewer in trouble.
-    /// SRT states resent data against sent data, so the figure is already a rate, and a link losing a fiftieth
-    /// of what is sent to it is one the retransmits are working to hide.
+    /// Frames a second. Shedding this many reads as a viewer in trouble.
+    /// Latency stays out of the rule: each leg has its own floor, and an RTMP viewer at its floor is not in trouble.
     /// </summary>
-    private const double StrainingLossPercent = 2;
-
-    /// <summary>
-    /// ms. Round trip at or above this reads the same way.
-    /// Distance alone is not trouble, but SRT's retransmit window is a small multiple of the round trip, and past
-    /// this the relay resends into a gap that has already played.
-    /// </summary>
-    private const double StrainingRttMs = 200;
-
-    /// <summary>
-    /// One discard, the whole threshold.
-    /// A packet the sender gave up on and a frame the relay's queue threw away are both data this viewer was never
-    /// sent, and either is a picture that did not arrive.
-    /// </summary>
-    private const double StrainingDiscards = 1;
+    private const double StrainingDroppedFps = 1;
 
     /// <summary>
     /// The whole severity rule: every figure that can put a row in the struggling state, and the measurement
     /// at which it does.
     ///
     /// A table rather than a condition in the render function or the view, on the rule every static fact here
-    /// follows: the escalation lands in four places in the markup, fill, weight, the hot roles and the one red,
+    /// follows: the escalation lands in four places in the markup, fill, weight, the hot roles and the one amber,
     /// and a rule restated at each is four rules that can disagree (<c>docs/development-principles.md</c>,
     /// "Stateless").
-    /// The view asks this row whether it is struggling and asks nothing else.
-    ///
-    /// A figure the leg does not report takes part in nothing, hence each entry reading presence rather than
-    /// value: a viewer over RTMP is untimed and not calm, and an absent round trip read as a zero certifies every
-    /// one of them.
+    /// A figure the viewer did not measure takes part in nothing, hence each entry reading presence.
     /// </summary>
-    private static readonly (Func<RelayReader, double?> Figure, double Limit)[] Strain =
+    private static readonly (Func<ViewerReport, double?> Figure, double Limit)[] Strain =
     [
-        (reader => reader.HasLossPercent ? reader.LossPercent : null, StrainingLossPercent),
-        (reader => reader.HasRttMs ? reader.RttMs : null, StrainingRttMs),
-        (Discards, StrainingDiscards),
+        (report => report.HasDroppedFps ? report.DroppedFps : null, StrainingDroppedFps),
     ];
 
     public bool IsLast { get; init; }
 
     /// <summary>
-    /// One row from one reader on the roster.
-    /// Nothing here is decided: a cell is the relay's figure for that reader, formatted, or the ellipsis saying
-    /// the leg states none.
+    /// One row from one viewer report.
+    /// Nothing here is decided: a cell is the viewer's figure, formatted, or the ellipsis saying it measured none.
     /// </summary>
-    public static ViewerRow Of(RelayReader reader)
+    public static ViewerRow Of(ViewerReport report)
     {
-        Assert.NotNull(reader, "a viewer row describes a reader the relay reported");
+        Assert.NotNull(report, "a viewer row describes a viewer report");
 
         return new ViewerRow(
-            Name: NameOf(reader),
-            Rtt: Figure.Of(reader.HasRttMs ? reader.RttMs : null, "0"),
-            Loss: Figure.Of(reader.HasLossPercent ? reader.LossPercent : null, "0.00"),
-            Dropped: Figure.Of(Discards(reader), "0"),
-            Via: reader.Transport.Length > 0 ? reader.Transport : Figure.NoValue,
-            IsStruggling: Strain.Any(rule => rule.Figure(reader) is { } measured && measured >= rule.Limit));
-    }
-
-    /// <summary>
-    /// Who a reader is: the address the relay saw, its connection handle where the relay gave no address, and
-    /// <see cref="Figure.NoValue"/> where it stated neither.
-    /// Falls back and then gives up rather than asserting.
-    /// These are the relay's own words, so a reader it named nothing is an Umgebungsfehler this screen survives:
-    /// an unnameable viewer still reads as somebody connected.
-    /// </summary>
-    private static string NameOf(RelayReader reader)
-    {
-        var address = reader.HasRemoteAddr && reader.RemoteAddr.Length > 0 ? reader.RemoteAddr : reader.Id;
-        return address.Length > 0 ? address : Figure.NoValue;
-    }
-
-    /// <summary>
-    /// What this viewer was not sent: packets the sender gave up on, plus frames the relay's outgoing queue
-    /// discarded.
-    /// Summed rather than shown apart, the column asking one question, did anything fail to go out, and a leg
-    /// reporting at most one of the two.
-    /// Absent where the leg counts neither, which is not a leg counting zero.
-    /// </summary>
-    private static double? Discards(RelayReader reader)
-    {
-        if (!reader.HasPacketsDropped && !reader.HasFramesDiscarded)
-        {
-            return null;
-        }
-
-        return (reader.HasPacketsDropped ? reader.PacketsDropped : 0)
-             + (reader.HasFramesDiscarded ? reader.FramesDiscarded : 0);
+            Name: report.DisplayName.Length > 0 ? report.DisplayName : Figure.NoValue,
+            Latency: Figure.Of(report.HasPathMs ? report.PathMs : null, "0"),
+            Fps: Figure.Of(report.HasShownFps ? report.ShownFps : null, "0"),
+            Dropped: Figure.Of(report.HasDroppedFps ? report.DroppedFps : null, "0"),
+            Via: report.Transport.Length > 0 ? report.Transport : Figure.NoValue,
+            IsStruggling: Strain.Any(rule => rule.Figure(report) is { } measured && measured >= rule.Limit));
     }
 }

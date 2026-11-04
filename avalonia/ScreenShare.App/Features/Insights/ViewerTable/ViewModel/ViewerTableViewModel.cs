@@ -27,15 +27,15 @@ public sealed class ViewerTableViewModel : Observable
     private bool _isLive;
 
     /// <summary>
-    /// Roster as the relay last reported it, in its order.
-    /// <see cref="ViewerRow.IsLast"/> is never set on it: which row ends a table is not a fact the relay has.
+    /// Viewers as watchd last reported them, in member order.
+    /// <see cref="ViewerRow.IsLast"/> is never set on it: which row ends a table is not a fact a report has.
     /// </summary>
     public IReadOnlyList<ViewerRow> Reported
     {
         get => _reported;
         set
         {
-            Assert.NotNull(value, "a viewer table renders a reported roster");
+            Assert.NotNull(value, "a viewer table renders the reported viewers");
 
             if (Set(ref _reported, value))
             {
@@ -46,7 +46,7 @@ public sealed class ViewerTableViewModel : Observable
 
     /// <summary>
     /// Whether a stream is in force.
-    /// The card is drawn on a destination reachable with nothing publishing, and an empty roster with no stream
+    /// The card is drawn on a destination reachable with nothing publishing, and an empty table with no stream
     /// behind it is a different absence from a stream nobody has joined.
     /// </summary>
     public bool IsLive
@@ -64,9 +64,9 @@ public sealed class ViewerTableViewModel : Observable
     /// <summary>
     /// How many readers the relay counts on this stream's path. Null while nothing has been read, or nothing
     /// is publishing.
-    /// Carried rather than taken off the row count, the two being different facts about one answer: the count
-    /// is what the relay said, the rows what this screen rendered of it.
-    /// Holding both makes a disagreement between them visible.
+    /// Carried rather than taken off the row count, the two coming from different services: the count is what
+    /// the relay serves, the rows what the viewers' apps reported.
+    /// A browser or an external player counts and reports nothing, so the two can differ.
     /// </summary>
     public int? Readers
     {
@@ -99,8 +99,8 @@ public sealed class ViewerTableViewModel : Observable
     /// <summary>
     /// Why there are no rows, empty while there are some.
     /// The absences are asked in the order they stop being true as a stream comes up.
-    /// A count standing with no rows behind it is a snapshot whose source answers no roster,
-    /// which reads as an empty path unless the sentence says otherwise (<c>docs/ipc-api.md</c>).
+    /// A count standing with no rows behind it means viewers whose app sends no figures,
+    /// which reads as an empty path unless the sentence says otherwise.
     /// </summary>
     public string Notice { get => _notice; private set => Set(ref _notice, value); }
 
@@ -109,7 +109,7 @@ public sealed class ViewerTableViewModel : Observable
     /// <summary>
     /// The one render function.
     /// Stamps the separator onto every row but the last, and leaves the bound list alone where nothing differs:
-    /// rows are records, so a roster pushed unchanged does not repaint the table under the pointer.
+    /// rows are records, so a table pushed unchanged does not repaint under the pointer.
     /// </summary>
     public void Apply()
     {
@@ -124,12 +124,10 @@ public sealed class ViewerTableViewModel : Observable
         StrugglingCount = Rows.Count(row => row.IsStruggling);
         HasRows = Rows.Count > 0;
 
-        // This card is the roster and the header pill above it is the count, one figure written by two render
-        // functions ending with two screens disagreeing.
         Notice = HasRows ? ""
             : !IsLive ? Cards.ViewersIdle
             : Readers is null ? Cards.ViewersUnasked
-            : Readers > 0 ? Cards.ViewersUnnamed
+            : Readers > 0 ? Cards.ViewersUnreported
             : Cards.ViewersNone;
 
         Assert.That(Rows.Count == reported.Count, "a row per reported viewer", Rows.Count, reported.Count);

@@ -9,156 +9,121 @@ using Xunit;
 namespace ScreenShare.App.Tests;
 
 /// <summary>
-/// Row per reader the relay named, cell per figure it stated about that reader.
-/// Unstated figure reads absent, never zero, so a viewer nobody timed never reads as a viewer with a perfect link.
+/// Row per viewer that reported, cell per figure its own app measured.
+/// Unmeasured figure reads absent, never zero, so a viewer whose clock nothing could compare never reads as
+/// a viewer with no latency at all.
 /// </summary>
 public sealed class ViewerRosterTests
 {
-    /// <summary>SRT reader: only leg the relay times and states a loss rate on.</summary>
-    private static RelayReader Srt(string address, double rttMs, double lossPercent, ulong dropped = 0) => new()
+    private static ViewerReport Report(string name, string transport, double? latencyMs = null, double? fps = null,
+        double? droppedFps = null)
     {
-        Type = "srtConn",
-        Id = $"id-{address}",
-        Transport = "srt",
-        RemoteAddr = address,
-        Joined = "2026-08-09T22:01:12.0000000+00:00",
-        BytesSent = 373004,
-        RttMs = rttMs,
-        LossPercent = lossPercent,
-        PacketsSent = 385,
-        PacketsLost = 0,
-        PacketsDropped = dropped,
-        FramesDiscarded = 0,
-    };
+        var report = new ViewerReport { MemberId = $"m-{name}", DisplayName = name, Transport = transport };
+        if (latencyMs is { } latency)
+        {
+            report.PathMs = latency;
+        }
+        if (fps is { } shown)
+        {
+            report.ShownFps = shown;
+        }
+        if (droppedFps is { } dropped)
+        {
+            report.DroppedFps = dropped;
+        }
+        return report;
+    }
 
-    /// <summary>RTMP reader: bytes and the relay's own discards, nothing about the line.</summary>
-    private static RelayReader Rtmp(string address, ulong discarded = 0) => new()
+    private static RelayStatus Serving(int readers, params ViewerReport[] reports)
     {
-        Type = "rtmpConn",
-        Id = $"id-{address}",
-        Transport = "rtmp",
-        RemoteAddr = address,
-        Joined = "2026-08-09T22:01:15.0000000+00:00",
-        BytesSent = 358672,
-        FramesDiscarded = discarded,
-    };
-
-    private static RelayStatus Serving(params RelayReader[] readers)
-    {
-        var path = new RelayPath { Name = "desk", Ready = true, Readers = readers.Length };
-        path.ReaderRoster.AddRange(readers);
+        var path = new RelayPath { Name = "desk", Ready = true, Readers = readers };
+        path.Viewers.AddRange(reports);
 
         var relay = new RelayStatus { Reachable = true };
         relay.Paths.Add(path);
         return relay;
     }
 
-    private static PublishState Live() => new()
-    {
-        Live = new PublishState.Types.Live { Publish = new PublishSettings(), StreamName = "desk" },
-    };
+    private static RelayStatus Serving(params ViewerReport[] reports) => Serving(reports.Length, reports);
 
     private static ViewerTableViewModel Table(RelayStatus? relay)
     {
         var path = InsightsSnapshot.PathOf(relay, "desk");
-        var table = new ViewerTableViewModel
+        return new ViewerTableViewModel
         {
-            Reported = path is null ? [] : path.ReaderRoster.Select(ViewerRow.Of).ToList(),
+            Reported = path is null ? [] : path.Viewers.Select(ViewerRow.Of).ToList(),
             Readers = path?.Readers,
             IsLive = true,
         };
-
-        return table;
     }
 
     [Fact]
-    public void ARowIsBuiltFromTheReaderTheRelayNamed()
+    public void ARowCarriesWhatTheViewersOwnAppMeasured()
     {
-        var table = Table(Serving(Srt("10.0.0.4:52157", rttMs: 18.4, lossPercent: 0.25)));
-
-        Assert.True(table.HasRows);
-        var row = Assert.Single(table.Rows);
-
-        Assert.Equal("10.0.0.4:52157", row.Name);
-        Assert.Equal("18", row.Rtt);
-        Assert.Equal("0.25", row.Loss);
-        Assert.Equal("srt", row.Via);
-        Assert.Equal("0", row.Dropped);
-    }
-
-    [Fact]
-    public void AFigureTheLegDoesNotReportReadsAsAbsentRatherThanAsZero()
-    {
-        var table = Table(Serving(Rtmp("10.0.0.9:55372")));
+        var table = Table(Serving(Report("Alice", "rtsp", latencyMs: 41.6, fps: 59.8, droppedFps: 0)));
 
         var row = Assert.Single(table.Rows);
-
-        // Nothing times an RTMP reader and nothing states its loss.
-        Assert.Equal(Figure.NoValue, row.Rtt);
-        Assert.Equal(Figure.NoValue, row.Loss);
-
-        // Measured zero is a measurement, and prints as one.
+        Assert.Equal("Alice", row.Name);
+        Assert.Equal("42", row.Latency);
+        Assert.Equal("60", row.Fps);
         Assert.Equal("0", row.Dropped);
-        Assert.Equal("rtmp", row.Via);
+        Assert.Equal("rtsp", row.Via);
         Assert.False(row.IsStruggling);
     }
 
+    /// <summary>Every leg reports the same figures, so an RTMP viewer is timed like an SRT one.</summary>
     [Fact]
-    public void AReaderTheRelayDescribedNowhereIsStillNamed()
+    public void EveryLegCarriesALatency()
     {
-        // Named on the path, absent from every per-protocol list: a relay with that listener off.
-        var unmeasured = new RelayReader { Type = "moqSession", Id = "5c1f", Transport = "moq" };
+        var table = Table(Serving(
+            Report("Alice", "rtmp", latencyMs: 2700),
+            Report("Bob", "hls", latencyMs: 540),
+            Report("Carol", "webrtc", latencyMs: 33)));
 
-        var table = Table(Serving(unmeasured));
+        Assert.Equal(["2700", "540", "33"], table.Rows.Select(row => row.Latency));
+    }
+
+    [Fact]
+    public void AFigureTheViewerDidNotMeasureReadsAsAbsentRatherThanAsZero()
+    {
+        var table = Table(Serving(Report("Alice", "srt")));
 
         var row = Assert.Single(table.Rows);
-        Assert.Equal("5c1f", row.Name);
-        Assert.Equal(Figure.NoValue, row.Rtt);
-        Assert.Equal(Figure.NoValue, row.Loss);
+        Assert.Equal(Figure.NoValue, row.Latency);
+        Assert.Equal(Figure.NoValue, row.Fps);
         Assert.Equal(Figure.NoValue, row.Dropped);
-        Assert.Equal("moq", row.Via);
         Assert.False(row.IsStruggling);
     }
 
-    /// <summary>
-    /// Relay naming a reader nothing is an Umgebungsfehler, so the row renders unnameable rather than asserting.
-    /// Somebody is connected either way.
-    /// </summary>
+    /// <summary>A member the group's list no longer names is still somebody watching.</summary>
     [Fact]
-    public void AReaderTheRelayNamedNothingStillRenders()
+    public void AViewerTheGroupNamesNothingStillRenders()
     {
-        var table = Table(Serving(new RelayReader()));
+        var table = Table(Serving(new ViewerReport { MemberId = "m-gone", Transport = "rtsp" }));
 
         var row = Assert.Single(table.Rows);
         Assert.Equal(Figure.NoValue, row.Name);
-        Assert.Equal(Figure.NoValue, row.Via);
-        Assert.False(row.IsStruggling);
-        Assert.Equal(1, table.Readers);
+        Assert.Equal("rtsp", row.Via);
     }
 
     [Fact]
-    public void OnlyAMeasuredFigureOverItsLimitMakesARowStruggle()
+    public void OnlyFramesTheViewerShedMakeARowStruggle()
     {
         var table = Table(Serving(
-            Srt("10.0.0.1:1", rttMs: 20, lossPercent: 0.1),      // healthy
-            Srt("10.0.0.2:2", rttMs: 20, lossPercent: 7.5),      // loss past its limit
-            Srt("10.0.0.3:3", rttMs: 480, lossPercent: 0),       // round trip past its limit
-            Srt("10.0.0.4:4", rttMs: 20, lossPercent: 0, 12),    // dropped at all
-            Rtmp("10.0.0.5:5")));                                // untimed, so never struggling
+            Report("Alice", "rtsp", latencyMs: 40, fps: 60, droppedFps: 0),
+            Report("Bob", "rtsp", latencyMs: 40, fps: 52, droppedFps: 8),
+            Report("Carol", "rtmp", latencyMs: 2700, fps: 60, droppedFps: 0)));
 
-        Assert.Equal(5, table.Rows.Count);
-        Assert.Equal(3, table.StrugglingCount);
+        Assert.Equal(1, table.StrugglingCount);
         Assert.False(table.Rows[0].IsStruggling);
         Assert.True(table.Rows[1].IsStruggling);
-        Assert.True(table.Rows[2].IsStruggling);
-        Assert.True(table.Rows[3].IsStruggling);
-        Assert.False(table.Rows[4].IsStruggling);
+        Assert.False(table.Rows[2].IsStruggling);
     }
 
     [Fact]
     public void OneRowEndsTheTableAndCarriesNoSeparator()
     {
-        var table = Table(Serving(Srt("10.0.0.1:1", 20, 0), Srt("10.0.0.2:2", 20, 0), Rtmp("10.0.0.3:3")));
+        var table = Table(Serving(Report("Alice", "rtsp"), Report("Bob", "srt"), Report("Carol", "hls")));
 
         Assert.Equal(3, table.Rows.Count);
         Assert.False(table.Rows[0].IsLast);
@@ -171,16 +136,15 @@ public sealed class ViewerRosterTests
     /// so a clear-and-fill per poll would reset the scroll position of a table nothing happened to.
     /// </summary>
     [Fact]
-    public void AnUnchangedRosterRenderedAgainTouchesNothing()
+    public void AnUnchangedTableRenderedAgainTouchesNothing()
     {
-        var relay = Serving(Srt("10.0.0.1:1", 20, 0.5), Rtmp("10.0.0.2:2"));
+        var relay = Serving(Report("Alice", "rtsp", latencyMs: 40), Report("Bob", "srt"));
         var table = Table(relay);
 
         var changes = 0;
         ((INotifyCollectionChanged)table.Rows).CollectionChanged += (_, _) => changes++;
 
-        // Same roster again, through the path the render pass reads it by.
-        table.Reported = InsightsSnapshot.PathOf(relay, "desk")!.ReaderRoster.Select(ViewerRow.Of).ToList();
+        table.Reported = InsightsSnapshot.PathOf(relay, "desk")!.Viewers.Select(ViewerRow.Of).ToList();
         table.Apply();
         table.Apply();
 
@@ -193,34 +157,27 @@ public sealed class ViewerRosterTests
     {
         var unasked = Table(null);
         Assert.False(unasked.HasRows);
-        Assert.Contains("has not been asked", unasked.Notice);
+        Assert.Equal(Cards.ViewersUnasked, unasked.Notice);
 
         var watched = Table(Serving());
         Assert.False(watched.HasRows);
-        Assert.Contains("Nobody is connected", watched.Notice);
+        Assert.Equal(Cards.ViewersNone, watched.Notice);
 
-        // Card is drawn with nothing publishing too, a third absence and not an empty roster.
         var idle = new ViewerTableViewModel();
         Assert.False(idle.HasRows);
-        Assert.Contains("Nothing is publishing", idle.Notice);
+        Assert.Equal(Cards.ViewersIdle, idle.Notice);
     }
 
     /// <summary>
-    /// A member reads the group service's index, which counts the readers of a path and leaves their names
-    /// at the service (<c>docs/ipc-api.md</c>).
-    /// The count then stands with no rows behind it, an unavailable roster wearing the look of an empty one,
-    /// and this card is where that difference is stated.
+    /// A viewer in a browser or an external player sends no figures, so the relay counts it and no row stands
+    /// behind it.
     /// </summary>
     [Fact]
-    public void ACountWithNoRosterBehindItSaysTheViewersAreUnnamed()
+    public void ACountWithNoReportBehindItSaysTheViewersSentNothing()
     {
-        var path = new RelayPath { Name = "desk", Ready = true, Readers = 2 };
-        var relay = new RelayStatus { Reachable = true };
-        relay.Paths.Add(path);
-
-        var table = Table(relay);
+        var table = Table(Serving(readers: 2));
 
         Assert.False(table.HasRows);
-        Assert.Equal(Cards.ViewersUnnamed, table.Notice);
+        Assert.Equal(Cards.ViewersUnreported, table.Notice);
     }
 }

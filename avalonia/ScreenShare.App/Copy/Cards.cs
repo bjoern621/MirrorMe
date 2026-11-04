@@ -118,7 +118,7 @@ public static class Cards
     /// What the viewer table says in place of rows.
     /// One sentence per absence, three of them leaving the publisher something to do next:
     /// start a stream, wait for the relay to be asked, or send somebody the link.
-    /// The fourth has no next step, the relay counting its viewers without naming them.
+    /// The fourth has no next step: the relay counts viewers whose app sends no figures.
     /// </summary>
     public const string ViewersIdle = "Nothing is publishing, so nobody can be watching this computer.";
 
@@ -126,8 +126,8 @@ public static class Cards
 
     public const string ViewersNone = "Nobody is connected to this stream yet.";
 
-    public const string ViewersUnnamed =
-        "This relay reports a viewer count only. It shares no names or connection figures.";
+    public const string ViewersUnreported =
+        "No viewer has sent figures yet. A browser or an external player never sends any.";
 
     /// <summary>
     /// What the wizard says before the backend has described this machine.

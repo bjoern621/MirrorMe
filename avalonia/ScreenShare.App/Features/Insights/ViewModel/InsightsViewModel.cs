@@ -250,13 +250,13 @@ public sealed class InsightsViewModel : Observable
         => discord is { InChannel: true, ChannelName.Length: > 0 } ? discord.ChannelName : InsightsCopy.YourGroup;
 
     /// <summary>
-    /// Viewer rows: one per reader the relay named on this stream's path, in the relay's own order,
+    /// Viewer rows: one per viewer report on this stream's path, in member order,
     /// so a row a reader learned the position of stays there.
     /// </summary>
     private static IReadOnlyList<ViewerRow> Watching(RelayStatus? relay, string stream)
     {
         var path = InsightsSnapshot.PathOf(relay, stream);
-        return path is null ? [] : path.ReaderRoster.Select(ViewerRow.Of).ToList();
+        return path is null ? [] : path.Viewers.Select(ViewerRow.Of).ToList();
     }
 
     // --- The effects ----------------------------------------------------------------

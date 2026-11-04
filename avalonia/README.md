@@ -239,13 +239,12 @@ Every start earns the move, so the destination a commit leads to is not a settin
 **Every figure on the insights screen has a source, and one with none prints an ellipsis rather than a zero.**
 Composed in `Features/Insights/Model/InsightsSnapshot.cs` out of three whole states: the publish state, the newest encoder sample, the relay snapshot.
 
-**The viewer table is a row per viewer, and the relay measures them one leg at a time.**
-The backend reads the relay's reader array per path and joins each entry to the per-protocol connection list its type names, so a row is a name, the leg it watches over, and whatever that leg is instrumented for (`backend/internal/relay/readers.go`).
-SRT is the one the relay times a round trip and states a loss rate on.
-The rest report what was sent to them and what the relay's own queue discarded.
-A cell with no measurement is an ellipsis, so a viewer over RTMP reads as untimed.
-The severity rule in `Features/Insights/Model/ViewerRow.cs` reads presence rather than value.
-Buffer fill and the decoder in use are figures nobody reports to a publisher, so those columns carry what the relay does measure: what was dropped, and the leg it went out over.
+**The viewer table holds a row per viewer, and each viewer measures itself.**
+Every viewer's app states what it decodes to watchd, with the latency off the clock stamped into each picture, the frames shown and the frames shed (`docs/viewer-reports.md`).
+The backend reads that for the stream this computer publishes and puts it on the path, so every leg carries the same columns.
+A cell with no measurement is an ellipsis.
+The severity rule in `Features/Insights/Model/ViewerRow.cs` reads presence rather than value, and frames shed decide it.
+A viewer in a browser or an external player sends nothing, so the relay's count can exceed the rows.
 
 **The chart draws what the session kept, against each figure's limit.**
 The session keeps the newest encoder samples, stamped as they land, and each pass places them by that stamp on a span ending at the newest one (`Features/Insights/Chart/Model/ChartPlots.cs`).
