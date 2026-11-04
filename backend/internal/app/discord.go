@@ -198,6 +198,8 @@ func (a *App) discordPassFailed(held storedLink, err error) {
 // held is the settings' half the pass does not own (wire).
 func (a *App) landDiscord(held storedLink, snap discordSnapshot, m membership, status relay.Status) {
 	a.discordLast.Store(&snap)
+	// After the snapshot lands, the token for the read being traded under the channel it names.
+	status = a.withViewers(status)
 	a.relayLast.Store(&status)
 	a.emit(wire.RelayStatusEvent(status))
 	a.emit(wire.DiscordStateEvent(snap.wire(held)))

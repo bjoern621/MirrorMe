@@ -221,6 +221,11 @@ func RelayPath(p relay.Path) *screensharev1.RelayPath {
 		roster = append(roster, RelayReader(reader))
 	}
 
+	viewers := make([]*screensharev1.ViewerReport, 0, len(p.Viewers))
+	for _, viewer := range p.Viewers {
+		viewers = append(viewers, ViewerReport(viewer))
+	}
+
 	return &screensharev1.RelayPath{
 		Name:         p.Name,
 		Ready:        p.Ready,
@@ -229,6 +234,23 @@ func RelayPath(p relay.Path) *screensharev1.RelayPath {
 		Readers:      int32(p.Readers),
 		ReaderRoster: roster,
 		InMbps:       p.InMbps,
+		Viewers:      viewers,
+	}
+}
+
+// ViewerReport carries one viewer of this machine's stream across.
+// Figures cross as the pointers they are, so an unmeasured one stays absent.
+func ViewerReport(v relay.Viewer) *screensharev1.ViewerReport {
+	assert.Assert(v.Member != "", "a viewer report names the member it came from")
+
+	return &screensharev1.ViewerReport{
+		MemberId:    v.Member,
+		DisplayName: v.DisplayName,
+		Transport:   v.Transport,
+		PathMs:      v.PathMs,
+		TotalMs:     v.TotalMs,
+		ShownFps:    v.ShownFPS,
+		DroppedFps:  v.DroppedFPS,
 	}
 }
 

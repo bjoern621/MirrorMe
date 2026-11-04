@@ -20,6 +20,7 @@ import (
 
 	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
 	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/screenshare/internal/watchsvc"
 
 	"bjoernblessin.de/go-utils/util/assert"
 )
@@ -60,6 +61,15 @@ type Path struct {
 	Readers int      `json:"readers"`
 	Roster  []Reader `json:"roster"`
 	InMbps  float64  `json:"inMbps"` // Mbit/s ingest, from the byte delta since the previous fetch
+	// Viewers is who watches this path and what each one measures, as watchd answers its publisher.
+	// Filled on the path this machine publishes alone (internal/app, viewers.go).
+	Viewers []Viewer `json:"viewers,omitempty"`
+}
+
+// Viewer is one member watching a path, under the name the group lists that member by.
+type Viewer struct {
+	DisplayName string
+	watchsvc.Viewer
 }
 
 // trackFormats maps the codec names a relay reports on a path to the bitstream formats the codec

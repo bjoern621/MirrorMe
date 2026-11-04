@@ -256,6 +256,30 @@ message RelayPath {
   // A member reads the group service's index instead,
   // which counts the readers of a path and leaves the roster behind it at the service.
   repeated RelayReader reader_roster = 7;
+  // Members watching this stream, with what each one's own decode measures of it,
+  // in member order (docs/viewer-reports.md).
+  // Filled on the stream this machine publishes alone: watchd answers a stream's publisher and nobody else.
+  repeated ViewerReport viewers = 9;
+}
+
+// ViewerReport is one member watching a stream this machine publishes,
+// as that member's app stated it to watchd.
+// The figures come off the viewer's decode, so every leg carries the same ones.
+// Each is absent where the viewer measured nothing, and absent never reads as zero.
+message ViewerReport {
+  string member_id = 1;
+  // Empty where the group's list names no such member.
+  string display_name = 2;
+  // The leg this member watches over: srt, rtsp, rtmp, webrtc, hls.
+  string transport = 3;
+  // ms from the publisher's encoder to the viewer's decoder, off the clock stamped into each picture.
+  optional double path_ms = 4;
+  // ms from the publisher's screen to the viewer's window, a floor where path_ms is absent.
+  optional double total_ms = 5;
+  // Frames a second reaching the viewer's window.
+  optional double shown_fps = 6;
+  // Frames a second the viewer's decoder shed to keep up.
+  optional double dropped_fps = 7;
 }
 
 // RelayStatus is one snapshot of the relay.

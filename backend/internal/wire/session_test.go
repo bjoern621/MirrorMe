@@ -10,6 +10,7 @@ import (
 	"bjoernblessin.de/screenshare/internal/ffmpeg"
 	"bjoernblessin.de/screenshare/internal/relay"
 	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/screenshare/internal/watchsvc"
 )
 
 // The figures a run can leave unmeasured, in the spelling PublishStats declares its fields under.
@@ -239,4 +240,30 @@ func TestAPartialRosterIsRefused(t *testing.T) {
 	}()
 
 	RelayPath(relay.Path{Name: "desk", Readers: 3, Roster: []relay.Reader{{Type: "srtConn", ID: "a"}}})
+}
+
+// A viewer's figures cross through their presence,
+// so a viewer who measured no delay arrives without one rather than at zero.
+func TestAViewerReportCrossesWhatTheViewerMeasured(t *testing.T) {
+	delay, shown := 41.5, 59.8
+	path := RelayPath(relay.Path{Name: "desk", Ready: true, Readers: 1, Viewers: []relay.Viewer{{
+		DisplayName: "Alice",
+		Viewer: watchsvc.Viewer{Member: "m-alice", Viewing: watchsvc.Viewing{
+			Path: "G/Bob/desk", Transport: "rtsp", PathMs: &delay, ShownFPS: &shown,
+		}},
+	}}})
+
+	if len(path.GetViewers()) != 1 {
+		t.Fatalf("%d viewer reports crossed, want 1", len(path.GetViewers()))
+	}
+	report := path.GetViewers()[0]
+	if report.GetMemberId() != "m-alice" || report.GetDisplayName() != "Alice" || report.GetTransport() != "rtsp" {
+		t.Errorf("crossed as %v, want m-alice named Alice over rtsp", report)
+	}
+	if report.PathMs == nil || *report.PathMs != delay || report.ShownFps == nil || *report.ShownFps != shown {
+		t.Errorf("measured figures crossed as %v", report)
+	}
+	if report.TotalMs != nil || report.DroppedFps != nil {
+		t.Errorf("unmeasured figures crossed with values: %v", report)
+	}
 }

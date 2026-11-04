@@ -119,7 +119,7 @@ func (a *App) fetchRelay() relay.Status {
 	s := a.settings
 	a.settingsMu.Unlock()
 
-	status := a.relayStatusFor(s)
+	status := a.withViewers(a.relayStatusFor(s))
 	a.relayLast.Store(&status)
 	a.emit(wire.RelayStatusEvent(status))
 	return status

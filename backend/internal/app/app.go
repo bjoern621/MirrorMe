@@ -21,6 +21,7 @@ import (
 	"bjoernblessin.de/screenshare/internal/settings"
 	"bjoernblessin.de/screenshare/internal/timeline"
 	"bjoernblessin.de/screenshare/internal/update"
+	"bjoernblessin.de/screenshare/internal/viewerclient"
 )
 
 // App is the backend a shell reaches.
@@ -64,6 +65,11 @@ type App struct {
 	// This app's side of the Discord manager, asked instead of groups while Discord mode is on
 	// (discord.go).
 	discord discordService
+	// This app's side of watchd: what this machine watches goes out, who watches its stream comes back
+	// (viewing.go, viewers.go).
+	viewerSvc viewerService
+	// Set while a statement to watchd is in flight, so a slow one drops the next rather than queueing it.
+	viewingInFlight atomic.Bool
 	// The pictures a shell draws people with, read once per address (pictures.go).
 	avatars pictureSource
 	// What the last Discord pass landed, nil until one has run.
@@ -207,6 +213,7 @@ func New(version, channel string) *App {
 		storeNotice:      notice,
 		groups:           groupclient.New(),
 		discord:          discordclient.New(),
+		viewerSvc:        viewerclient.New(),
 		relayStop:        make(chan struct{}),
 		relayDone:        make(chan struct{}),
 		receiveStatsStop: make(chan struct{}),

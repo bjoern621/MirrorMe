@@ -53,6 +53,9 @@ func (a *App) pollReceiveStats() {
 	// and before the first decode there are none to take off.
 	quiet := true
 
+	// When the last statement to watchd went out, zero before the first (viewing.go).
+	var stated time.Time
+
 	for {
 		select {
 		case <-a.receiveStatsStop:
@@ -74,6 +77,11 @@ func (a *App) pollReceiveStats() {
 		}
 
 		a.emit(wire.ReceiveStatsEvent(sample))
+
+		if now := time.Now(); shouldStateViewing(sample, stated, now) {
+			stated = now
+			a.stateViewing(sample)
+		}
 	}
 }
 
