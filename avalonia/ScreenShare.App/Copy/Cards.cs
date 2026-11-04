@@ -184,6 +184,9 @@ public static class Cards
     /// <summary>Card at the step column's foot, holding what no control on screen already says.</summary>
     public const string ChecksTitle = "Checks before sharing";
 
+    /// <summary>Disclosure on that card over the lines that report nothing wrong.</summary>
+    public const string ChecksNotes = "Notes";
+
     /// <summary>Beside the predicted rate on the cost bar.</summary>
     public static string OfUplink(string uplink) => $"of {uplink} uplink";
 
