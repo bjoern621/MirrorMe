@@ -380,8 +380,8 @@ public interface IBackend
 
     /// <summary>
     /// Sets how loud one decode plays and whether it plays at all.
-    /// <paramref name="volume"/> is linear gain from zero, one being the stream unchanged.
-    /// Above one amplifies, and the backend bounds it rather than letting a slider clip the output device.
+    /// <paramref name="volume"/> names a slider position in 0..1, which the backend plays at its cube as gain.
+    /// One leaves the stream unchanged, and the backend bounds a value past either end.
     /// <paramref name="muted"/> silences the branch without losing the volume, so unmuting returns to the level
     /// the reader chose.
     ///

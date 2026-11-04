@@ -875,13 +875,14 @@ type ReceiveStream struct {
 	// so a tile with no meter and no slider beats one offering a slider wired to nothing.
 	HasAudio bool `protobuf:"varint,8,opt,name=has_audio,json=hasAudio,proto3" json:"has_audio,omitempty"`
 	// Last values SetReceiveAudio was given, kept whether or not a branch exists to apply them to.
-	// A decode opens muted at a volume of one.
+	// A decode opens muted at a volume of one half.
 	// An audio pad arriving later picks them up,
 	// which takes the ordering out of the caller's hands.
 	// Read back from here rather than remembered per caller,
 	// so two shells never disagree about how loud one decode is.
 	//
-	// volume is linear gain from zero, with one meaning untouched.
+	// volume names a slider position from zero to one and plays at its cube as linear gain:
+	// one leaves the stream untouched and one half plays it at -18 dB.
 	// muted stays separate from a volume of zero,
 	// so that unmuting restores the chosen level instead of silence.
 	Volume float64 `protobuf:"fixed64,9,opt,name=volume,proto3" json:"volume,omitempty"`

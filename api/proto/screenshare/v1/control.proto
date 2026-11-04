@@ -209,7 +209,7 @@ message ReceiveWanted {
 // A decode that does not exist is NOT_FOUND.
 message ReceiveAudio {
   StreamRef stream = 1;
-  // Linear gain from zero, where one is the stream unchanged.
+  // Slider position from zero to one, played at its cube as linear gain (docs/viewer-architecture.md).
   // The backend bounds values above one rather than letting a slider clip the output device.
   double volume = 2;
   // Silences the branch and keeps the volume.

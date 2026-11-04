@@ -980,7 +980,7 @@ func (x *ReceiveWanted) GetToneMap() bool {
 type ReceiveAudio struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
 	Stream *StreamRef             `protobuf:"bytes,1,opt,name=stream,proto3" json:"stream,omitempty"`
-	// Linear gain from zero, where one is the stream unchanged.
+	// Slider position from zero to one, played at its cube as linear gain (docs/viewer-architecture.md).
 	// The backend bounds values above one rather than letting a slider clip the output device.
 	Volume float64 `protobuf:"fixed64,2,opt,name=volume,proto3" json:"volume,omitempty"`
 	// Silences the branch and keeps the volume.

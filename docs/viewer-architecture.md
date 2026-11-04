@@ -105,7 +105,9 @@ The other track is decoded beside the picture, added to the running pipeline.
 Without both halves an RTSP tile drops the audio at the source and plays silently while the relay reports two tracks.
 
 Loudness is a property of the decode and not of a window: one pipeline holds one audio branch, so a per-window volume would be several controls over one element.
-A decode opens muted, at the loudness the stream arrived with, and sound starts on a request of its own.
+A decode opens muted with its volume slider half way, and sound starts on a request of its own.
+Slider position plays at its cube as gain, the curve behind PulseAudio's volume percentages: half way plays at -18 dB, the top unchanged.
+A linear slider would spend its top half on the last 6 dB.
 The level is measured **before** the volume, a stream muted and metered after appearing silent, leaving a reader unable to see it had started making noise again.
 
 Levels leave on a subscription of their own rather than as an event kind.

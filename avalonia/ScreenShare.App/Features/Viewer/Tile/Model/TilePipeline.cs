@@ -22,7 +22,7 @@ namespace ScreenShare.App.Features.Viewer.Tile.Model;
 /// </param>
 /// <param name="HasAudio">
 /// The pipeline carries a sound track, played at <paramref name="Volume"/> and <paramref name="Muted"/>.
-/// Volume is linear gain from zero, 1 untouched.
+/// Volume names a slider position in 0..1, which the backend plays at its cube as gain.
 /// </param>
 /// <param name="Transfer">
 /// Transfer characteristic of the decoded frames as GStreamer spells it, "smpte2084".
@@ -54,6 +54,12 @@ public readonly record struct TilePipeline(
     string ToneMapMissing = "",
     Text? Failure = null)
 {
+    /// <summary>
+    /// Volume the backend opens a decode at (<c>backend/internal/receive/receiver.go</c>),
+    /// where a slider with no track behind it rests.
+    /// </summary>
+    public const double OpeningVolume = 0.5;
+
     /// <summary>State of one relay decode, null where nothing is decoding that pair.</summary>
     public static TilePipeline? Of(ReceiveStream? decode) => decode is null
         ? null
@@ -77,7 +83,7 @@ public readonly record struct TilePipeline(
         ? null
         : new TilePipeline(
             preview.Live,
-            HasAudio: false, Volume: 1, Muted: false);
+            HasAudio: false, Volume: OpeningVolume, Muted: false);
 
     /// <summary>
     /// State of one monitor's preview, null where the backend reads no such screen.
@@ -90,5 +96,5 @@ public readonly record struct TilePipeline(
         ? null
         : new TilePipeline(
             screen.Live,
-            HasAudio: false, Volume: 1, Muted: false);
+            HasAudio: false, Volume: OpeningVolume, Muted: false);
 }

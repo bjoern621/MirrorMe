@@ -137,6 +137,7 @@ func (r *Receiver) onSourcePad(pad gst.Pad, onAudio func()) {
 }
 
 // SetAudio names how loud the stream plays and whether it plays at all.
+// volume names a slider position from 0 to 1, played at gainAt(volume).
 //
 // The request is held here with or without an audio branch,
 // and written onto one the moment it is built.
@@ -147,7 +148,7 @@ func (r *Receiver) onSourcePad(pad gst.Pad, onAudio func()) {
 // Mute is not a volume of zero, unmuting returning to the level the reader chose.
 // Two fields remember it.
 func (r *Receiver) SetAudio(volume float64, muted bool) {
-	assert.Assert(volume >= 0 && volume <= 1, "volume is a fraction", volume)
+	assert.Assert(volume >= 0 && volume <= 1, "volume is a slider position in 0..1", volume)
 
 	r.mu.Lock()
 	r.wantVolume, r.wantMuted = volume, muted
@@ -192,7 +193,7 @@ func (r *Receiver) Levelling() bool {
 // Repeatable: values are written, nothing is toggled.
 func (r *Receiver) applyAudio() {
 	r.mu.Lock()
-	vol, volume, muted := r.volume, r.wantVolume, r.wantMuted
+	vol, volume, muted := r.volume, gainAt(r.wantVolume), r.wantMuted
 	if r.wantLevelled {
 		volume *= math.Pow(10, r.levelling.GainDB()/20)
 	}
@@ -203,6 +204,17 @@ func (r *Receiver) applyAudio() {
 	}
 	vol.SetObjectProperty("volume", volume)
 	vol.SetObjectProperty("mute", muted)
+}
+
+// gainAt returns the linear gain that a volume slider position plays at: the cube of the position.
+// The cube tracks loudness as the ear hears it.
+// A linear slider would spend its top half on the last 6 dB.
+// PulseAudio's volume percentages and GStreamer's GST_STREAM_VOLUME_FORMAT_CUBIC use the same curve.
+// Half way plays at -18 dB in each.
+func gainAt(position float64) float64 {
+	assert.Assert(position >= 0 && position <= 1, "a volume slider position lies in 0..1", position)
+
+	return position * position * position
 }
 
 // Level is the loudest sample and the power average over the level element's last posted interval,

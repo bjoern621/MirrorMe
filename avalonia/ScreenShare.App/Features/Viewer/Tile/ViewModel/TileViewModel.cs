@@ -103,7 +103,7 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
     private readonly StatsFold _statsFold;
     private bool _hasAudio;
     private bool _muted;
-    private double _volume = 1;
+    private double _volume = TilePipeline.OpeningVolume;
     private double _level;
     private bool _hasLevel;
     private bool _isHdr;
@@ -251,7 +251,7 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
     public bool Muted { get => _muted; private set => Set(ref _muted, value); }
 
     /// <summary>
-    /// Linear gain, 0..1, 1 being the stream unchanged.
+    /// Slider position, 0..1, which the backend plays at its cube as gain: 1 leaves the stream unchanged.
     /// The setter sends rather than stores: the value comes back on the decode's state,
     /// written here by the render pass.
     /// A drag issues one effect per step, each naming a state the backend can already be in, which the effect
@@ -418,12 +418,11 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
         TileStats.Merge(Stats, ShowStats ? TileStats.Of(sample, _report) : []);
         _statsFold.Apply();
 
-        // A pipeline that is gone leaves the controls at their defaults, never at the last one's values:
-        // the next decode of this stream starts unchanged and unmuted,
-        // and a slider showing otherwise would describe a pipeline nothing is running.
+        // A pipeline that is gone leaves the controls at their defaults, never at the last one's values.
+        // A slider showing the last one's would describe a pipeline nothing is running.
         // A preview reports no track, so it lands here as a video-only stream does.
         HasAudio = pipeline?.HasAudio ?? false;
-        Set(ref _volume, pipeline?.Volume ?? 1, nameof(Volume));
+        Set(ref _volume, pipeline?.Volume ?? TilePipeline.OpeningVolume, nameof(Volume));
         Muted = pipeline?.Muted ?? false;
         ToggleMute.Refresh();
 

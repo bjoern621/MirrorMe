@@ -68,6 +68,16 @@ public sealed class TileKeysTests
         Assert.Same(tile.Quieter, TileKeys.Command(tile, Press(Key.Subtract)));
     }
 
+    /// <summary>A greyed slider rests where the backend opens a decode, so the first track arriving moves nothing.</summary>
+    [Fact]
+    public void ASliderWithNoDecodeRestsHalfWay()
+    {
+        var tile = Tile(new SeededBackend("linux"));
+        tile.Apply(pipeline: null, sample: null);
+
+        Assert.Equal(0.5, tile.Volume, 3);
+    }
+
     /// <summary>The tile draws what came back, so two presses are two steps and not one reported twice.</summary>
     [Fact]
     public async Task AVolumeKeyMovesTheDecodeOneStep()
