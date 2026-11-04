@@ -7,10 +7,9 @@ namespace ScreenShare.App.Tests;
 
 /// <summary>
 /// A stream carrying more range than the display shows draws at the wrong brightness,
-/// which a reader blames on the stream or the screen,
-/// so the tile states the curve and what it is doing about it in both directions.
-/// It states what the decode was built with: tone mapping is an element in the pipeline,
-/// so the tick comes back through the decode's own state rather than off the request.
+/// so the tile offers to roll it down.
+/// The tick states what the decode was built with: tone mapping is an element in the pipeline,
+/// so the tick comes back through the decode's own state.
 /// </summary>
 public sealed class ToneMapTests
 {
@@ -26,7 +25,7 @@ public sealed class ToneMapTests
             ToneMap: toneMap, CanToneMap: canToneMap, ToneMapMissing: missing);
 
     [Fact]
-    public void AnHdrStreamDrawnAsItArrivesSaysWhichCurveAndThatNothingIsConverting()
+    public void AnHdrStreamDrawnAsItArrivesIsOfferedTheConversion()
     {
         var tile = Tile(new SeededBackend("linux"));
 
@@ -34,36 +33,28 @@ public sealed class ToneMapTests
 
         Assert.True(tile.IsHdr);
         Assert.False(tile.ToneMapped);
-        Assert.True(tile.HasColourNote);
-        Assert.Contains("HDR (PQ)", tile.ColourNote);
-        Assert.Contains("as it arrives", tile.ColourNote);
+        Assert.True(tile.CanToneMap);
     }
 
-    /// <summary>Two tiles of one stream are told apart by the badge, so a silent converting tile leaves them alike.</summary>
     [Fact]
-    public void ATileThatIsRollingTheRangeDownSaysThatToo()
+    public void ATileThatIsRollingTheRangeDownTicksTheControl()
     {
         var tile = Tile(new SeededBackend("linux"));
 
         tile.Apply(Decode(hdr: true, toneMap: true), sample: null);
 
         Assert.True(tile.ToneMapped);
-        Assert.True(tile.HasColourNote);
-        Assert.Contains("rolled down", tile.ColourNote);
     }
 
-    /// <summary>
-    /// A badge over every tile is noise, and a control that converts nothing costs a press to learn as much.
-    /// </summary>
+    /// <summary>A control that converts nothing costs a press to learn as much.</summary>
     [Fact]
-    public void AStandardRangeStreamCarriesNoBadgeAndNoChoice()
+    public void AStandardRangeStreamIsOfferedNoChoice()
     {
         var tile = Tile(new SeededBackend("linux"));
 
         tile.Apply(Decode(hdr: false), sample: null);
 
         Assert.False(tile.IsHdr);
-        Assert.False(tile.HasColourNote);
         Assert.False(tile.CanToneMap);
         Assert.False(tile.ToggleToneMap.CanExecute(null));
         Assert.Contains("range this display shows", tile.ToneMapNote);
@@ -128,7 +119,6 @@ public sealed class ToneMapTests
         tile.Apply(TilePipeline.Of(decode), sample: null);
 
         Assert.False(tile.ToneMapped);
-        Assert.Contains("as it arrives", tile.ColourNote);
     }
 
     /// <summary>

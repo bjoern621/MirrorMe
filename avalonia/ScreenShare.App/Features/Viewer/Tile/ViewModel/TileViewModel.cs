@@ -119,8 +119,6 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
     private bool _isHdr;
     private bool _toneMapped;
     private bool _canToneMap;
-    private string _colourNote = "";
-    private bool _hasColourNote;
     private string _toneMapNote = "";
     private double _aspect = TileLayout.UnknownAspect;
 
@@ -365,20 +363,6 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
     /// </summary>
     public bool CanToneMap { get => _canToneMap; private set => Set(ref _canToneMap, value); }
 
-    /// <summary>
-    /// What this tile draws in colour terms, empty for a stream whose range this display shows.
-    /// The badge over the picture, and the whole of what tells a reader the choice exists:
-    /// an HDR stream drawn as it arrives reads as a bad stream rather than as a setting.
-    /// </summary>
-    public string ColourNote { get => _colourNote; private set => Set(ref _colourNote, value); }
-
-    /// <summary>
-    /// Whether the badge has anything to say, which draws it.
-    /// Written beside the sentence rather than derived from it, as <see cref="HasNotice"/> is:
-    /// nothing raises a change for a computed property.
-    /// </summary>
-    public bool HasColourNote { get => _hasColourNote; private set => Set(ref _hasColourNote, value); }
-
     /// <summary>What the tone-map row says beside itself, empty where the control is live.</summary>
     public string ToneMapNote { get => _toneMapNote; private set => Set(ref _toneMapNote, value); }
 
@@ -507,14 +491,11 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
         IsHdr = pipeline?.Hdr ?? false;
         ToneMapped = pipeline?.ToneMap ?? false;
         CanToneMap = _source.IsRelay && IsHdr && (pipeline?.CanToneMap ?? false);
-        ColourNote = ColourNoteFor(pipeline);
-        HasColourNote = ColourNote.Length > 0;
         ToneMapNote = ToneMapNoteFor(pipeline, _source.IsRelay);
         ToggleToneMap.Refresh();
 
         Assert.That(HasNotice == (Notice.Length > 0), "a notice and its sentence agree", Name);
         Assert.That(!NoticeIsFailure || HasNotice, "a failure is marked on the sentence stating it", Name);
-        Assert.That(HasColourNote == (ColourNote.Length > 0), "a colour badge and its sentence agree", Name);
         Assert.That(!CanToneMap || IsHdr, "only a stream that carries the range is offered a way out of it", Name);
         Assert.That(Aspect > 0, "a tile has a positive shape to be arranged at", Name, Aspect);
     }
@@ -645,23 +626,6 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
 
     /// <summary>Raised after a report has moved, so the screen holding this tile re-renders.</summary>
     public event Action? Changed;
-
-    /// <summary>
-    /// Badge over an HDR picture, empty for a stream whose range this display shows.
-    /// Names the curve and then what is done about it, what a reader comparing two tiles of one stream compares.
-    /// Drawn in both states: a badge that vanished with the conversion on would leave the two indistinguishable.
-    /// </summary>
-    private static string ColourNoteFor(TilePipeline? pipeline)
-    {
-        if (pipeline is not { Hdr: true } p)
-        {
-            return "";
-        }
-
-        return p.ToneMap
-            ? $"{Words.Transfer(p.Transfer)}, rolled down for this display"
-            : $"{Words.Transfer(p.Transfer)}, drawn as it arrives";
-    }
 
     /// <summary>
     /// What the tone-map row says beside itself, empty where the control is live and needs no explaining.

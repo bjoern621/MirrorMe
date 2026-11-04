@@ -302,7 +302,8 @@ A row's `show` toggle opens a decode through `Set receive` and the tile subscrib
 Nothing about the arrangement crosses the contract and nothing could: the backend describes decodes, and a decode is not a tile.
 
 **Nothing is measured over the picture.**
-A tile draws its name on hover and a colour badge where the range needs one, and every figure about the decode is in the stats panel the tile's menu opens.
+A tile draws its name on hover.
+Every figure about the decode sits in the stats panel that the tile's menu opens.
 Both go again, with the cursor, once the pointer has held still over the tile for a moment, and the stats panel stays up through it, being asked for rather than hovered into (`Features/Viewer/Tile/View/RestingWatch.cs`).
 
 The panel is composed from two readings coming from opposite directions.
@@ -523,7 +524,7 @@ The descriptors arrive over the socket the pool names rather than in the message
 macOS has IOSurface from VideoToolbox, which carries no first-class import handle type, so no `ITileSurface` covers it.
 
 `NativeControlHost` plus `gst_video_overlay_set_window_handle` is the wrong path, and the reason is visible on the tile.
-The native child window draws above all Avalonia content, so the name, the colour badge and the stats panel would disappear behind the video.
+The native child window draws above all Avalonia content, so the name and the stats panel would disappear behind the video.
 Both surfaces are composition visuals for that reason, the OpenGL one included.
 
 A tile whose handle type has no surface refuses rather than falling back to a copy through system memory, and says so.
