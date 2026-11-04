@@ -107,6 +107,10 @@ public static class Statements
 
             TextCode.DetailStep => Words.DetailStep(a.DetailStep),
 
+            TextCode.EffortMost => "Smallest stream",
+
+            TextCode.EffortLeast => "Fastest encode",
+
             // Publish engines and the encoder probe.
 
             TextCode.EngineToolingMissing =>

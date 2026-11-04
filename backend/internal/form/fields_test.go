@@ -790,6 +790,35 @@ func TestTheEffortLadderIsTheCodecsOwnMostEffortFirst(t *testing.T) {
 	}
 }
 
+// The two ends of every effort ladder say which end they are, and no step between them does.
+// A bare "1" on target-usage and a bare "0" on SVT-AV1 both mean most effort,
+// and nothing on screen would tell a reader which way either ladder runs.
+func TestEveryEffortLadderNamesItsEnds(t *testing.T) {
+	d := fieldTestDeps()
+	for _, c := range capabilities.Codecs {
+		steps := c.Effort.Steps
+		if len(steps) == 0 {
+			continue
+		}
+		s := settings.Defaults()
+		s.Publish.UseCodec(c.Name)
+		s.Publish.Effort = steps[0]
+
+		for i, o := range optionEfforts(d, s) {
+			want := screensharev1.TextCode_TEXT_CODE_UNSPECIFIED
+			switch i {
+			case 0:
+				want = screensharev1.TextCode_TEXT_CODE_EFFORT_MOST
+			case len(steps) - 1:
+				want = screensharev1.TextCode_TEXT_CODE_EFFORT_LEAST
+			}
+			if got := o.GetNote().GetCode(); got != want {
+				t.Errorf("%s step %q carries note %v, want %v", c.Name, o.GetValue(), got, want)
+			}
+		}
+	}
+}
+
 // Every closed set the settings start on is one the form offers.
 // A default the form withholds is a first launch opening on a value the user cannot pick again,
 // which is the disagreement between the tables and the screen read from the other end.

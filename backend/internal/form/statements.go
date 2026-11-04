@@ -47,6 +47,8 @@ const (
 	regionOffScreen         = screensharev1.TextCode_TEXT_CODE_REGION_OFF_SCREEN
 	scaledFromSource        = screensharev1.TextCode_TEXT_CODE_SCALED_FROM_SOURCE
 	detailStep              = screensharev1.TextCode_TEXT_CODE_DETAIL_STEP
+	effortMost              = screensharev1.TextCode_TEXT_CODE_EFFORT_MOST
+	effortLeast             = screensharev1.TextCode_TEXT_CODE_EFFORT_LEAST
 	engineToolingMissing    = screensharev1.TextCode_TEXT_CODE_ENGINE_TOOLING_MISSING
 	engineHasNoPublishSink  = screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_PUBLISH_SINK
 	// The app builds this leg and the machine cannot run what it builds,

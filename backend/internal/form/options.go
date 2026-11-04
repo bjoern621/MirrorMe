@@ -382,8 +382,23 @@ func optionModes(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
 // that being the one the row declares rather than a preference.
 // A codec whose row declares no ladder offers what the draft holds,
 // so a greyed control still shows its value rather than an empty list.
+// Both ends carry a note naming which end they are (TEXT_CODE_EFFORT_MOST).
 func optionEfforts(_ Deps, s settings.Settings) []*screensharev1.FieldOption {
-	return optionLadder(codecLadders(s).Effort, s.Publish.Effort, s.Publish.Mode)
+	l := codecLadders(s).Effort
+	return optionLadder(l, s.Publish.Effort, s.Publish.Mode, effortEnds(l.Steps))
+}
+
+// effortEnds notes a ladder's first step as most effort and its last as least,
+// and nothing for a codec whose row declares no ladder.
+func effortEnds(steps []string) map[string]*screensharev1.Text {
+	if len(steps) == 0 {
+		return nil
+	}
+	assert.Assert(len(steps) >= 2, "an effort ladder has two ends", steps)
+	return map[string]*screensharev1.Text{
+		steps[0]:            say(effortMost),
+		steps[len(steps)-1]: say(effortLeast),
+	}
 }
 
 // optionTunes offers the selected codec's tune ladder, read the way the effort one is:
@@ -393,7 +408,7 @@ func optionEfforts(_ Deps, s settings.Settings) []*screensharev1.FieldOption {
 // so the control holds "tune for nothing" as a choice.
 // The encoders with no such step are the ones always tuning for something.
 func optionTunes(_ Deps, s settings.Settings) []*screensharev1.FieldOption {
-	return optionLadder(codecLadders(s).Tune, s.Publish.Tune, s.Publish.Mode)
+	return optionLadder(codecLadders(s).Tune, s.Publish.Tune, s.Publish.Mode, nil)
 }
 
 // codecLadders is the selected codec's row, and an empty row for a codec no table carries.
@@ -402,17 +417,17 @@ func codecLadders(s settings.Settings) capabilities.Codec {
 	return c
 }
 
-// optionLadder builds one ladder's entries: its steps, the step this mode starts on marked,
-// and the held value kept where the ladder has no step for it.
+// optionLadder builds one ladder's entries: its steps with the notes the caller keys by step,
+// the step this mode starts on marked, and the held value kept where the ladder has no step for it.
 //
 // The held value stays for the reason a stale monitor index does (optionMonitors):
 // a list that dropped it would leave the dropdown claiming a step the draft is not on.
-func optionLadder(l capabilities.Ladder, held, mode string) []*screensharev1.FieldOption {
+func optionLadder(l capabilities.Ladder, held, mode string, notes map[string]*screensharev1.Text) []*screensharev1.FieldOption {
 	start, _ := l.StepFor(mode)
 
 	out := make([]*screensharev1.FieldOption, 0, len(l.Steps)+1)
 	for _, step := range l.Steps {
-		out = append(out, optionEntry(step, nil, step == start))
+		out = append(out, optionEntry(step, notes[step], step == start))
 	}
 	if held != "" && !l.Has(held) {
 		out = append(out, optionEntry(held, nil, false))

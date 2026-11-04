@@ -305,6 +305,12 @@ enum TextCode {
   // the number alone not saying which step it is once the scale differs from 0..51.
   // TEXT_ARG_NAME_DETAIL_STEP.
   TEXT_CODE_DETAIL_STEP = 199;
+  // Effort entry at one end of its encoder's ladder:
+  // most effort first and least effort last, whichever way the encoder numbers or names its steps.
+  // "4" sits mid-ladder on target-usage and near the top on SVT-AV1, so the step alone names no end.
+  // No arguments.
+  TEXT_CODE_EFFORT_MOST = 337;
+  TEXT_CODE_EFFORT_LEAST = 338;
   // The stream runs under its target frame rate.
   // TEXT_ARG_NAME_FPS is the rate measured, TEXT_ARG_NAME_TARGET_FPS the one asked for.
   TEXT_CODE_VERDICT_DIP = 200;

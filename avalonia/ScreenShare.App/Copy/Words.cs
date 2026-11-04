@@ -241,23 +241,24 @@ public static class Words
     /// Effort ladders, every encoder's steps in one table.
     /// A step is the encoder's own identifier, and the backend offers whichever ladder the selected codec declares,
     /// so the named ladders sit together: no codec offers both, and a step of one is never a step of the other.
-    /// Only the ends and the defaults carry a word, naming each step between them implying a difference in kind.
+    /// Only the defaults carry a word, naming each step between the ends implying a difference in kind.
+    /// The ends take theirs from the note the backend puts on them (TextCode.EffortMost).
     /// The numeric ladders are absent: their steps are numbers on the encoder's own scale,
     /// 0 to 13 on SVT-AV1 and 0 to 8 on libaom, so the number is the name and the lookup falls through.
     /// </summary>
     private static readonly Dictionary<string, string> Efforts = new()
     {
         // NVIDIA's ladder, slowest step first, as the backend orders every ladder.
-        ["p7"] = "p7 · smallest",
+        ["p7"] = "p7",
         ["p6"] = "p6",
         ["p5"] = "p5",
         ["p4"] = "p4 · default",
         ["p3"] = "p3",
         ["p2"] = "p2",
-        ["p1"] = "p1 · fastest",
+        ["p1"] = "p1",
 
         // x264's ladder, taken by libx265 as well.
-        ["placebo"] = "Placebo · slowest",
+        ["placebo"] = "Placebo",
         ["veryslow"] = "Very slow",
         ["slower"] = "Slower",
         ["slow"] = "Slow",
@@ -266,7 +267,7 @@ public static class Words
         ["faster"] = "Faster",
         ["veryfast"] = "Very fast",
         ["superfast"] = "Superfast",
-        ["ultrafast"] = "Ultrafast · fastest",
+        ["ultrafast"] = "Ultrafast",
 
         // AMD's quality scale, spelled alike by all three of its encoders.
         // Three steps and no ladder between them, so each carries a word.

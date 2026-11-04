@@ -447,6 +447,12 @@ const (
 	// the number alone not saying which step it is once the scale differs from 0..51.
 	// TEXT_ARG_NAME_DETAIL_STEP.
 	TextCode_TEXT_CODE_DETAIL_STEP TextCode = 199
+	// Effort entry at one end of its encoder's ladder:
+	// most effort first and least effort last, whichever way the encoder numbers or names its steps.
+	// "4" sits mid-ladder on target-usage and near the top on SVT-AV1, so the step alone names no end.
+	// No arguments.
+	TextCode_TEXT_CODE_EFFORT_MOST  TextCode = 337
+	TextCode_TEXT_CODE_EFFORT_LEAST TextCode = 338
 	// The stream runs under its target frame rate.
 	// TEXT_ARG_NAME_FPS is the rate measured, TEXT_ARG_NAME_TARGET_FPS the one asked for.
 	TextCode_TEXT_CODE_VERDICT_DIP TextCode = 200
@@ -1185,6 +1191,8 @@ var (
 		5:   "TEXT_CODE_MONITOR_NOT_ENUMERATED",
 		6:   "TEXT_CODE_SCALED_FROM_SOURCE",
 		199: "TEXT_CODE_DETAIL_STEP",
+		337: "TEXT_CODE_EFFORT_MOST",
+		338: "TEXT_CODE_EFFORT_LEAST",
 		200: "TEXT_CODE_VERDICT_DIP",
 		7:   "TEXT_CODE_NO_MONITOR_PREVIEW",
 		191: "TEXT_CODE_CAPTURE_TAKES_NO_SHARE_KIND",
@@ -1463,6 +1471,8 @@ var (
 		"TEXT_CODE_MONITOR_NOT_ENUMERATED":                    5,
 		"TEXT_CODE_SCALED_FROM_SOURCE":                        6,
 		"TEXT_CODE_DETAIL_STEP":                               199,
+		"TEXT_CODE_EFFORT_MOST":                               337,
+		"TEXT_CODE_EFFORT_LEAST":                              338,
 		"TEXT_CODE_VERDICT_DIP":                               200,
 		"TEXT_CODE_NO_MONITOR_PREVIEW":                        7,
 		"TEXT_CODE_CAPTURE_TAKES_NO_SHARE_KIND":               191,
@@ -2169,7 +2179,7 @@ const file_screenshare_v1_text_proto_rawDesc = "" +
 	"\x16TEXT_ARG_NAME_PROPERTY\x10T\x12\x1c\n" +
 	"\x18TEXT_ARG_NAME_TIMEOUT_MS\x10U\x12\x1a\n" +
 	"\x16TEXT_ARG_NAME_TRANSFER\x10V\x12\x19\n" +
-	"\x15TEXT_ARG_NAME_DEVICES\x10W\"\x04\b3\x103*\x18TEXT_ARG_NAME_ENC_PRESET*\x16TEXT_ARG_NAME_RAW_MBPS*\xf5T\n" +
+	"\x15TEXT_ARG_NAME_DEVICES\x10W\"\x04\b3\x103*\x18TEXT_ARG_NAME_ENC_PRESET*\x16TEXT_ARG_NAME_RAW_MBPS*\xaeU\n" +
 	"\bTextCode\x12\x19\n" +
 	"\x15TEXT_CODE_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aTEXT_CODE_CAPTURE_WRONG_OS\x10\x01\x12#\n" +
@@ -2179,6 +2189,8 @@ const file_screenshare_v1_text_proto_rawDesc = "" +
 	" TEXT_CODE_MONITOR_NOT_ENUMERATED\x10\x05\x12 \n" +
 	"\x1cTEXT_CODE_SCALED_FROM_SOURCE\x10\x06\x12\x1a\n" +
 	"\x15TEXT_CODE_DETAIL_STEP\x10\xc7\x01\x12\x1a\n" +
+	"\x15TEXT_CODE_EFFORT_MOST\x10\xd1\x02\x12\x1b\n" +
+	"\x16TEXT_CODE_EFFORT_LEAST\x10\xd2\x02\x12\x1a\n" +
 	"\x15TEXT_CODE_VERDICT_DIP\x10\xc8\x01\x12 \n" +
 	"\x1cTEXT_CODE_NO_MONITOR_PREVIEW\x10\a\x12*\n" +
 	"%TEXT_CODE_CAPTURE_TAKES_NO_SHARE_KIND\x10\xbf\x01\x12)\n" +
