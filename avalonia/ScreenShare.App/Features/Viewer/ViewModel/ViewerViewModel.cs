@@ -151,6 +151,7 @@ public sealed class ViewerViewModel : Observable
         // News that the draft or the form behind it moved: a row's legs and a tile's leg are both read off it.
         // Raised on the UI loop by the form session, so nothing to marshal here.
         _form.Changed += Apply;
+        _session.DecodeEnded += Ended;
 
         Apply();
     }
@@ -1068,6 +1069,24 @@ public sealed class ViewerViewModel : Observable
 
         _tiles[stream] = tile;
         Tiles.Add(tile);
+        Apply();
+    }
+
+    /// <summary>
+    /// Takes the tile of a decode that ended on its own off the grid, and keeps its stream in the strip until a press.
+    /// Opening it again unasked would repeat whatever ended it, for as long as the relay lists the stream.
+    /// The backend has dropped the decode, so no stop is asked for.
+    /// An exit for a leg the tile does not draw names a decode it never showed, and changes nothing.
+    /// </summary>
+    private void Ended(StreamRef decode)
+    {
+        if (!_tiles.TryGetValue(decode.StreamName, out var tile) || tile.Transport != decode.Transport)
+        {
+            return;
+        }
+
+        _stopped.Add(decode.StreamName);
+        Drop(decode.StreamName);
         Apply();
     }
 

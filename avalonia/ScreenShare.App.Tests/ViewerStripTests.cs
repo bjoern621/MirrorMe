@@ -74,6 +74,23 @@ public sealed class ViewerStripTests
         Assert.DoesNotContain(viewer.Strip, item => item is StreamRowViewModel);
     }
 
+    /// <summary>
+    /// A decode that ended takes its tile with it, and the stream waits in the strip for a press.
+    /// Opening it again unasked would repeat whatever ended it.
+    /// </summary>
+    [Fact]
+    public void AnEndedDecodeClosesItsTile()
+    {
+        var (viewer, backend, session) = Watching("one", "two");
+
+        backend.End("one");
+        Reread(viewer, session);
+
+        Assert.Equal(["two"], viewer.Tiles.Select(tile => tile.Name));
+        Assert.Equal(2, backend.Starts);
+        Assert.False(Waiting(viewer, "one").IsTiled);
+    }
+
     /// <summary>A stream that ended and started again is a new share, and plays like any other.</summary>
     [Fact]
     public void AStreamBackOnTheRelayPlaysAgain()

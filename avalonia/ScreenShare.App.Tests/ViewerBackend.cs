@@ -78,6 +78,17 @@ internal sealed class ViewerBackend(params string[] paths) : IBackend
     /// <summary>Decodes still open, for asserting a stop reached the backend.</summary>
     public IReadOnlyList<StreamRef> Decoding => _decoding;
 
+    /// <summary>
+    /// Ends one decode on its own, the way a publisher stopping ends it: gone from the decodes,
+    /// announced on the next subscription.
+    /// </summary>
+    public void End(string streamName)
+    {
+        var streamRef = new StreamRef { StreamName = streamName, Transport = Leg };
+        _decoding.Remove(streamRef);
+        _seed.Announcements.Add(new Event { ReceiveExit = new ReceiveExit { Stream = streamRef, Message = "stream ended" } });
+    }
+
     public Task<RelayStatus> RelayStatusAsync(CancellationToken cancellation = default)
     {
         var relay = new RelayStatus { Reachable = true };

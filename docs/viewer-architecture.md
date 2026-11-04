@@ -172,12 +172,13 @@ What crosses is the control calls one way and the frame events the other.
 
 **The host owns which decodes exist.**
 A decode that ended stays in the host's set carrying its reason until the backend stops it.
-An entry dropped where it ended would take the reason with it, and the reason is what the tile shows.
+An entry dropped where it ended would take the reason with it, and `ReceiveExit` carries that reason to every shell.
 
 **A decode runs while a window draws it.**
 Which tiles exist is the shell's arrangement.
 A showing window opens a decode for every stream that the relay carries, except this machine's own and one that the reader stopped.
 A stop holds while the relay carries the stream, and a stream back after it ended plays again.
+A decode ending on its own closes its tile and counts as a stop, so a failing stream waits for a press.
 A window closed to the tray draws none:
 the tiles in its grid leave and their decodes close, while a stream in a window of its own keeps both.
 The streams are kept, so the window comes back watching them, each through the start a press runs and on the leg the settings name then.

@@ -102,6 +102,14 @@ public sealed class Session
     public event Action? SettingsMoved;
 
     /// <summary>
+    /// Raised on the UI loop when a decode ended on its own, named by its pair.
+    /// A signal beside <see cref="Receiving"/>, which reads the same decode as absent:
+    /// absence also covers a decode whose start has not reached that list yet,
+    /// and a tile closed over it would close every stream as it opens.
+    /// </summary>
+    public event Action<StreamRef>? DecodeEnded;
+
+    /// <summary>
     /// Raised on the UI loop after <see cref="Levels"/> or <see cref="Pointer"/> has moved, and by nothing else.
     ///
     /// <b>A second signal rather than a second reason to raise the first, and the reason is cadence.</b>
@@ -654,6 +662,10 @@ public sealed class Session
                 // Recorded nowhere: the synthetic set is a development aid and no screen reports it,
                 // so a slot that died reads off the backend's run log
                 // (backend/internal/app/teststreams.go).
+                break;
+
+            case Event.PayloadOneofCase.ReceiveExit:
+                DecodeEnded?.Invoke(change.ReceiveExit.Stream);
                 break;
 
             case Event.PayloadOneofCase.ViewerExit:
