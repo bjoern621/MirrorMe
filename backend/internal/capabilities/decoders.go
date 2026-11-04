@@ -16,7 +16,7 @@ import (
 // A row states what its decoder family reaches at its best,
 // so a hardware verdict means some GPU decodes the stream rather than that a given one will.
 // The measured counterpart is the native grid,
-// which reports the element its own decodebin picked per stream.
+// which reports the element its own decodebin3 picked per stream.
 //
 // Every format carries a software row,
 // so no stream is undecodable and a verdict is only ever about what it costs.

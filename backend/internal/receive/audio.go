@@ -3,7 +3,6 @@ package receive
 import (
 	"math"
 	"slices"
-	"strings"
 	"time"
 
 	"github.com/go-gst/go-glib/pkg/gobject/v2"
@@ -34,8 +33,8 @@ import (
 // output device.
 var audioChain = []string{"queue", "audioconvert", "level", "audioresample", "volume", "autoaudiosink"}
 
-// audioCaps prefixes the media type of a pad this branch is built for.
-const audioCaps = "audio/"
+// audioPadTemplate names the template decodebin3 exposes every audio track's pad from.
+const audioPadTemplate = "audio_%u"
 
 // LevelInterval is the level element's posting period, and so the fastest a meter moves.
 //
@@ -63,8 +62,8 @@ func (r *Receiver) onDecodePad(pad gst.Pad, onAudio func()) {
 	already := r.volume != nil
 	r.mu.Unlock()
 	if already {
-		// decodebin exposes a pad per elementary stream, and the first audio track is the one played:
-		// a second would mix into it.
+		// Each decoder exposes a pad per audio track. The first one plays.
+		// A second would mix into it.
 		logger.Debugf("stream %q already has an audio branch", r.name)
 		return
 	}
@@ -116,9 +115,9 @@ func (r *Receiver) onSourcePad(pad gst.Pad, onAudio func()) {
 		return
 	}
 
-	dec := gst.ElementFactoryMake("decodebin", "dec-"+pad.GetName())
+	dec := gst.ElementFactoryMake(decodeFactory, "dec-"+pad.GetName())
 	if dec == nil {
-		logger.Warnf("stream %q has no decodebin element, the track beside the picture stays off", r.name)
+		logger.Warnf("stream %q has no %s element, the track beside the picture stays off", r.name, decodeFactory)
 		return
 	}
 	pipeline := r.heldPipeline()
@@ -283,14 +282,11 @@ func loudest(st *gst.Structure, field string) (float64, bool) {
 	return out, true
 }
 
-// isAudioPad reads the answer off the pad's caps.
-// An unnegotiated pad carries nothing.
+// isAudioPad reads the answer off the template the decode bin exposed the pad from.
+// decodebin3 exposes a pad that carries no caps yet at pad-added.
 func isAudioPad(pad gst.Pad) bool {
-	caps := pad.GetCurrentCaps()
-	if caps == nil || caps.GetSize() == 0 {
-		return false
-	}
-	return strings.HasPrefix(caps.GetStructure(0).GetName(), audioCaps)
+	tmpl := pad.GetPadTemplate()
+	return tmpl != nil && tmpl.GetName() == audioPadTemplate
 }
 
 // buildAudioChain makes, adds and links the audio elements, and is false where any step failed.

@@ -90,7 +90,7 @@ func readEncoded(s *Stats, dec gst.Element) {
 // doing: the picture size a stream sends is not the size a tile scaled it to.
 //
 // The decoder's pad rather than the next element's:
-// every video decoder has one whichever chain it sits in and whichever bin decodebin built it
+// every video decoder has one whichever chain it sits in and whichever bin decodebin3 built it
 // inside, and its memory feature is where the decoder put the frames rather than where something
 // after it moved them.
 func readDecoded(s *Stats, dec gst.Element) {
@@ -109,7 +109,7 @@ func readDecoded(s *Stats, dec gst.Element) {
 	if h, ok := st.GetInt("height"); ok {
 		s.Height = int(h)
 	}
-	s.Format = st.GetString("format")
+	s.Format = rawFormat(st)
 	s.Depth, s.Subsampling = pixelShape(s.Format)
 	s.Colorimetry = st.GetString("colorimetry")
 	s.Transfer = colour.TransferOfColorimetry(s.Colorimetry)
@@ -151,7 +151,7 @@ func (r *Receiver) readRender(s *Stats) {
 	if caps := padCaps(sink, "sink"); caps != nil {
 		s.RenderMemory = memoryOf(caps)
 		st := caps.GetStructure(0)
-		s.RenderFormat = st.GetString("format")
+		s.RenderFormat = rawFormat(st)
 		s.RenderColorimetry = st.GetString("colorimetry")
 		if w, ok := st.GetInt("width"); ok {
 			s.RenderWidth = int(w)

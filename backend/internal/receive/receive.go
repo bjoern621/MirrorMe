@@ -27,6 +27,9 @@ const (
 	sinkName   = "sink"
 )
 
+// decodeFactory autoplugs the decoder of every encoded stream (chains.go).
+const decodeFactory = "decodebin3"
+
 // renderQueue buffers between the decode thread and the sink's thread, bounded in time rather
 // than in buffers so the bound means the same at every resolution and frame rate.
 //

@@ -59,7 +59,7 @@ func (RTMP) WatchURL(s settings.Settings, path string) string {
 	return rtmpURL(s, path)
 }
 
-// GstSource is one element: rtmp2src yields the FLV stream that decodebin then demuxes and decodes.
+// GstSource is one element: rtmp2src yields the FLV stream that decodebin3 then demuxes and decodes.
 func (RTMP) GstSource(s settings.Settings, path string) []string {
 	assert.Assert(path != "", "a receive source names the path it decodes")
 

@@ -298,7 +298,7 @@ func (r *Receiver) watchSamples(onLive func()) {
 	})
 }
 
-// watchDecodePads grows the audio branch when decodebin exposes an audio pad.
+// watchDecodePads grows the audio branch when decodebin3 exposes an audio pad.
 // An audio pad never matches the video branch, so pad-added is the detection point and the branch
 // is built there, while the pipeline plays.
 func (r *Receiver) watchDecodePads(onAudio func()) {
@@ -340,8 +340,8 @@ func (r *Receiver) watchSourcePads(onAudio func()) {
 
 // watchElements classifies the elements the pipeline holds and the ones it grows.
 //
-// Most of what a reader is shown comes from elements the launch line does not name: decodebin
-// builds its decoders inside nested bins, rtspsrc its jitterbuffers.
+// Most of what a reader is shown comes from elements the launch line does not name: decodebin3
+// builds its parsers and decoders inside itself, rtspsrc its jitterbuffers.
 // The signal catches those as they appear and the walk catches what parse-launch already built,
 // the transport's source among them.
 // Connecting before the walk means an element added in between is seen twice,

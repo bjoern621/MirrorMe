@@ -131,7 +131,7 @@ func TestChainLaunchIsComplete(t *testing.T) {
 		line := c.launch(Stream{Source: "videotestsrc"}, toneMapRung{})
 		for _, want := range []string{
 			"videotestsrc",
-			"decodebin name=" + decodeName,
+			decodeFactory + " name=" + decodeName,
 			renderQueue,
 			renderSink,
 		} {
@@ -143,7 +143,7 @@ func TestChainLaunchIsComplete(t *testing.T) {
 		// A raw source gives the same line minus the decoder: all the chain carries remains, and
 		// the one element with nothing to do is gone.
 		raw := c.launch(Stream{Source: "videotestsrc", Raw: true}, toneMapRung{})
-		if strings.Contains(raw, "decodebin") {
+		if strings.Contains(raw, decodeFactory) {
 			t.Errorf("the %q raw launch line autoplugs a decoder for frames nothing encoded: %s", c.name, raw)
 		}
 		for _, want := range []string{"videotestsrc", renderQueue, renderSink} {

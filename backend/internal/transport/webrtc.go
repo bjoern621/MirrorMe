@@ -95,7 +95,7 @@ func (WebRTC) GstSink(s settings.Settings) []string {
 }
 
 // GstSource names whepsrc, which runs the WHEP exchange and yields one RTP pad per negotiated
-// track, the shape rtspsrc has, so the receiver's decodebin picks depayloader and decoder off
+// track, the shape rtspsrc has, so the receiver's decodebin3 picks depayloader and decoder off
 // the caps.
 //
 // audio-caps=EMPTY is what makes the exchange work at all.

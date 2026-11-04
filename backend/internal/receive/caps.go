@@ -20,6 +20,21 @@ static int pixel_shape(const char *name, int *depth, int *h_sub, int *v_sub) {
 	*v_sub = 1 << GST_VIDEO_FORMAT_INFO_H_SUB(info, 1);
 	return 1;
 }
+
+// dma_drm_format takes a drm-format caps field, e.g. "NV12:0x0200000010401b04", and returns
+// the raw video format with the same planes and depth.
+// The modifier names a tiling, which gst_video_dma_drm_format_to_gst_format maps to no format,
+// so the fourcc alone decides.
+// NULL where this GStreamer build maps the fourcc to none.
+static const char *dma_drm_format(const char *drm) {
+	guint64 modifier = 0;
+	guint32 fourcc = gst_video_dma_drm_fourcc_from_string(drm, &modifier);
+	GstVideoFormat fmt = gst_video_dma_drm_fourcc_to_format(fourcc);
+	if (fmt == GST_VIDEO_FORMAT_UNKNOWN) {
+		return NULL;
+	}
+	return gst_video_format_to_string(fmt);
+}
 */
 import "C"
 
@@ -69,6 +84,30 @@ func pixelShape(format string) (depth int, subsampling string) {
 	}
 	return int(d), subsamplingLabel(int(h), int(v))
 }
+
+// rawFormat reads the raw video format a caps structure carries.
+// dmabuf caps carry DMA_DRM there and their layout in drm-format, which this reads instead.
+// "" where the structure names neither.
+func rawFormat(st *gst.Structure) string {
+	format := st.GetString("format")
+	if format != dmaDrmFormat {
+		return format
+	}
+	drm := st.GetString("drm-format")
+	if drm == "" {
+		return ""
+	}
+	name := C.CString(drm)
+	defer C.free(unsafe.Pointer(name))
+	raw := C.dma_drm_format(name)
+	if raw == nil {
+		return ""
+	}
+	return C.GoString(raw)
+}
+
+// dmaDrmFormat stands in the format field of dmabuf caps, which name their layout in drm-format.
+const dmaDrmFormat = "DMA_DRM"
 
 // subsamplingLabel writes chroma subsampling factors as J:a:b: a region four luma samples wide,
 // a chroma samples across it, and b for the second row, which vertical subsampling takes to zero.

@@ -98,26 +98,32 @@ type chain struct {
 	// Where the chain converts, and not necessarily what the sink takes:
 	// a chain may convert on the GPU and hand the sink system memory afterwards.
 	device string
-	colour Colour
+	// decoded names the caps the decoder hands its frames over in, written straight after it.
+	// "" leaves the memory to the decoder.
+	decoded string
+	colour  Colour
 }
 
-// The memory features the device chains work in.
+// The memory features the device chains work in, and the one a decoder exports to them.
 const (
-	glMemory    = "memory:GLMemory"
-	d3d11Memory = "memory:D3D11Memory"
-	d3d12Memory = "memory:D3D12Memory"
+	glMemory     = "memory:GLMemory"
+	d3d11Memory  = "memory:D3D11Memory"
+	d3d12Memory  = "memory:D3D12Memory"
+	dmaBufMemory = "memory:DMABuf"
 )
 
 // chains are the render chains on offer, and the one place a launch line is written.
 //
-// All of them decode through decodebin,
+// All of them decode through decodebin3,
 // which picks depayloader, demuxer and decoder off the stream's caps backed by gst-libav,
 // leaving a tile decoding whatever a native ffplay or mpv window decodes,
 // HEVC 4:4:4 and RGB included.
+// decodebin3 lets its decoder negotiate with what follows, so a row's decoded caps reach it.
+// Under decodebin, dmabuf asked for after a VA decoder stops the stream as not-negotiated.
 // All of them end in the appsink the frame channel reads,
 // behind a queue bounding the decode thread against the sink's.
 //
-// In every chain the element straight after decodebin takes video and no audio,
+// In every chain the element straight after the decoder takes video and no audio,
 // which holds parse-launch's delayed linking off the audio pads: their caps never match,
 // so the video pad alone joins the branch and an audio pad is given a branch of its own when it
 // turns up (audio.go).
@@ -191,7 +197,14 @@ var chains = []chain{
 			"video/x-raw(" + glMemory + "),format=RGBA,colorimetry=sRGB,pixel-aspect-ratio=1/1",
 		},
 		device: glMemory,
-		colour: ColourStated,
+		// glupload imports a hardware decoder's dmabuf without touching the pixels.
+		// Left to choose, a VA decoder hands over system memory.
+		// The CPU then reads every frame off the GPU for glupload to put back.
+		// That way a 2944x1840 60 fps stream on a Radeon 780M drew 30 fps.
+		// Decoded into dmabuf it drew all 60.
+		// System memory stays the fallback for a software decoder, which exports nothing.
+		decoded: "video/x-raw(" + dmaBufMemory + ");video/x-raw",
+		colour:  ColourStated,
 	},
 	{
 		name:  "d3d11",
@@ -248,7 +261,7 @@ var chains = []chain{
 		// Its one element converts nothing.
 		// Any video in any memory is accepted, which passes the frames through untouched,
 		// and audio is refused, which holds parse-launch's delayed linking off the audio pad:
-		// with the queue first after decodebin, a stream whose audio pad appeared first would put
+		// with the queue first after the decoder, a stream whose audio pad appeared first would put
 		// sound into the video branch and leave the video pad nowhere to go.
 		//
 		// Whatever size the tile draws, the render is at the size the source sends:
@@ -382,10 +395,13 @@ func missingFactory(needs []string) string {
 // Past the chain's converter they are labelled sRGB,
 // and a rolloff there would read its input off a label that has stopped describing the samples.
 func (c chain) launch(st Stream, rung toneMapRung) string {
-	parts := make([]string, 0, len(c.elements)+len(rung.elements)+4)
+	parts := make([]string, 0, len(c.elements)+len(rung.elements)+5)
 	parts = append(parts, st.Source)
 	if !st.Raw {
-		parts = append(parts, "decodebin name="+decodeName)
+		parts = append(parts, decodeFactory+" name="+decodeName)
+		if c.decoded != "" {
+			parts = append(parts, c.decoded)
+		}
 	}
 	parts = append(parts, rung.elements...)
 	parts = append(parts, c.elements...)

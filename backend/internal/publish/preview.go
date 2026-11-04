@@ -151,7 +151,7 @@ func AllocatePreviewPort() (int, error) {
 // RTP carries no format announcement, and the exchange that normally supplies one is what this leg
 // leaves out.
 // They are the other half of previewCarriages, and a depayloader is autoplugged from them
-// by the decodebin the chain already ends the source in.
+// by the decodebin3 the chain already ends the source in.
 //
 // The jitter buffer holds one frame rather than the tens of milliseconds a network leg is given.
 // Reordering and loss are what a jitter buffer absorbs and neither happens on loopback, so what

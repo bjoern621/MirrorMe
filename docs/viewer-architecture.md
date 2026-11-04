@@ -205,6 +205,9 @@ On Windows that is Direct3D 11, a shared texture being exported from a Direct3D 
 It is also why that row ends in no download: pulling every frame into system memory for the exporter to push back onto the same GPU is the copy this table exists to avoid.
 Everywhere else the default is GL.
 
+**A hardware decoder hands the GL chain dmabuf**, which `glupload` imports without a copy.
+A software decoder exports none and hands over system memory.
+
 That leaves the Windows default stating no exact colour, its converter free to pass the work to a video processor configured through an API the caps do not describe.
 A reader who wants the colour stated picks the CPU chain and pays the download.
 
