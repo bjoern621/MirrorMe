@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.VisualTree;
 using ScreenShare.App.Contracts;
 
 namespace ScreenShare.App.Controls;
@@ -12,15 +13,24 @@ namespace ScreenShare.App.Controls;
 /// <see cref="IsOpen"/> names the state wanted.
 /// <see cref="Openness"/> follows it under the transition that <c>Controls/Reveal/Reveal.axaml</c> sets,
 /// so the body is clipped to the height reached so far and the rows under the fold move with it.
+/// While <see cref="FollowsOpening"/> holds, the nearest scroll viewer moves with the opening,
+/// so a fold pressed at the foot of a column grows into view.
 /// </summary>
 public sealed class Reveal : Decorator
 {
+    /// <summary>Room kept above and below the body, wide enough for a fold's heading and the padding of its card.</summary>
+    private const double FollowMarginPixels = 40;
+
     public static readonly StyledProperty<bool> IsOpenProperty =
         AvaloniaProperty.Register<Reveal, bool>(nameof(IsOpen));
 
     /// <summary>Share of the body's height drawn: 0 closed, 1 open.</summary>
     public static readonly StyledProperty<double> OpennessProperty =
         AvaloniaProperty.Register<Reveal, double>(nameof(Openness));
+
+    /// <summary>False on a reveal that can open out of the reader's view, where following would pull the scroll away from the press.</summary>
+    public static readonly StyledProperty<bool> FollowsOpeningProperty =
+        AvaloniaProperty.Register<Reveal, bool>(nameof(FollowsOpening), defaultValue: true);
 
     static Reveal()
     {
@@ -45,6 +55,12 @@ public sealed class Reveal : Decorator
         set => SetValue(OpennessProperty, value);
     }
 
+    public bool FollowsOpening
+    {
+        get => GetValue(FollowsOpeningProperty);
+        set => SetValue(FollowsOpeningProperty, value);
+    }
+
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
@@ -58,6 +74,19 @@ public sealed class Reveal : Decorator
         {
             Draw();
         }
+
+        if (change.Property == OpennessProperty && IsOpen && FollowsOpening && this.IsAttachedToVisualTree())
+        {
+            LayoutUpdated -= FollowOnce;
+            LayoutUpdated += FollowOnce;
+        }
+    }
+
+    /// <summary>Runs after layout, since the scroll offset clamps to an extent that layout grows.</summary>
+    private void FollowOnce(object? sender, EventArgs e)
+    {
+        LayoutUpdated -= FollowOnce;
+        this.BringIntoView(new Rect(Bounds.Size).Inflate(new Thickness(0, FollowMarginPixels)));
     }
 
     /// <summary>Writes the body's presence and fade from the two properties. Idempotent.</summary>

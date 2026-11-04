@@ -77,4 +77,18 @@ public sealed class FoldBodyTests
 
         Assert.True(snapping.Count == 0, $"a fold body binds Reveal.IsOpen, never IsVisible: {string.Join(", ", snapping)}");
     }
+
+    private static readonly System.Text.RegularExpressions.Regex Negated =
+        new(@"<controls:Reveal(?![^>]*FollowsOpening=""False"")[^>]*IsOpen=""\{Binding ![^}]*\}""", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+    /// <summary>Opening one encode row closes another, whose heading lines then come back wherever that row stands.</summary>
+    [Fact]
+    public void ARevealThatOpensAsItsFoldClosesLeavesTheScrollAlone()
+    {
+        var following = Markup.Views()
+            .SelectMany(view => Negated.Matches(File.ReadAllText(view)).Select(match => $"{Path.GetFileName(view)}: {match.Value}"))
+            .ToList();
+
+        Assert.True(following.Count == 0, $"a reveal bound to a closed state sets FollowsOpening=\"False\": {string.Join(", ", following)}");
+    }
 }

@@ -407,7 +407,7 @@ One duration per kind of change, so a hover reads alike on every control:
 | Menu, dropdown, tooltip opening | about 150 ms | fades in, growing from 96 % |
 | Menu or dropdown closing | about 110 ms | fades out, shrinking, before it goes |
 | Tick or mark appearing | about 200 ms | pops in from 40 % |
-| Fold opening or closing | about 220 ms | body unrolls to its height as it fades in, rows under it move along, chevron turns, the figure on its heading fades out |
+| Fold opening or closing | about 220 ms | body unrolls to its height as it fades in, rows under it move along, the column scrolls with an opening body, chevron turns, the figure on its heading fades out |
 | Card, dialog, side panel, tile | about 260 ms | card rises, dialog grows, panel slides in from its edge, stats panel grows out of its corner, tile fades in with a slight zoom, a stream taking the stage too, the stage settling from a slight zoom as the strip goes or comes back |
 | Dialog or panel closing | about 160 ms | dimmed ground fades out with the dialog on it, a side panel or stats panel fades where it stood |
 | Picture arriving | 500 ms | fades in over the tile |

@@ -195,8 +195,11 @@
                                          Margin="7,0,0,6"
                                          IsVisible="{Binding !Field.IsEnabled}"
                                          Text="{Binding Field.Reason}" />
-                    <!-- The open control draws its own lines under it. -->
-                    <controls:Reveal IsOpen="{Binding !IsOpen}">
+                    <!--
+                      The open control draws its own lines under it.
+                      Opening one row closes another, so these return far from the press and the scroll stays put.
+                    -->
+                    <controls:Reveal IsOpen="{Binding !IsOpen}" FollowsOpening="False">
                       <ItemsControl Margin="7,0,0,0" ItemsSource="{Binding Field.Diagnostics}">
                         <ItemsControl.ItemTemplate>
                           <DataTemplate x:DataType="fields:Impact">
