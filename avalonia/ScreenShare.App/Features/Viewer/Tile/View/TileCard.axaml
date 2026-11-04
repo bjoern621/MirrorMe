@@ -192,21 +192,21 @@
       </Style.Animations>
     </Style>
     <!--
-      A stream taking the stage fades in with the same slight zoom, from a press on the strip or a key alike.
-      The strip going or coming back settles the stage's frame from a smaller scale,
+      A stream taking the stage fades in, from a press on the strip or a key alike.
+      The fade sits on the frame because two animations of one property on one control play back to back:
+      on the card, a tile staged as its screen opens would fade in twice.
+      The strip going or coming back settles the stage's frame from a slight zoom,
       the stage changing size in one layout pass.
       The grid host sets both classes (Features/Viewer/View/ViewerView.axaml), a window of its own staging nothing.
     -->
-    <Style Selector="tiles|TileCard.staged">
+    <Style Selector="tiles|TileCard.staged Border.frame">
       <Style.Animations>
         <Animation Duration="{StaticResource MotionMount}" Easing="{StaticResource MotionEase}">
           <KeyFrame Cue="0%">
             <Setter Property="Opacity" Value="0" />
-            <Setter Property="RenderTransform" Value="scale(0.97)" />
           </KeyFrame>
           <KeyFrame Cue="100%">
             <Setter Property="Opacity" Value="1" />
-            <Setter Property="RenderTransform" Value="none" />
           </KeyFrame>
         </Animation>
       </Style.Animations>
