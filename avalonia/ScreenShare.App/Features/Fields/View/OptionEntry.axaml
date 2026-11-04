@@ -30,19 +30,33 @@
             IsEnabled="{Binding IsEnabled}"
             Command="{Binding Choose}">
       <StackPanel Spacing="4">
-        <Grid ColumnDefinitions="*,Auto">
-          <!-- Beside the title, for the reason a dropdown row carries it there (SelectEntry.axaml). -->
-          <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
-            <ti:TablerIcon Classes="button"
-                           Icon="{Binding Glyph, FallbackValue=IconPoint}"
-                           IsVisible="{Binding HasGlyph}"
-                           Brush="{Binding $parent[Button].Foreground, Mode=OneWay}"
-                           VerticalAlignment="Center" />
-            <TextBlock Classes="optiontitle" Text="{Binding Label}" VerticalAlignment="Center" />
-          </StackPanel>
-          <TextBlock Grid.Column="1" Classes="figure" IsVisible="{Binding HasNote}" Text="{Binding Note}" />
-          <Border Grid.Column="1"
+        <!--
+          A column each, so a long title wraps inside its own and never runs under the note or the tag.
+          The glyph sits beside the title, for the reason a dropdown row carries it there (SelectEntry.axaml).
+        -->
+        <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+          <ti:TablerIcon Grid.Column="0"
+                         Classes="button"
+                         Margin="0,0,8,0"
+                         Icon="{Binding Glyph, FallbackValue=IconPoint}"
+                         IsVisible="{Binding HasGlyph}"
+                         Brush="{Binding $parent[Button].Foreground, Mode=OneWay}"
+                         VerticalAlignment="Center" />
+          <TextBlock Grid.Column="1"
+                     Classes="optiontitle"
+                     TextWrapping="Wrap"
+                     TextTrimming="None"
+                     Text="{Binding Label}"
+                     VerticalAlignment="Center" />
+          <TextBlock Grid.Column="2"
+                     Classes="figure"
+                     Margin="8,0,0,0"
+                     VerticalAlignment="Center"
+                     IsVisible="{Binding HasNote}"
+                     Text="{Binding Note}" />
+          <Border Grid.Column="3"
                   Classes="tag"
+                  Margin="8,0,0,0"
                   IsVisible="{Binding IsRecommended}"
                   VerticalAlignment="Center">
             <TextBlock Classes="tag" Text="{x:Static copy:Cards.Recommended}" />
