@@ -5,26 +5,68 @@ using ScreenShare.App.Mvvm;
 
 namespace ScreenShare.App.Features.Setup.QualityStep.ViewModel;
 
-/// <summary>One expert control as the fold draws it: closed with its value, or open on the control itself.</summary>
-public sealed record ExpertRow
+/// <summary>
+/// One expert control as the fold draws it: closed with its value, or open on the control itself.
+/// One per key across passes, written in place, so its container stays and the fold under it moves on a press.
+/// </summary>
+public sealed class ExpertRow : Observable
 {
-    public required FieldViewModel Field { get; init; }
+    private FieldViewModel _field;
+    private bool _isOpen;
+    private ValueList<bool> _pips = ValueList<bool>.Empty;
+    private string _nextLabel = "";
 
-    public required bool IsOpen { get; init; }
+    public ExpertRow(FieldViewModel field, DelegateCommand toggle, DelegateCommand next)
+    {
+        Assert.NotNull(field, "a row draws one control");
+        Assert.NotNull(toggle, "a row opens on a press");
+        Assert.NotNull(next, "a row leads on to the next control");
+
+        _field = field;
+        Toggle = toggle;
+        Next = next;
+    }
+
+    public FieldViewModel Field { get => _field; private set => Set(ref _field, value); }
+
+    public bool IsOpen { get => _isOpen; private set => Set(ref _isOpen, value); }
 
     /// <summary>Opens this row and closes the one open before it, or closes this one where it is open.</summary>
-    public required DelegateCommand Toggle { get; init; }
+    public DelegateCommand Toggle { get; }
 
     /// <summary>One per control that opens, true at this row's own place. Empty on a greyed row.</summary>
-    public required ValueList<bool> Pips { get; init; }
+    public ValueList<bool> Pips { get => _pips; private set => Set(ref _pips, value); }
 
     /// <summary>"Next: Color range", empty on the last control that opens.</summary>
-    public required string NextLabel { get; init; }
+    public string NextLabel
+    {
+        get => _nextLabel;
+        private set
+        {
+            if (Set(ref _nextLabel, value))
+            {
+                OnPropertyChanged(nameof(HasNext));
+            }
+        }
+    }
 
     public bool HasNext => NextLabel.Length > 0;
 
     /// <summary>Opens the control <see cref="NextLabel"/> names.</summary>
-    public required DelegateCommand Next { get; init; }
+    public DelegateCommand Next { get; }
+
+    /// <summary>The row's render function. Idempotent.</summary>
+    public void Apply(FieldViewModel field, bool isOpen, ValueList<bool> pips, string nextLabel)
+    {
+        Assert.NotNull(field, "a row draws one control");
+        Assert.That(field.Key == _field.Key, "a row draws the one control it was made for", field.Key, _field.Key);
+        Assert.That(!isOpen || field.IsEnabled, "a greyed control never opens", field.Key);
+
+        Field = field;
+        IsOpen = isOpen;
+        Pips = pips;
+        NextLabel = nextLabel;
+    }
 }
 
 /// <summary>
@@ -32,12 +74,11 @@ public sealed record ExpertRow
 ///
 /// The open row is the reader's and the one state held here, kept across passes like <see cref="FoldViewModel.Shown"/>.
 /// A greyed control never opens, its closed row carrying the reason.
-/// The open key clears once the form stops sending that control, so a field that returns comes back closed.
+/// The open key and the control's row clear once the form stops sending that control, so a field that returns comes back closed.
 /// </summary>
 public sealed class ExpertFoldViewModel : Observable
 {
-    private readonly Dictionary<string, DelegateCommand> _toggles = [];
-    private readonly Dictionary<string, DelegateCommand> _nexts = [];
+    private readonly Dictionary<string, ExpertRow> _rows = [];
     private IReadOnlyList<FieldViewModel> _fields = [];
     private string _open = "";
 
@@ -45,17 +86,16 @@ public sealed class ExpertFoldViewModel : Observable
 
     public ObservableCollection<ExpertRow> Rows { get; } = [];
 
-    /// <summary>The one render function. Idempotent: an unchanged field list rebuilds equal rows.</summary>
+    /// <summary>The one render function. Idempotent: an unchanged field list writes nothing.</summary>
     public void Apply(IReadOnlyList<FieldViewModel> fields)
     {
         Assert.NotNull(fields, "the fold draws the fields the step leaves it");
 
         _fields = fields;
         var keys = fields.Select(field => field.Key).ToHashSet();
-        foreach (var gone in _toggles.Keys.Where(key => !keys.Contains(key)).ToList())
+        foreach (var gone in _rows.Keys.Where(key => !keys.Contains(key)).ToList())
         {
-            _toggles.Remove(gone);
-            _nexts.Remove(gone);
+            _rows.Remove(gone);
         }
         if (!keys.Contains(_open))
         {
@@ -63,36 +103,29 @@ public sealed class ExpertFoldViewModel : Observable
         }
 
         var openable = fields.Where(field => field.IsEnabled).ToList();
-        Reconcile.Onto(Rows, fields.Select(field => RowOf(field, openable)).ToList());
+        Reconcile.InPlace(Rows, fields.Select(field => Draw(field, openable)).ToList());
         Fold.Apply(fields);
 
         Assert.That(Rows.Count(row => row.IsOpen) <= 1, "the fold holds one control open at most", Rows.Count);
     }
 
-    private ExpertRow RowOf(FieldViewModel field, List<FieldViewModel> openable)
+    private ExpertRow Draw(FieldViewModel field, List<FieldViewModel> openable)
     {
+        if (!_rows.TryGetValue(field.Key, out var row))
+        {
+            var key = field.Key;
+            row = new ExpertRow(field, new DelegateCommand(() => Toggle(key)), new DelegateCommand(() => OpenAfter(key)));
+            _rows[key] = row;
+        }
+
         var place = openable.IndexOf(field);
         var next = place >= 0 && place + 1 < openable.Count ? openable[place + 1] : null;
-        return new ExpertRow
-        {
-            Field = field,
-            IsOpen = field.Key == _open && field.IsEnabled,
-            Toggle = CommandOf(_toggles, field.Key, () => Toggle(field.Key)),
-            Pips = place < 0 ? ValueList<bool>.Empty : new ValueList<bool>(openable.Select((_, index) => index == place)),
-            NextLabel = next is null ? "" : Copy.Fields.NextControl(next.Label),
-            Next = CommandOf(_nexts, field.Key, () => OpenAfter(field.Key)),
-        };
-    }
-
-    /// <summary>One command per key across passes, so an unchanged row compares equal.</summary>
-    private static DelegateCommand CommandOf(Dictionary<string, DelegateCommand> commands, string key, Action run)
-    {
-        if (!commands.TryGetValue(key, out var command))
-        {
-            command = new DelegateCommand(run);
-            commands[key] = command;
-        }
-        return command;
+        row.Apply(
+            field,
+            field.Key == _open && field.IsEnabled,
+            place < 0 ? ValueList<bool>.Empty : new ValueList<bool>(openable.Select((_, index) => index == place)),
+            next is null ? "" : Copy.Fields.NextControl(next.Label));
+        return row;
     }
 
     /// <summary>

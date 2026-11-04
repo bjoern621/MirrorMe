@@ -247,6 +247,21 @@ public sealed class ExpertFoldTests
         Assert.Equal(["publish.gop"], flow.Quality.Expert.Rows.Where(row => row.IsOpen).Select(row => row.Field.Key));
     }
 
+    /// <summary>A replaced row rebuilds its container, and the fold under it then snaps to its end state.</summary>
+    [Fact]
+    public async Task OpeningARowKeepsEveryRowItsContainer()
+    {
+        var flow = await FlowAsync();
+        var drawn = flow.Quality.Expert.Rows.ToList();
+        var edits = 0;
+        flow.Quality.Expert.Rows.CollectionChanged += (_, _) => edits++;
+
+        drawn.First(row => row.Field.IsEnabled).Toggle.Execute(null);
+
+        Assert.Equal(0, edits);
+        Assert.True(drawn.First(row => row.Field.IsEnabled).IsOpen);
+    }
+
     [Fact]
     public async Task PressingTheOpenRowClosesIt()
     {
