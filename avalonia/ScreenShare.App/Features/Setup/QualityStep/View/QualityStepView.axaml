@@ -17,11 +17,6 @@
   </UserControl.Resources>
 
   <UserControl.Styles>
-    <!-- An open expert row already names its control in the row heading it, so the field row drops its own label. -->
-    <Style Selector="ContentControl.expert TextBlock.fieldlabel">
-      <Setter Property="IsVisible" Value="False" />
-    </Style>
-
     <!-- A row opening fades its value out, the control unrolling under it taking over, and turns its chevron up. -->
     <Style Selector="TextBlock.value">
       <Setter Property="Transitions">
@@ -211,7 +206,8 @@
                       </ItemsControl>
                     </controls:Reveal>
                     <controls:Reveal IsOpen="{Binding IsOpen}">
-                      <ContentControl Classes="expert"
+                      <!-- Headed: the row button above names the control (FieldRow.axaml). -->
+                      <ContentControl Classes="headed"
                                       Margin="7,4,7,10"
                                       Content="{Binding Field}"
                                       ContentTemplate="{StaticResource FieldRow}" />
