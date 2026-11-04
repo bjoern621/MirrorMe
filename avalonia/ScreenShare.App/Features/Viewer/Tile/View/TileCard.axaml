@@ -88,7 +88,7 @@
     <Style Selector="tiles|TileCard:resting Button.edge">
       <Setter Property="Cursor" Value="None" />
     </Style>
-    <Style Selector="tiles|TileCard:resting Button.edge /template/ Ellipse#Shade">
+    <Style Selector="tiles|TileCard:resting Button.edge /template/ Panel#Arc">
       <Setter Property="Opacity" Value="0" />
     </Style>
     <Style Selector="tiles|TileCard:resting Button.edge /template/ Border#Disc">
