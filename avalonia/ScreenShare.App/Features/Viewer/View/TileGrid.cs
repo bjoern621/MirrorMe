@@ -153,7 +153,7 @@ public sealed class TileGrid : Panel
         }
 
         var delta = e.Delta.X != 0 ? e.Delta.X : e.Delta.Y;
-        scroll.Offset = scroll.Offset.WithX(Math.Clamp(scroll.Offset.X - (delta * WheelScroll.Step), 0, room));
+        scroll.Offset = scroll.Offset.WithX(Math.Clamp(scroll.Offset.X - (delta * WheelScroll.StepOf(WaylandTouchpad.Source, e.Delta)), 0, room));
         e.Handled = true;
     }
 

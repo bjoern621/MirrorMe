@@ -11,9 +11,8 @@ using NWayland.Protocols.PointerGesturesUnstableV1;
 using NWayland.Protocols.Wayland;
 
 using ScreenShare.App.Contracts;
-using ScreenShare.App.Features.Viewer.Tile.Model;
 
-namespace ScreenShare.App.Features.Viewer.Tile.View;
+namespace ScreenShare.App.Controls;
 
 /// <summary>One update of a touchpad pinch: the zoom since the last one, and how far the fingers' middle moved.</summary>
 internal readonly record struct TouchpadPinch(double Factor, Vector Moved);
@@ -24,7 +23,7 @@ internal readonly record struct TouchpadPinch(double Factor, Vector Moved);
 /// so this binds the pinch on Avalonia's own <c>wl_pointer</c> and taps its listener for the source.
 ///
 /// Both live past Avalonia's public surface and are reached by reflection into Avalonia.Wayland 12.1.1.
-/// A member missing under another version asserts at the first pointer over a card, since only an edit here fixes it.
+/// A member missing under another version asserts at the first pointer over a scroll view or a card, since only an edit here fixes it.
 /// A compositor serving no pointer gestures leaves the pinch out and logs once.
 /// Every other backend names no source and raises no pinch here.
 /// </summary>

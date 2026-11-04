@@ -291,8 +291,8 @@ X11, Windows and macOS name no source, so a two-finger scroll there zooms as a w
 Avalonia's X11 backend raises no touchpad pinch.
 
 Avalonia's Wayland backend binds no `zwp_pointer_gestures_v1` and drops the scroll source.
-`Features/Viewer/Tile/View/WaylandTouchpad.cs` reaches its `wl_pointer` by reflection, binds the pinch on it and taps its listener.
-The reflection names members of Avalonia.Wayland 12.1.1, so a version bump re-checks them: a renamed one asserts at the first pointer over a card.
+`Controls/WheelScroll/WaylandTouchpad.cs` reaches its `wl_pointer` by reflection, binds the pinch on it and taps its listener.
+The reflection names members of Avalonia.Wayland 12.1.1, so a version bump re-checks them: a renamed one asserts at the first pointer over a scroll view or a card.
 A strip tile under a focused one stays unzoomable, its wheel scrolling the strip.
 Shift with the wheel scrolls sideways and zooms nothing.
 

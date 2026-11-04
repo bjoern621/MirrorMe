@@ -8,7 +8,7 @@ using ScreenShare.App.Contracts;
 namespace ScreenShare.App.Controls;
 
 /// <summary>
-/// Scroll presenter whose wheel moves <see cref="WheelScroll.Step"/> per notch.
+/// Scroll presenter whose wheel moves the step <see cref="WheelScroll"/> sets for what the scroll came from.
 /// Avalonia fixes its own at 50 with no property to change it, so the scroll viewer template in
 /// <c>Design/Scrolling.axaml</c> puts this one in its place.
 ///
@@ -17,6 +17,16 @@ namespace ScreenShare.App.Controls;
 /// </summary>
 public sealed class WheelScrollPresenter : ScrollContentPresenter
 {
+    protected override void OnPointerEntered(PointerEventArgs e)
+    {
+        base.OnPointerEntered(e);
+
+        if (TopLevel.GetTopLevel(this) is { } top)
+        {
+            WaylandTouchpad.Attach(top);
+        }
+    }
+
     protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
     {
         Assert.NotNull(e, "a wheel event arrives with its arguments");
@@ -32,7 +42,7 @@ public sealed class WheelScrollPresenter : ScrollContentPresenter
             return;
         }
 
-        var offset = WheelScroll.Offset(Offset, e.Delta, Extent, Viewport, e.KeyModifiers == KeyModifiers.Shift);
+        var offset = WheelScroll.Offset(Offset, e.Delta, Extent, Viewport, e.KeyModifiers == KeyModifiers.Shift, WaylandTouchpad.Source);
         var moved = offset != Offset;
         SetCurrentValue(OffsetProperty, offset);
 

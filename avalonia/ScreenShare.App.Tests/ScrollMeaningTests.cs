@@ -1,3 +1,4 @@
+using ScreenShare.App.Controls;
 using ScreenShare.App.Features.Viewer.Tile.Model;
 using Xunit;
 

@@ -1,17 +1,7 @@
 using ScreenShare.App.Contracts;
+using ScreenShare.App.Controls;
 
 namespace ScreenShare.App.Features.Viewer.Tile.Model;
-
-/// <summary>What a scroll came from, in the terms of Wayland's <c>wl_pointer.axis_source</c>.</summary>
-public enum ScrollSource
-{
-    /// <summary>No backend said: X11, Windows and macOS name none.</summary>
-    Unknown,
-    Wheel,
-    Finger,
-    Continuous,
-    WheelTilt,
-}
 
 public enum ScrollMeaning
 {

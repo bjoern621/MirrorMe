@@ -45,7 +45,7 @@
     <PackageReference Include="Avalonia.Wayland" Version="12.1.1" />
     <!--
       The protocol bindings Avalonia.Wayland 12.1.1 is built on, named directly since
-      Features/Viewer/Tile/View/WaylandTouchpad.cs binds a protocol of its own on them.
+      Controls/WheelScroll/WaylandTouchpad.cs binds a protocol of its own on them.
       The two versions move together.
     -->
     <PackageReference Include="NWayland" Version="0.11.0" />

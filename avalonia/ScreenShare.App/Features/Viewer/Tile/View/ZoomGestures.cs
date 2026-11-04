@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 
 using ScreenShare.App.Contracts;
+using ScreenShare.App.Controls;
 using ScreenShare.App.Features.Viewer.Tile.Model;
 
 namespace ScreenShare.App.Features.Viewer.Tile.View;

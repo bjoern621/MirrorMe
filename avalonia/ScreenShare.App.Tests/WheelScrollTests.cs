@@ -16,37 +16,65 @@ public sealed class WheelScrollTests
     private static readonly Size Wide = new(1000, 200);
 
     [Fact]
-    public void ANotchDownMovesOneStep()
+    public void ANotchDownMovesOneNotchStep()
     {
-        var offset = WheelScroll.Offset(new Vector(0, 0), new Vector(0, -1), Tall, Viewport, shift: false);
+        var offset = WheelScroll.Offset(new Vector(0, 0), new Vector(0, -1), Tall, Viewport, false, ScrollSource.Wheel);
 
-        Assert.Equal(new Vector(0, WheelScroll.Step), offset);
+        Assert.Equal(new Vector(0, WheelScroll.NotchStep), offset);
     }
 
-    /// <summary>A touchpad reports fractions of a notch, and each moves its share of a step.</summary>
+    [Fact]
+    public void AWheelMovesFartherPerNotchThanASmoothScrollPerUnit() =>
+        Assert.True(
+            WheelScroll.StepOf(ScrollSource.Wheel, new Vector(0, 1)) > WheelScroll.StepOf(ScrollSource.Finger, new Vector(0, 1)));
+
+    /// <summary>A high-resolution wheel reports fractions of a notch, and each moves its share of a step.</summary>
     [Fact]
     public void AFractionOfANotchMovesItsShareOfAStep()
     {
-        var offset = WheelScroll.Offset(new Vector(0, 100), new Vector(0, 0.5), Tall, Viewport, shift: false);
+        var offset = WheelScroll.Offset(new Vector(0, 100), new Vector(0, 0.5), Tall, Viewport, false, ScrollSource.Wheel);
 
-        Assert.Equal(new Vector(0, 100 - (WheelScroll.Step / 2)), offset);
+        Assert.Equal(new Vector(0, 100 - (WheelScroll.NotchStep / 2)), offset);
     }
+
+    /// <summary>
+    /// A named source decides alone, a touchpad delta landing on a whole number included.
+    /// X11 and Windows name no source, and report a wheel in whole notches and a touchpad in fractions.
+    /// </summary>
+    [Theory]
+    [InlineData(ScrollSource.Wheel, 1, WheelScroll.NotchStep)]
+    [InlineData(ScrollSource.Wheel, 0.125, WheelScroll.NotchStep)]
+    [InlineData(ScrollSource.WheelTilt, 1, WheelScroll.NotchStep)]
+    [InlineData(ScrollSource.Finger, 1, WheelScroll.SmoothStep)]
+    [InlineData(ScrollSource.Finger, 0.5, WheelScroll.SmoothStep)]
+    [InlineData(ScrollSource.Continuous, 2, WheelScroll.SmoothStep)]
+    [InlineData(ScrollSource.Unknown, 1, WheelScroll.NotchStep)]
+    [InlineData(ScrollSource.Unknown, -3, WheelScroll.NotchStep)]
+    [InlineData(ScrollSource.Unknown, 0.5, WheelScroll.SmoothStep)]
+    public void TheSourceSetsTheStep(ScrollSource source, double delta, double step) =>
+        Assert.Equal(step, WheelScroll.StepOf(source, new Vector(0, delta)));
+
+    [Fact]
+    public void AnUnnamedScrollWithAFractionOnEitherAxisMovesASmoothStep() =>
+        Assert.Equal(WheelScroll.SmoothStep, WheelScroll.StepOf(ScrollSource.Unknown, new Vector(0.5, 1)));
 
     [Fact]
     public void TheOffsetStopsAtEitherEnd()
     {
         var bottom = Tall.Height - Viewport.Height;
 
-        Assert.Equal(new Vector(0, 0), WheelScroll.Offset(new Vector(0, 5), new Vector(0, 3), Tall, Viewport, false));
         Assert.Equal(
-            new Vector(0, bottom), WheelScroll.Offset(new Vector(0, bottom - 5), new Vector(0, -3), Tall, Viewport, false));
+            new Vector(0, 0), WheelScroll.Offset(new Vector(0, 5), new Vector(0, 3), Tall, Viewport, false, ScrollSource.Wheel));
+        Assert.Equal(
+            new Vector(0, bottom),
+            WheelScroll.Offset(new Vector(0, bottom - 5), new Vector(0, -3), Tall, Viewport, false, ScrollSource.Wheel));
     }
 
     /// <summary>An axis whose content fits has nothing to scroll, so a delta along it moves nothing.</summary>
     [Fact]
     public void AnAxisThatFitsStaysPut()
     {
-        var offset = WheelScroll.Offset(new Vector(0, 0), new Vector(-1, -1), Tall, Viewport, shift: false);
+        var offset = WheelScroll.Offset(new Vector(0, 0), new Vector(-1, -1), Tall, Viewport, false, ScrollSource.Wheel);
 
         Assert.Equal(0, offset.X);
     }
@@ -55,8 +83,8 @@ public sealed class WheelScrollTests
     [Fact]
     public void ShiftTurnsAnUpAndDownNotchSideways()
     {
-        var offset = WheelScroll.Offset(new Vector(0, 0), new Vector(0, -1), Wide, Viewport, shift: true);
+        var offset = WheelScroll.Offset(new Vector(0, 0), new Vector(0, -1), Wide, Viewport, true, ScrollSource.Wheel);
 
-        Assert.Equal(new Vector(WheelScroll.Step, 0), offset);
+        Assert.Equal(new Vector(WheelScroll.NotchStep, 0), offset);
     }
 }

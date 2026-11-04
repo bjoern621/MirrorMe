@@ -12,7 +12,7 @@
 
   <!--
     Fluent's template with two changes.
-    The presenter takes a shorter wheel step (Controls/WheelScroll/WheelScrollPresenter.cs).
+    The presenter sets the wheel step per scroll source (Controls/WheelScroll/WheelScrollPresenter.cs).
     A bar sits in a lane of its own beside the content, where Fluent floats it over a card edge or a wrapped line.
 
     An axis that can show a bar keeps its lane while the bar hides, held open by an empty border of the bar's size.
