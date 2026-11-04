@@ -202,6 +202,9 @@ public sealed class ViewerViewModel : Observable
     /// <summary>Whether the reader asked for equal cells over the stage.</summary>
     private bool _gridAsked;
 
+    /// <summary>Whether the reader put the strip away. Kept through the grid, so the next stage opens alone.</summary>
+    private bool _stripHidden;
+
     /// <summary>
     /// Stream the reader last put on the stage, empty before any pick.
     /// Kept while its stream is gone, so one that drops out and comes back takes the stage again.
@@ -211,7 +214,7 @@ public sealed class ViewerViewModel : Observable
 
     /// <summary>
     /// How the tiles are arranged: the stage with the strip under it wherever the strip holds anything and
-    /// the reader has not asked for the grid, stacked on a narrow window.
+    /// the reader has not asked for the grid, stacked on a narrow window, alone where the strip is put away.
     /// </summary>
     public LayoutMode Mode { get => _mode; private set => Set(ref _mode, value); }
 
@@ -512,6 +515,7 @@ public sealed class ViewerViewModel : Observable
         var beside = waiting.Count + (narrow ? 0 : hints.Count);
         Mode = Tiles.Count == 0 || (Tiles.Count == 1 && beside == 0) || (ShowsGridToggle && _gridAsked)
             ? LayoutMode.Grid
+            : _stripHidden ? LayoutMode.Stage
             : narrow ? LayoutMode.Stack : LayoutMode.Focus;
         IsGrid = Mode == LayoutMode.Grid;
         Focused = Mode == LayoutMode.Grid ? ""
@@ -527,6 +531,9 @@ public sealed class ViewerViewModel : Observable
         {
             tile.Apply(TilePipeline.Of(DecodeOf(tile)), _session.StatsOf(tile.Name, tile.Transport));
             tile.IsFocused = tile.Name == Focused;
+            tile.HasStrip = tile.IsFocused;
+            tile.StripHidden = tile.IsFocused && Mode == LayoutMode.Stage;
+            tile.CanStep = tile.IsFocused && Tiles.Count >= 2;
             tile.IsPoppedOut = _popped.Contains(tile.Name);
             tile.NamedByDiscord = discordMode;
 
@@ -538,12 +545,14 @@ public sealed class ViewerViewModel : Observable
                 : Fullscreen == tile.Name;
         }
 
+        // A put-away strip keeps its tiles, each decode running on at no size, and drops the cells without one.
         var stacked = Mode == LayoutMode.Stack;
+        var alone = Mode == LayoutMode.Stage;
         Reconcile.InPlace(Strip, [
             .. Tiles,
-            .. waiting,
-            .. stacked ? [] : hints,
-            .. ShowsGridToggle && !IsGrid ? [Switch] : Array.Empty<IStripItem>(),
+            .. alone ? [] : waiting,
+            .. stacked || alone ? [] : hints,
+            .. ShowsGridToggle && !IsGrid && !alone ? [Switch] : Array.Empty<IStripItem>(),
         ]);
         Reconcile.Onto(HintsBelow, stacked ? hints : []);
         HasHintsBelow = HintsBelow.Count > 0;
@@ -985,6 +994,23 @@ public sealed class ViewerViewModel : Observable
             case TileIntent.Close:
                 // Fired without waiting: the tile leaves before the stop's round trip answers.
                 _ = StopAsync(stream);
+                break;
+
+            case TileIntent.Strip:
+                Assert.That(Mode != LayoutMode.Grid, "a strip is put away from under a stage", stream);
+                _stripHidden = !_stripHidden;
+                break;
+
+            case TileIntent.StageNext:
+            case TileIntent.StagePrevious:
+                Assert.That(
+                    _tiles.ContainsKey(Focused) && Tiles.Count >= 2,
+                    "a stage steps to another playing stream",
+                    Focused,
+                    Tiles.Count);
+                var at = Tiles.IndexOf(_tiles[Focused]);
+                var step = intent == TileIntent.StageNext ? 1 : -1;
+                _staged = Tiles[(at + step + Tiles.Count) % Tiles.Count].Name;
                 break;
 
             case TileIntent.LeaveFullscreen:

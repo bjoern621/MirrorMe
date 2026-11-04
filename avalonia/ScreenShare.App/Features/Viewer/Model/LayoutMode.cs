@@ -25,4 +25,10 @@ public enum LayoutMode
     /// Focus for a narrow window: the stage at the full width, the strip wrapping two to a row under it.
     /// </summary>
     Stack,
+
+    /// <summary>
+    /// Focus with the strip put away: the focused tile takes the whole box, every other tile drawn at no size.
+    /// The other decodes run on, so a step to another stream shows a picture at once.
+    /// </summary>
+    Stage,
 }

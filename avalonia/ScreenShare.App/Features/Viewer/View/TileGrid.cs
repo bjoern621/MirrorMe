@@ -179,6 +179,7 @@ public sealed class TileGrid : Panel
     {
         LayoutMode.Focus => Focused(box),
         LayoutMode.Stack => Stacked(box),
+        LayoutMode.Stage => Alone(box),
         LayoutMode.Grid => (Grid(box), box.Width),
         _ => Assert.Never<(List<(Control Child, Rect Rect)>, double)>("a layout mode the panel arranges", Mode),
     };
@@ -229,6 +230,23 @@ public sealed class TileGrid : Panel
         }
 
         var arrangement = FocusLayout.Stack(children.Select(GetAspect).ToList(), focused, box.Width, Gap);
+        return (Place(children, arrangement.Tiles), box.Width);
+    }
+
+    /// <summary>
+    /// One tile filling the box, the rest at no size.
+    /// With nothing focused it is the grid, for the reason <see cref="Focused"/> gives.
+    /// </summary>
+    private (List<(Control Child, Rect Rect)> Places, double Width) Alone(Size box)
+    {
+        var children = Children.OfType<Control>().ToList();
+        var focused = children.FindIndex(GetIsFocusedTile);
+        if (focused < 0)
+        {
+            return (Grid(box), box.Width);
+        }
+
+        var arrangement = FocusLayout.Alone(children.Select(GetAspect).ToList(), focused, box.Width, box.Height);
         return (Place(children, arrangement.Tiles), box.Width);
     }
 

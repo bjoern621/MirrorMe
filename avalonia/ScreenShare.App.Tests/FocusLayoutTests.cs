@@ -129,6 +129,22 @@ public sealed class FocusLayoutTests
         Assert.Equal(336, arrangement.Extent, 3);
     }
 
+    /// <summary>With the strip put away the stage takes the box, every other tile drawn at no size.</summary>
+    [Fact]
+    public void AStageAloneTakesTheBoxAndHidesTheRest()
+    {
+        var arrangement = FocusLayout.Alone([.. Enumerable.Repeat(Wide, 3)], 1, 1200, 800);
+        var stage = arrangement.Tiles.Single(tile => tile.Index == 1);
+
+        Assert.Equal(1200, stage.Width, 3);
+        Assert.Equal(1200 / Wide, stage.Height, 3);
+        Assert.Equal((800 - (1200 / Wide)) / 2, stage.Y, 3);
+        Assert.All(
+            arrangement.Tiles.Where(tile => tile.Index != 1),
+            tile => Assert.Equal(0, tile.Width * tile.Height, 3));
+        Assert.Equal(1200, arrangement.Extent, 3);
+    }
+
     /// <summary>A box with no room places nothing, which is the first measure pass inside a scroll viewer.</summary>
     [Fact]
     public void ABoxWithNoRoomPlacesNothing()

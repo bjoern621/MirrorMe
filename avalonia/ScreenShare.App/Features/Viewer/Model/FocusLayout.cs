@@ -135,6 +135,34 @@ public static class FocusLayout
     }
 
     /// <summary>
+    /// Rectangles for a stage alone in the box, the strip put away.
+    /// Every other tile gets an empty rectangle at the origin and keeps its decode.
+    /// </summary>
+    /// <param name="aspects">Width over height per tile, in the caller's own order.</param>
+    /// <param name="focused">Which of them takes the stage.</param>
+    /// <param name="width">Usable width.</param>
+    /// <param name="height">Usable height.</param>
+    public static Arrangement Alone(IReadOnlyList<double> aspects, int focused, double width, double height)
+    {
+        Assert.NotNull(aspects, "an arrangement is of some tiles");
+        Assert.That(
+            focused >= 0 && focused < aspects.Count, "the focused tile is one of them", focused, aspects.Count);
+
+        if (width <= 0 || height <= 0)
+        {
+            return new Arrangement([], 0);
+        }
+
+        var placed = Enumerable.Range(0, aspects.Count)
+            .Select(index => new TileLayout.Placement(index, 0, 0, 0, 0))
+            .ToArray();
+        placed[focused] = Letterbox(TileLayout.Sane(aspects[focused]), focused, 0, 0, width, height);
+
+        Assert.That(placed[focused].Width <= width + 0.001, "the stage fits the width", placed[focused].Width, width);
+        return new Arrangement(placed, width);
+    }
+
+    /// <summary>
     /// Largest rectangle of the given shape that fits the box, centred in it.
     /// The focused tile keeps its stream's shape as every other tile does, being alone turning the leftover space
     /// into a margin.

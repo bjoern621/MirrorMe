@@ -39,6 +39,9 @@ public sealed class TileKeysTests
         Assert.Same(tile.Louder, TileKeys.Command(tile, Press(Key.OemPlus)));
         Assert.Same(tile.Quieter, TileKeys.Command(tile, Press(Key.OemMinus)));
         Assert.Same(tile.Close, TileKeys.Command(tile, Press(Key.X)));
+        Assert.Same(tile.ToggleStrip, TileKeys.Command(tile, Press(Key.H)));
+        Assert.Same(tile.StagePrevious, TileKeys.Command(tile, Press(Key.Left)));
+        Assert.Same(tile.StageNext, TileKeys.Command(tile, Press(Key.Right)));
     }
 
     [Fact]

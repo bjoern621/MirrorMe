@@ -65,6 +65,9 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
         LeaveFullscreen = new DelegateCommand(() => arrange(TileIntent.LeaveFullscreen));
         LeavePopOut = new DelegateCommand(() => arrange(TileIntent.LeavePopOut));
         Close = new DelegateCommand(() => arrange(TileIntent.Close));
+        ToggleStrip = new DelegateCommand(() => arrange(TileIntent.Strip), () => HasStrip);
+        StageNext = new DelegateCommand(() => arrange(TileIntent.StageNext), () => CanStep);
+        StagePrevious = new DelegateCommand(() => arrange(TileIntent.StagePrevious), () => CanStep);
         // The panel composes on the render pass and only while up, so turning it on has to reach one.
         // Without the notification it opens empty until the next sample lands.
         ToggleStats = new DelegateCommand(() =>
@@ -138,6 +141,46 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
     /// At most one tile carries it, and a tile cannot see what the others are doing.
     /// </summary>
     public bool IsFocused { get => _isFocused; set => Set(ref _isFocused, value); }
+
+    private bool _hasStrip;
+    private bool _stripHidden;
+    private bool _canStep;
+
+    /// <summary>
+    /// Whether this tile stands on a stage with a strip to put away, shown or hidden.
+    /// Written by the screen owning the arrangement, like <see cref="IsFocused"/>.
+    /// </summary>
+    public bool HasStrip
+    {
+        get => _hasStrip;
+        set
+        {
+            if (Set(ref _hasStrip, value))
+            {
+                ToggleStrip.Refresh();
+            }
+        }
+    }
+
+    /// <summary>Whether the strip under this tile's stage is put away. False wherever <see cref="HasStrip"/> is.</summary>
+    public bool StripHidden { get => _stripHidden; set => Set(ref _stripHidden, value); }
+
+    /// <summary>
+    /// Whether this tile stands on a stage with another playing stream to step to.
+    /// Written by the screen owning the arrangement, like <see cref="IsFocused"/>.
+    /// </summary>
+    public bool CanStep
+    {
+        get => _canStep;
+        set
+        {
+            if (Set(ref _canStep, value))
+            {
+                StageNext.Refresh();
+                StagePrevious.Refresh();
+            }
+        }
+    }
 
     /// <summary>
     /// Whether the name comes off a Discord voice channel, the group following one.
@@ -363,6 +406,15 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
     /// and this is the way out the reader still has.
     /// </summary>
     public DelegateCommand Close { get; }
+
+    /// <summary>Puts the strip under the stage away, or brings it back. Refused off the stage.</summary>
+    public DelegateCommand ToggleStrip { get; }
+
+    /// <summary>Stages the next playing stream. Refused off the stage and with no other stream playing.</summary>
+    public DelegateCommand StageNext { get; }
+
+    /// <summary>Stages the previous playing stream, refused where <see cref="StageNext"/> is.</summary>
+    public DelegateCommand StagePrevious { get; }
 
     /// <summary>
     /// Puts the figures up over this tile, or takes them down.

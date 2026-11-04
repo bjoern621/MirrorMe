@@ -318,8 +318,9 @@ public partial class TileCard : UserControl
     /// Applies what a key names to the tile under the pointer.
     /// The states the menu's rows name, on the keys those rows print beside them,
     /// so reading the menu once is enough.
-    /// Each key names a state rather than a step, so a second press is a round trip instead of a second
-    /// arrangement, the volume keys naming the level they want for the same reason.
+    /// Each key but the two arrows names a state, so a second press is a round trip,
+    /// the volume keys naming the level they want for the same reason.
+    /// An arrow steps the stage, so a second press steps it again (<see cref="TileKeys"/>).
     /// </summary>
     private void OnKeyPressed(object? sender, KeyEventArgs e)
     {

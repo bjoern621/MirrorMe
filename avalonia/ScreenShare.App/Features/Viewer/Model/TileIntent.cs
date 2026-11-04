@@ -12,6 +12,9 @@ namespace ScreenShare.App.Features.Viewer.Model;
 /// A leave intent names one, arriving from something meaning a single direction:
 /// a window that has closed, or a key meaning "leave".
 /// A toggle raised from there would ask for the state it was reporting the end of.
+///
+/// The two stage steps depart from both: each moves the stage one stream along, so a second press moves it again.
+/// An arrow means "the one after this", and naming the target would make the tile read the other tiles' order.
 /// </summary>
 public enum TileIntent
 {
@@ -32,4 +35,13 @@ public enum TileIntent
 
     /// <summary>Out of the grid with its decode closed, whether or not the relay still carries the stream.</summary>
     Close,
+
+    /// <summary>Toggle: put the strip under the stage away, or bring it back.</summary>
+    Strip,
+
+    /// <summary>Step: stage the stream after the staged one in tile order, wrapping at the end.</summary>
+    StageNext,
+
+    /// <summary>Step: stage the stream before the staged one, wrapping at the start.</summary>
+    StagePrevious,
 }

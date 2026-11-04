@@ -76,6 +76,11 @@
       <Setter Property="Padding" Value="7,4" />
     </Style>
 
+    <Style Selector="Border.chrome.stage">
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Margin" Value="{StaticResource InsetTight}" />
+    </Style>
+
     <Style Selector="Border.nameplate">
       <Setter Property="Background" Value="{StaticResource ScrimBrush}" />
       <Setter Property="CornerRadius" Value="5" />
@@ -244,6 +249,7 @@
   <!--
     Right-click carries everything a tile affords, in one menu rather than a row of hover buttons,
     and defined here rather than per host, what a tile affords not changing with the window it is in.
+    The stage's arrows and strip chevron depart from it, with their reason where they stand.
 
     Grouped by subject, in the order a reader reaches for them: where the stream is drawn, how loud it is,
     what happens to its range, what is printed over it.
@@ -284,6 +290,16 @@
                        Text="One stream fills the space, the rest beneath it. Shows only with two or more streams." />
           </StackPanel>
         </MenuItem.Header>
+      </MenuItem>
+
+      <!-- On the staged tile alone, the one with a strip under it to put away. -->
+      <MenuItem Header="{x:Static copy:Cards.HideStrip}" Command="{Binding ToggleStrip}"
+                InputGesture="{x:Static tiles:TileKeys.Strip}"
+                IsChecked="{Binding StripHidden, Mode=OneWay}"
+                IsVisible="{Binding HasStrip}">
+        <MenuItem.Icon>
+          <ti:TablerIcon Icon="IconLayoutBottombarCollapse" />
+        </MenuItem.Icon>
       </MenuItem>
 
       <MenuItem Header="Own window" Command="{Binding TogglePopOut}"
@@ -517,6 +533,60 @@
               Margin="7,7,7,12"
               IsVisible="{Binding HasColourNote}">
         <TextBlock Classes="hint" Text="{Binding ColourNote}" />
+      </Border>
+
+      <!--
+        The stage's own controls, the one departure from a menu holding everything:
+        a step either way through the playing streams, and the strip put away or back.
+        They arrange the grid, so a card in a window of its own or on a filled screen draws none.
+        Each takes its own click, a tap reaching the card meaning focus.
+      -->
+      <Border Classes="chrome stage" HorizontalAlignment="Left" VerticalAlignment="Center">
+        <Border.IsVisible>
+          <MultiBinding Converter="{x:Static BoolConverters.And}">
+            <Binding Path="CanStep" />
+            <Binding Path="$parent[tiles:TileCard].InGrid" />
+            <Binding Path="!PictureElsewhere" />
+          </MultiBinding>
+        </Border.IsVisible>
+        <Button Theme="{StaticResource IconButton}" Command="{Binding StagePrevious}" Tapped="OnClickTaken"
+                ToolTip.Tip="{x:Static copy:Cards.StagePreviousTip}">
+          <ti:TablerIcon Classes="button" Icon="IconChevronLeft" />
+        </Button>
+      </Border>
+      <Border Classes="chrome stage" HorizontalAlignment="Right" VerticalAlignment="Center">
+        <Border.IsVisible>
+          <MultiBinding Converter="{x:Static BoolConverters.And}">
+            <Binding Path="CanStep" />
+            <Binding Path="$parent[tiles:TileCard].InGrid" />
+            <Binding Path="!PictureElsewhere" />
+          </MultiBinding>
+        </Border.IsVisible>
+        <Button Theme="{StaticResource IconButton}" Command="{Binding StageNext}" Tapped="OnClickTaken"
+                ToolTip.Tip="{x:Static copy:Cards.StageNextTip}">
+          <ti:TablerIcon Classes="button" Icon="IconChevronRight" />
+        </Button>
+      </Border>
+      <Border Classes="chrome stage" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+        <Border.IsVisible>
+          <MultiBinding Converter="{x:Static BoolConverters.And}">
+            <Binding Path="HasStrip" />
+            <Binding Path="$parent[tiles:TileCard].InGrid" />
+            <Binding Path="!PictureElsewhere" />
+          </MultiBinding>
+        </Border.IsVisible>
+        <Button Theme="{StaticResource IconButton}" Command="{Binding ToggleStrip}" Tapped="OnClickTaken">
+          <ToolTip.Tip>
+            <Panel>
+              <TextBlock Text="{x:Static copy:Cards.HideStripTip}" IsVisible="{Binding !StripHidden}" />
+              <TextBlock Text="{x:Static copy:Cards.ShowStripTip}" IsVisible="{Binding StripHidden}" />
+            </Panel>
+          </ToolTip.Tip>
+          <Panel>
+            <ti:TablerIcon Classes="button" Icon="IconChevronDown" IsVisible="{Binding !StripHidden}" />
+            <ti:TablerIcon Classes="button" Icon="IconChevronUp" IsVisible="{Binding StripHidden}" />
+          </Panel>
+        </Button>
       </Border>
 
       <!-- Where in the picture a zoomed card is, under the stats overlay that opens in the same corner. -->

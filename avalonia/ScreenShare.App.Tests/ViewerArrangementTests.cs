@@ -162,6 +162,82 @@ public sealed class ViewerArrangementTests
         Assert.Equal("two", viewer.Focused);
     }
 
+    /// <summary>Hiding the strip leaves the staged stream alone on the stage, every decode running on.</summary>
+    [Fact]
+    public void HidingTheStripLeavesTheStageAlone()
+    {
+        var viewer = Grid("one", "two");
+
+        Tile(viewer, "one").ToggleStrip.Execute(null);
+
+        Assert.Equal(LayoutMode.Stage, viewer.Mode);
+        Assert.Equal("one", viewer.Focused);
+        Assert.True(Tile(viewer, "one").StripHidden);
+        Assert.Equal(2, viewer.Tiles.Count);
+        Assert.DoesNotContain(viewer.Switch, viewer.Strip);
+
+        Tile(viewer, "one").ToggleStrip.Execute(null);
+
+        Assert.Equal(LayoutMode.Focus, viewer.Mode);
+        Assert.False(Tile(viewer, "one").StripHidden);
+    }
+
+    /// <summary>The grid has no strip to hide and no stage to step.</summary>
+    [Fact]
+    public void TheGridOffersNoStripToggleAndNoArrows()
+    {
+        var viewer = Grid("one", "two");
+        viewer.ToggleGrid.Execute(null);
+
+        Assert.All(viewer.Tiles, tile => Assert.False(tile.HasStrip));
+        Assert.All(viewer.Tiles, tile => Assert.False(tile.CanStep));
+    }
+
+    /// <summary>The arrows walk the playing streams in tile order and wrap at either end.</summary>
+    [Fact]
+    public void TheArrowsWalkTheStageThroughEveryStream()
+    {
+        var viewer = Grid("one", "two", "three");
+
+        Tile(viewer, "one").StageNext.Execute(null);
+        Assert.Equal("two", viewer.Focused);
+
+        Tile(viewer, "two").StageNext.Execute(null);
+        Tile(viewer, "three").StageNext.Execute(null);
+        Assert.Equal("one", viewer.Focused);
+
+        Tile(viewer, "one").StagePrevious.Execute(null);
+        Assert.Equal("three", viewer.Focused);
+    }
+
+    /// <summary>A hidden strip stays hidden while the arrows change the stream on the stage.</summary>
+    [Fact]
+    public void AStepKeepsTheStripHidden()
+    {
+        var viewer = Grid("one", "two");
+
+        Tile(viewer, "one").ToggleStrip.Execute(null);
+        Tile(viewer, "one").StageNext.Execute(null);
+
+        Assert.Equal(LayoutMode.Stage, viewer.Mode);
+        Assert.Equal("two", viewer.Focused);
+        Assert.True(Tile(viewer, "two").StripHidden);
+    }
+
+    /// <summary>One playing stream has nothing to step to, a stopped one beside it waiting for its own press.</summary>
+    [Fact]
+    public void AStageWithOneStreamOffersNoArrows()
+    {
+        var viewer = Grid("one", "two");
+
+        Tile(viewer, "two").Close.Execute(null);
+
+        Assert.Equal("one", viewer.Focused);
+        Assert.True(Tile(viewer, "one").HasStrip);
+        Assert.False(Tile(viewer, "one").CanStep);
+        Assert.False(Tile(viewer, "one").StageNext.CanExecute(null));
+    }
+
     /// <summary>Slot stops the grid reflowing on a pop-out, and is what the stream comes back into.</summary>
     [Fact]
     public void APoppedOutStreamKeepsItsSlot()

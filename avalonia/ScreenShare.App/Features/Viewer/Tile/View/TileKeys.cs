@@ -13,7 +13,7 @@ namespace ScreenShare.App.Features.Viewer.Tile.View;
 /// A gesture in the markup with a switch over <see cref="Key"/> beside it would be two answers to what F does,
 /// and the menu would keep printing the stale one until somebody compared them.
 ///
-/// Each key but the stop names a state, so pressing it twice is a round trip.
+/// Each key but the stop and the two stage steps names a state, so pressing it twice is a round trip.
 /// The tone-map row carries none: it rebuilds the decode and blanks the tile for as long as that takes,
 /// too much for one letter under a resting pointer.
 /// </summary>
@@ -43,6 +43,16 @@ public static class TileKeys
     /// </summary>
     public static KeyGesture StopWatching { get; } = new(Key.X);
 
+    public static KeyGesture Strip { get; } = new(Key.H);
+
+    /// <summary>
+    /// One stream along, with the pointer over the stage.
+    /// A step and no state, so a second press moves the stage again.
+    /// </summary>
+    public static KeyGesture StageNext { get; } = new(Key.Right);
+
+    public static KeyGesture StagePrevious { get; } = new(Key.Left);
+
     /// <summary>
     /// Same key where the layout prints + above =, so the character costs a Shift.
     /// Modifiers are part of a gesture, so a shifted press is a different gesture:
@@ -62,6 +72,9 @@ public static class TileKeys
         (ShiftedLouder, tile => tile.Louder),
         (Quieter, tile => tile.Quieter),
         (StopWatching, tile => tile.Close),
+        (Strip, tile => tile.ToggleStrip),
+        (StageNext, tile => tile.StageNext),
+        (StagePrevious, tile => tile.StagePrevious),
     ];
 
     /// <summary>
