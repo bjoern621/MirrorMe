@@ -341,13 +341,14 @@
   <!--
     A side edge of the stage as the target, the full height of the picture.
     Nothing shows until the pointer enters the edge: the picture stays whole for whoever watches it.
-    Under the pointer a shade fades in from the side and a round disc grows in around the glyph.
-    The press darkens the disc, squeezes it, and leans the glyph the way the stage steps.
+    Under the pointer an arc of shade fades in against the side, as a double tap on a phone's video player shows,
+    and a round disc grows in around the glyph.
+    The press darkens both, squeezes the disc and leans the glyph the way the stage steps.
 
-    Its own template, the shared skin's single box having no layer to fade a gradient on:
-    a gradient brush switches at the midpoint of a fill fade (Controls/Motion/BrushFade.cs),
-    so the shade fades by its opacity.
-    The sides differ in the shade's brush and the lean alone.
+    Its own template, the shared skin's single box having no curve to draw.
+    The arc comes from an ellipse twice the edge's width, centred on the outer side and clipped by the edge,
+    taller than the picture so its top and bottom curve too.
+    The sides differ in which side the ellipse centres on and the lean alone.
   -->
   <ControlTheme x:Key="EdgeButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
     <Setter Property="Background" Value="Transparent" />
@@ -359,14 +360,18 @@
     <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
     <Setter Property="Template">
       <ControlTemplate>
-        <Panel Background="Transparent">
-          <Border Name="Shade" Background="{TemplateBinding Background}" Opacity="0">
-            <Border.Transitions>
+        <Panel Background="Transparent" ClipToBounds="True">
+          <Ellipse Name="Shade"
+                   Width="{StaticResource StageArcWidth}"
+                   Fill="{StaticResource StageArcBrush}"
+                   Opacity="0">
+            <Ellipse.Transitions>
               <Transitions>
                 <DoubleTransition Property="Opacity" Duration="{StaticResource MotionMount}" Easing="{StaticResource MotionEase}" />
+                <controls:BrushFade Property="Fill" Duration="{StaticResource MotionPress}" Easing="{StaticResource MotionEase}" />
               </Transitions>
-            </Border.Transitions>
-          </Border>
+            </Ellipse.Transitions>
+          </Ellipse>
           <Border Name="Disc"
                   Width="{StaticResource StageDiscSize}"
                   Height="{StaticResource StageDiscSize}"
@@ -400,8 +405,11 @@
       </ControlTemplate>
     </Setter>
 
-    <Style Selector="^:pointerover /template/ Border#Shade">
+    <Style Selector="^:pointerover /template/ Ellipse#Shade">
       <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="^:pressed /template/ Ellipse#Shade">
+      <Setter Property="Fill" Value="{StaticResource StageArcPressedBrush}" />
     </Style>
     <Style Selector="^:pointerover /template/ Border#Disc">
       <Setter Property="Opacity" Value="1" />
@@ -415,7 +423,10 @@
 
   <ControlTheme x:Key="EdgeButtonLeft" TargetType="Button" BasedOn="{StaticResource EdgeButton}">
     <Setter Property="HorizontalAlignment" Value="Left" />
-    <Setter Property="Background" Value="{StaticResource StageEdgeLeftBrush}" />
+    <Style Selector="^ /template/ Ellipse#Shade">
+      <Setter Property="HorizontalAlignment" Value="Left" />
+      <Setter Property="Margin" Value="{StaticResource StageArcLeftMargin}" />
+    </Style>
     <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="RenderTransform" Value="translateX(-3px)" />
     </Style>
@@ -423,7 +434,10 @@
 
   <ControlTheme x:Key="EdgeButtonRight" TargetType="Button" BasedOn="{StaticResource EdgeButton}">
     <Setter Property="HorizontalAlignment" Value="Right" />
-    <Setter Property="Background" Value="{StaticResource StageEdgeRightBrush}" />
+    <Style Selector="^ /template/ Ellipse#Shade">
+      <Setter Property="HorizontalAlignment" Value="Right" />
+      <Setter Property="Margin" Value="{StaticResource StageArcRightMargin}" />
+    </Style>
     <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="RenderTransform" Value="translateX(3px)" />
     </Style>

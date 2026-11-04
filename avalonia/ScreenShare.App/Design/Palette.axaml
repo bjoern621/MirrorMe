@@ -120,18 +120,11 @@
   <SolidColorBrush x:Key="ZoomWindowBrush" Color="#55FFFFFF" />
 
   <!--
-    Under a pointer at the stage's side edge: black fading in from that edge,
-    so the picture darkens where the press lands and keeps its hue.
-    Softer than the scrim, the disc on it carrying the glyph.
+    The arc of shade under a pointer at the stage's side edge, black at a third so the picture keeps its hue.
+    Darker under the press, every press answering with a darker fill.
   -->
-  <LinearGradientBrush x:Key="StageEdgeLeftBrush" StartPoint="0%,50%" EndPoint="100%,50%">
-    <GradientStop Offset="0" Color="#66000000" />
-    <GradientStop Offset="1" Color="#00000000" />
-  </LinearGradientBrush>
-  <LinearGradientBrush x:Key="StageEdgeRightBrush" StartPoint="100%,50%" EndPoint="0%,50%">
-    <GradientStop Offset="0" Color="#66000000" />
-    <GradientStop Offset="1" Color="#00000000" />
-  </LinearGradientBrush>
+  <SolidColorBrush x:Key="StageArcBrush" Color="#4D000000" />
+  <SolidColorBrush x:Key="StageArcPressedBrush" Color="#73000000" />
 
   <!-- The disc on a stage edge under the press, darker than the scrim it wears on hover. -->
   <SolidColorBrush x:Key="StageDiscPressedBrush" Color="#CC000000" />
