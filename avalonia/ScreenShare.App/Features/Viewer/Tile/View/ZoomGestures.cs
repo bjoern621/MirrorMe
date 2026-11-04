@@ -27,6 +27,9 @@ internal sealed class ZoomGestures
     /// <summary>Pointer travel, in card pixels, past which a press on a zoomed picture drags it rather than clicking it.</summary>
     private const double DragThreshold = 4;
 
+    /// <summary>Card pixels a pan moves per unit of a finger scroll, which Wayland sends without the pointer's acceleration.</summary>
+    private const double PanPerScrollUnit = 3;
+
     private readonly Control _frame;
     private readonly Func<bool> _zoomable;
     private readonly Func<TileZoom> _read;
@@ -112,7 +115,7 @@ internal sealed class ZoomGestures
                 {
                     return;
                 }
-                _write(_read().Panned(e.Delta, size));
+                _write(_read().Panned(e.Delta * PanPerScrollUnit, size));
                 break;
             default:
                 Assert.Never("unexpected scroll meaning", (int)meaning);
