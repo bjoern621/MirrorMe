@@ -127,7 +127,7 @@ public static class Cards
     public const string ViewersNone = "Nobody is connected to this stream yet.";
 
     public const string ViewersUnnamed =
-        "The relay counts viewers without naming them, so the count above is all there is.";
+        "This relay reports a viewer count only. It shares no names or connection figures.";
 
     /// <summary>
     /// What the wizard says before the backend has described this machine.

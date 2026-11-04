@@ -54,7 +54,7 @@
                  Text="{Binding Notice}"
                  IsVisible="{Binding !HasRows}"
                  TextWrapping="Wrap"
-                 Margin="13,4,13,15" />
+                 Margin="13,11" />
 
       <Border DockPanel.Dock="Top"
               Background="{StaticResource PanelBrush}"
