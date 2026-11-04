@@ -10,13 +10,13 @@ import (
 )
 
 func TestViewingStatesEveryRunningDecodeWithItsFigures(t *testing.T) {
-	path, total, shown, shed := 41.5, 88.0, 59.8, 0.2
+	path, arrive, total, shown, shed := 41.5, 20.0, 88.0, 59.8, 0.2
 	sample := []wire.ReceiveStreamStats{
 		{
 			Stream:       wire.StreamRef{StreamName: "Bob/screen", Transport: "rtsp"},
 			RenderFPS:    &shown,
 			DiscardedFPS: &shed,
-			Delay:        wire.DelayBudget{Path: &path, Total: &total},
+			Delay:        wire.DelayBudget{Path: &path, Arrive: &arrive, Total: &total},
 		},
 		{Stream: wire.StreamRef{StreamName: "Carol/game", Transport: "srt"}},
 	}
@@ -30,7 +30,7 @@ func TestViewingStatesEveryRunningDecodeWithItsFigures(t *testing.T) {
 	if bob.Path != "G/Bob/screen" || bob.Transport != "rtsp" {
 		t.Errorf("first viewing names %s over %s, want G/Bob/screen over rtsp", bob.Path, bob.Transport)
 	}
-	if *bob.PathMs != path || *bob.TotalMs != total || *bob.ShownFPS != shown || *bob.DroppedFPS != shed {
+	if *bob.PathMs != path+arrive || *bob.TotalMs != total || *bob.ShownFPS != shown || *bob.DroppedFPS != shed {
 		t.Errorf("figures stated as %+v", bob)
 	}
 	carol := viewing[1]
@@ -93,5 +93,15 @@ func TestAStatementWaitsOutTheIntervalUnlessItEndsTheViewing(t *testing.T) {
 	}
 	if !shouldStateViewing(nil, stated, stated.Add(viewingInterval/2)) {
 		t.Error("the empty sample ending the viewing waited for the interval")
+	}
+}
+
+func TestAWayHereWithNoBufferingReadingIsThePathAlone(t *testing.T) {
+	path := 41.5
+	if way := wayHereOf(wire.DelayBudget{Path: &path}); way == nil || *way != path {
+		t.Errorf("way here = %v, want the path", way)
+	}
+	if way := wayHereOf(wire.DelayBudget{}); way != nil {
+		t.Errorf("way here of an unstamped stream = %v, want it absent", *way)
 	}
 }

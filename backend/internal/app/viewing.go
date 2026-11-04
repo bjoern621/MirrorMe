@@ -20,6 +20,16 @@ type viewerService interface {
 	Viewers(base, token, path string) ([]watchsvc.Viewer, error)
 }
 
+// wayHereOf is encoder to decoder, the buffering row included.
+// Absent on a stream carrying no stamp.
+func wayHereOf(budget wire.DelayBudget) *float64 {
+	if budget.Path == nil || budget.Arrive == nil {
+		return budget.Path
+	}
+	way := *budget.Path + *budget.Arrive
+	return &way
+}
+
 // viewingOf turns one receive sample into the set watchd takes, one viewing per running decode.
 // pathOf puts the group's prefix back on a stream's name.
 // An empty sample states an empty set, which clears this member at watchd.
@@ -29,7 +39,7 @@ func viewingOf(sample []wire.ReceiveStreamStats, pathOf func(streamName string) 
 		viewing = append(viewing, watchsvc.Viewing{
 			Path:       pathOf(s.Stream.StreamName),
 			Transport:  s.Stream.Transport,
-			PathMs:     s.Delay.Path,
+			PathMs:     wayHereOf(s.Delay),
 			TotalMs:    s.Delay.Total,
 			ShownFPS:   s.RenderFPS,
 			DroppedFPS: s.DiscardedFPS,
