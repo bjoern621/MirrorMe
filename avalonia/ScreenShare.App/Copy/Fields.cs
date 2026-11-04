@@ -44,9 +44,6 @@ public static class Fields
     /// <summary>Entries held back, beside a disclosure: the figure says whether opening it is worth the trip.</summary>
     public static string OptionCount(int count) => count == 1 ? "1 option" : $"{count} options";
 
-    /// <summary>Foot of an open expert control, naming the control its press opens.</summary>
-    public static string NextControl(string label) => $"Next: {label}";
-
     /// <summary>
     /// One control's copy.
     /// <c>Doc</c> is the article for the concept, where one exists.

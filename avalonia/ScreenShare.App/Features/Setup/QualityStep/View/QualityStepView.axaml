@@ -212,21 +212,9 @@
                     </controls:Reveal>
                     <controls:Reveal IsOpen="{Binding IsOpen}">
                       <ContentControl Classes="expert"
-                                      Margin="7,4,7,0"
+                                      Margin="7,4,7,10"
                                       Content="{Binding Field}"
                                       ContentTemplate="{StaticResource FieldRow}" />
-                    </controls:Reveal>
-                    <controls:Reveal IsOpen="{Binding IsOpen}">
-                      <Button Margin="7,8,7,8"
-                              HorizontalAlignment="Right"
-                              Theme="{StaticResource LinkButton}"
-                              IsVisible="{Binding HasNext}"
-                              Command="{Binding Next}">
-                        <StackPanel Orientation="Horizontal" Spacing="4">
-                          <TextBlock Classes="secondary" VerticalAlignment="Center" Text="{Binding NextLabel}" />
-                          <ti:TablerIcon Icon="IconArrowRight" Brush="{StaticResource MutedBrush}" VerticalAlignment="Center" />
-                        </StackPanel>
-                      </Button>
                     </controls:Reveal>
                   </StackPanel>
                 </Border>
