@@ -559,3 +559,25 @@ func TestOnlyAFollowedFormNamesThePresetOwnedFields(t *testing.T) {
 		t.Errorf("a detached form names %v as preset-owned, want none", got)
 	}
 }
+
+// A size picked before the preset was followed stays out of its find:
+// balanced sends the screen at its own size, which is the picture it promises.
+func TestBalancedSendsTheScreenAtItsOwnSize(t *testing.T) {
+	deps := Deps{
+		Platform: platform.Info{OS: "linux", Display: "wayland"},
+		Monitors: []display.Monitor{{Index: 0, Width: 2944, Height: 1840}},
+	}
+	deps.Encoders = presetOnlyFamilies(capabilities.FamilyVaapi)
+
+	s := availabilityDraft("portal", "h264_vaapi", "yuv420p", "srt")
+	s.Publish.OutputResolution = "1152x720"
+	s, _ = Repair(deps, s)
+
+	reached, ok := presetResolve(deps, presetOf(t, settings.PresetBalanced), s)
+	if !ok {
+		t.Fatal("balanced reaches nothing on a VAAPI machine")
+	}
+	if reached.Publish.OutputResolution != "" {
+		t.Errorf("balanced resolved to %q, want the screen's own size", reached.Publish.OutputResolution)
+	}
+}

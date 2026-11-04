@@ -10,7 +10,7 @@ A stored set of field values can only be right on the machine it was written on.
 So the table states the goal, and a search finds a configuration for it here.
 
 `balanced`, `lossless`, `gaming` and `readability` are declared beside the capability table the search walks and the repair it holds every candidate to (`ipc-api.md`).
-A fresh installation follows `balanced`: H.264, the one bitstream every transport carries and every viewer decodes, quarter-resolution chroma, a hardware encoder where one runs and x264 behind it.
+A fresh installation follows `balanced`: H.264, the one bitstream every transport carries and every viewer decodes, the screen at its own size, quarter-resolution chroma, a hardware encoder where one runs and x264 behind it.
 Its target spends a share of the measured line and takes a conservative figure while none is recorded, since the stated uplink is a guess until a measurement stands behind it (`settings.Publish.UplinkMeasuredUnix`).
 
 They reach a surface on the resolved form, one entry per preset: the settings applying it would produce here, or the reason nothing here reaches it, and whether the draft follows it (`form.proto`, `BuiltinPreset`).

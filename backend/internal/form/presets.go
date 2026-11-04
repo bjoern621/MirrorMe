@@ -84,6 +84,8 @@ type presetClaim struct {
 	modes       []string
 	chromas     []string
 	colorRanges []string
+	// outputResolutions are the output sizes the promise survives, the empty value being the screen's own.
+	outputResolutions []string
 
 	fps     *presetRange
 	bframes *presetRange
@@ -107,6 +109,10 @@ var presetEnumAxes = []struct {
 	{
 		of:      func(p settings.Publish) string { return p.ColorRange },
 		allowed: func(c presetClaim) []string { return c.colorRanges },
+	},
+	{
+		of:      func(p settings.Publish) string { return p.OutputResolution },
+		allowed: func(c presetClaim) []string { return c.outputResolutions },
 	},
 }
 
@@ -166,6 +172,8 @@ var presetTable = []preset{
 			// whose only encode is one of them.
 			modes: []string{capabilities.ModeVbr, capabilities.ModeCbr, capabilities.ModeAbr},
 			fps:   &presetRange{min: 30, max: 60},
+			// The screen at its own size: a scaled-down picture blurs the text a desktop stream is watched for.
+			outputResolutions: []string{""},
 		},
 		// H.264 alone: the one bitstream every transport row carries and every viewer decodes,
 		// which is the reach a first stream is judged by.
@@ -173,6 +181,7 @@ var presetTable = []preset{
 		base: func(p settings.Publish) settings.Publish {
 			p.Mode = capabilities.ModeVbr
 			p.Fps = 60
+			p.OutputResolution = ""
 			p.Gop = 0
 			p.Bframes = 0
 			p.BitrateM = balancedBitrate(p)
