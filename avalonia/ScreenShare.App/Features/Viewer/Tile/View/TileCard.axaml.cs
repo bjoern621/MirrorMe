@@ -138,13 +138,16 @@ public partial class TileCard : UserControl
     ///
     /// The handler goes on the window because keys arrive at whatever holds the keyboard, which a tile never does:
     /// taking focus on hover would steal it from whatever was being typed in.
+    /// It listens on the tunnel, ahead of the control holding the keyboard:
+    /// on the bubble the nav strip's list, focused by the click that opened the viewer, takes Left and Right
+    /// as a move to the next destination.
     /// </summary>
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
 
         _root = TopLevel.GetTopLevel(this);
-        _root?.AddHandler(KeyDownEvent, OnKeyPressed, RoutingStrategies.Bubble);
+        _root?.AddHandler(KeyDownEvent, OnKeyPressed, RoutingStrategies.Tunnel);
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
