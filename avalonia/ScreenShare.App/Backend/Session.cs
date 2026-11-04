@@ -4,7 +4,7 @@ using ScreenShare.App.Copy;
 
 namespace ScreenShare.App.Backend;
 
-/// <summary>One encoder sample, stamped on arrival by this shell's clock so a chart lines it up with the timeline's marks.</summary>
+/// <summary>One encoder sample, stamped on arrival by this shell's clock.</summary>
 public sealed record PublishReading(PublishStats Stats, DateTimeOffset At);
 
 /// <summary>

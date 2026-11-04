@@ -342,7 +342,7 @@ func (a *App) launchLocked(s settings.Settings, attempts int) error {
 			}
 			a.takePublishDelay(run, stats)
 			a.emit(wire.PublishStatsEvent(stats))
-			if a.timeline.Sample(time.Now(), stats.Fps) {
+			if a.timeline.Sample(stats.Fps) {
 				a.emitTimeline()
 			}
 		},

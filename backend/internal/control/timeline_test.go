@@ -16,7 +16,6 @@ func TestReadingTheStreamTimelineAnswersTheJudgedRun(t *testing.T) {
 	backend := &fakeBackend{timeline: timeline.Snapshot{
 		Level:     screensharev1.StreamVerdict_LEVEL_DISAPPOINTS,
 		StartedAt: started,
-		Events:    []timeline.Event{{Kind: screensharev1.StreamEvent_KIND_RESTART, At: started.Add(time.Second)}},
 	}}
 	server := New(backend, events.New(), "test")
 
@@ -24,8 +23,7 @@ func TestReadingTheStreamTimelineAnswersTheJudgedRun(t *testing.T) {
 	if got.GetVerdict().GetLevel() != screensharev1.StreamVerdict_LEVEL_DISAPPOINTS {
 		t.Errorf("verdict reads %v, want the judged level", got.GetVerdict().GetLevel())
 	}
-	if got.GetStartedAtUnixMillis() != started.UnixMilli() || len(got.GetEvents()) != 1 ||
-		got.GetEvents()[0].GetAtUnixMillis() != started.Add(time.Second).UnixMilli() {
-		t.Errorf("run reads %v, want its start and its one restart", got)
+	if got.GetStartedAtUnixMillis() != started.UnixMilli() {
+		t.Errorf("run reads %v, want its start", got)
 	}
 }

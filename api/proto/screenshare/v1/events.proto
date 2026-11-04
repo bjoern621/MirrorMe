@@ -733,15 +733,16 @@ message Event {
   reserved "grid_state", "grid_exit", "show_settings";
 }
 
-// One publish run as a viewer would judge it: a verdict on the stream now,
-// and the events that moved it since the run started.
-// Judged by the backend, which holds the stream; a shell draws the verdict and places the events.
+// One publish run as a viewer would judge it.
+// Judged by the backend, which holds the stream; a shell draws the verdict.
 message StreamTimeline {
   StreamVerdict verdict = 1;
-  // Oldest first, capped at the most recent events of the run.
-  repeated StreamEvent events = 2;
-  // When the run the events belong to started. Zero while no run has started.
+  // When the run started. Zero while no run has started.
   int64 started_at_unix_millis = 3;
+
+  // 2 was events, the run's dips, restarts, joins and leaves, which a shell marked under its chart.
+  reserved 2;
+  reserved "events";
 }
 
 message StreamVerdict {
@@ -762,25 +763,4 @@ message StreamVerdict {
   string message = 3;
   // Full log of the run that stopped, empty otherwise.
   string log_path = 4;
-}
-
-message StreamEvent {
-  enum Kind {
-    KIND_UNSPECIFIED = 0;
-    // The encoder's frame rate fell under target long enough for a viewer to see it.
-    KIND_DIP = 1;
-    // The pipeline ended and a retry relaunches it.
-    KIND_RESTART = 2;
-    // A member came into the group.
-    KIND_JOIN = 3;
-    // A member left the group.
-    KIND_LEAVE = 4;
-  }
-  Kind kind = 1;
-  int64 at_unix_millis = 2;
-  // The member, on a join or a leave.
-  string who = 3;
-  // On a dip: the lowest frame rate it reached and the target it fell from.
-  double fps = 4;
-  double target_fps = 5;
 }

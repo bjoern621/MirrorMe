@@ -9,6 +9,4 @@ const (
 	RECOVER_SHARE = 0.9
 	// Slow readings in a row that open a dip. The encoder reports about once a second.
 	DIP_SAMPLES = 2
-	// MAX_EVENTS caps the events kept per run, the oldest dropped first.
-	MAX_EVENTS = 200
 )

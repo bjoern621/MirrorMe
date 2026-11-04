@@ -19,16 +19,6 @@ Capture rate stays out, a still screen producing no new pictures while the viewe
 A stopped run carries the pipeline's own words and its log path, and keeps them until the next start.
 A stop the user asked for clears the run.
 
-## Marks
-
-Each run keeps the marks that moved it, oldest first, the most recent 200.
-
-| Mark | Carries |
-| --- | --- |
-| dip | when it began, the lowest rate it reached and the target |
-| restart | when the pipeline ended |
-| join, leave | the member, against the group's first reading of the run |
-
 `Read stream_timeline` reads the run and `stream_timeline` pushes it whole on every change.
 
 ## Screen
@@ -37,7 +27,7 @@ Header: what is shared and to which group, the way it travels and the running ti
 Under it the verdict, then two tabs.
 
 Stream tab: the preview, a card per figure and a chart of the picked card over one minute, five minutes or the whole run.
-Each card holds its newest value against its limit, and the chart marks every moment the run kept.
+Each card holds its newest value against its limit.
 The chart's axis spans two round steps around the readings and the limit, and a stretch past the limit draws in amber.
 
 | Figure | Limit |

@@ -224,7 +224,7 @@ public sealed class InsightsViewModel : Observable
         Preview.Apply();
 
         var limits = new Limits(live?.Publish.Fps is > 0 and var fps ? fps : null, reading.VbvCeilingMbps);
-        Chart.Apply(_session.Samples, reading, limits, _session.Timeline?.Events ?? []);
+        Chart.Apply(_session.Samples, reading, limits);
 
         Viewers.Reported = Watching(_session.Relay, reading.Stream);
         Viewers.Readers = reading.Viewers;

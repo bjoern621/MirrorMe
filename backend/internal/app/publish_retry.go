@@ -128,7 +128,7 @@ func (a *App) publishEnded(run *publishRun, err error, stderrTail string, logPat
 	spent, wait, retrying := publishRetryAfter(err, time.Since(run.startedAt), run.attempts)
 	if retrying {
 		a.scheduleRetryLocked(run.settings, spent, wait, cause, message)
-		a.timeline.Restart(time.Now(), cause)
+		a.timeline.Restart(cause)
 	} else if err != nil {
 		// A followed preset's stream walks to the preset's next transport on a fresh budget
 		// where this leg spent its own: the exit alone cannot tell a blocked path from a dead
@@ -143,7 +143,7 @@ func (a *App) publishEnded(run *publishRun, err error, stderrTail string, logPat
 				text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_NEXT_TRANSPORT, next))
 			retrying = true
 			a.scheduleRetryLocked(walked, 0, publishBackoff[0], cause, message)
-			a.timeline.Restart(time.Now(), cause)
+			a.timeline.Restart(cause)
 		}
 	}
 	// The relaunch is the one thing the held screen source is held for,
@@ -156,7 +156,7 @@ func (a *App) publishEnded(run *publishRun, err error, stderrTail string, logPat
 			message = fmt.Sprintf("%s (gave up after %d retries)", message, spent)
 		}
 		if err != nil {
-			a.timeline.Stop(time.Now(), cause, message, logPath)
+			a.timeline.Stop(cause, message, logPath)
 		} else {
 			a.timeline.End()
 		}
@@ -215,7 +215,7 @@ func (a *App) firePublishRetry(r *publishRetry) {
 		// No connection was opened, so nothing here is the relay closing one:
 		// the trade's own statement says what happened, outranked where membership stopped the trade.
 		cause, words := exitFailure(err, "", a.membership().failure())
-		a.timeline.Stop(time.Now(), cause, words, "")
+		a.timeline.Stop(cause, words, "")
 		a.emit(wire.PublishExitEvent(words, "", cause))
 		a.emitPublishState()
 		return
@@ -238,7 +238,7 @@ func (a *App) firePublishRetry(r *publishRetry) {
 		// and it ends here rather than on a budget nothing is spending.
 		logger.Warnf("retry %d of the publish of '%s' did not start: %v", r.attempts, r.settings.Publish.Name(), err)
 		cause, words := exitFailure(err, "", a.membership().failure())
-		a.timeline.Stop(time.Now(), cause, words, "")
+		a.timeline.Stop(cause, words, "")
 		a.emit(wire.PublishExitEvent(words, "", cause))
 	}
 	a.emitPublishState()

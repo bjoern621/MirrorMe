@@ -7,9 +7,6 @@ using ScreenShare.App.Features.Insights.Model;
 
 namespace ScreenShare.App.Features.Insights.Chart.Model;
 
-/// <summary>A timeline mark placed on the chart. At: seconds from the left edge.</summary>
-public sealed record ChartMark(double At, string Label);
-
 /// <summary>What the chart header states for the span drawn. Worst: the low of a frame rate, the peak of the rest.</summary>
 public sealed record ChartSummary(double? Average, double? Worst);
 
@@ -25,10 +22,9 @@ public sealed record ChartPlot(
     double Bottom,
     double Top,
     double? Limit,
-    ChartSummary Summary,
-    IReadOnlyList<ChartMark> Marks)
+    ChartSummary Summary)
 {
-    public static readonly ChartPlot Empty = new([], [], ChartPlots.MinimumSpanSeconds, 0, 1, null, new(null, null), []);
+    public static readonly ChartPlot Empty = new([], [], ChartPlots.MinimumSpanSeconds, 0, 1, null, new(null, null));
 }
 
 /// <summary>Every card's figure at one reading, the one place the three meet.</summary>
@@ -59,15 +55,9 @@ public static class ChartPlots
         Metrics.Of(MetricKey.EncodeTime).Print(WidestValue),
         Metrics.Of(MetricKey.Bitrate).Print(WidestValue));
 
-    public static ChartPlot Of(
-        IReadOnlyList<PublishReading> readings,
-        Metric metric,
-        Limits limits,
-        ChartRange range,
-        IReadOnlyList<StreamEvent> events)
+    public static ChartPlot Of(IReadOnlyList<PublishReading> readings, Metric metric, Limits limits, ChartRange range)
     {
         Assert.NotNull(readings, "a chart is drawn from the readings the session kept");
-        Assert.NotNull(events, "a chart marks the timeline's events");
 
         if (readings.Count == 0)
         {
@@ -97,7 +87,7 @@ public static class ChartPlots
             values.Count == 0 ? null : metric.LowIsBad ? values.Min() : values.Max());
         var (bottom, top) = Axis(values, limit);
 
-        var plot = new ChartPlot(points, pastAt, span, bottom, top, limit, summary, Marks(events, start, span));
+        var plot = new ChartPlot(points, pastAt, span, bottom, top, limit, summary);
 
         Assert.That(plot.Points.All(point => point.X >= 0 && point.X <= span), "every point sits inside the span", span);
         Assert.That(plot.Past.Count == plot.Points.Count, "every point carries its past flag", plot.Points.Count);
@@ -143,32 +133,6 @@ public static class ChartPlots
             ?? Math.Max(MinimumSpanSeconds, (end - readings[0].At).TotalSeconds);
         return (end.AddSeconds(-span), span);
     }
-
-    private static IReadOnlyList<ChartMark> Marks(IReadOnlyList<StreamEvent> events, DateTimeOffset start, double span)
-    {
-        var marks = new List<ChartMark>();
-        foreach (var e in events)
-        {
-            var at = (DateTimeOffset.FromUnixTimeMilliseconds(e.AtUnixMillis) - start).TotalSeconds;
-            if (at < 0 || at > span)
-            {
-                continue;
-            }
-
-            marks.Add(new ChartMark(at, Label(e)));
-        }
-
-        return marks;
-    }
-
-    private static string Label(StreamEvent e) => e.Kind switch
-    {
-        StreamEvent.Types.Kind.Join => $"{e.Who} joined",
-        StreamEvent.Types.Kind.Leave => $"{e.Who} left",
-        StreamEvent.Types.Kind.Dip => $"Fell to {e.Fps:0} fps",
-        StreamEvent.Types.Kind.Restart => "Restarted",
-        _ => Assert.Never<string>("every timeline event kind has a label", e.Kind),
-    };
 
     private static string Print(MetricKey key, PublishStats stats)
     {

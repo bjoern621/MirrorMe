@@ -4,13 +4,12 @@ using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Media;
-using ScreenShare.App.Features.Insights.Chart.Model;
 
 namespace ScreenShare.App.Features.Insights.Chart.View;
 
 /// <summary>
-/// One series over time: three gridlines labelled on the left, the limit as a dashed rule,
-/// the timeline's marks along the foot, and a rule where the pointer rests.
+/// One series over time: three gridlines labelled on the left, the limit as a dashed rule
+/// and a rule where the pointer rests.
 /// Points come in the source space that Extent names: X in seconds from 0, Y in the figure's unit from Extent.Y up.
 /// A segment touching a reading past the limit takes PastBrush.
 /// A press pins the pointer's moment, a touch screen having no hover.
@@ -31,9 +30,6 @@ public sealed class TimeChart : Control
 
     public static readonly StyledProperty<string> LimitLabelProperty =
         AvaloniaProperty.Register<TimeChart, string>(nameof(LimitLabel), "");
-
-    public static readonly StyledProperty<IReadOnlyList<ChartMark>?> MarksProperty =
-        AvaloniaProperty.Register<TimeChart, IReadOnlyList<ChartMark>?>(nameof(Marks));
 
     public static readonly StyledProperty<double> HoverSecondsProperty =
         AvaloniaProperty.Register<TimeChart, double>(nameof(HoverSeconds), double.NaN,
@@ -60,8 +56,8 @@ public sealed class TimeChart : Control
     /// <summary>Width of the axis labels on the left, px.</summary>
     private const double Gutter = 30;
 
-    /// <summary>Height of the marks band at the foot, px.</summary>
-    private const double MarkBand = 22;
+    /// <summary>Room under the bottom gridline for its axis label, px.</summary>
+    private const double FootBand = 8;
 
     /// <summary>Room above the top gridline for the limit's label, px.</summary>
     private const double TopBand = 16;
@@ -71,7 +67,7 @@ public sealed class TimeChart : Control
     private bool _pinned;
 
     static TimeChart() => AffectsRender<TimeChart>(
-        PointsProperty, PastProperty, ExtentProperty, LimitFractionProperty, LimitLabelProperty, MarksProperty,
+        PointsProperty, PastProperty, ExtentProperty, LimitFractionProperty, LimitLabelProperty,
         HoverSecondsProperty, StrokeProperty, FillProperty, GridBrushProperty, LimitBrushProperty, LabelBrushProperty,
         PastBrushProperty);
 
@@ -84,8 +80,6 @@ public sealed class TimeChart : Control
     public double LimitFraction { get => GetValue(LimitFractionProperty); set => SetValue(LimitFractionProperty, value); }
 
     public string LimitLabel { get => GetValue(LimitLabelProperty); set => SetValue(LimitLabelProperty, value); }
-
-    public IReadOnlyList<ChartMark>? Marks { get => GetValue(MarksProperty); set => SetValue(MarksProperty, value); }
 
     public double HoverSeconds { get => GetValue(HoverSecondsProperty); set => SetValue(HoverSecondsProperty, value); }
 
@@ -101,7 +95,7 @@ public sealed class TimeChart : Control
 
     public IBrush? PastBrush { get => GetValue(PastBrushProperty); set => SetValue(PastBrushProperty, value); }
 
-    private Rect Plot => new(Gutter, TopBand, Math.Max(0, Bounds.Width - Gutter), Math.Max(0, Bounds.Height - MarkBand - TopBand));
+    private Rect Plot => new(Gutter, TopBand, Math.Max(0, Bounds.Width - Gutter), Math.Max(0, Bounds.Height - FootBand - TopBand));
 
     public override void Render(DrawingContext context)
     {
@@ -117,7 +111,6 @@ public sealed class TimeChart : Control
         DrawGrid(context, plot);
         DrawSeries(context, plot);
         DrawLimit(context, plot);
-        DrawMarks(context, plot);
         DrawHover(context, plot);
     }
 
@@ -243,38 +236,6 @@ public sealed class TimeChart : Control
 
         var label = Text(LimitLabel, LimitBrush);
         context.DrawText(label, new Point(plot.Right - label.Width - 4, y - label.Height - 1));
-    }
-
-    private void DrawMarks(DrawingContext context, Rect plot)
-    {
-        if (Marks is not { Count: > 0 } marks)
-        {
-            return;
-        }
-
-        var xs = marks.Select(mark => plot.Left + mark.At / Extent.Width * plot.Width).ToList();
-        foreach (var x in xs)
-        {
-            context.DrawEllipse(LabelBrush, null, new Point(x, plot.Bottom + 10), 2.5, 2.5);
-        }
-
-        // A label sits right of its dot, or left where the edge cuts it off.
-        // One that would cover another label or dot keeps its dot and drops its words.
-        var right = double.NegativeInfinity;
-        for (var i = 0; i < marks.Count; i++)
-        {
-            var x = xs[i];
-            var label = Text(marks[i].Label);
-            var left = Math.Max(plot.Left, x + 6 + label.Width <= plot.Right ? x + 6 : x - 6 - label.Width);
-            var covers = xs.Where((other, j) => j != i).Any(other => other > left - 4 && other < left + label.Width + 4);
-            if (left <= right || covers)
-            {
-                continue;
-            }
-
-            context.DrawText(label, new Point(left, plot.Bottom + 10 - label.Height / 2));
-            right = left + label.Width + 8;
-        }
     }
 
     private void DrawHover(DrawingContext context, Rect plot)

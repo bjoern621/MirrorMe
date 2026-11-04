@@ -8,7 +8,7 @@ namespace ScreenShare.App.Tests;
 
 /// <summary>
 /// The chart draws one figure over a span, against that figure's limit.
-/// Every point, summary and mark comes out of the readings and the timeline handed in.
+/// Every point and summary comes out of the readings handed in.
 /// </summary>
 public sealed class InsightsChartTests
 {
@@ -20,19 +20,12 @@ public sealed class InsightsChartTests
         new PublishStats { Fps = fps, TransitMs = transitMs, InstMbps = mbps },
         T0.AddSeconds(second));
 
-    private static StreamEvent Joined(string who, int second) => new()
-    {
-        Kind = StreamEvent.Types.Kind.Join,
-        Who = who,
-        AtUnixMillis = T0.AddSeconds(second).ToUnixTimeMilliseconds(),
-    };
-
     [Fact]
     public void AReadingOlderThanTheRangeLeavesThePlot()
     {
         var readings = new[] { Read(0, 60), Read(30, 60), Read(70, 60), Read(90, 60) };
 
-        var plot = ChartPlots.Of(readings, Metrics.Of(MetricKey.FrameRate), AtSixty, ChartRange.OneMinute, []);
+        var plot = ChartPlots.Of(readings, Metrics.Of(MetricKey.FrameRate), AtSixty, ChartRange.OneMinute);
 
         Assert.Equal(60, plot.Span);
         Assert.Equal([0.0, 40, 60], plot.Points.Select(point => point.X));
@@ -43,7 +36,7 @@ public sealed class InsightsChartTests
     {
         var readings = new[] { Read(0, 60), Read(200, 60), Read(400, 60) };
 
-        var plot = ChartPlots.Of(readings, Metrics.Of(MetricKey.FrameRate), AtSixty, ChartRange.Session, []);
+        var plot = ChartPlots.Of(readings, Metrics.Of(MetricKey.FrameRate), AtSixty, ChartRange.Session);
 
         Assert.Equal(400, plot.Span);
         Assert.Equal(3, plot.Points.Count);
@@ -54,7 +47,7 @@ public sealed class InsightsChartTests
     {
         var readings = new[] { Read(0, 60), Read(1, 48), Read(2, 50), Read(3, 60) };
 
-        var summary = ChartPlots.Of(readings, Metrics.Of(MetricKey.FrameRate), AtSixty, ChartRange.OneMinute, []).Summary;
+        var summary = ChartPlots.Of(readings, Metrics.Of(MetricKey.FrameRate), AtSixty, ChartRange.OneMinute).Summary;
 
         Assert.Equal(54.5, summary.Average);
         Assert.Equal(48, summary.Worst);
@@ -72,7 +65,7 @@ public sealed class InsightsChartTests
     public void AnUnboundedEncodeHasNoBitrateLimit()
     {
         var plot = ChartPlots.Of([Read(0, 60), Read(1, 60)], Metrics.Of(MetricKey.Bitrate),
-            AtSixty with { CeilingMbps = null }, ChartRange.OneMinute, []);
+            AtSixty with { CeilingMbps = null }, ChartRange.OneMinute);
 
         Assert.Null(plot.Limit);
         Assert.DoesNotContain(true, plot.Past);
@@ -82,7 +75,7 @@ public sealed class InsightsChartTests
     public void TheAxisHoldsBothThePeakAndTheLimit()
     {
         var plot = ChartPlots.Of([Read(0, 30), Read(1, 31)], Metrics.Of(MetricKey.FrameRate), AtSixty,
-            ChartRange.OneMinute, []);
+            ChartRange.OneMinute);
 
         Assert.True(plot.Top >= 60, $"top {plot.Top} leaves the target off the chart");
         Assert.True(plot.Bottom <= 30, $"bottom {plot.Bottom} leaves the low off the chart");
@@ -93,7 +86,7 @@ public sealed class InsightsChartTests
     public void AShallowDipIsDrawnOnAnAxisCloseAroundIt()
     {
         var plot = ChartPlots.Of([Read(0, 60), Read(1, 48), Read(2, 60)], Metrics.Of(MetricKey.FrameRate), AtSixty,
-            ChartRange.OneMinute, []);
+            ChartRange.OneMinute);
 
         Assert.Equal(20, plot.Bottom);
         Assert.Equal(60, plot.Top);
@@ -103,22 +96,9 @@ public sealed class InsightsChartTests
     public void AReadingPastTheLimitIsMarkedPast()
     {
         var plot = ChartPlots.Of([Read(0, 60), Read(1, 48), Read(2, 60)], Metrics.Of(MetricKey.FrameRate), AtSixty,
-            ChartRange.OneMinute, []);
+            ChartRange.OneMinute);
 
         Assert.Equal([false, true, false], plot.Past);
-    }
-
-    [Fact]
-    public void AMarkInsideTheRangeIsPlacedAndNamed()
-    {
-        var readings = new[] { Read(0, 60), Read(100, 60) };
-
-        var marks = ChartPlots.Of(readings, Metrics.Of(MetricKey.FrameRate), AtSixty, ChartRange.OneMinute,
-            [Joined("Lea", 10), Joined("Kim", 70)]).Marks;
-
-        var mark = Assert.Single(marks);
-        Assert.Equal(30, mark.At);
-        Assert.Equal("Kim joined", mark.Label);
     }
 
     [Fact]

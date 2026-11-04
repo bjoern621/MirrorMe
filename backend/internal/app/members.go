@@ -144,7 +144,6 @@ func (a *App) setMembership(m membership) {
 func (a *App) landMembership(m membership) {
 	a.setMembership(m)
 	a.emit(wire.MembersStateEvent(a.membersWire(m)))
-	a.judgeMembers(m)
 }
 
 // MembersState is who this machine shares a group with, as the presence loop last read it.

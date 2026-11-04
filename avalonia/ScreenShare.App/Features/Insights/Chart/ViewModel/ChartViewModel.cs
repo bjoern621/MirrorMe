@@ -1,5 +1,4 @@
 using Avalonia;
-using ScreenShare.Api.V1;
 using ScreenShare.App.Backend;
 using ScreenShare.App.Contracts;
 using ScreenShare.App.Copy;
@@ -12,7 +11,7 @@ namespace ScreenShare.App.Features.Insights.Chart.ViewModel;
 /// <summary>
 /// The three value cards and the one chart they pick.
 /// The picked card's figure is drawn over the range picked beside the chart, against its limit,
-/// with the timeline's marks under it and every card's figure at the moment the pointer rests on.
+/// with every card's figure at the moment the pointer rests on.
 /// Holds no reading: each pass draws from the session's readings again.
 /// </summary>
 public sealed class ChartViewModel : Observable
@@ -70,8 +69,6 @@ public sealed class ChartViewModel : Observable
 
     public string LimitLabel { get => _limitLabel; private set => Set(ref _limitLabel, value); }
 
-    public IReadOnlyList<ChartMark> Marks => Plot.Marks;
-
     public bool HasPoints => Plot.Points.Count > 1;
 
     public static string NoReadings => InsightsCopy.NoReadings;
@@ -112,25 +109,21 @@ public sealed class ChartViewModel : Observable
     public Readout Readout { get => _readout; private set => Set(ref _readout, value); }
 
     private Limits _limits = new(null, null);
-    private IReadOnlyList<StreamEvent> _events = [];
     private InsightsSnapshot _reading = InsightsSnapshot.Unread;
 
     /// <summary>
     /// The one render function.
     /// reading: the figures the cards state now. limits: what the running stream is held to.
     /// </summary>
-    public void Apply(
-        IReadOnlyList<PublishReading> readings, InsightsSnapshot reading, Limits limits, IReadOnlyList<StreamEvent> events)
+    public void Apply(IReadOnlyList<PublishReading> readings, InsightsSnapshot reading, Limits limits)
     {
         Assert.NotNull(readings, "a chart draws the readings the session kept");
         Assert.NotNull(reading, "the cards state one reading");
         Assert.NotNull(limits, "every figure is read against what the stream is held to");
-        Assert.NotNull(events, "the chart marks the timeline's events");
 
         _readings = readings;
         _reading = reading;
         _limits = limits;
-        _events = events;
         Render();
     }
 
@@ -148,12 +141,11 @@ public sealed class ChartViewModel : Observable
         }
 
         var metric = Metrics.Of(Picked);
-        Plot = ChartPlots.Of(_readings, metric, _limits, SelectedRange.Value, _events);
+        Plot = ChartPlots.Of(_readings, metric, _limits, SelectedRange.Value);
         OnPropertyChanged(nameof(Points));
         OnPropertyChanged(nameof(PastAt));
         OnPropertyChanged(nameof(Extent));
         OnPropertyChanged(nameof(LimitFraction));
-        OnPropertyChanged(nameof(Marks));
         OnPropertyChanged(nameof(HasPoints));
 
         var summary = Plot.Summary;
