@@ -11,9 +11,8 @@ import (
 	"time"
 )
 
-// The relay verifies a token and this app never does, so what these pin is the shape a verifier
-// reads: three segments, a signature over the first two, and a JWKS carrying the key that checks
-// it.
+// These pin the shape the relay reads, checked here by hand rather than through Verify:
+// three segments, a signature over the first two, and a JWKS carrying the key that checks it.
 // A token this package signs and nothing can verify is a stream nobody can open.
 
 func mustSigner(t *testing.T) *Signer {
