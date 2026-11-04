@@ -330,17 +330,4 @@ public sealed class ExpertFoldTests
 
         Assert.False(Row(flow, last.Field.Key).HasNext);
     }
-
-    /// <summary>One pip per control that opens, the open row's pip marked.</summary>
-    [Fact]
-    public async Task ThePipsMarkWhereTheOpenRowSitsAmongTheControlsThatOpen()
-    {
-        var flow = await FlowAsync();
-        var openable = Openable(flow);
-
-        openable[1].Toggle.Execute(null);
-
-        var expected = openable.Select((_, index) => index == 1);
-        Assert.Equal(expected, Row(flow, openable[1].Field.Key).Pips);
-    }
 }

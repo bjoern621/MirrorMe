@@ -90,8 +90,8 @@
   </Style>
 
   <!-- A word pinned to a card, such as Recommended: a capsule that inverts with the card it sits on. -->
-  <!-- The marks that follow a pick or a step ease into their new fill and edge. -->
-  <Style Selector="Border.tag, Border.crop, Border.pip, Border.impact">
+  <!-- The marks that follow a pick ease into their new fill and edge. -->
+  <Style Selector="Border.tag, Border.crop, Border.impact">
     <Setter Property="RenderTransform" Value="none" />
     <Setter Property="Transitions">
       <Transitions>
@@ -123,18 +123,6 @@
   </Style>
   <Style Selector="Border.crop.picked">
     <Setter Property="BorderBrush" Value="{DynamicResource ForegroundBrush}" />
-  </Style>
-
-  <!-- One dot per expert control that opens, the open one filled. -->
-  <Style Selector="Border.pip">
-    <Setter Property="Width" Value="6" />
-    <Setter Property="Height" Value="6" />
-    <Setter Property="CornerRadius" Value="3" />
-    <Setter Property="Background" Value="{DynamicResource DividerBrush}" />
-  </Style>
-  <Style Selector="Border.pip.current">
-    <Setter Property="Background" Value="{DynamicResource ForegroundBrush}" />
-    <Setter Property="RenderTransform" Value="scale(1.35)" />
   </Style>
 
   <!-- What a choice raises, a glyph and a few words under its sentence. Inverts with the card it sits on. -->

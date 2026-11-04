@@ -13,7 +13,6 @@ public sealed class ExpertRow : Observable
 {
     private FieldViewModel _field;
     private bool _isOpen;
-    private ValueList<bool> _pips = ValueList<bool>.Empty;
     private string _nextLabel = "";
 
     public ExpertRow(FieldViewModel field, DelegateCommand toggle, DelegateCommand next)
@@ -34,9 +33,6 @@ public sealed class ExpertRow : Observable
     /// <summary>Opens this row and closes the one open before it, or closes this one where it is open.</summary>
     public DelegateCommand Toggle { get; }
 
-    /// <summary>One per control that opens, true at this row's own place. Empty on a greyed row.</summary>
-    public ValueList<bool> Pips { get => _pips; private set => Set(ref _pips, value); }
-
     /// <summary>"Next: Color range", empty on the last control that opens.</summary>
     public string NextLabel
     {
@@ -56,7 +52,7 @@ public sealed class ExpertRow : Observable
     public DelegateCommand Next { get; }
 
     /// <summary>The row's render function. Idempotent.</summary>
-    public void Apply(FieldViewModel field, bool isOpen, ValueList<bool> pips, string nextLabel)
+    public void Apply(FieldViewModel field, bool isOpen, string nextLabel)
     {
         Assert.NotNull(field, "a row draws one control");
         Assert.That(field.Key == _field.Key, "a row draws the one control it was made for", field.Key, _field.Key);
@@ -64,7 +60,6 @@ public sealed class ExpertRow : Observable
 
         Field = field;
         IsOpen = isOpen;
-        Pips = pips;
         NextLabel = nextLabel;
     }
 }
@@ -123,7 +118,6 @@ public sealed class ExpertFoldViewModel : Observable
         row.Apply(
             field,
             field.Key == _open && field.IsEnabled,
-            place < 0 ? ValueList<bool>.Empty : new ValueList<bool>(openable.Select((_, index) => index == place)),
             next is null ? "" : Copy.Fields.NextControl(next.Label));
         return row;
     }
