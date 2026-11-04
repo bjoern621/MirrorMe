@@ -1730,8 +1730,9 @@ type DelayBudget struct {
 	// Absent on a stream this machine neither publishes nor can read a stamp out of.
 	PublishMs *float64 `protobuf:"fixed64,1,opt,name=publish_ms,json=publishMs,proto3,oneof" json:"publish_ms,omitempty"`
 	// From the publishing machine's encoder handing a frame over,
-	// to this machine's decoder being handed the same frame:
-	// the two legs, the relay between them and this machine's own buffering, as one measurement.
+	// to the leg's source on this machine stamping the same frame:
+	// the two legs and the relay between them, as one measurement.
+	// arrive_ms carries on from there to the decoder.
 	//
 	// Measured rather than derived, off a clock written into the coded picture,
 	// so it is present on somebody else's stream and over every transport.
@@ -1739,25 +1740,23 @@ type DelayBudget struct {
 	// on a stream this app did not publish,
 	// and where the two machines' clocks disagree enough to put the encoder ahead of the decoder.
 	//
-	// total_ms counts it in place of the stages it spans, arrive_ms among them.
 	// A reader may draw it or not,
 	// this stating what was measured rather than what a panel has room for.
 	PathMs *float64 `protobuf:"fixed64,8,opt,name=path_ms,json=pathMs,proto3,oneof" json:"path_ms,omitempty"`
-	// The share of path_ms this machine spent:
+	// What this machine spent ahead of the decoder:
 	// from the leg's source stamping a frame to the decoder being handed it,
 	// which is the transport's own buffering, the demuxer and the parser.
 	//
-	// The one stretch two measurements bracket, path_ms crossing it and the sink's window opening
-	// on it, so a sum that added the whole of both would count it twice.
-	// total_ms counts it inside path_ms and starts decode_ms where path_ms ends.
+	// Two measurements bracket this stretch, so path_ms stops where it starts
+	// and decode_ms starts where it ends.
+	// Absent for frames that reach the decoder ahead of their timestamps, as RTMP and HLS deliver them.
 	//
 	// What a leg holds packets for against loss lands here:
 	// an RTSP jitter buffer spends its window on this stage,
 	// and an SRT leg buffers inside its source and leaves the demuxer and the parser alone here.
 	ArriveMs *float64 `protobuf:"fixed64,10,opt,name=arrive_ms,json=arriveMs,proto3,oneof" json:"arrive_ms,omitempty"`
 	// The decoder being handed a frame to the sink taking it: the decode and the queues around it.
-	// Absent where nothing measured the arrival to subtract,
-	// in which case the whole stretch behind the source's stamp is reported here.
+	// Where nothing measured the arrival, the whole stretch behind the source's stamp lands here.
 	DecodeMs *float64 `protobuf:"fixed64,11,opt,name=decode_ms,json=decodeMs,proto3,oneof" json:"decode_ms,omitempty"`
 	// The worst arrive_ms and decode_ms together have cost any one frame since this decode started,
 	// which never comes down.
@@ -1774,9 +1773,8 @@ type DelayBudget struct {
 	// which is why the first two rising to meet it is a decode about to start dropping frames.
 	PresentMs *float64 `protobuf:"fixed64,5,opt,name=present_ms,json=presentMs,proto3,oneof" json:"present_ms,omitempty"`
 	// The whole path a frame took, every measured stretch counted once.
-	// A floor rather than a total:
 	// path_ms is the only measurement of the way between the two machines,
-	// so a stream carrying no stamp counts none of that way,
+	// so a stream carrying no stamp totals a floor,
 	// and a publisher on another machine takes the first stage out of reach as well.
 	// Absent where no stage was measured at all.
 	TotalMs       *float64 `protobuf:"fixed64,6,opt,name=total_ms,json=totalMs,proto3,oneof" json:"total_ms,omitempty"`

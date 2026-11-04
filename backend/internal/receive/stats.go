@@ -113,6 +113,8 @@ type Stats struct {
 	// so the average a reader shows is taken over the reader's own interval instead of over the whole
 	// run.
 	//
+	// Negative where frames reach the sink ahead of their timestamps.
+	//
 	// The work done inside the window LatencyMin schedules, not a delay beside it.
 	// A transit reaching that window is a decode whose sink has begun raising QoS,
 	// and the decoder then discards to hold the stream on the clock,

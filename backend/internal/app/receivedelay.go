@@ -19,7 +19,7 @@ import (
 // The relay terminates the publishing protocol and re-muxes per reader, and neither end times that:
 // the relay API states no per-path delay and is an operator's rather than a member's,
 // and no leg carries a relay timestamp to subtract.
-// So the total is a floor.
+// The way here spans it, so only a stream carrying no stamp totals a floor.
 
 // publishedStreamLocked is the stream this machine publishes and what its leg costs a frame,
 // and the empty name where nothing is published.
@@ -51,12 +51,13 @@ func (a *App) publishedStreamLocked() (string, publishDelay) {
 func receiveDelayOf(now, last receive.Stats, seen bool, publishing publishDelay) wire.DelayBudget {
 	transit := transitOf(now, last, seen)
 	arrive := arriveOf(now, last, seen)
+	buffered := bufferedOf(arrive)
 	budget := wire.DelayBudget{
 		Publish: firstOf(publishing.Transit, stampedPublishOf(now, last, seen)),
-		Path:    pathOf(now, last, seen, arrive),
-		Arrive:  arrive,
+		Path:    pathOf(now, last, seen, buffered),
+		Arrive:  buffered,
 	}
-	budget.Decode = decodeOf(transit, budget.Arrive)
+	budget.Decode = decodeOf(transit, arrive)
 	budget.Present = presentOf(now.LatencyMin, transit)
 	budget.Total = totalOf(budget)
 
@@ -71,8 +72,9 @@ func receiveDelayOf(now, last receive.Stats, seen bool, publishing publishDelay)
 // nil where there is nothing to divide: a first reading, a pipeline rebuilt under one ref,
 // which restarts the counters, and an interval no frame crossed.
 // The last is nothing to time rather than a frame that took no time.
+// Negative for frames reaching the sink ahead of their timestamps (internal/pipedelay).
 func transitOf(now, last receive.Stats, seen bool) *float64 {
-	if !seen || now.TransitFrames <= last.TransitFrames || now.Transit < last.Transit {
+	if !seen || now.TransitFrames <= last.TransitFrames {
 		return nil
 	}
 	mean := float64(now.Transit-last.Transit) / float64(now.TransitFrames-last.TransitFrames)
@@ -84,12 +86,22 @@ func transitOf(now, last receive.Stats, seen bool) *float64 {
 //
 // The same three readings a transit is taken from, and nil on the same three grounds.
 // Also nil before the pipeline picks a decoder, there being no pad to measure at.
+// Negative as a transit is.
 func arriveOf(now, last receive.Stats, seen bool) *float64 {
-	if !seen || now.ArriveFrames <= last.ArriveFrames || now.Arrive < last.Arrive {
+	if !seen || now.ArriveFrames <= last.ArriveFrames {
 		return nil
 	}
 	mean := float64(now.Arrive-last.Arrive) / float64(now.ArriveFrames-last.ArriveFrames)
 	return msOfPtr(time.Duration(mean))
+}
+
+// bufferedOf is the arrival as a stage of the path, nil for frames ahead of their timestamps,
+// which reach the decoder with nothing buffered.
+func bufferedOf(arrive *float64) *float64 {
+	if arrive == nil || *arrive < 0 {
+		return nil
+	}
+	return arrive
 }
 
 // decodeOf is what the decode itself cost: the transit less the arrival it opens with.
@@ -175,11 +187,12 @@ func pathOf(now, last receive.Stats, seen bool, arrive *float64) *float64 {
 // presentOf is what the sink holds a frame for after it arrives:
 // the pipeline's latency window less the work already done inside it.
 //
-// nil where either half is missing, and never negative.
+// A leg with no window holds a frame until its timestamp, the same subtraction.
+// nil without a transit, and never negative.
 // A transit past the window is a frame the sink drops for being late,
 // not one it draws early, and the drop is counted where drops are counted.
 func presentOf(latency time.Duration, transit *float64) *float64 {
-	if latency <= 0 || transit == nil {
+	if transit == nil {
 		return nil
 	}
 	wait := msOf(latency) - *transit
@@ -191,10 +204,8 @@ func presentOf(latency time.Duration, transit *float64) *float64 {
 
 // totalOf adds the stretches that carry a figure, each counted once, and is nil where none does.
 //
-// A floor rather than a total.
 // Path is the only measurement of the way between the two machines,
-// so a stream carrying no stamp adds none of that way and the relay's own share is in no reading
-// either way.
+// so a stream carrying no stamp adds none of that way and totals a floor.
 // Adding what is there still answers, every absent stage only making the real delay larger.
 func totalOf(budget wire.DelayBudget) *float64 {
 	stages := []*float64{budget.Publish, budget.Path, budget.Arrive, budget.Decode, budget.Present}

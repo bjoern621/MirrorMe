@@ -28,7 +28,7 @@ So no measurement maps a video surface, and the frames a capture or a decoder le
 | --- | --- | --- |
 | Capture and encode | publish pipeline, encoded-frame counter | its own clock, less the frame's running time |
 | that row, on another machine's stream | the pictures themselves | the publisher's own reading, stamped into each one |
-| Publisher to here | both measuring points | the clock in the picture, against this machine's |
+| Publisher to here | both measuring points | the clock in the picture, against this machine's, less the buffering row |
 | Buffered here | receive pipeline, decoder sink pad | its own clock, less the frame's running time |
 | Decode | receive pipeline, sink pad | the same subtraction, less what the buffering took |
 | Slowest frame | receive pipeline, sink pad | the worst that subtraction has ever read |
@@ -43,10 +43,14 @@ Two readings cross that row.
 The way here ends at the decoder, and the receiving pipeline's own subtraction starts at the leg's source, ahead of it.
 So the stretch between the source and the decoder lies inside both, and the decode row is the receiving reading less it.
 
+RTMP and HLS carry the publisher's timestamps, so a frame can reach this pipeline ahead of its own.
+Both readings then fall below zero, the buffering row stays blank and the sink's wait lands in "Waiting to show".
+
 ## Adding them up
 
 The total is the stretches that carry a figure, added, each counted once.
-The way here holds both the buffering row and the relay inside it, so the buffering row is added alone only where the way here is blank.
+The way here stops where the buffering row starts, so the rows add up.
+The figure that a viewer reports puts the two back together ([viewer-reports.md](viewer-reports.md)).
 A way here with a figure makes the sum the whole journey, and one without leaves it short by everything between the machines, which is why it is stated as a floor.
 
 The budget is assembled once, on this side.

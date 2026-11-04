@@ -47,7 +47,7 @@ type Probe struct {
 	// A copy, the carrying event not outliving the callback that saw it.
 	// A pointer swap, it changing once per stream start against once per frame here.
 	segment atomic.Pointer[gst.Segment]
-	total   atomic.Uint64 // ns
+	total   atomic.Int64 // ns
 	frames  atomic.Uint64
 	peak    atomic.Uint64 // ns
 }
@@ -117,9 +117,11 @@ func (p *Probe) measure(_ gst.Pad, info *gst.PadProbeInfo) gst.PadProbeReturn {
 	if !ok {
 		return gst.PadProbeOK
 	}
-	p.total.Add(uint64(delay))
+	p.total.Add(int64(delay))
 	p.frames.Add(1)
-	p.raisePeak(uint64(delay))
+	if delay > 0 {
+		p.raisePeak(uint64(delay))
+	}
 	return gst.PadProbeOK
 }
 
@@ -156,9 +158,9 @@ func (p *Probe) follow(_ gst.Pad, info *gst.PadProbeInfo) gst.PadProbeReturn {
 
 // delayOf is one buffer's delay, false where this pipeline cannot state it.
 //
-// A negative result is refused rather than clamped to zero: a frame stamped for a moment that has
-// not arrived, produced by a source running ahead of the clock, would read as a frame that crossed
-// the pipeline instantly.
+// Negative for a frame ahead of its running time, which a leg carrying the publisher's timestamps
+// delivers.
+// A synchronizing sink waits that difference out, so it stays a reading.
 func (p *Probe) delayOf(buffer *gst.Buffer) (time.Duration, bool) {
 	segment := p.segment.Load()
 	if segment == nil || segment.Format() != gst.FormatTime {
@@ -174,10 +176,10 @@ func (p *Probe) delayOf(buffer *gst.Buffer) (time.Duration, bool) {
 	}
 
 	now, ok := p.runningTime()
-	if !ok || now < stamped {
+	if !ok {
 		return 0, false
 	}
-	return time.Duration(now - stamped), true
+	return time.Duration(now) - time.Duration(stamped), true
 }
 
 // runningTime is the pipeline's own running time: clock reading minus base time.

@@ -93,14 +93,34 @@ func TestReceiveDelayPresentNeverGoesNegative(t *testing.T) {
 	closeTo(t, "present", budget.Present, ms(0))
 }
 
-// A pipeline that has answered no latency query leaves the wait unmeasured
-// rather than reading it as the whole window being work.
-func TestReceiveDelayPresentNeedsAWindow(t *testing.T) {
+// A leg with no latency window holds a frame until its timestamp and no longer, so a frame reaching
+// the sink behind its timestamp leaves at once.
+func TestReceiveDelayNoWindowHoldsALateFrameNoLonger(t *testing.T) {
 	now := receive.Stats{Transit: 200 * time.Millisecond, TransitFrames: 10}
 
-	if budget := receiveDelayOf(now, receive.Stats{}, true, publishDelay{}); budget.Present != nil {
-		t.Errorf("a pipeline with no latency window waits %v ms, want it absent", *budget.Present)
+	budget := receiveDelayOf(now, receive.Stats{}, true, publishDelay{})
+
+	closeTo(t, "present", budget.Present, ms(0))
+}
+
+// RTMP and HLS carry the publisher's timestamps, so frames can reach this pipeline ahead of them.
+// Decoder and sink readings then fall below zero and the sink waits out the difference.
+func TestReceiveDelayAFrameAheadOfItsTimestampWaitsAtTheSink(t *testing.T) {
+	now := receive.Stats{
+		Transit: -200 * time.Millisecond, TransitFrames: 10,
+		Arrive: -500 * time.Millisecond, ArriveFrames: 10,
+		Path: 60 * time.Millisecond, PathFrames: 10,
 	}
+
+	budget := receiveDelayOf(now, receive.Stats{}, true, publishDelay{})
+
+	if budget.Arrive != nil {
+		t.Errorf("a frame ahead of its timestamp buffered %v ms, want it absent", *budget.Arrive)
+	}
+	closeTo(t, "path", budget.Path, ms(6))
+	closeTo(t, "decode", budget.Decode, ms(30))
+	closeTo(t, "present", budget.Present, ms(20))
+	closeTo(t, "total", budget.Total, ms(56))
 }
 
 // What the way from the publishing machine cost is a mean over the interval between two readings,
