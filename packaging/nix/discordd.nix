@@ -29,7 +29,7 @@ buildGoModule {
   };
 
   # The module cache rather than a vendor directory, for the reason packaging/nix/package.nix states.
-  # The hash is the module's one dependency set, shared with the other two binaries.
+  # The hash is the module's one dependency set, shared with the other binaries.
   proxyVendor = true;
   vendorHash = "sha256-3sMf233ihFSRiN1kr+uG3lljk0XUDrhkTbrGRe5Z1Bs=";
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Runs the relay and the group service beside it, against deploy/mediamtx-groups.yml.
+# Runs the relay with the group service and the viewer service beside it, against deploy/mediamtx-groups.yml.
 #
 # The relay verifies every connection against the key set the group service publishes,
 # so a relay started on its own refuses every publisher:
@@ -8,7 +8,7 @@
 # A machine with no deployment certificate and no hook paths takes both as environment overrides,
 # the file itself being the one every relay reads (deploy/mediamtx-groups.yml).
 #
-# Foreground, and Ctrl+C ends both.
+# Foreground, and Ctrl+C ends all three.
 set -euo pipefail
 
 root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
@@ -33,7 +33,7 @@ fi
 
 # Built rather than `go run`, which puts a second process between this script and the service,
 # and leaves it running when the signal reaches the wrapper alone.
-(cd "$root/backend" && go build -o "$root/bin/groupd" ./cmd/groupd)
+(cd "$root/backend" && go build -o "$root/bin/groupd" ./cmd/groupd && go build -o "$root/bin/watchd" ./cmd/watchd)
 
 # The signing key is stored, so tokens issued before a restart are still verified after one:
 # the relay caches the key set it fetched,
@@ -42,7 +42,10 @@ fi
 # Reports land beside the other drawn state, so a development relay takes them like a deployment.
 "$root/bin/groupd" -key "$dev/signing-key.pem" -reports "$dev/reports" &
 groupd=$!
-trap 'kill "$groupd" 2>/dev/null || true' EXIT
+# Viewer figures for publishers, verifying tokens against the key set groupd publishes.
+"$root/bin/watchd" &
+watchd=$!
+trap 'kill "$groupd" "$watchd" 2>/dev/null || true' EXIT
 
 # From the relay's own directory, because MediaMTX draws the MoQ pair beside whatever it runs in.
 cd "$dev"

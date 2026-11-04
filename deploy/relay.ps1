@@ -1,6 +1,6 @@
 #Requires -Version 7.0
 <#
-  relay.ps1 - run the relay and the group service beside it on Windows.
+  relay.ps1 - run the relay with the group service and the viewer service beside it on Windows.
 
   The relay verifies every connection against the key set the group service publishes,
   so a relay started on its own refuses every publisher:
@@ -83,6 +83,8 @@ Push-Location (Join-Path $root "backend")
 try {
   & go build -o (Join-Path $bin "groupd.exe") ./cmd/groupd
   if ($LASTEXITCODE -ne 0) { throw "building the group service failed" }
+  & go build -o (Join-Path $bin "watchd.exe") ./cmd/watchd
+  if ($LASTEXITCODE -ne 0) { throw "building the viewer service failed" }
 } finally {
   Pop-Location
 }
@@ -94,6 +96,8 @@ try {
 # Reports land beside the other drawn state, so a development relay takes them like a deployment.
 $service = Start-Process -FilePath (Join-Path $bin "groupd.exe") -PassThru -NoNewWindow `
   -ArgumentList "-key", (Join-Path $dev "signing-key.pem"), "-reports", (Join-Path $dev "reports")
+# Viewer figures for publishers, verifying tokens against the key set groupd publishes.
+$viewers = Start-Process -FilePath (Join-Path $bin "watchd.exe") -PassThru -NoNewWindow
 
 $env:MTX_RTSPSERVERCERT = $cert
 $env:MTX_RTSPSERVERKEY  = $key
@@ -111,4 +115,5 @@ try {
 } finally {
   Pop-Location
   if (-not $service.HasExited) { $service.Kill() }
+  if (-not $viewers.HasExited) { $viewers.Kill() }
 }

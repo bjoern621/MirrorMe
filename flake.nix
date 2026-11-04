@@ -353,6 +353,9 @@
         # The Discord manager beside it (packaging/nix/discordd.nix, docs/discord-mode.md).
         packages.discordd = pkgs.callPackage ./packaging/nix/discordd.nix { inherit version; };
 
+        # The viewer service beside it (packaging/nix/watchd.nix, docs/viewer-reports.md).
+        packages.watchd = pkgs.callPackage ./packaging/nix/watchd.nix { inherit version; };
+
         # A relay deployment's three processes as container images,
         # for a relay on Kubernetes instead of on a host of its own.
         # They are what a NixOS relay host runs,
@@ -378,6 +381,10 @@
         packages.discordd-image = pkgs.callPackage ./packaging/nix/discordd-image.nix {
           inherit version;
           screenshare-discordd = self.packages.${system}.discordd;
+        };
+        packages.watchd-image = pkgs.callPackage ./packaging/nix/watchd-image.nix {
+          inherit version;
+          screenshare-watchd = self.packages.${system}.watchd;
         };
 
         # The client the release workflow pushes the build closure to the Attic cache with.

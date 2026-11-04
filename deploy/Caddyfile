@@ -63,6 +63,12 @@
 		reverse_proxy {$SCREENSHARE_GROUPD:127.0.0.1:9443}
 	}
 
+	# What each viewer measures of a stream, for its publisher (docs/viewer-reports.md).
+	# A relay access token rides in the Authorization header under TLS.
+	handle /viewers* {
+		reverse_proxy {$SCREENSHARE_WATCHD:127.0.0.1:9445}
+	}
+
 	# Discord mode: presence, brokered tokens and the browser link flow (docs/discord-mode.md).
 	# Under a prefix of its own because discordd's /presence and /tokens
 	# would otherwise collide with groupd's routes on the one name,
