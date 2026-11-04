@@ -168,10 +168,6 @@ public static class Cards
 
     public const string ShowStripTip = "Show the other streams (H)";
 
-    public const string StageNextTip = "Next stream (Right arrow)";
-
-    public const string StagePreviousTip = "Previous stream (Left arrow)";
-
     public const string JoinTitle = "Join a group to watch and share";
 
     public const string JoinBody = "Everyone in a group sees the others' streams.";

@@ -119,20 +119,4 @@
   -->
   <SolidColorBrush x:Key="ZoomWindowBrush" Color="#55FFFFFF" />
 
-  <!--
-    The arc of shade under a pointer at the stage's side edge, black so the picture keeps its hue.
-    Strongest against the side, holding most of its strength across the arc and fading out toward the rim,
-    so the arc meets the picture on a soft edge.
-    The radii follow the ellipse it fills, so the fade runs along the curve.
-  -->
-  <RadialGradientBrush x:Key="StageArcBrush" RadiusX="50%" RadiusY="50%">
-    <GradientStop Offset="0" Color="#66000000" />
-    <GradientStop Offset="0.6" Color="#52000000" />
-    <GradientStop Offset="0.85" Color="#2E000000" />
-    <GradientStop Offset="1" Color="#00000000" />
-  </RadialGradientBrush>
-
-  <!-- The disc on a stage edge under the press, darker than the scrim it wears on hover. -->
-  <SolidColorBrush x:Key="StageDiscPressedBrush" Color="#CC000000" />
-
 </ResourceDictionary>

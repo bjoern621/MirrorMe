@@ -81,20 +81,6 @@
       <Setter Property="Margin" Value="{StaticResource InsetTight}" />
     </Style>
 
-    <!--
-      A resting pointer clears a stage edge as it clears the chrome, the edge still taking a press.
-      The edge's own hand cursor would otherwise outlast the card's hidden one.
-    -->
-    <Style Selector="tiles|TileCard:resting Button.edge">
-      <Setter Property="Cursor" Value="None" />
-    </Style>
-    <Style Selector="tiles|TileCard:resting Button.edge /template/ Panel#Arc">
-      <Setter Property="Opacity" Value="0" />
-    </Style>
-    <Style Selector="tiles|TileCard:resting Button.edge /template/ Border#Disc">
-      <Setter Property="Opacity" Value="0" />
-    </Style>
-
     <!-- The strip chevron turns over as the strip goes or comes back, pointing where a press sends it. -->
     <Style Selector="ti|TablerIcon.strip">
       <Setter Property="RenderTransform" Value="none" />
@@ -206,7 +192,7 @@
       </Style.Animations>
     </Style>
     <!--
-      A stream taking the stage fades in with the same slight zoom, a step or a press on the strip alike.
+      A stream taking the stage fades in with the same slight zoom, from a press on the strip or a key alike.
       The strip going or coming back settles the stage's frame from a smaller scale,
       the stage changing size in one layout pass.
       The grid host sets both classes (Features/Viewer/View/ViewerView.axaml), a window of its own staging nothing.
@@ -324,7 +310,7 @@
   <!--
     Right-click carries everything a tile affords, in one menu rather than a row of hover buttons,
     and defined here rather than per host, what a tile affords not changing with the window it is in.
-    The stage's arrows and strip chevron depart from it, with their reason where they stand.
+    The stage's strip chevron departs from it, with its reason where it stands.
 
     Grouped by subject, in the order a reader reaches for them: where the stream is drawn, how loud it is,
     what happens to its range, what is printed over it.
@@ -606,37 +592,10 @@
       </Border>
 
       <!--
-        The stage's own controls, the one departure from a menu holding everything:
-        a step either way through the playing streams, and the strip put away or back.
-        They arrange the grid, so a card in a window of its own or on a filled screen draws none.
-        Each takes its own click, a tap reaching the card meaning focus.
+        The stage's own control, the one departure from a menu holding everything: the strip put away or back.
+        It arranges the grid, so a card in a window of its own or on a filled screen draws none.
+        It takes its own click, a tap reaching the card meaning focus.
       -->
-      <!--
-        Each side edge steps the stage, the whole edge taking the press and showing nothing until the pointer enters it.
-        A drag of a zoomed picture starts outside the edges.
-      -->
-      <Button Classes="edge" Theme="{StaticResource EdgeButtonLeft}" Command="{Binding StagePrevious}"
-              Tapped="OnClickTaken" ToolTip.Tip="{x:Static copy:Cards.StagePreviousTip}">
-        <Button.IsVisible>
-          <MultiBinding Converter="{x:Static BoolConverters.And}">
-            <Binding Path="CanStep" />
-            <Binding Path="$parent[tiles:TileCard].InGrid" />
-            <Binding Path="!PictureElsewhere" />
-          </MultiBinding>
-        </Button.IsVisible>
-        <ti:TablerIcon Classes="button" Icon="IconChevronLeft" Brush="{Binding $parent[Button].Foreground, Mode=OneWay}" />
-      </Button>
-      <Button Classes="edge" Theme="{StaticResource EdgeButtonRight}" Command="{Binding StageNext}"
-              Tapped="OnClickTaken" ToolTip.Tip="{x:Static copy:Cards.StageNextTip}">
-        <Button.IsVisible>
-          <MultiBinding Converter="{x:Static BoolConverters.And}">
-            <Binding Path="CanStep" />
-            <Binding Path="$parent[tiles:TileCard].InGrid" />
-            <Binding Path="!PictureElsewhere" />
-          </MultiBinding>
-        </Button.IsVisible>
-        <ti:TablerIcon Classes="button" Icon="IconChevronRight" Brush="{Binding $parent[Button].Foreground, Mode=OneWay}" />
-      </Button>
       <Border Classes="chrome stage" HorizontalAlignment="Center" VerticalAlignment="Bottom">
         <Border.IsVisible>
           <MultiBinding Converter="{x:Static BoolConverters.And}">

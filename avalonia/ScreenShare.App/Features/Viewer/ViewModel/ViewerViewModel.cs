@@ -534,7 +534,6 @@ public sealed class ViewerViewModel : Observable
             tile.IsFocused = tile.Name == Focused;
             tile.HasStrip = tile.IsFocused;
             tile.StripHidden = tile.IsFocused && Mode == LayoutMode.Stage;
-            tile.CanStep = tile.IsFocused && Tiles.Count >= 2;
             tile.IsPoppedOut = _popped.Contains(tile.Name);
             tile.NamedByDiscord = discordMode;
 
@@ -1000,18 +999,6 @@ public sealed class ViewerViewModel : Observable
             case TileIntent.Strip:
                 Assert.That(Mode != LayoutMode.Grid, "a strip is put away from under a stage", stream);
                 _stripHidden = !_stripHidden;
-                break;
-
-            case TileIntent.StageNext:
-            case TileIntent.StagePrevious:
-                Assert.That(
-                    _tiles.ContainsKey(Focused) && Tiles.Count >= 2,
-                    "a stage steps to another playing stream",
-                    Focused,
-                    Tiles.Count);
-                var at = Tiles.IndexOf(_tiles[Focused]);
-                var step = intent == TileIntent.StageNext ? 1 : -1;
-                _staged = Tiles[(at + step + Tiles.Count) % Tiles.Count].Name;
                 break;
 
             case TileIntent.LeaveFullscreen:
