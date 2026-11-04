@@ -6,9 +6,10 @@ using ScreenShare.App.Contracts;
 namespace ScreenShare.App.Controls;
 
 /// <summary>
-/// Holds a dialog's dimmed ground and fades it in as the dialog opens and out as it closes.
+/// Holds a surface over the window, a dialog's dimmed ground or a panel, and fades it in as it opens and out as it closes.
 /// The body stays drawn until the fade ends, and a closing overlay lets presses through to the window.
-/// An opening overlay takes the focus, so a key binding on the view around it hears Escape before the window does.
+/// An overlay that <see cref="TakesFocus"/> takes the focus as it opens, so a key binding on the view around it
+/// hears Escape before the window does.
 ///
 /// <see cref="IsOpen"/> names the state wanted.
 /// <see cref="Openness"/> follows it under the transition that <c>Controls/Overlay/Overlay.axaml</c> sets.
@@ -21,6 +22,10 @@ public sealed class Overlay : Decorator
     /// <summary>Opacity the overlay draws at: 0 closed, 1 open.</summary>
     public static readonly StyledProperty<double> OpennessProperty =
         AvaloniaProperty.Register<Overlay, double>(nameof(Openness));
+
+    /// <summary>Whether opening moves the focus here: set on a dialog, left off on a panel beside the content.</summary>
+    public static readonly StyledProperty<bool> TakesFocusProperty =
+        AvaloniaProperty.Register<Overlay, bool>(nameof(TakesFocus));
 
     static Overlay()
     {
@@ -44,6 +49,12 @@ public sealed class Overlay : Decorator
         set => SetValue(OpennessProperty, value);
     }
 
+    public bool TakesFocus
+    {
+        get => GetValue(TakesFocusProperty);
+        set => SetValue(TakesFocusProperty, value);
+    }
+
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
@@ -64,12 +75,28 @@ public sealed class Overlay : Decorator
     {
         base.OnAttachedToVisualTree(e);
         TakeFocus();
+        LayOutAhead();
+    }
+
+    /// <summary>
+    /// Lays a closed body out once at zero opacity, then hides it again.
+    /// A body's first layout outlasts the fade, so without this the first open after start lands in one frame.
+    /// </summary>
+    private void LayOutAhead()
+    {
+        if (IsOpen || Child is not { } body)
+        {
+            return;
+        }
+
+        body.IsVisible = true;
+        Dispatcher.UIThread.Post(Draw, DispatcherPriority.Background);
     }
 
     /// <summary>Posted past layout, a control not yet arranged refusing the focus.</summary>
     private void TakeFocus()
     {
-        if (IsOpen)
+        if (IsOpen && TakesFocus)
         {
             Dispatcher.UIThread.Post(() => Focus(), DispatcherPriority.Loaded);
         }

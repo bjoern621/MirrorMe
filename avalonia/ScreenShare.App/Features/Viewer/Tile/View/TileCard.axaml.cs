@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 
+using ScreenShare.App.Controls;
 using ScreenShare.App.Features.Viewer.Tile.ViewModel;
 
 namespace ScreenShare.App.Features.Viewer.Tile.View;
@@ -173,7 +174,7 @@ public partial class TileCard : UserControl
     /// Draws what markup cannot decide: the overlay, the chrome under a resting pointer, and the meter's bar
     /// at the level in pixels of this card.
     ///
-    /// The classes are what the markup raises the overlay and hides the chrome on,
+    /// The overlay opens and fades on its own state, the class is what the markup hides the chrome on,
     /// and the cursor is this control's own property, inherited by everything drawn inside it.
     /// Every pass writes all of them, and each write is the state named rather than a change to it,
     /// so a pass per pointer move and a pass per level costs nothing.
@@ -182,7 +183,11 @@ public partial class TileCard : UserControl
     {
         var chrome = TileChrome.Of(_resting, _watched is { ShowStats: true }, PictureElsewhere);
 
-        PseudoClasses.Set(":stats", chrome.Stats);
+        if (this.FindControl<Overlay>("Stats") is { } stats)
+        {
+            stats.IsOpen = chrome.Stats;
+        }
+
         PseudoClasses.Set(":resting", chrome.Resting);
         Cursor = chrome.Resting ? Hidden : null;
 

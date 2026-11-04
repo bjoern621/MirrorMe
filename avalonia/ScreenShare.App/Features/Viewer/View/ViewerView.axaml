@@ -356,14 +356,16 @@
       The watch settings over the stage, which keeps its whole width (docs/design-language.md, "Narrow windows").
       A panel, never a flyout: a flyout would close on every click.
     -->
-    <Panel IsVisible="{Binding WatchPanel.IsOpen}">
-      <controls:Overlay IsOpen="{Binding WatchPanel.IsSheet}">
-        <Border Classes="scrim" PointerPressed="ScrimPressed" />
-      </controls:Overlay>
-      <Border Classes="overpanel" Classes.sheet="{Binding WatchPanel.IsSheet}">
-        <watch:WatchSettingsView DataContext="{Binding Watch}" />
-      </Border>
-    </Panel>
+    <controls:Overlay IsOpen="{Binding WatchPanel.IsOpen}">
+      <Panel>
+        <controls:Overlay IsOpen="{Binding WatchPanel.IsSheet}">
+          <Border Classes="scrim" PointerPressed="ScrimPressed" />
+        </controls:Overlay>
+        <Border Classes="overpanel" Classes.sheet="{Binding WatchPanel.IsSheet}">
+          <watch:WatchSettingsView DataContext="{Binding Watch}" />
+        </Border>
+      </Panel>
+    </controls:Overlay>
 
     <!--
       The stream filling this window, over every column: fullscreen is a property of the window and not an

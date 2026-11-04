@@ -83,7 +83,7 @@
   </UserControl.Styles>
 
   <!-- Dimmed rather than covered: the window stays readable behind what is being decided over it. -->
-  <controls:Overlay IsOpen="{Binding IsOpen}">
+  <controls:Overlay IsOpen="{Binding IsOpen}" TakesFocus="True">
     <Border Classes="scrim"
             PointerPressed="ScrimPressed">
 

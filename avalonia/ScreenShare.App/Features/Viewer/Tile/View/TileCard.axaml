@@ -177,16 +177,11 @@
       figures over the plate describe a decode this card is not drawing,
       and asking one tile for them puts the panel on screen twice.
 
-      The card writes the class off the tile's state and the host's answer together,
+      The card opens the overlay holding it off the tile's state and the host's answer together,
       the same pair deciding whether a resting pointer clears the chrome
       (Features/Viewer/Tile/View/TileChrome.cs).
+      The overlay fades it out on close, as it grows in below.
     -->
-    <Style Selector="tiles|TileCard Panel.stats">
-      <Setter Property="IsVisible" Value="False" />
-    </Style>
-    <Style Selector="tiles|TileCard:stats Panel.stats">
-      <Setter Property="IsVisible" Value="True" />
-    </Style>
 
     <!-- The panel grows out of the corner it stands in, as a menu grows out of its anchor. -->
     <Style Selector="Panel.stats[IsVisible=True] > Border">
@@ -522,72 +517,74 @@
         The inset sits on the wrapper: the panel's height binds to the wrapper,
         and a margin on the panel itself would push its last row past the tile's clip.
       -->
-      <Panel Classes="stats" Margin="{StaticResource InsetTight}" Tapped="OnClickTaken">
-        <Border VerticalAlignment="Top" HorizontalAlignment="Right"
-                MaxHeight="{Binding $parent[Panel].Bounds.Height}"
-                Width="286"
-                Background="{StaticResource SurfaceBrush}"
-                BorderBrush="{StaticResource DividerBrush}"
-                BorderThickness="1"
-                CornerRadius="{StaticResource RadiusPanel}">
-          <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
-                        Padding="{StaticResource InsetControl}">
-            <StackPanel Spacing="{StaticResource GapControl}">
+      <controls:Overlay Name="Stats">
+        <Panel Classes="stats" Margin="{StaticResource InsetTight}" Tapped="OnClickTaken">
+          <Border VerticalAlignment="Top" HorizontalAlignment="Right"
+                  MaxHeight="{Binding $parent[Panel].Bounds.Height}"
+                  Width="286"
+                  Background="{StaticResource SurfaceBrush}"
+                  BorderBrush="{StaticResource DividerBrush}"
+                  BorderThickness="1"
+                  CornerRadius="{StaticResource RadiusPanel}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                          Padding="{StaticResource InsetControl}">
+              <StackPanel Spacing="{StaticResource GapControl}">
 
-              <TextBlock Classes="ident" Text="{Binding Title}" TextWrapping="Wrap" />
+                <TextBlock Classes="ident" Text="{Binding Title}" TextWrapping="Wrap" />
 
-              <!-- Blocks in the order the frames pass through the stages (Features/Viewer/Tile/Model/TileStats.cs). -->
-              <ItemsControl ItemsSource="{Binding Stats}">
-                <ItemsControl.ItemTemplate>
-                  <DataTemplate x:DataType="model:StatSection">
-                    <StackPanel>
-                      <Button Theme="{StaticResource RowButton}" Command="{Binding Toggle}">
-                        <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{StaticResource GapControl}" Margin="0,4">
-                          <ti:TablerIcon Grid.Column="0" Classes="disclosure" Classes.open="{Binding IsOpen}"
-                                         Icon="IconChevronRight" Brush="{StaticResource MutedBrush}"
-                                         VerticalAlignment="Center" />
-                          <TextBlock Grid.Column="1" Classes="caption" Classes.alarm="{Binding HasAlarm}"
-                                     Text="{Binding Heading}" ToolTip.Tip="{Binding Tip}"
-                                     VerticalAlignment="Center" />
-                          <!-- The open block prints the figure in its own row. -->
-                          <TextBlock Grid.Column="2" Classes="figure lead" Classes.alarm="{Binding Lead.Alarm}"
-                                     Classes.open="{Binding IsOpen}"
-                                     Text="{Binding Lead.Value}"
-                                     TextWrapping="Wrap" TextAlignment="Right" VerticalAlignment="Center" />
-                        </Grid>
-                      </Button>
+                <!-- Blocks in the order the frames pass through the stages (Features/Viewer/Tile/Model/TileStats.cs). -->
+                <ItemsControl ItemsSource="{Binding Stats}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="model:StatSection">
+                      <StackPanel>
+                        <Button Theme="{StaticResource RowButton}" Command="{Binding Toggle}">
+                          <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{StaticResource GapControl}" Margin="0,4">
+                            <ti:TablerIcon Grid.Column="0" Classes="disclosure" Classes.open="{Binding IsOpen}"
+                                           Icon="IconChevronRight" Brush="{StaticResource MutedBrush}"
+                                           VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Classes="caption" Classes.alarm="{Binding HasAlarm}"
+                                       Text="{Binding Heading}" ToolTip.Tip="{Binding Tip}"
+                                       VerticalAlignment="Center" />
+                            <!-- The open block prints the figure in its own row. -->
+                            <TextBlock Grid.Column="2" Classes="figure lead" Classes.alarm="{Binding Lead.Alarm}"
+                                       Classes.open="{Binding IsOpen}"
+                                       Text="{Binding Lead.Value}"
+                                       TextWrapping="Wrap" TextAlignment="Right" VerticalAlignment="Center" />
+                          </Grid>
+                        </Button>
 
-                      <!--
-                        Label left, figure right.
-                        The label takes the width its text needs and the figure wraps into the rest.
-                        Labels come from a fixed vocabulary and readings do not,
-                        so a long reading sized first would squeeze its label to one letter per line.
-                        The tip sits on the label, the reading being the half that changes under the pointer.
-                      -->
-                      <controls:Reveal IsOpen="{Binding IsOpen}">
-                        <ItemsControl ItemsSource="{Binding Lines}" Margin="7,2,3,8">
-                          <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="model:StatLine">
-                              <Grid ColumnDefinitions="Auto,*"
-                                    ColumnSpacing="{StaticResource GapControl}">
-                                <TextBlock Grid.Column="0" Classes="hint" Classes.alarm="{Binding Alarm}"
-                                           Text="{Binding Label}" ToolTip.Tip="{Binding Tip}" />
-                                <TextBlock Grid.Column="1" Classes="figure" Classes.alarm="{Binding Alarm}"
-                                           Text="{Binding Value}" TextWrapping="Wrap" TextAlignment="Right" />
-                              </Grid>
-                            </DataTemplate>
-                          </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                      </controls:Reveal>
-                    </StackPanel>
-                  </DataTemplate>
-                </ItemsControl.ItemTemplate>
-              </ItemsControl>
+                        <!--
+                          Label left, figure right.
+                          The label takes the width its text needs and the figure wraps into the rest.
+                          Labels come from a fixed vocabulary and readings do not,
+                          so a long reading sized first would squeeze its label to one letter per line.
+                          The tip sits on the label, the reading being the half that changes under the pointer.
+                        -->
+                        <controls:Reveal IsOpen="{Binding IsOpen}">
+                          <ItemsControl ItemsSource="{Binding Lines}" Margin="7,2,3,8">
+                            <ItemsControl.ItemTemplate>
+                              <DataTemplate x:DataType="model:StatLine">
+                                <Grid ColumnDefinitions="Auto,*"
+                                      ColumnSpacing="{StaticResource GapControl}">
+                                  <TextBlock Grid.Column="0" Classes="hint" Classes.alarm="{Binding Alarm}"
+                                             Text="{Binding Label}" ToolTip.Tip="{Binding Tip}" />
+                                  <TextBlock Grid.Column="1" Classes="figure" Classes.alarm="{Binding Alarm}"
+                                             Text="{Binding Value}" TextWrapping="Wrap" TextAlignment="Right" />
+                                </Grid>
+                              </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                          </ItemsControl>
+                        </controls:Reveal>
+                      </StackPanel>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
 
-            </StackPanel>
-          </ScrollViewer>
-        </Border>
-      </Panel>
+              </StackPanel>
+            </ScrollViewer>
+          </Border>
+        </Panel>
+      </controls:Overlay>
 
       <!--
         The meter, along the bottom edge.
