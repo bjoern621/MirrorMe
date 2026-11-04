@@ -74,6 +74,9 @@
   <sys:Double x:Key="RowButtonHeight">36</sys:Double>
   <!-- The stage's side edge a pointer steps from, the full height of the stage. -->
   <sys:Double x:Key="StageEdgeWidth">72</sys:Double>
+  <!-- The round disc under an edge's glyph, the radius half its size. -->
+  <sys:Double x:Key="StageDiscSize">44</sys:Double>
+  <CornerRadius x:Key="RadiusStageDisc">22</CornerRadius>
 
   <!-- Setup's one column on a wide window: a choice row three cards across, and no line too long to read. -->
   <sys:Double x:Key="StepColumnWidth">640</sys:Double>

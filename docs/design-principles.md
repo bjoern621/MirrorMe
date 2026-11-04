@@ -54,6 +54,15 @@ A window showing it elsewhere shows it read-only, with one link to the owner.
 A button fills on hover and darkens under the press.
 A control waiting on the backend shows a turning arc in place of its label until the answer lands.
 
+## Everything moves
+
+Every change on screen eases into place, so the app feels fluent under the hand.
+A control shown, hidden, picked or pressed fades, grows or slides.
+A stream taking the stage fades in.
+Small feedback answers each touch: a fill easing in, a give under the press, a chevron leaning the way it acts.
+A control that appears on hover fades in softly, rounded where it sits on a picture.
+Durations and easings: [design-language.md](design-language.md), "Motion".
+
 ## An error leaves the app
 
 Every error text can be selected and copied.

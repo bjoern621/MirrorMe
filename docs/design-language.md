@@ -210,8 +210,8 @@ The viewer puts one stream on the stage and lines the strip up beside it: the ot
 A press on a strip tile puts that stream on the stage.
 A window too narrow for the strip beside the stage stacks it under the stage, two to a row, and lists the member lines under it.
 Each side edge of the stage steps through the playing streams on a press anywhere along it.
-An edge shows nothing until the pointer enters it, then darkens from its side under a chevron.
-A chevron at the foot of the stage hides the strip.
+An edge shows nothing until the pointer enters it, then a shade fades in from its side and a round disc grows in around a chevron.
+A chevron at the foot of the stage hides the strip, turning over as the strip goes.
 A hidden strip leaves the stage alone in the space, and the same chevron brings the strip back.
 
 A grid is equal cells, and the arrangement is derived: the one with the largest fitted picture wins, and a short last row centres itself.
@@ -410,7 +410,8 @@ One duration per kind of change, so a hover reads alike on every control:
 | Menu or dropdown closing | about 110 ms | fades out, shrinking, before it goes |
 | Tick or mark appearing | about 200 ms | pops in from 40 % |
 | Fold opening or closing | about 220 ms | body unrolls to its height as it fades in, rows under it move along, chevron turns, the figure on its heading fades out |
-| Card, dialog, side panel, tile | about 260 ms | card rises, dialog grows, panel slides in from its edge, stats panel grows out of its corner, tile fades in with a slight zoom |
+| Card, dialog, side panel, tile | about 260 ms | card rises, dialog grows, panel slides in from its edge, stats panel grows out of its corner, tile fades in with a slight zoom, a stream taking the stage too, the stage settling from a slight zoom as the strip goes or comes back |
+| Stage edge under the pointer | about 260 ms | shade fades in, disc grows in from 80 %, darkens and gives under the press, chevron leans the way the stage steps |
 | Dialog or panel closing | about 160 ms | dimmed ground fades out with the dialog on it, a side panel or stats panel fades where it stood |
 | Picture arriving | 500 ms | fades in over the tile |
 

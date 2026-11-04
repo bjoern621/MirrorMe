@@ -88,11 +88,24 @@
     <Style Selector="tiles|TileCard:resting Button.edge">
       <Setter Property="Cursor" Value="None" />
     </Style>
-    <Style Selector="tiles|TileCard:resting Button.edge /template/ Border#Root">
-      <Setter Property="Background" Value="Transparent" />
-    </Style>
-    <Style Selector="tiles|TileCard:resting Button.edge /template/ ContentPresenter#PART_ContentPresenter">
+    <Style Selector="tiles|TileCard:resting Button.edge /template/ Border#Shade">
       <Setter Property="Opacity" Value="0" />
+    </Style>
+    <Style Selector="tiles|TileCard:resting Button.edge /template/ Border#Disc">
+      <Setter Property="Opacity" Value="0" />
+    </Style>
+
+    <!-- The strip chevron turns over as the strip goes or comes back, pointing where a press sends it. -->
+    <Style Selector="ti|TablerIcon.strip">
+      <Setter Property="RenderTransform" Value="none" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <TransformOperationsTransition Property="RenderTransform" Duration="{StaticResource MotionMove}" Easing="{StaticResource MotionEase}" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="ti|TablerIcon.strip.hidden">
+      <Setter Property="RenderTransform" Value="rotate(180deg)" />
     </Style>
 
     <Style Selector="Border.nameplate">
@@ -192,6 +205,54 @@
         </Animation>
       </Style.Animations>
     </Style>
+    <!--
+      A stream taking the stage fades in with the same slight zoom, a step or a press on the strip alike.
+      The strip going or coming back settles the stage's frame from a smaller scale,
+      the stage changing size in one layout pass.
+      The grid host sets both classes (Features/Viewer/View/ViewerView.axaml), a window of its own staging nothing.
+    -->
+    <Style Selector="tiles|TileCard.staged">
+      <Style.Animations>
+        <Animation Duration="{StaticResource MotionMount}" Easing="{StaticResource MotionEase}">
+          <KeyFrame Cue="0%">
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="RenderTransform" Value="scale(0.97)" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="RenderTransform" Value="none" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+    <Style Selector="tiles|TileCard.staged.alone Border.frame, tiles|TileCard.staged.beside Border.frame">
+      <Setter Property="RenderTransformOrigin" Value="50%,50%" />
+    </Style>
+    <Style Selector="tiles|TileCard.staged.alone Border.frame">
+      <Style.Animations>
+        <Animation Duration="{StaticResource MotionMount}" Easing="{StaticResource MotionEase}">
+          <KeyFrame Cue="0%">
+            <Setter Property="RenderTransform" Value="scale(0.96)" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="RenderTransform" Value="none" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+    <Style Selector="tiles|TileCard.staged.beside Border.frame">
+      <Style.Animations>
+        <Animation Duration="{StaticResource MotionMount}" Easing="{StaticResource MotionEase}">
+          <KeyFrame Cue="0%">
+            <Setter Property="RenderTransform" Value="scale(1.03)" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="RenderTransform" Value="none" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+
     <Style Selector="tiles|TileCard tiles|StreamTile">
       <Setter Property="Transitions">
         <Transitions>
@@ -606,10 +667,7 @@
               <TextBlock Text="{x:Static copy:Cards.ShowStripTip}" IsVisible="{Binding StripHidden}" />
             </Panel>
           </ToolTip.Tip>
-          <Panel>
-            <ti:TablerIcon Classes="button" Icon="IconChevronDown" IsVisible="{Binding !StripHidden}" />
-            <ti:TablerIcon Classes="button" Icon="IconChevronUp" IsVisible="{Binding StripHidden}" />
-          </Panel>
+          <ti:TablerIcon Classes="button strip" Classes.hidden="{Binding StripHidden}" Icon="IconChevronDown" />
         </Button>
       </Border>
 

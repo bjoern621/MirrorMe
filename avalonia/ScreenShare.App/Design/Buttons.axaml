@@ -339,6 +339,97 @@
   <ControlTheme x:Key="OptionCard" TargetType="Button" BasedOn="{StaticResource CardButton}" />
 
   <!--
+    A side edge of the stage as the target, the full height of the picture.
+    Nothing shows until the pointer enters the edge: the picture stays whole for whoever watches it.
+    Under the pointer a shade fades in from the side and a round disc grows in around the glyph.
+    The press darkens the disc, squeezes it, and leans the glyph the way the stage steps.
+
+    Its own template, the shared skin's single box having no layer to fade a gradient on:
+    a gradient brush switches at the midpoint of a fill fade (Controls/Motion/BrushFade.cs),
+    so the shade fades by its opacity.
+    The sides differ in the shade's brush and the lean alone.
+  -->
+  <ControlTheme x:Key="EdgeButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Width" Value="{StaticResource StageEdgeWidth}" />
+    <Setter Property="Height" Value="NaN" />
+    <Setter Property="VerticalAlignment" Value="Stretch" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Panel Background="Transparent">
+          <Border Name="Shade" Background="{TemplateBinding Background}" Opacity="0">
+            <Border.Transitions>
+              <Transitions>
+                <DoubleTransition Property="Opacity" Duration="{StaticResource MotionMount}" Easing="{StaticResource MotionEase}" />
+              </Transitions>
+            </Border.Transitions>
+          </Border>
+          <Border Name="Disc"
+                  Width="{StaticResource StageDiscSize}"
+                  Height="{StaticResource StageDiscSize}"
+                  CornerRadius="{StaticResource RadiusStageDisc}"
+                  Background="{StaticResource ScrimBrush}"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  Opacity="0"
+                  RenderTransform="scale(0.8)">
+            <Border.Transitions>
+              <Transitions>
+                <DoubleTransition Property="Opacity" Duration="{StaticResource MotionMount}" Easing="{StaticResource MotionEase}" />
+                <TransformOperationsTransition Property="RenderTransform" Duration="{StaticResource MotionMove}" Easing="{StaticResource MotionEase}" />
+                <controls:BrushFade Property="Background" Duration="{StaticResource MotionPress}" Easing="{StaticResource MotionEase}" />
+              </Transitions>
+            </Border.Transitions>
+            <ContentPresenter Name="PART_ContentPresenter"
+                              Content="{TemplateBinding Content}"
+                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              RenderTransform="none">
+              <ContentPresenter.Transitions>
+                <Transitions>
+                  <TransformOperationsTransition Property="RenderTransform" Duration="{StaticResource MotionPress}" Easing="{StaticResource MotionEase}" />
+                </Transitions>
+              </ContentPresenter.Transitions>
+            </ContentPresenter>
+          </Border>
+        </Panel>
+      </ControlTemplate>
+    </Setter>
+
+    <Style Selector="^:pointerover /template/ Border#Shade">
+      <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="^:pointerover /template/ Border#Disc">
+      <Setter Property="Opacity" Value="1" />
+      <Setter Property="RenderTransform" Value="none" />
+    </Style>
+    <Style Selector="^:pressed /template/ Border#Disc">
+      <Setter Property="Background" Value="{StaticResource StageDiscPressedBrush}" />
+      <Setter Property="RenderTransform" Value="scale(0.9)" />
+    </Style>
+  </ControlTheme>
+
+  <ControlTheme x:Key="EdgeButtonLeft" TargetType="Button" BasedOn="{StaticResource EdgeButton}">
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="Background" Value="{StaticResource StageEdgeLeftBrush}" />
+    <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="RenderTransform" Value="translateX(-3px)" />
+    </Style>
+  </ControlTheme>
+
+  <ControlTheme x:Key="EdgeButtonRight" TargetType="Button" BasedOn="{StaticResource EdgeButton}">
+    <Setter Property="HorizontalAlignment" Value="Right" />
+    <Setter Property="Background" Value="{StaticResource StageEdgeRightBrush}" />
+    <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="RenderTransform" Value="translateX(3px)" />
+    </Style>
+  </ControlTheme>
+
+  <!--
     A picture is the target, so the button brings no ground and no outline of its own:
     the tile inside draws both, and what is picked is marked on the picture
     (Features/Setup/ScreenPicker/View).
@@ -347,62 +438,6 @@
     Greyed, the fill goes: half a card behind a caption reads as a control drawn wrong,
     and the sentence under the card says why the screen cannot be picked.
   -->
-  <!--
-    A side edge of the stage as the target, the full height of the picture.
-    Nothing shows until the pointer enters the edge: the picture stays whole for whoever watches it.
-    Under the pointer the edge darkens from its side and its glyph fades in.
-    No squeeze under the press, a strip as tall as the picture reading as the picture moving.
-    The two sides differ in the fill alone, each fading in from its own edge.
-  -->
-  <ControlTheme x:Key="EdgeButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-    <Setter Property="Background" Value="Transparent" />
-    <Setter Property="BorderThickness" Value="0" />
-    <Setter Property="CornerRadius" Value="0" />
-    <Setter Property="Width" Value="{StaticResource StageEdgeWidth}" />
-    <Setter Property="Height" Value="NaN" />
-    <Setter Property="VerticalAlignment" Value="Stretch" />
-    <Setter Property="Padding" Value="0" />
-    <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
-
-    <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Opacity" Value="0" />
-      <Setter Property="Transitions">
-        <Transitions>
-          <DoubleTransition Property="Opacity" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
-        </Transitions>
-      </Setter>
-    </Style>
-    <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Opacity" Value="1" />
-    </Style>
-    <Style Selector="^:pressed:not(:disabled) /template/ Border#Root">
-      <Setter Property="RenderTransform" Value="none" />
-    </Style>
-    <Style Selector="^:disabled /template/ Border#Root">
-      <Setter Property="Background" Value="Transparent" />
-    </Style>
-  </ControlTheme>
-
-  <ControlTheme x:Key="EdgeButtonLeft" TargetType="Button" BasedOn="{StaticResource EdgeButton}">
-    <Setter Property="HorizontalAlignment" Value="Left" />
-    <Style Selector="^:pointerover /template/ Border#Root">
-      <Setter Property="Background" Value="{StaticResource StageEdgeLeftBrush}" />
-    </Style>
-    <Style Selector="^:pressed /template/ Border#Root">
-      <Setter Property="Background" Value="{StaticResource StageEdgeLeftPressedBrush}" />
-    </Style>
-  </ControlTheme>
-
-  <ControlTheme x:Key="EdgeButtonRight" TargetType="Button" BasedOn="{StaticResource EdgeButton}">
-    <Setter Property="HorizontalAlignment" Value="Right" />
-    <Style Selector="^:pointerover /template/ Border#Root">
-      <Setter Property="Background" Value="{StaticResource StageEdgeRightBrush}" />
-    </Style>
-    <Style Selector="^:pressed /template/ Border#Root">
-      <Setter Property="Background" Value="{StaticResource StageEdgeRightPressedBrush}" />
-    </Style>
-  </ControlTheme>
-
   <ControlTheme x:Key="TileButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderThickness" Value="0" />

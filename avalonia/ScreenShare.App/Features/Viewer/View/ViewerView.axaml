@@ -139,7 +139,10 @@
               (Features/Viewer/Tile/View/TileCard.axaml.cs).
             -->
             <DataTemplate x:DataType="tile:TileViewModel">
-              <tiles:TileCard PictureElsewhere="{Binding PictureElsewhere}" InGrid="True" />
+              <tiles:TileCard PictureElsewhere="{Binding PictureElsewhere}" InGrid="True"
+                              Classes.staged="{Binding IsFocused}"
+                              Classes.alone="{Binding StripHidden}"
+                              Classes.beside="{Binding !StripHidden}" />
             </DataTemplate>
 
             <!-- A stopped stream: a press plays it, and its menu opens it outside this window. -->
