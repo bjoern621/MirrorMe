@@ -275,6 +275,22 @@ The read is slower than the capture's own leg, the position changing once a fram
 
 The marker is placed on the picture rather than on the card, the host letterboxing to the stream's shape, so a fraction of the card would drift into the bars.
 
+### Zooming into a tile
+
+The wheel zooms a tile around the pointer.
+A left drag moves the zoomed picture.
+A pinch zooms on a touch screen, and on a touchpad under Windows and macOS.
+Avalonia's X11 and Wayland backends raise no touchpad pinch, so a touchpad there zooms by its two-finger scroll.
+A strip tile under a focused one stays unzoomable, its wheel scrolling the strip.
+Shift with the wheel scrolls sideways and zooms nothing.
+
+Zoom belongs to the card, so a popped-out window and the grid slot it left zoom apart.
+The picture always covers the card.
+The zoom tops out at eight times.
+The marker zooms with the picture it sits on.
+The render size a tile asks for grows with the zoom, so a zoomed picture gets decoded at the size it is seen at.
+The ask stays an upper bound, so zooming past the stream's own size costs nothing more.
+
 ## The frame channel
 
 Frames never cross the control API.

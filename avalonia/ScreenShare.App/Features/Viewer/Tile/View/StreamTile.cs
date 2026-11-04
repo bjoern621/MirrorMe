@@ -33,6 +33,13 @@ public sealed class StreamTile : Decorator
     public static readonly StyledProperty<IFrameSource?> SourceProperty =
         AvaloniaProperty.Register<StreamTile, IFrameSource?>(nameof(Source));
 
+    /// <summary>
+    /// Magnification the card draws this picture at, 1 unzoomed.
+    /// The ask grows with it, so a zoomed picture is decoded at the size it is seen at rather than stretched.
+    /// </summary>
+    public static readonly StyledProperty<double> ZoomProperty =
+        AvaloniaProperty.Register<StreamTile, double>(nameof(Zoom), 1);
+
     /// <summary>A source swap restarts only while attached.</summary>
     private bool _attached;
 
@@ -52,6 +59,12 @@ public sealed class StreamTile : Decorator
     {
         get => GetValue(SourceProperty);
         set => SetValue(SourceProperty, value);
+    }
+
+    public double Zoom
+    {
+        get => GetValue(ZoomProperty);
+        set => SetValue(ZoomProperty, value);
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -78,6 +91,11 @@ public sealed class StreamTile : Decorator
             // so a new row tears the subscription down instead of reusing it.
             Stop();
             Start();
+        }
+
+        if (change.Property == ZoomProperty)
+        {
+            Fit(Bounds.Size);
         }
     }
 
@@ -116,7 +134,7 @@ public sealed class StreamTile : Decorator
     /// States how many pixels this tile needs.
     ///
     /// Device pixels rather than layout units: the scaler fixates against a pixel count,
-    /// so a 200-unit tile on a 200% display wants 400 of them.
+    /// so a 200-unit tile on a 200% display wants 400 of them, and 800 zoomed in twofold.
     /// Rounded onto a rung, held until the size settles, and skipped where it matches the size in force,
     /// a repeat renegotiating the pipeline's filter branch and re-announcing its pool.
     ///
@@ -126,7 +144,9 @@ public sealed class StreamTile : Decorator
     /// </summary>
     private void Fit(Size size)
     {
-        var scaling = TopLevel.GetTopLevel(this)?.RenderScaling ?? 1;
+        Assert.That(Zoom >= 1, "a picture is drawn at its own size or larger", Zoom);
+
+        var scaling = (TopLevel.GetTopLevel(this)?.RenderScaling ?? 1) * Zoom;
         var wanted = new PixelSize(
             Math.Max(0, (int)Math.Ceiling(size.Width * scaling)),
             Math.Max(0, (int)Math.Ceiling(size.Height * scaling)));

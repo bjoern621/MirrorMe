@@ -3,9 +3,15 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
+using Avalonia.VisualTree;
 
+using ScreenShare.App.Contracts;
 using ScreenShare.App.Controls;
+using ScreenShare.App.Features.Viewer.Model;
+using ScreenShare.App.Features.Viewer.Tile.Model;
 using ScreenShare.App.Features.Viewer.Tile.ViewModel;
+using ScreenShare.App.Features.Viewer.View;
 
 namespace ScreenShare.App.Features.Viewer.Tile.View;
 
@@ -38,6 +44,10 @@ public partial class TileCard : UserControl
 
         // Held by the handlers it puts on this card, so it lasts as long as the card draws.
         _ = new RestingWatch(this, Rested);
+
+        var frame = this.FindControl<Panel>("Frame");
+        Assert.NotNull(frame, "a card draws its picture inside a frame");
+        _gestures = new ZoomGestures(frame, Zoomable, () => _zoom, ZoomTo);
     }
 
     /// <summary>
@@ -49,6 +59,29 @@ public partial class TileCard : UserControl
 
     /// <summary>Pointer's answer as the watch last reported it, the one input to a pass that no owner can be asked for.</summary>
     private bool _resting;
+
+    /// <summary>
+    /// How far this card is zoomed into its picture, kept per card: a popped-out window and the grid slot
+    /// it left zoom apart.
+    /// </summary>
+    private TileZoom _zoom = TileZoom.None;
+
+    private readonly ZoomGestures _gestures;
+
+    private void ZoomTo(TileZoom zoom)
+    {
+        _zoom = zoom;
+        Draw();
+    }
+
+    /// <summary>
+    /// Whether a gesture over this card zooms it.
+    /// A strip tile under a focused one is too small to zoom into, so its wheel goes on to scroll the strip.
+    /// </summary>
+    private bool Zoomable() =>
+        !PictureElsewhere
+        && _watched is not null
+        && (!InGrid || _watched.IsFocused || this.FindAncestorOfType<TileGrid>() is not { Mode: LayoutMode.Focus });
 
     /// <summary>Takes the pointer's answer and draws on it.</summary>
     private void Rested(bool resting)
@@ -138,6 +171,8 @@ public partial class TileCard : UserControl
             _watched.PropertyChanged -= OnTileChanged;
         }
 
+        // Another stream on this card starts unzoomed.
+        _zoom = TileZoom.None;
         _watched = DataContext as TileViewModel;
         if (_watched is not null)
         {
@@ -151,7 +186,8 @@ public partial class TileCard : UserControl
     {
         if (change.PropertyName is nameof(TileViewModel.Level)
             or nameof(TileViewModel.HasLevel)
-            or nameof(TileViewModel.ShowStats))
+            or nameof(TileViewModel.ShowStats)
+            or nameof(TileViewModel.IsFocused))
         {
             Draw();
         }
@@ -188,6 +224,8 @@ public partial class TileCard : UserControl
             stats.IsOpen = chrome.Stats;
         }
 
+        DrawZoom();
+
         PseudoClasses.Set(":resting", chrome.Resting);
         Cursor = chrome.Resting ? Hidden : null;
 
@@ -197,6 +235,29 @@ public partial class TileCard : UserControl
         }
 
         bar.Width = _watched is { HasLevel: true } tile ? Math.Max(0, Bounds.Width * tile.Level) : 0;
+    }
+
+    /// <summary>
+    /// Writes the zoom onto the picture and onto the size it asks to be decoded at.
+    /// A card that stopped being zoomable, a focused tile gone back to the strip, draws unzoomed
+    /// and keeps its zoom for its next turn on the stage.
+    /// </summary>
+    private void DrawZoom()
+    {
+        if (this.FindControl<Panel>("Frame") is not { } frame
+            || this.FindControl<Panel>("Zoomed") is not { } zoomed
+            || this.FindControl<StreamTile>("Picture") is not { } picture)
+        {
+            return;
+        }
+
+        var zoom = Zoomable() ? _zoom : TileZoom.None;
+        var matrix = zoom.Transform(frame.Bounds.Size);
+        if (zoomed.RenderTransform is not MatrixTransform { Matrix: var drawn } || drawn != matrix)
+        {
+            zoomed.RenderTransform = new MatrixTransform(matrix);
+        }
+        picture.Zoom = zoom.Scale;
     }
 
     /// <summary>
@@ -222,6 +283,13 @@ public partial class TileCard : UserControl
     protected override void OnTapped(TappedEventArgs e)
     {
         base.OnTapped(e);
+
+        // The release ending a drag of the picture.
+        if (_gestures.Dragged)
+        {
+            e.Handled = true;
+            return;
+        }
 
         if (!InGrid || DataContext is not TileViewModel tile)
         {

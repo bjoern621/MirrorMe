@@ -383,25 +383,32 @@
 
   <!-- Fill and corner come from the styles, so the filled-screen case can restate them. -->
   <Border Classes="frame" ClipToBounds="True">
-    <Panel>
+    <Panel Name="Frame" Background="Transparent">
 
       <!--
-        The picture, and where it comes from.
-        The styles above set both, a card drawing the plate carrying no source at all rather than a hidden one.
+        The picture and the publisher's pointer over it, zoomed together (Features/Viewer/Tile/View/ZoomGestures.cs).
+        The frame around them stays unzoomed, so a gesture lands in its pixels, and its clear ground catches one anywhere.
       -->
-      <tiles:StreamTile />
+      <Panel Name="Zoomed" RenderTransformOrigin="0,0">
 
-      <!--
-        The publisher's pointer, which the frames of a stream sending its position do not carry
-        (docs/capture-architecture.md, "The pointer").
-        Over the picture and under the chrome: a marker that hid a menu would cost a reader the control.
-        The offsets are in this card's own pixels.
-      -->
-      <Canvas IsVisible="{Binding HasPointer}" ClipToBounds="True">
-        <Path Classes="pointer"
-              Canvas.Left="{Binding PointerLeft}"
-              Canvas.Top="{Binding PointerTop}" />
-      </Canvas>
+        <!--
+          The picture, and where it comes from.
+          The styles above set both, a card drawing the plate carrying no source at all rather than a hidden one.
+        -->
+        <tiles:StreamTile Name="Picture" />
+
+        <!--
+          The publisher's pointer, which the frames of a stream sending its position do not carry
+          (docs/capture-architecture.md, "The pointer").
+          Over the picture and under the chrome: a marker that hid a menu would cost a reader the control.
+          The offsets are in this card's own pixels.
+        -->
+        <Canvas IsVisible="{Binding HasPointer}" ClipToBounds="True">
+          <Path Classes="pointer"
+                Canvas.Left="{Binding PointerLeft}"
+                Canvas.Top="{Binding PointerTop}" />
+        </Canvas>
+      </Panel>
 
       <!--
         Why the tile is dark: nothing decoding, connecting, or a handle this renderer cannot open.
