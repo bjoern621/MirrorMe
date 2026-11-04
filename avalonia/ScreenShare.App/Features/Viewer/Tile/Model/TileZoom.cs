@@ -21,6 +21,9 @@ public readonly record struct TileZoom(double Scale, double CenterX, double Cent
 
     public bool IsZoomed => Scale > 1;
 
+    /// <summary>Part of the picture the card shows, in fractions of the picture's width and height.</summary>
+    public Rect Visible => new(CenterX - 1 / (2 * Scale), CenterY - 1 / (2 * Scale), 1 / Scale, 1 / Scale);
+
     /// <summary>Zooms by <paramref name="factor"/> and keeps the spot under <paramref name="anchor"/> under it.</summary>
     public TileZoom At(Point anchor, Size card, double factor)
     {

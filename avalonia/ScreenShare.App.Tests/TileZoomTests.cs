@@ -86,6 +86,30 @@ public sealed class TileZoomTests
         Assert.Equal(before.Y + 20, after.Y, 6);
     }
 
+    [Fact]
+    public void AnUnzoomedCardShowsAllOfThePicture() => Assert.Equal(new Rect(0, 0, 1, 1), TileZoom.None.Visible);
+
+    /// <summary>The part the zoom map outlines: the card's share of the picture, around the spot in the card's middle.</summary>
+    [Fact]
+    public void AZoomedCardShowsItsShareOfThePictureAroundItsMiddle()
+    {
+        var zoomed = TileZoom.None.At(new Point(600, 100), Card, 4);
+        var visible = zoomed.Visible;
+
+        Assert.Equal(0.25, visible.Width, 6);
+        Assert.Equal(0.25, visible.Height, 6);
+        Assert.Equal(zoomed.CenterX, visible.Center.X, 6);
+        Assert.Equal(zoomed.CenterY, visible.Center.Y, 6);
+    }
+
+    [Fact]
+    public void TheVisiblePartStaysInsideThePicture()
+    {
+        var corner = TileZoom.None.At(new Point(0, 0), Card, 2).Panned(new Vector(5000, 5000), Card);
+
+        Assert.True(new Rect(0, 0, 1, 1).Contains(corner.Visible), $"visible part {corner.Visible} reaches past the picture");
+    }
+
     /// <summary>A focus or a window drag resizes the card, and the spot being looked at stays in its middle.</summary>
     [Fact]
     public void AResizedCardKeepsTheSameSpotInTheMiddle()

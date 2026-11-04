@@ -51,6 +51,25 @@
       <Setter Property="IsHitTestVisible" Value="False" />
     </Style>
 
+    <!-- Up while the zoom moves, faded like the chrome (Features/Viewer/Tile/View/ZoomMap.cs). -->
+    <Style Selector="tiles|ZoomMap">
+      <Setter Property="Width" Value="{StaticResource ZoomMapWidth}" />
+      <Setter Property="Background" Value="{StaticResource ScrimBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource HairlineBrush}" />
+      <Setter Property="CornerRadius" Value="{StaticResource RadiusSegment}" />
+      <Setter Property="WindowFill" Value="{StaticResource ZoomWindowBrush}" />
+      <Setter Property="WindowStroke" Value="{StaticResource ForegroundBrush}" />
+      <Setter Property="Opacity" Value="0" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="tiles|ZoomMap:shown">
+      <Setter Property="Opacity" Value="1" />
+    </Style>
+
     <Style Selector="Border.chrome">
       <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
       <Setter Property="CornerRadius" Value="{StaticResource RadiusControl}" />
@@ -509,6 +528,10 @@
               IsVisible="{Binding HasColourNote}">
         <TextBlock Classes="hint" Text="{Binding ColourNote}" />
       </Border>
+
+      <!-- Where in the picture a zoomed card is, under the stats overlay that opens in the same corner. -->
+      <tiles:ZoomMap Name="Map" VerticalAlignment="Top" HorizontalAlignment="Right"
+                     Margin="{StaticResource InsetTight}" IsHitTestVisible="False" />
 
       <!--
         The stats overlay, turned on per tile for the one stream being diagnosed.

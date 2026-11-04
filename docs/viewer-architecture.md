@@ -296,6 +296,7 @@ Zoom belongs to the card, so a popped-out window and the grid slot it left zoom 
 The picture always covers the card.
 The zoom tops out at eight times.
 The marker zooms with the picture it sits on.
+A zoom map upper right shows where the card is in the picture, raised by each zoom step and pan and faded a second after the last one.
 The render size a tile asks for grows with the zoom, so a zoomed picture gets decoded at the size it is seen at.
 The ask stays an upper bound, so zooming past the stream's own size costs nothing more.
 

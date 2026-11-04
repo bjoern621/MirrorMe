@@ -113,4 +113,10 @@
   -->
   <SolidColorBrush x:Key="ScrimBrush" Color="#99000000" />
 
+  <!--
+    The part of a zoomed picture on screen, as a box on the zoom map over that picture.
+    White at a third, so the scrim under it reads through and no hue lands on the video.
+  -->
+  <SolidColorBrush x:Key="ZoomWindowBrush" Color="#55FFFFFF" />
+
 </ResourceDictionary>

@@ -238,7 +238,7 @@ public partial class TileCard : UserControl
     }
 
     /// <summary>
-    /// Writes the zoom onto the picture and onto the size it asks to be decoded at.
+    /// Writes the zoom onto the picture, onto the size it asks to be decoded at and onto the map over it.
     /// A card that stopped being zoomable, a focused tile gone back to the strip, draws unzoomed
     /// and keeps its zoom for its next turn on the stage.
     /// </summary>
@@ -246,7 +246,8 @@ public partial class TileCard : UserControl
     {
         if (this.FindControl<Panel>("Frame") is not { } frame
             || this.FindControl<Panel>("Zoomed") is not { } zoomed
-            || this.FindControl<StreamTile>("Picture") is not { } picture)
+            || this.FindControl<StreamTile>("Picture") is not { } picture
+            || this.FindControl<ZoomMap>("Map") is not { } map)
         {
             return;
         }
@@ -258,6 +259,12 @@ public partial class TileCard : UserControl
             zoomed.RenderTransform = new MatrixTransform(matrix);
         }
         picture.Zoom = zoom.Scale;
+
+        map.Zoom = zoom;
+        if (frame.Bounds is { Width: > 0, Height: > 0 } laid)
+        {
+            map.Aspect = laid.Height / laid.Width;
+        }
     }
 
     /// <summary>

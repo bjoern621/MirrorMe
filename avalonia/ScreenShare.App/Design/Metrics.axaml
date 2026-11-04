@@ -149,6 +149,9 @@
   -->
   <sys:Double x:Key="StripTileHeight">112</sys:Double>
 
+  <!-- The zoom map over a zoomed picture, a width alone: the height follows the picture's shape. -->
+  <sys:Double x:Key="ZoomMapWidth">96</sys:Double>
+
   <!--
     Motion (docs/design-language.md, "Motion").
     One duration per kind of change, so a hover reads alike on every control.

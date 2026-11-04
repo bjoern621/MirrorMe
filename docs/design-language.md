@@ -195,6 +195,8 @@ Tiles are black in both themes, video defining its own background.
 A tile keeps its own aspect inside its cell (a 4:3 camera pillarboxes, a 21:9 desktop letterboxes) and is never cropped or stretched.
 Tile chrome: 9px radius, a name plate lower left, and on the stage the picture's height and rate lower right.
 Plates and controls fade in under a moving pointer and out once it holds still, the stats overlay open or not.
+A tile being zoomed or panned shows a zoom map upper right: the whole picture as a dark frame, the part on screen as a light box inside it.
+It fades out a second after the zoom holds still.
 
 A stream filling a screen is the stream and nothing else: no chrome, no rail, no radius.
 The aspect rule is the cell's, so the picture keeps its shape and the surround is black.
