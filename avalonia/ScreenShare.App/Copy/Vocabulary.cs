@@ -54,6 +54,7 @@ public sealed class Vocabulary
         "publish.fps" => Rate(value),
         "publish.maxrate_mbps" => Ceiling(value),
         "publish.capture_memory" => Words.Memory(value),
+        "publish.cursor" => Words.Cursor(value),
         "publish.drm_map" => Words.DrmMap(value),
         "publish.format" => Words.Format(value),
         "publish.encoder" => Words.Encoder(value),
