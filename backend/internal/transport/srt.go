@@ -108,18 +108,21 @@ func (SRT) WatchURL(s settings.Settings, path string) string {
 		s.Viewer.SrtWatchLatencyMs*1000, srtBufBytes, srtBufBytes) + srtPassphraseQuery(s)
 }
 
-// GstSource splits as GstSink does: srtsrc takes streamid and latency (milliseconds) as properties
-// on a bare srt:// URI.
+// GstSource splits as GstSink does: srtsrc takes streamid as a property on a bare srt:// URI.
 // The buffer options WatchURL carries are ffmpeg protocol knobs with no srtsrc equivalent.
+//
+// The window goes to the socket as rcvlatency (milliseconds) and the latency property stays at 0.
+// srtsrc answers a latency query with that property, and a frame's timestamp at the decoder already
+// lies behind the window, so the sink would hold the window a second time.
 func (SRT) GstSource(s settings.Settings, path string) []string {
 	assert.Assert(path != "", "a receive source names the path it decodes")
 
 	return append([]string{
 		"srtsrc",
-		"uri=" + SRT{}.ListenerURL(s),
+		fmt.Sprintf("uri=%s?rcvlatency=%d", SRT{}.ListenerURL(s), s.Viewer.SrtWatchLatencyMs),
 		"mode=caller",
 		"streamid=" + srtStreamID(s, "read", path),
-		fmt.Sprintf("latency=%d", s.Viewer.SrtWatchLatencyMs),
+		"latency=0",
 	}, srtPassphraseProperty(s)...)
 }
 

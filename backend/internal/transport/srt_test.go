@@ -2,8 +2,8 @@ package transport
 
 import (
 	"net/url"
-	"strconv"
 	"slices"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -75,10 +75,10 @@ func TestSRTGstSource(t *testing.T) {
 
 	for _, want := range []string{
 		"srtsrc",
-		"uri=srt://10.0.0.5:8890",
+		"uri=srt://10.0.0.5:8890?rcvlatency=1200", // srtsrc counts milliseconds, unlike the ffmpeg URL
 		"mode=caller",
 		"streamid=read:bob",
-		"latency=1200", // srtsrc counts milliseconds, unlike the ffmpeg URL
+		"latency=0", // stamps leave the source after the window, so the sink holds none of it again
 	} {
 		if !slices.Contains(src, want) {
 			t.Errorf("GstSource = %v, missing %q", src, want)

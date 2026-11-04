@@ -126,6 +126,23 @@ func (t *decodeTrack) takeStamp(buf *gst.Buffer) {
 	t.pathFrames.Add(1)
 }
 
+// elementTuning is a property set on an element that a bin plugs in, out of the launch line's reach.
+type elementTuning struct {
+	factory  string
+	property string
+	value    any
+}
+
+// elementTunings is every such property.
+//
+// tsdemux answers a latency query with 700 ms by default, H.222.0's widest gap between two
+// timestamps, and the sink holds every frame for it.
+// A stream here carries a timestamp per frame, so 100 ms covers it.
+// At 0 a decode carrying desktop audio stalls.
+var elementTunings = []elementTuning{
+	{factory: "tsdemux", property: "latency", value: int32(100)},
+}
+
 // elementStats pairs an element found in the pipeline with the table entry stating
 // which of its "stats" fields are shown and how they read.
 type elementStats struct {
@@ -156,6 +173,11 @@ func (r *Receiver) onElement(e gst.Element) {
 	for _, src := range statSources {
 		if src.factory == factory {
 			r.trackStats(e, src)
+		}
+	}
+	for _, tuning := range elementTunings {
+		if tuning.factory == factory {
+			e.SetObjectProperty(tuning.property, tuning.value)
 		}
 	}
 	if factory == rtspSourceFactory {
