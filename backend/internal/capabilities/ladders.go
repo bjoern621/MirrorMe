@@ -15,15 +15,10 @@ import (
 // The per-mode defaults are the constants both argument builders spend.
 // They live here, a speed decision written into two switch statements drifting between the engines.
 //
-// The VAAPI rows declare neither ladder, and each absence has its own reason.
-// No VA profile carries a tuning hint, so there is nothing to aim at on either engine.
-// The effort knob does exist on both, and its scale is not one number:
-// the va elements take target-usage over 1..7,
-// where ffmpeg's -quality runs over the range the driver reports,
-// 0..32 on Mesa's radeonsi against oneVPL's 1..7 on Intel's.
-// One ladder over two scales would spend a different step per engine and per card,
-// which is the stream's look following the capture backend,
-// so the control is greyed and names the codec.
+// The VAAPI rows declare an effort ladder and no tune, since no VA profile carries a tuning hint.
+// The va elements spend the ladder as target-usage.
+// ffmpeg's -quality runs over the range the driver reports, 0..32 on Mesa's radeonsi,
+// so that engine withholds the knob (form.availabilityEngineRules).
 //
 // The AMF rows declare an effort ladder and no tune, though the API has a usage hint:
 // this app pins it,
@@ -244,9 +239,9 @@ var (
 
 // targetUsages is the target-usage scale, 1 at the quality end and 7 at the speed one.
 //
-// One ladder for QSV and VAAPI, the two APIs counting the same way:
-// oneVPL defines the scale,
-// and the va elements take the same seven points on a property of the same name.
+// One ladder for QSV and VAAPI.
+// oneVPL defines the scale, and the va elements take seven points on a property of the same name.
+// A driver reading those points another way gets its spelling in vaTargetUsages.
 // Stated as the numbers, the numbers being the scale's own and the names one engine's spelling:
 // the GStreamer elements take the figure on their target-usage property,
 // and the ffmpeg QSV builder maps it onto -preset (ffmpeg/encoders.go, qsvPresets).
@@ -258,6 +253,30 @@ var targetUsageDefaults = map[string]string{
 	ModeVbr:      "4",
 	ModeCbr:      "7",
 	ModeLossless: "4",
+}
+
+// vaTargetUsages spells the target-usage ladder per driver, for the va elements.
+var vaTargetUsages = Ladder{
+	Steps:    targetUsages,
+	Defaults: targetUsageDefaults,
+	Drivers:  map[string]map[string]string{"radeonsi": radeonsiTargetUsages},
+}
+
+// radeonsiTargetUsages maps each oneVPL step onto the radeonsi preset nearest its trade.
+//
+// Mesa reads target-usage as a bitfield (src/gallium/frontends/va/encode.c):
+// bits 1 and 2 pick the preset, so oneVPL's count would run from balance up to high quality.
+// Each value sets bit 0, which Mesa names valid_setting.
+// On a Radeon 780M, a 2944x1840 H.264 encode tops out at 57 fps on quality and at 96 on balance.
+// Balance trails quality by 0.4 dB PSNR under a 15 Mbit/s ceiling.
+//
+// The value 1 adds pre-encoding and VBAQ (variance-based adaptive quantization) to balance.
+// It stays unused: under an 8 Mbit/s ceiling it spent 3.6 Mbit/s at 31 dB PSNR, where balance reached 44.
+// The speed preset sits at 0, outside the elements' range.
+var radeonsiTargetUsages = map[string]string{
+	"1": "7",
+	"2": "5", "3": "5",
+	"4": "3", "5": "3", "6": "3", "7": "3",
 }
 
 // amfPresets is AMD's quality preset, most effort first.

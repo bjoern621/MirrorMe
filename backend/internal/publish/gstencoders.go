@@ -206,7 +206,7 @@ func GstEncoderElementOn(codec, memory string) (string, bool) {
 	// The codec's own steps for that mode: the defaults carry another codec's,
 	// and a step off this ladder spells a property value no element takes.
 	// Harmless for the element name read back below, and a trap for a caller that reads further.
-	l, err := c.ResolveSteps(mode, "", "")
+	l, err := c.ResolveSteps(mode, "", "", capabilities.Device{})
 	assert.Assert(err == nil, "a codec's own row resolves against its own ladders", codec, err)
 	// The defaults' own rates rather than an empty set: a mapping composes properties out of them, and
 	// a figure that is not there is one a mapping cannot state a property from.
@@ -265,7 +265,7 @@ var gstLiveDelay = map[string][]string{
 // gstEncoder returns the encoder element with its properties, and the elements linking it
 // to the sink, for the selected codec reading frames in the resolved memory.
 // A rate outside an element's property range is refused rather than moved into it.
-func gstEncoder(s settings.Settings, gop int, memory string) (encoder []string, link []string, err error) {
+func gstEncoder(s settings.Settings, gop int, memory string, device capabilities.Device) (encoder []string, link []string, err error) {
 	gst, ok := gstCodecs[s.Publish.Codec()]
 	if !ok {
 		return nil, nil, text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(EngineGst), text.Codec(s.Publish.Codec()))
@@ -277,7 +277,7 @@ func gstEncoder(s settings.Settings, gop int, memory string) (encoder []string, 
 	if err := gstEncoderRefusal(s, c, gst); err != nil {
 		return nil, nil, err
 	}
-	l, err := c.ResolveSteps(s.Publish.Mode, s.Publish.Effort, s.Publish.Tune)
+	l, err := c.ResolveSteps(s.Publish.Mode, s.Publish.Effort, s.Publish.Tune, device)
 	if err != nil {
 		return nil, nil, err
 	}

@@ -95,7 +95,7 @@ func BuildPublishArgs(s settings.Settings, taps []Tap) ([]string, error) {
 		return nil, err
 	}
 
-	enc, err := encoderArgs(s, gopFor(s))
+	enc, err := encoderArgs(s, gopFor(s), gpu.Device())
 	if err != nil {
 		return nil, err
 	}

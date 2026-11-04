@@ -51,7 +51,7 @@ func TestTheLivePropertiesAreWhatTheBuildersSpend(t *testing.T) {
 				s.Publish.BitrateM = limit
 			}
 
-			encoder, _, err := gstEncoder(s, 60, gpupath.MemorySystem)
+			encoder, _, err := gstEncoder(s, 60, gpupath.MemorySystem, capabilities.Device{})
 			if err != nil {
 				t.Fatalf("building: %v", err)
 			}

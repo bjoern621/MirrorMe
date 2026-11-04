@@ -82,7 +82,7 @@ func GstEncodeProbe(s settings.Settings, width, height, frames int, heavy bool) 
 	if err != nil {
 		return nil, err
 	}
-	encoder, link, err := gstEncoder(s, gstGop(s), mem.memory)
+	encoder, link, err := gstEncoder(s, gstGop(s), mem.memory, gpu.Device())
 	if err != nil {
 		return nil, err
 	}

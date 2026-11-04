@@ -99,7 +99,7 @@ func TestGstEncodeProbeCarriesTheRunsEncoder(t *testing.T) {
 	if err != nil {
 		t.Fatalf("resolving the frame memory: %v", err)
 	}
-	encoder, _, err := gstEncoder(s, gstGop(s), mem.memory)
+	encoder, _, err := gstEncoder(s, gstGop(s), mem.memory, capabilities.Device{})
 	if err != nil {
 		t.Fatalf("building the encoder: %v", err)
 	}

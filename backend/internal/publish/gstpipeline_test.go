@@ -387,11 +387,11 @@ func TestEveryGstDeviceEncoderCoversItsFamilysCodecs(t *testing.T) {
 // Direct3D 12 memory and refuse Direct3D 11.
 func TestTheGstDevicePathNamesTheDeviceEncoderElement(t *testing.T) {
 	s := gstD3d11Stream()
-	device, _, err := gstEncoder(s, 60, gpupath.MemoryGpu)
+	device, _, err := gstEncoder(s, 60, gpupath.MemoryGpu, capabilities.Device{})
 	if err != nil {
 		t.Fatal(err)
 	}
-	system, _, err := gstEncoder(s, 60, gpupath.MemorySystem)
+	system, _, err := gstEncoder(s, 60, gpupath.MemorySystem, capabilities.Device{})
 	if err != nil {
 		t.Fatal(err)
 	}

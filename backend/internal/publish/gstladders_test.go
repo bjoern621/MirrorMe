@@ -70,10 +70,25 @@ func TestTheLaddersStateWhatTheElementsSpend(t *testing.T) {
 				if !declared {
 					t.Fatalf("%s declares no effort step for %s, and the element spends one", c.Name, mode)
 				}
-				assertProperty(t, mustGstEncoder(t, c, mode), property, step)
+				assertProperty(t, mustGstEncoder(t, c, mode, capabilities.Device{}), property, step)
 			})
 		}
 	}
+}
+
+// A va element takes the step as the installed driver reads it (capabilities.Ladder.Drivers).
+func TestTheVaElementSpendsTheDriversSpelling(t *testing.T) {
+	c, ok := capabilities.Get("h264_vaapi")
+	if !ok {
+		t.Fatal("no capability row for h264_vaapi")
+	}
+	radeonsi := capabilities.Device{Driver: "radeonsi"}
+	step, _ := c.Effort.StepFor(capabilities.ModeVbr)
+	want := c.Effort.SpelledFor(radeonsi, step)
+	if want == step {
+		t.Fatalf("radeonsi reads step %s as written, which leaves this test nothing to tell apart", step)
+	}
+	assertProperty(t, mustGstEncoder(t, c, capabilities.ModeVbr, radeonsi), "target-usage", want)
 }
 
 // A codec this engine builds spends an effort step exactly where its row declares a ladder.
@@ -146,7 +161,7 @@ func TestTheTuneStepTravelsInTheElementsOwnProperty(t *testing.T) {
 		s.Publish.Cq = c.CqMaxOn(capabilities.EngineGst) / 2
 		s.Publish.Tune = tc.step
 
-		encoder, _, err := gstEncoder(s, 60, gpupath.MemorySystem)
+		encoder, _, err := gstEncoder(s, 60, gpupath.MemorySystem, capabilities.Device{})
 		if err != nil {
 			t.Fatalf("%s tuned for %s: %v", tc.codec, tc.step, err)
 		}
@@ -159,7 +174,7 @@ func TestTheTuneStepTravelsInTheElementsOwnProperty(t *testing.T) {
 // mustGstEncoder builds one element's properties for one mode on a draft the codec accepts:
 // the quantizer rides its own scale and the bitrate stays under its ceiling,
 // so nothing but the knob under test can refuse it.
-func mustGstEncoder(t *testing.T, c capabilities.Codec, mode string) []string {
+func mustGstEncoder(t *testing.T, c capabilities.Codec, mode string, device capabilities.Device) []string {
 	t.Helper()
 
 	chromas := c.EngineChromas(capabilities.EngineGst)
@@ -186,7 +201,7 @@ func mustGstEncoder(t *testing.T, c capabilities.Codec, mode string) []string {
 		s.Publish.MaxrateM = elementRateCeilingM
 	}
 
-	encoder, _, err := gstEncoder(s, 60, gpupath.MemorySystem)
+	encoder, _, err := gstEncoder(s, 60, gpupath.MemorySystem, device)
 	if err != nil {
 		t.Fatalf("%s in %s: %v", c.Name, mode, err)
 	}

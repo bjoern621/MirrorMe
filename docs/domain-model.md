@@ -147,6 +147,7 @@ Where one engine's wrapper has no such knob the steps are gapped there rather th
 A knob one engine spends and the other does not is a departure rather than a gap, the control being the same control on both.
 VAAPI is the case: its rows declare seven target usages, where the other engine counts over the range the installed driver reports, measured 0..32 on one driver against 1..7 on another.
 One step carried across would spend a different amount of work per engine and per card, so one builder spends none and the form greys the control there with that reason.
+Mesa's radeonsi reads target usage as a preset bitfield, so the VAAPI rows spell each step per driver (`vaTargetUsages`).
 
 ## Rows with no ladder
 

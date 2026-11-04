@@ -216,6 +216,23 @@ type Ladder struct {
 	// and x264 in the same mode takes whatever step it is given.
 	// A flag on the mode would grey every codec's control wherever one of them pins.
 	Pins []string `json:"pins"`
+	// Drivers holds the value a driver reads each step as, keyed by driver and then by step.
+	// A driver with no entry reads every step as written.
+	Drivers map[string]map[string]string `json:"-"`
+}
+
+// SpelledFor is the value the driver on device reads step as.
+// The empty step stays empty: a knob left alone needs no spelling.
+func (l Ladder) SpelledFor(device Device, step string) string {
+	assert.Assert(step == "" || l.Has(step), "a spelled step lies on its ladder", step)
+
+	spellings, ok := l.Drivers[device.Driver]
+	if !ok || step == "" {
+		return step
+	}
+	spelled, ok := spellings[step]
+	assert.Assert(ok, "a driver spelling covers every step of its ladder", device.Driver, step)
+	return spelled
 }
 
 func (l Ladder) PinsIn(mode string) bool {
@@ -272,13 +289,14 @@ type Steps struct {
 // An encode that followed the engine would tie a stream's picture to its capture backend.
 // Each engine still owns the spelling: ffmpeg's -preset, the x264 element's speed-preset,
 // and the empty step, which every builder answers by passing no such option at all.
+// device decides the effort value its driver reads (Ladder.Drivers).
 //
 // A refusal is an Umgebungsfehler,
 // keeping a hand-edited settings file off an encoder's own error path:
 // the field is free-form text,
 // the repair walks a step off the ladder back onto it,
 // and nothing between the two bounds a value that reached the settings by another route.
-func (c Codec) ResolveSteps(mode, effort, tune string) (Steps, error) {
+func (c Codec) ResolveSteps(mode, effort, tune string, device Device) (Steps, error) {
 	e, ok := c.Effort.Resolve(mode, effort)
 	if !ok {
 		return Steps{}, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN,
@@ -289,7 +307,7 @@ func (c Codec) ResolveSteps(mode, effort, tune string) (Steps, error) {
 		return Steps{}, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN,
 			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_TUNE, tune))
 	}
-	return Steps{Effort: e, Tune: t}, nil
+	return Steps{Effort: c.Effort.SpelledFor(device, e), Tune: t}, nil
 }
 
 // everyMode spreads one step across every rate-control mode,

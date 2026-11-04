@@ -63,7 +63,7 @@ func BuildEncodeProbeArgs(s settings.Settings, width, height, frames int, heavy 
 		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_FPS_NOT_POSITIVE, text.Fps(s.Publish.Fps))
 	}
 
-	enc, err := encoderArgs(s, gopFor(s))
+	enc, err := encoderArgs(s, gopFor(s), gpu.Device())
 	if err != nil {
 		return nil, err
 	}

@@ -387,7 +387,7 @@ func gstRoundTripEncode(t *testing.T, s settings.Settings, pattern string) strin
 	if err != nil {
 		t.Fatal(err)
 	}
-	encoder, link, err := gstEncoder(s, s.Publish.Fps*2, mem.memory)
+	encoder, link, err := gstEncoder(s, s.Publish.Fps*2, mem.memory, capabilities.Device{})
 	if err != nil {
 		t.Fatal(err)
 	}

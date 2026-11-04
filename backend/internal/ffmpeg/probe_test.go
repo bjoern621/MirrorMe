@@ -88,7 +88,7 @@ func TestEncodeProbeCarriesTheRunsEncoder(t *testing.T) {
 	if err != nil {
 		t.Fatalf("building the probe: %v", err)
 	}
-	enc, err := encoderArgs(s, gopFor(s))
+	enc, err := encoderArgs(s, gopFor(s), capabilities.Device{})
 	if err != nil {
 		t.Fatalf("building the encoder: %v", err)
 	}

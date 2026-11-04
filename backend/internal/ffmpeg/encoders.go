@@ -113,13 +113,13 @@ var familyMappings = map[string]encoderArgsFunc{
 // and a load path of their own, as VAAPI, QSV and Vulkan do (hwsurface.go),
 // and none encodes from a command carrying only a bitrate.
 // capabilities.Validate rejects those codecs ahead of this either way.
-func encoderArgs(s settings.Settings, gop int) ([]string, error) {
+func encoderArgs(s settings.Settings, gop int, device capabilities.Device) ([]string, error) {
 	c, ok := capabilities.Get(s.Publish.Codec())
 	if !ok {
 		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(s.Publish.Codec()))
 	}
 
-	l, err := c.ResolveSteps(s.Publish.Mode, s.Publish.Effort, s.Publish.Tune)
+	l, err := c.ResolveSteps(s.Publish.Mode, s.Publish.Effort, s.Publish.Tune, device)
 	if err != nil {
 		return nil, err
 	}

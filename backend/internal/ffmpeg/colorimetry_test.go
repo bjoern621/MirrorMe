@@ -129,7 +129,7 @@ func TestPublishedColorimetryIsSignalledInTheBitstream(t *testing.T) {
 				}
 
 				options, filters := publishColour(t, s)
-				enc, err := encoderArgs(s, gopFor(s))
+				enc, err := encoderArgs(s, gopFor(s), capabilities.Device{})
 				if err != nil {
 					t.Fatal(err)
 				}

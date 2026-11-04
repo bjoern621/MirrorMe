@@ -65,7 +65,7 @@ func buildPipeline(s settings.Settings, capture []string, meterPort string, prev
 	if err != nil {
 		return nil, err
 	}
-	encoder, link, err := gstEncoder(s, gstGop(s), mem.memory)
+	encoder, link, err := gstEncoder(s, gstGop(s), mem.memory, gpu.Device())
 	if err != nil {
 		return nil, err
 	}

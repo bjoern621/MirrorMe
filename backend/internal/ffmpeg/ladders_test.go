@@ -175,7 +175,7 @@ func mustEncoderArgs(t *testing.T, c capabilities.Codec, mode string) []string {
 		s.Publish.BitrateM = limit
 	}
 
-	args, err := encoderArgs(s, gopFor(s))
+	args, err := encoderArgs(s, gopFor(s), capabilities.Device{})
 	if err != nil {
 		t.Fatalf("%s in %s: %v", c.Name, mode, err)
 	}

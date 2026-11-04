@@ -149,7 +149,7 @@ func TestAStepOutsideTheLadderIsRefused(t *testing.T) {
 		s := baseStream()
 		s.Publish.UseCodec(tc.codec)
 		s.Publish.Chroma, s.Publish.Effort = "yuv420p", tc.step
-		if _, err := encoderArgs(s, gopFor(s)); err == nil {
+		if _, err := encoderArgs(s, gopFor(s), capabilities.Device{}); err == nil {
 			t.Errorf("%s took the step %q", tc.codec, tc.step)
 		}
 	}
@@ -164,7 +164,7 @@ func TestAStepOutsideTheLadderIsRefused(t *testing.T) {
 			s.Publish.UseCodec(codec)
 			s.Publish.Chroma, s.Publish.Effort = "yuv420p", step
 			s.Publish.Tune, _ = c.Tune.StepFor(s.Publish.Mode)
-			if _, err := encoderArgs(s, gopFor(s)); err != nil {
+			if _, err := encoderArgs(s, gopFor(s), capabilities.Device{}); err != nil {
 				t.Errorf("%s step %q: %v", codec, step, err)
 			}
 		}
@@ -187,7 +187,7 @@ func TestNvencCbrPinsTheDeclaredStep(t *testing.T) {
 	s := baseStream()
 	s.Publish.UseCodec("hevc_nvenc")
 	s.Publish.Chroma, s.Publish.Mode, s.Publish.Effort = "yuv420p", "cbr", "p7"
-	args, err := encoderArgs(s, gopFor(s))
+	args, err := encoderArgs(s, gopFor(s), capabilities.Device{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -349,7 +349,7 @@ func TestEncoderArgs(t *testing.T) {
 			s := baseStream()
 			s.Publish.UseCodec(tc.codec)
 			s.Publish.Mode = tc.mode
-			args, err := encoderArgs(s, gopFor(s))
+			args, err := encoderArgs(s, gopFor(s), capabilities.Device{})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -375,7 +375,7 @@ func TestSvtAv1SizesARateBufferInCbrOnly(t *testing.T) {
 	s.Publish.VbvMs = 500
 
 	s.Publish.Mode = "abr"
-	args, err := encoderArgs(s, gopFor(s))
+	args, err := encoderArgs(s, gopFor(s), capabilities.Device{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -384,7 +384,7 @@ func TestSvtAv1SizesARateBufferInCbrOnly(t *testing.T) {
 	}
 
 	s.Publish.Mode = "cbr"
-	args, err = encoderArgs(s, gopFor(s))
+	args, err = encoderArgs(s, gopFor(s), capabilities.Device{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -407,7 +407,7 @@ func TestVp9ProfileFollowsChroma(t *testing.T) {
 		s := baseStream()
 		s.Publish.UseCodec("libvpx-vp9")
 		s.Publish.Chroma = chroma
-		args, err := encoderArgs(s, gopFor(s))
+		args, err := encoderArgs(s, gopFor(s), capabilities.Device{})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -429,7 +429,7 @@ func TestAmfHevcProfileFollowsChroma(t *testing.T) {
 		s := baseStream()
 		s.Publish.UseCodec("hevc_amf")
 		s.Publish.Chroma = chroma
-		args, err := encoderArgs(s, gopFor(s))
+		args, err := encoderArgs(s, gopFor(s), capabilities.Device{})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -479,7 +479,7 @@ func TestEncoderArgsAgainstFfmpeg(t *testing.T) {
 				if limit := cap.BitrateLimitOn(capabilities.EngineFfmpeg); limit > 0 && s.Publish.BitrateM > limit {
 					s.Publish.BitrateM = limit
 				}
-				enc, err := encoderArgs(s, gopFor(s))
+				enc, err := encoderArgs(s, gopFor(s), capabilities.Device{})
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -804,7 +804,7 @@ func TestAbrAndVbrDifferWhereBothAreAllowed(t *testing.T) {
 			if capabilities.Validate(capabilities.EngineFfmpeg, s.Publish.Codec(), s.Publish.CapabilityOptions(), s.Publish.Cq, s.Publish.BitrateM, s.Publish.Gop, capabilities.Device{}) != nil {
 				continue
 			}
-			args, err := encoderArgs(s, gopFor(s))
+			args, err := encoderArgs(s, gopFor(s), capabilities.Device{})
 			if err != nil {
 				t.Fatalf("%s %s: %v", c.Name, mode, err)
 			}
@@ -827,7 +827,7 @@ func TestConstantQualityCarriesTheStatedCeiling(t *testing.T) {
 		s.Publish.UseCodec(codec)
 		s.Publish.Mode, s.Publish.Chroma = "crf", "yuv420p"
 		s.Publish.MaxrateM, s.Publish.VbvMs = 12, 200
-		args, err := encoderArgs(s, gopFor(s))
+		args, err := encoderArgs(s, gopFor(s), capabilities.Device{})
 		if err != nil {
 			t.Fatalf("%s: %v", codec, err)
 		}
@@ -849,7 +849,7 @@ func TestConstantQualityWithoutACeilingStatesNoRate(t *testing.T) {
 	s.Publish.UseCodec("libx264")
 	s.Publish.Mode, s.Publish.Chroma = "crf", "yuv420p"
 	s.Publish.MaxrateM = 0
-	args, err := encoderArgs(s, gopFor(s))
+	args, err := encoderArgs(s, gopFor(s), capabilities.Device{})
 	if err != nil {
 		t.Fatal(err)
 	}

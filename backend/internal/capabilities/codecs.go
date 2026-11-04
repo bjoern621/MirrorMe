@@ -265,7 +265,7 @@ var Codecs = []Codec{
 	// so a row declares the format's capability rather than one generation's.
 	{
 		Name:          "h264_vaapi",
-		Effort:        Ladder{Steps: targetUsages, Defaults: targetUsageDefaults},
+		Effort:        vaTargetUsages,
 		Family:        FamilyVaapi,
 		Format:        "h264",
 		Implemented:   true,
@@ -278,7 +278,7 @@ var Codecs = []Codec{
 	},
 	{
 		Name:          "hevc_vaapi",
-		Effort:        Ladder{Steps: targetUsages, Defaults: targetUsageDefaults},
+		Effort:        vaTargetUsages,
 		Family:        FamilyVaapi,
 		Format:        "hevc",
 		Implemented:   true,
@@ -291,7 +291,7 @@ var Codecs = []Codec{
 	},
 	{
 		Name:          "av1_vaapi",
-		Effort:        Ladder{Steps: targetUsages, Defaults: targetUsageDefaults},
+		Effort:        vaTargetUsages,
 		Family:        FamilyVaapi,
 		Format:        "av1",
 		Implemented:   true,
@@ -305,7 +305,7 @@ var Codecs = []Codec{
 	},
 	{
 		Name:          "vp9_vaapi",
-		Effort:        Ladder{Steps: targetUsages, Defaults: targetUsageDefaults},
+		Effort:        vaTargetUsages,
 		Family:        FamilyVaapi,
 		Format:        "vp9",
 		Implemented:   true,
@@ -321,7 +321,7 @@ var Codecs = []Codec{
 		// it holds on both engines where the shared one holds on the GStreamer engine alone,
 		// and the first match is the reason reported.
 		Name:          "vp8_vaapi",
-		Effort:        Ladder{Steps: targetUsages, Defaults: targetUsageDefaults},
+		Effort:        vaTargetUsages,
 		Family:        FamilyVaapi,
 		Format:        "vp8",
 		Implemented:   true,
