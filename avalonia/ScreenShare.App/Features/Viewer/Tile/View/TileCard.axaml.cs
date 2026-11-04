@@ -210,8 +210,8 @@ public partial class TileCard : UserControl
     }
 
     /// <summary>
-    /// Draws what markup cannot decide: the overlay, the plates and chrome under a resting pointer, the cursor
-    /// and the meter's bar at the level in pixels of this card.
+    /// Draws what markup cannot decide: the overlay and its menu row, the plates and chrome under a resting pointer,
+    /// the cursor and the meter's bar at the level in pixels of this card.
     ///
     /// The overlay opens and fades on its own state, the class is what the markup hides the plates and chrome on,
     /// and the cursor is this control's own property, inherited by everything drawn inside it.
@@ -220,11 +220,17 @@ public partial class TileCard : UserControl
     /// </summary>
     private void Draw()
     {
-        var chrome = TileChrome.Of(_resting, _watched is { ShowStats: true }, PictureElsewhere, Bounds.Size);
+        var chrome = Chrome();
 
         if (this.FindControl<Overlay>("Stats") is { } stats)
         {
             stats.IsOpen = chrome.Stats;
+        }
+
+        if (this.FindControl<MenuItem>("StatsRow") is { } row)
+        {
+            row.IsEnabled = chrome.StatsFits;
+            row.IsChecked = chrome.StatsTicked;
         }
 
         DrawZoom();
@@ -239,6 +245,8 @@ public partial class TileCard : UserControl
 
         bar.Width = _watched is { HasLevel: true } tile ? Math.Max(0, Bounds.Width * tile.Level) : 0;
     }
+
+    private TileChrome Chrome() => TileChrome.Of(_resting, _watched is { ShowStats: true }, PictureElsewhere, Bounds.Size);
 
     /// <summary>
     /// Writes the zoom onto the picture, onto the size it asks to be decoded at and onto the map over it.
@@ -350,8 +358,9 @@ public partial class TileCard : UserControl
 
         // Refused wherever the row the key names is greyed:
         // a stream without a sound track has no level to move and nothing to silence.
+        // A card too narrow for the stats panel has nowhere to draw it.
         // The press stays unhandled, a key this tile cannot answer not being its own.
-        if (!command.CanExecute(null))
+        if (!command.CanExecute(null) || (command == tile.ToggleStats && !Chrome().StatsFits))
         {
             return;
         }

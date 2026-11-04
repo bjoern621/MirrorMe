@@ -68,6 +68,38 @@ public sealed class TileChromeTests
         Assert.True(chrome.HidesCursor);
     }
 
+    /// <summary>The menu row greys and drops its tick, so it never claims a panel nobody can see.</summary>
+    [Fact]
+    public void ANarrowUprightCardGreysTheMenuRow()
+    {
+        var chrome = TileChrome.Of(pointerResting: false, showStats: true, pictureElsewhere: false, card: new Size(400, 700));
+
+        Assert.False(chrome.StatsFits);
+        Assert.False(chrome.StatsTicked);
+    }
+
+    [Fact]
+    public void ARoomyCardTicksTheMenuRowWhileTheOverlayIsOn()
+    {
+        var on = TileChrome.Of(pointerResting: false, showStats: true, pictureElsewhere: false, card: Wide);
+        var off = TileChrome.Of(pointerResting: false, showStats: false, pictureElsewhere: false, card: Wide);
+
+        Assert.True(on.StatsFits);
+        Assert.True(on.StatsTicked);
+        Assert.True(off.StatsFits);
+        Assert.False(off.StatsTicked);
+    }
+
+    /// <summary>The window a stream popped out to draws its figures, so the slot's own shape decides nothing.</summary>
+    [Fact]
+    public void ANarrowSlotWhosePictureMovedKeepsTheMenuRow()
+    {
+        var chrome = TileChrome.Of(pointerResting: false, showStats: true, pictureElsewhere: true, card: new Size(400, 700));
+
+        Assert.True(chrome.StatsFits);
+        Assert.True(chrome.StatsTicked);
+    }
+
     [Fact]
     public void ANarrowWideCardKeepsTheOverlay()
     {

@@ -394,12 +394,22 @@
 
       <Separator />
 
-      <MenuItem Header="Stats overlay" Command="{Binding ToggleStats}"
-                InputGesture="{x:Static tiles:TileKeys.Stats}"
-                IsChecked="{Binding ShowStats, Mode=OneWay}">
+      <!--
+        Greyed, tick and all, on a card too narrow for the panel (Features/Viewer/Tile/View/TileChrome.cs).
+        The card's size decides, so its code-behind writes the row.
+      -->
+      <MenuItem Name="StatsRow" Command="{Binding ToggleStats}"
+                InputGesture="{x:Static tiles:TileKeys.Stats}">
         <MenuItem.Icon>
           <ti:TablerIcon Icon="IconChartBar" />
         </MenuItem.Icon>
+        <MenuItem.Header>
+          <StackPanel MaxWidth="260">
+            <TextBlock Text="Stats overlay" />
+            <TextBlock Classes="hint" Text="{x:Static copy:Cards.StatsNoRoom}" TextWrapping="Wrap"
+                       IsVisible="{Binding !$parent[MenuItem].IsEnabled}" />
+          </StackPanel>
+        </MenuItem.Header>
       </MenuItem>
 
       <Separator />

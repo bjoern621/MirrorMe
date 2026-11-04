@@ -6,15 +6,17 @@ using ScreenShare.App.Features.Shell.Model;
 namespace ScreenShare.App.Features.Viewer.Tile.View;
 
 /// <summary>
-/// What a card puts over its picture, off the four facts that decide it.
+/// What a card puts over its picture and into its menu, off the four facts that decide it.
 ///
 /// A still pointer clears the plates and the hover chrome whatever else is up.
 /// The stats overlay holds the cursor alone: a pointer holding still there is aimed at a row.
 /// </summary>
 /// <param name="Stats">Whether this card draws the stats overlay.</param>
+/// <param name="StatsFits">Whether the card has room for the overlay, which enables its menu row and key.</param>
+/// <param name="StatsTicked">Whether the overlay's menu row carries its tick.</param>
 /// <param name="Resting">Whether the plates and the hover chrome come off.</param>
 /// <param name="HidesCursor">Whether the cursor comes off.</param>
-public readonly record struct TileChrome(bool Stats, bool Resting, bool HidesCursor)
+public readonly record struct TileChrome(bool Stats, bool StatsFits, bool StatsTicked, bool Resting, bool HidesCursor)
 {
     /// <summary>
     /// Reads a card's state.
@@ -27,11 +29,13 @@ public readonly record struct TileChrome(bool Stats, bool Resting, bool HidesCur
 
         // Figures belong to the card drawing the picture they describe,
         // so a slot whose stream popped out is a picture again and rests like one.
+        // Its own shape decides nothing about a panel drawn in another window.
         // A narrow upright card would sit almost wholly under the panel.
         // The tile keeps its overlay on, which returns once the card widens.
-        var stats = showStats && !pictureElsewhere && !Cramped(card);
+        var fits = pictureElsewhere || !Cramped(card);
+        var stats = showStats && !pictureElsewhere && fits;
 
-        return new TileChrome(stats, pointerResting, pointerResting && !stats);
+        return new TileChrome(stats, fits, showStats && fits, pointerResting, pointerResting && !stats);
     }
 
     private static bool Cramped(Size card)
