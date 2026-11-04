@@ -16,45 +16,45 @@
     a filled screen.
     Defined once rather than per host, so the menu, the meter and the badge cannot drift apart between them.
 
-    The name plate stands at rest, small in a corner, so a strip of pictures says whose each one is.
-    The controls wait for the pointer, and go again once the pointer holds still:
+    The plates and the controls wait for the pointer, and go again once the pointer holds still:
     a pointer parked on a picture is somebody watching it (Features/Viewer/Tile/View/RestingWatch.cs).
 
     The stage tile carries one figure, the picture's height and rate.
     Every other reading of a decode sits in the stats overlay.
-    A card drawing it is a card being read: the overlay stays up wherever the pointer goes,
-    and it holds the chrome and the cursor up with it (Features/Viewer/Tile/View/TileChrome.cs).
+    The overlay stays up wherever the pointer goes, and it holds the cursor up with it
+    (Features/Viewer/Tile/View/TileChrome.cs).
   -->
 
   <UserControl.Styles>
-    <!-- Hover chrome. Faded in rather than snapped, hit-testable only once up. -->
-    <Style Selector="Border.chrome">
+    <!-- Hover chrome and plates. Faded in rather than snapped, hit-testable only once up. -->
+    <Style Selector="Border.chrome, Border.nameplate">
       <Setter Property="Opacity" Value="0" />
       <Setter Property="IsHitTestVisible" Value="False" />
-      <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
-      <Setter Property="CornerRadius" Value="{StaticResource RadiusControl}" />
-      <Setter Property="Padding" Value="7,4" />
       <Setter Property="Transitions">
         <Transitions>
           <DoubleTransition Property="Opacity" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
         </Transitions>
       </Setter>
     </Style>
-    <Style Selector="tiles|TileCard:pointerover Border.chrome">
+    <Style Selector="tiles|TileCard:pointerover Border.chrome, tiles|TileCard:pointerover Border.nameplate">
       <Setter Property="Opacity" Value="1" />
       <Setter Property="IsHitTestVisible" Value="True" />
     </Style>
 
     <!--
-      A pointer that stopped moving takes it off again, along with the cursor itself
-      (Features/Viewer/Tile/View/RestingWatch.cs).
-      A card drawing the stats overlay never rests: the pointer there is aimed at the figures
+      A pointer that stopped moving takes them off again, the stats overlay open or not
       (Features/Viewer/Tile/View/TileChrome.cs).
       After the hover setter it overrides, styles applying in the order they are written.
     -->
-    <Style Selector="tiles|TileCard:resting Border.chrome">
+    <Style Selector="tiles|TileCard:resting Border.chrome, tiles|TileCard:resting Border.nameplate">
       <Setter Property="Opacity" Value="0" />
       <Setter Property="IsHitTestVisible" Value="False" />
+    </Style>
+
+    <Style Selector="Border.chrome">
+      <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
+      <Setter Property="CornerRadius" Value="{StaticResource RadiusControl}" />
+      <Setter Property="Padding" Value="7,4" />
     </Style>
 
     <Style Selector="Border.nameplate">
@@ -178,7 +178,7 @@
       and asking one tile for them puts the panel on screen twice.
 
       The card opens the overlay holding it off the tile's state and the host's answer together,
-      the same pair deciding whether a resting pointer clears the chrome
+      the same pair deciding whether a resting pointer clears the cursor
       (Features/Viewer/Tile/View/TileChrome.cs).
       The overlay fades it out on close, as it grows in below.
     -->
@@ -449,8 +449,7 @@
 
       <!--
         Off with the picture it names, the plate standing in for both.
-        The mute mark stands at rest beside the name, every decode opening muted:
-        a silent tile then says why it is silent without a hover.
+        The mute mark sits beside the name, every decode opening muted.
         A stream without an audio track wears none, having nothing to mute.
       -->
       <Border Classes="nameplate" VerticalAlignment="Bottom" HorizontalAlignment="Left"
@@ -511,7 +510,7 @@
 
       <!--
         The stats overlay, turned on per tile for the one stream being diagnosed.
-        It stays up when the pointer leaves, and the card keeps its cursor and chrome while it is up.
+        It stays up when the pointer leaves, and the card keeps its cursor while it is up.
 
         It shows one stage at a time: every block closed on its heading and one figure,
         a press opening that block and closing the one open before it (Features/Viewer/Tile/ViewModel/StatsFold.cs).

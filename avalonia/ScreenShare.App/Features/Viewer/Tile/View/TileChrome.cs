@@ -3,13 +3,13 @@ namespace ScreenShare.App.Features.Viewer.Tile.View;
 /// <summary>
 /// What a card puts over its picture, off the three facts that decide it.
 ///
-/// One answer for the overlay and for the chrome, the overlay deciding the other:
-/// figures on screen are what a pointer holding still is aimed at,
-/// and clearing the picture there takes the cursor off the panel being read.
+/// A still pointer clears the plates and the hover chrome whatever else is up.
+/// The stats overlay holds the cursor alone: a pointer holding still there is aimed at a row.
 /// </summary>
 /// <param name="Stats">Whether this card draws the stats overlay.</param>
-/// <param name="Resting">Whether the chrome and the cursor come off.</param>
-public readonly record struct TileChrome(bool Stats, bool Resting)
+/// <param name="Resting">Whether the plates and the hover chrome come off.</param>
+/// <param name="HidesCursor">Whether the cursor comes off.</param>
+public readonly record struct TileChrome(bool Stats, bool Resting, bool HidesCursor)
 {
     /// <summary>
     /// Reads a card's state.
@@ -22,6 +22,6 @@ public readonly record struct TileChrome(bool Stats, bool Resting)
         // so a slot whose stream popped out is a picture again and rests like one.
         var stats = showStats && !pictureElsewhere;
 
-        return new TileChrome(stats, pointerResting && !stats);
+        return new TileChrome(stats, pointerResting, pointerResting && !stats);
     }
 }

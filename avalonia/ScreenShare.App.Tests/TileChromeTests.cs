@@ -4,8 +4,9 @@ using Xunit;
 namespace ScreenShare.App.Tests;
 
 /// <summary>
-/// A picture somebody watches loses its chrome and its cursor, and a panel somebody reads keeps both.
-/// Asserted: which of the two a card is, off the pointer, the tile's overlay and the host's answer.
+/// A still pointer clears everything drawn over the picture but the stats overlay,
+/// and a panel somebody reads keeps the cursor pointing at it.
+/// Asserted: what a card clears, off the pointer, the tile's overlay and the host's answer.
 /// </summary>
 public sealed class TileChromeTests
 {
@@ -16,16 +17,18 @@ public sealed class TileChromeTests
 
         Assert.False(chrome.Stats);
         Assert.True(chrome.Resting);
+        Assert.True(chrome.HidesCursor);
     }
 
-    /// <summary>The cursor is what a reader points the figures out with, and the name says whose they are.</summary>
+    /// <summary>The cursor is what a reader points the figures out with.</summary>
     [Fact]
-    public void TheStatsOverlayHoldsTheChromeAndTheCursor()
+    public void TheStatsOverlayHoldsTheCursorAndClearsThePlates()
     {
         var chrome = TileChrome.Of(pointerResting: true, showStats: true, pictureElsewhere: false);
 
         Assert.True(chrome.Stats);
-        Assert.False(chrome.Resting);
+        Assert.True(chrome.Resting);
+        Assert.False(chrome.HidesCursor);
     }
 
     [Fact]
@@ -34,6 +37,7 @@ public sealed class TileChromeTests
         var chrome = TileChrome.Of(pointerResting: false, showStats: false, pictureElsewhere: false);
 
         Assert.False(chrome.Resting);
+        Assert.False(chrome.HidesCursor);
     }
 
     /// <summary>
@@ -47,5 +51,6 @@ public sealed class TileChromeTests
 
         Assert.False(chrome.Stats);
         Assert.True(chrome.Resting);
+        Assert.True(chrome.HidesCursor);
     }
 }

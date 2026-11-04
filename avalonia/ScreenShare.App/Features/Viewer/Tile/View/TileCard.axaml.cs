@@ -207,10 +207,10 @@ public partial class TileCard : UserControl
     }
 
     /// <summary>
-    /// Draws what markup cannot decide: the overlay, the chrome under a resting pointer, and the meter's bar
-    /// at the level in pixels of this card.
+    /// Draws what markup cannot decide: the overlay, the plates and chrome under a resting pointer, the cursor
+    /// and the meter's bar at the level in pixels of this card.
     ///
-    /// The overlay opens and fades on its own state, the class is what the markup hides the chrome on,
+    /// The overlay opens and fades on its own state, the class is what the markup hides the plates and chrome on,
     /// and the cursor is this control's own property, inherited by everything drawn inside it.
     /// Every pass writes all of them, and each write is the state named rather than a change to it,
     /// so a pass per pointer move and a pass per level costs nothing.
@@ -227,7 +227,7 @@ public partial class TileCard : UserControl
         DrawZoom();
 
         PseudoClasses.Set(":resting", chrome.Resting);
-        Cursor = chrome.Resting ? Hidden : null;
+        Cursor = chrome.HidesCursor ? Hidden : null;
 
         if (this.FindControl<Border>("Level") is not { } bar)
         {
