@@ -47,8 +47,6 @@ public sealed class InsightsViewModel : Observable
 
     private double _window = double.PositiveInfinity;
 
-    public event Action<InsightsAction>? ActionRequested;
-
     /// <param name="form">Settings the backend holds, which the preview's end-to-end route reads its leg from.</param>
     /// <param name="dispatch">Hands work to the UI loop, where every binding here is written.</param>
     public InsightsViewModel(IBackend backend, FormSession form, Session session, Action<Action> dispatch)
@@ -71,7 +69,6 @@ public sealed class InsightsViewModel : Observable
         Tabs = [StreamTab, ViewersTab];
         _selectedTab = StreamTab;
 
-        EditInSetup = new DelegateCommand(() => Request(InsightsAction.EditInSetup));
         StopCommand = new PendingCommand(() => PerformAsync(_backend.StopPublishAsync), dispatch, () => IsLive);
         Refused = reason => dispatch(() =>
         {
@@ -141,11 +138,7 @@ public sealed class InsightsViewModel : Observable
 
     public bool HasTitle => Title.Length > 0;
 
-    public static string EditLabel => InsightsCopy.EditInSetup;
-
     public static string ViewersNote => InsightsCopy.ViewersNote;
-
-    public DelegateCommand EditInSetup { get; }
 
     /// <summary>Beside the cards on a wide window, over them on a narrow one.</summary>
     public bool IsWide => _window >= WideFrom;
@@ -273,7 +266,6 @@ public sealed class InsightsViewModel : Observable
     {
         Assert.That(path.Length > 0, "a log is opened by the path the verdict named");
 
-        Request(InsightsAction.OpenFullLog);
         return PerformAsync(cancellation => _backend.OpenLogAsync(path, cancellation));
     }
 
@@ -295,12 +287,5 @@ public sealed class InsightsViewModel : Observable
         catch (OperationCanceledException)
         {
         }
-    }
-
-    private void Request(InsightsAction action)
-    {
-        Assert.That(Enum.IsDefined(action), "a control asks for an action this screen names", (int)action);
-
-        ActionRequested?.Invoke(action);
     }
 }

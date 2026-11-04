@@ -1,7 +1,6 @@
 using Avalonia.Threading;
 using ScreenShare.App.Backend;
 using ScreenShare.App.Contracts;
-using ScreenShare.App.Features.Insights.Model;
 using ScreenShare.App.Features.Insights.ViewModel;
 using ScreenShare.App.Features.Setup.Model;
 using ScreenShare.App.Features.Setup.RegionPicker.View;
@@ -208,11 +207,6 @@ public sealed class ShellViewModel : Observable
             RenderStatusBar();
             RenderChrome();
         };
-
-        // The live screen names the navigation and the shell performs it, so a value stays editable in one window
-        // (docs/design-language.md, "Ownership").
-        // Every other action that screen raises it performs itself against the backend.
-        Insights.ActionRequested += OnInsightsRequested;
 
         // Setup owns the commit and performs it.
         // Where the window goes afterwards is the window's.
@@ -486,12 +480,6 @@ public sealed class ShellViewModel : Observable
         _openingDecided = true;
     }
 
-    /// <summary>
-    /// What the shell does with a request the live screen raised.
-    /// A request that navigates is the shell's.
-    /// The rest are the publisher's, and answering one here would be the shell inventing behaviour it does not
-    /// own.
-    /// </summary>
     private void OnJoinRequested(JoinRoute route)
     {
         // An unlinked machine links first, and Settings holds the button; every other way in is the relay step's.
@@ -503,14 +491,6 @@ public sealed class ShellViewModel : Observable
 
         Setup.CurrentStep = RelayLayout.GroupKey;
         Show(Destination.Setup);
-    }
-
-    private void OnInsightsRequested(InsightsAction action)
-    {
-        if (action == InsightsAction.EditInSetup)
-        {
-            Show(Destination.Setup);
-        }
     }
 
     /// <summary>Hands the band the destination it stands in, its hint and the build. Idempotent.</summary>

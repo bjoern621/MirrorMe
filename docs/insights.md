@@ -33,7 +33,7 @@ Each run keeps the marks that moved it, oldest first, the most recent 200.
 
 ## Screen
 
-Header: what is shared and to which group, the way it travels, the running time and `Edit in setup`.
+Header: what is shared and to which group, the way it travels and the running time.
 Under it the verdict, then two tabs.
 
 Stream tab: the preview, a card per figure and a chart of the picked card over one minute, five minutes or the whole run.

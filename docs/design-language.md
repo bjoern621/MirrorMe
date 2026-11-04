@@ -186,7 +186,7 @@ The settings dialog shows one section at a time, its list beside the section, an
 Below 520 px the dialog fills the window and shows the list first, a picked section taking its place and an arrow leading back.
 
 The insights header's title wraps where the window is narrower than its row.
-Below 520 px `Edit in setup` keeps its pencil alone, and the chart's range picker drops under its figures.
+Below 520 px the chart's range picker drops under its figures.
 The floor the window asks the desktop for is the narrowest one column is drawn for (`Features/Shell/Model/WindowSize.cs`).
 
 ## Video surfaces
@@ -330,7 +330,7 @@ A figure is inert instead: quieter than a row, no fill under the pointer, out of
 ## Wording
 
 Anything written as words for a reader is sentence case: headings, buttons, field labels, empty states, status lines, failure messages.
-"Start sharing", "Force keyframe", "Edit in setup", "Read-only while live."
+"Start sharing", "Force keyframe", "Open full log", "Read-only while live."
 A standalone sentence takes a full stop.
 A fragment labelling a state does not: "No frames arriving", "Waiting for the first frame".
 
@@ -367,7 +367,7 @@ Any other showing the same value shows it read-only, with one link back to the o
 A second editor for one setting is the defect this prevents.
 
 Setup owns the configuration of what this machine sends.
-Insights shows the running stream and edits nothing, with one `Edit in setup` link.
+Insights shows the running stream and edits nothing. The nav strip leads back to setup.
 Viewer owns how this machine receives: the watch settings, saved from a panel beside the stage, and the per-tile controls over a running decode.
 They sit with the tiles because a reader who only watches never opens setup, and a draft setup holds is persisted by going live (`viewer-architecture.md`, "Two legs, two protocols").
 

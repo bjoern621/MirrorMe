@@ -17,8 +17,6 @@ public static class InsightsCopy
 
     public const string OpenFullLog = "Open full log";
 
-    public const string EditInSetup = "Edit in setup";
-
     public const string StreamTab = "Stream";
 
     public const string NoReadings = "Nothing to chart yet. The encoder reports once a second while sharing.";
