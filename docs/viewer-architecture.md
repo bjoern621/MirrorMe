@@ -281,8 +281,14 @@ The marker is placed on the picture rather than on the card, the host letterboxi
 
 The wheel zooms a tile around the pointer.
 A left drag moves the zoomed picture.
-A pinch zooms on a touch screen, and on a touchpad under Windows and macOS.
-Avalonia's X11 and Wayland backends raise no touchpad pinch, so a touchpad there zooms by its two-finger scroll.
+A pinch zooms on a touch screen, and on a touchpad under Wayland, Windows and macOS.
+Under Wayland a two-finger scroll moves the zoomed picture, `wl_pointer.axis_source` telling fingers from a wheel.
+X11, Windows and macOS name no source, so a two-finger scroll there zooms as a wheel does.
+Avalonia's X11 backend raises no touchpad pinch.
+
+Avalonia's Wayland backend binds no `zwp_pointer_gestures_v1` and drops the scroll source.
+`Features/Viewer/Tile/View/WaylandTouchpad.cs` reaches its `wl_pointer` by reflection, binds the pinch on it and taps its listener.
+The reflection names members of Avalonia.Wayland 12.1.1, so a version bump re-checks them: a renamed one asserts at the first pointer over a card.
 A strip tile under a focused one stays unzoomable, its wheel scrolling the strip.
 Shift with the wheel scrolls sideways and zooms nothing.
 
