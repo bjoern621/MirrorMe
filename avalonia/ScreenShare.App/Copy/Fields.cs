@@ -299,7 +299,7 @@ public static class Fields
 
         ["source"] = new(
             "Capture",
-            "Which screen goes out, and how its frames reach the encoder.",
+            "How frames get from the screen to the encoder. You pick the screen, window or region when you start sharing.",
             "How should the screen be captured?"),
 
         ["quality"] = new(
