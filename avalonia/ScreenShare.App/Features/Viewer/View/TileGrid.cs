@@ -61,11 +61,27 @@ public sealed class TileGrid : Panel
     /// <summary>Box the last measure pass solved, which the arrange pass places the children in.</summary>
     private Size _measured;
 
+    /// <summary>Set by a change to the tiles or the mode, so the next arrange slides them. A window drag or a scroll leaves it clear.</summary>
+    private bool _rearranged;
+
     static TileGrid()
     {
         AffectsMeasure<TileGrid>(ModeProperty, ViewportProperty);
         AffectsArrange<TileGrid>(OffsetProperty);
         AffectsParentMeasure<TileGrid>(AspectProperty, IsFocusedTileProperty);
+        ModeProperty.Changed.AddClassHandler<TileGrid>((grid, _) => grid._rearranged = true);
+        IsFocusedTileProperty.Changed.AddClassHandler<Control>((tile, _) =>
+        {
+            if (tile.GetVisualParent() is TileGrid grid)
+            {
+                grid._rearranged = true;
+            }
+        });
+    }
+
+    public TileGrid()
+    {
+        Children.CollectionChanged += (_, _) => _rearranged = true;
     }
 
     public LayoutMode Mode
@@ -126,9 +142,15 @@ public sealed class TileGrid : Panel
         var (places, _) = Solve(_measured);
         foreach (var (child, rect) in places)
         {
+            var from = child.Bounds;
             child.Arrange(rect);
+            if (_rearranged && from.Size != default && rect is { Width: > 0, Height: > 0 })
+            {
+                ArrangeMotion.Reshape(child, from, rect);
+            }
         }
 
+        _rearranged = false;
         return finalSize;
     }
 

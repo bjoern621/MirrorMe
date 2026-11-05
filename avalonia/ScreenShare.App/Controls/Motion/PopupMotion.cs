@@ -177,7 +177,7 @@ public static class PopupMotion
         return (TimeSpan)found;
     }
 
-    private static Easing Ease()
+    internal static Easing Ease()
         => Assert.NotNull(
             Application.Current?.FindResource("MotionEase") as Easing,
             "Design/Metrics.axaml declares MotionEase as an easing");

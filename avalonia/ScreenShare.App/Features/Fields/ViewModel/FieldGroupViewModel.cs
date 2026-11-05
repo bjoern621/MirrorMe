@@ -191,8 +191,8 @@ public sealed class FieldGroupViewModel : Observable
         // Split second, off the one rendered list, so the two halves and the whole cannot disagree.
         // The fold's own open state is the reader's and stays untouched here.
         var floor = _onFloor is null ? rendered : [.. rendered.Where(model => _onFloor(model.Key))];
-        Reconcile.Onto(Floor, floor);
-        Reconcile.Onto(Folded, _onFloor is null ? [] : [.. rendered.Where(model => !_onFloor(model.Key))]);
+        Reconcile.InPlace(Floor, floor);
+        Reconcile.InPlace(Folded, _onFloor is null ? [] : [.. rendered.Where(model => !_onFloor(model.Key))]);
         Fold.Apply(Folded);
 
         Assert.That(

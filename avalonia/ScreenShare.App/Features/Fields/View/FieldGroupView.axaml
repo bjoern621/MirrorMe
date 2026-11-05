@@ -38,7 +38,13 @@
                  IsVisible="{Binding HasHelp}"
                  Text="{Binding Help}" />
 
-      <ItemsControl ItemsSource="{Binding Floor}" ItemTemplate="{StaticResource FieldRow}" />
+      <ItemsControl ItemsSource="{Binding Floor}" ItemTemplate="{StaticResource FieldRow}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <controls:SlidingStack />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+      </ItemsControl>
 
       <!-- The step's fold: what the floor leaves out, behind a closed disclosure (Setup/Model/FloorLayout.cs). -->
       <ContentControl IsVisible="{Binding Fold.HasAny}" Content="{Binding Fold}" ContentTemplate="{StaticResource FoldDisclosure}" />
