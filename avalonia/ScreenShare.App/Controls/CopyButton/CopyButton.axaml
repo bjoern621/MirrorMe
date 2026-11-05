@@ -20,20 +20,37 @@
                 Background="{TemplateBinding Background}"
                 BorderBrush="{TemplateBinding BorderBrush}"
                 BorderThickness="{TemplateBinding BorderThickness}"
-                CornerRadius="{TemplateBinding CornerRadius}">
+                CornerRadius="{TemplateBinding CornerRadius}"
+                RenderTransform="none">
+          <Border.Transitions>
+            <Transitions>
+              <controls:BrushFade Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              <TransformOperationsTransition Property="RenderTransform" Duration="{StaticResource MotionPress}" Easing="{StaticResource MotionEase}" />
+            </Transitions>
+          </Border.Transitions>
           <Panel>
             <ti:TablerIcon Name="Idle" Icon="IconCopy" HorizontalAlignment="Center" />
-            <ti:TablerIcon Name="Done" Icon="IconCheck" HorizontalAlignment="Center" IsVisible="False" />
+            <ti:TablerIcon Name="Done" Icon="IconCheck" HorizontalAlignment="Center" Opacity="0" RenderTransform="scale(0.4)" />
           </Panel>
         </Border>
       </ControlTemplate>
     </Setter>
 
+    <!-- Design/Icons.axaml lifts a glyph inside a Button, and this control's style key misses that selector. -->
+    <Style Selector="^:pointerover:not(:disabled) /template/ ti|TablerIcon#Idle">
+      <Setter Property="RenderTransform" Value="scale(1.12)" />
+    </Style>
+    <Style Selector="^:pressed:not(:disabled) /template/ ti|TablerIcon#Idle">
+      <Setter Property="RenderTransform" Value="scale(0.94)" />
+    </Style>
+
     <Style Selector="^:copied /template/ ti|TablerIcon#Idle">
-      <Setter Property="IsVisible" Value="False" />
+      <Setter Property="Opacity" Value="0" />
+      <Setter Property="RenderTransform" Value="scale(0.4)" />
     </Style>
     <Style Selector="^:copied /template/ ti|TablerIcon#Done">
-      <Setter Property="IsVisible" Value="True" />
+      <Setter Property="Opacity" Value="1" />
+      <Setter Property="RenderTransform" Value="none" />
     </Style>
 
     <!--
