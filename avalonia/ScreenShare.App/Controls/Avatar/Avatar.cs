@@ -54,6 +54,10 @@ public sealed class Avatar : TemplatedControl
         if (change.Property == PictureProperty)
         {
             Drawn = Pictures.Of(Picture);
+            if (IsLoaded)
+            {
+                ArrangeMotion.Arrive(this);
+            }
         }
     }
 }

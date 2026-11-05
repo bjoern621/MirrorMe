@@ -31,17 +31,18 @@
             controls:Pending.IsActive="{Binding Press.IsRunning}"
             ToolTip.Tip="{Binding BlockedTip}">
       <StackPanel Orientation="Horizontal" Spacing="{StaticResource GapTight}" VerticalAlignment="Center">
-        <Ellipse Width="{StaticResource DotSize}"
+        <Ellipse Classes="fadesin"
+                 Width="{StaticResource DotSize}"
                  Height="{StaticResource DotSize}"
                  Fill="{Binding $parent[Button].Foreground}"
                  IsVisible="{Binding !ShowsStop}"
                  VerticalAlignment="Center" />
-        <ti:TablerIcon Classes="button"
+        <ti:TablerIcon Classes="button fadesin"
                        Icon="IconPlayerStop"
                        Brush="{Binding $parent[Button].Foreground, Mode=OneWay}"
                        IsVisible="{Binding ShowsStop}"
                        VerticalAlignment="Center" />
-        <TextBlock Text="{Binding PressLabel}" />
+        <TextBlock Text="{Binding PressLabel}" controls:TextFade.IsOn="True" />
       </StackPanel>
     </Button>
 

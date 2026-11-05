@@ -108,7 +108,8 @@
                        Classes="heading"
                        Margin="4,0,0,0"
                        VerticalAlignment="Center"
-                       Text="{Binding Heading}" />
+                       Text="{Binding Heading}"
+                       controls:TextFade.IsOn="True" />
 
             <Button Grid.Column="2"
                     Theme="{StaticResource IconButton}"
@@ -151,8 +152,8 @@
               <StackPanel Margin="16,14" Spacing="{StaticResource GapSection}">
 
                 <StackPanel Spacing="6">
-                  <TextBlock Classes="cardtitle" TextWrapping="Wrap" TextTrimming="None" Text="{Binding Question}" />
-                  <TextBlock Classes="muted" TextWrapping="Wrap" TextTrimming="None" Text="{Binding Lead}" />
+                  <TextBlock Classes="cardtitle" TextWrapping="Wrap" TextTrimming="None" Text="{Binding Question}" controls:TextFade.IsOn="True" />
+                  <TextBlock Classes="muted" TextWrapping="Wrap" TextTrimming="None" Text="{Binding Lead}" controls:TextFade.IsOn="True" />
                 </StackPanel>
 
                 <Panel>
