@@ -31,13 +31,13 @@
         </Button>
       </Grid>
 
-      <ItemsControl ItemsSource="{Binding Builtin}">
-        <ItemsControl.ItemsPanel>
+      <controls:RowList ItemsSource="{Binding Builtin}">
+        <controls:RowList.ItemsPanel>
           <ItemsPanelTemplate>
             <controls:ChoiceRowPanel />
           </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-        <ItemsControl.ItemTemplate>
+        </controls:RowList.ItemsPanel>
+        <controls:RowList.ItemTemplate>
           <DataTemplate x:DataType="vm:BuiltinPresetRow">
             <Button Theme="{StaticResource OptionCard}"
                     Classes.picked="{Binding IsCurrent}"
@@ -66,8 +66,8 @@
               </StackPanel>
             </Button>
           </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
+        </controls:RowList.ItemTemplate>
+      </controls:RowList>
 
       <!--
         That the window is still dialling, under the refusal saying it could not be reached.

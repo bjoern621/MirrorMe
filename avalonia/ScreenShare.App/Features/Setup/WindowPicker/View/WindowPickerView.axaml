@@ -17,8 +17,8 @@
 
   <controls:CardColumn Spacing="{StaticResource GapTight}" IsVisible="{Binding IsVisible}">
 
-    <ItemsControl ItemsSource="{Binding Windows}">
-      <ItemsControl.ItemTemplate>
+    <controls:RowList ItemsSource="{Binding Windows}">
+      <controls:RowList.ItemTemplate>
         <DataTemplate x:DataType="model:WindowChoice">
           <Button Theme="{StaticResource OptionCard}"
                   Classes.picked="{Binding IsSelected}"
@@ -45,8 +45,8 @@
             </StackPanel>
           </Button>
         </DataTemplate>
-      </ItemsControl.ItemTemplate>
-    </ItemsControl>
+      </controls:RowList.ItemTemplate>
+    </controls:RowList>
 
     <TextBlock Classes="hint"
                TextWrapping="Wrap"

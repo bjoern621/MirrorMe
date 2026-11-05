@@ -288,9 +288,9 @@
 
                 <!-- Disclosure between the two lists, where every choice control keeps it (OptionEntry.axaml). -->
                 <StackPanel IsVisible="{Binding IsChoice}">
-                  <ItemsControl ItemsSource="{Binding Offered}"
-                                ItemTemplate="{StaticResource OptionEntry}"
-                                IsEnabled="{Binding IsEnabled}" />
+                  <controls:RowList ItemsSource="{Binding Offered}"
+                                    ItemTemplate="{StaticResource OptionEntry}"
+                                    IsEnabled="{Binding IsEnabled}" />
 
                   <Button Theme="{StaticResource LinkButton}"
                           HorizontalAlignment="Left"
@@ -307,10 +307,10 @@
                   </Button>
 
                   <controls:Reveal IsOpen="{Binding RefusedShown}">
-                    <ItemsControl ItemsSource="{Binding Refused}"
-                                  ItemTemplate="{StaticResource OptionEntry}"
-                                  IsEnabled="{Binding IsEnabled}"
-                                  Margin="0,6,0,0" />
+                    <controls:RowList ItemsSource="{Binding Refused}"
+                                      ItemTemplate="{StaticResource OptionEntry}"
+                                      IsEnabled="{Binding IsEnabled}"
+                                      Margin="0,6,0,0" />
                   </controls:Reveal>
                 </StackPanel>
 

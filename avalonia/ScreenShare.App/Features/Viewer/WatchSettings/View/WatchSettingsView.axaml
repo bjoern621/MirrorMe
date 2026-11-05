@@ -69,7 +69,7 @@
 
     <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
       <StackPanel>
-        <ItemsControl ItemsSource="{Binding Arrivals}" ItemTemplate="{StaticResource ArrivalCard}" />
+        <controls:RowList ItemsSource="{Binding Arrivals}" ItemTemplate="{StaticResource ArrivalCard}" />
 
         <!-- Backend's own sentence about the last write, unrewritten. -->
         <SelectableTextBlock Classes="reason"

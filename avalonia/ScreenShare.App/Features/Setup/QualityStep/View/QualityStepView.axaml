@@ -92,15 +92,15 @@
 
               <SelectableTextBlock Classes="reason" IsVisible="{Binding Field.HasReason}" Text="{Binding Field.Reason}" />
 
-              <ItemsControl ItemsSource="{Binding Field.Offered}"
-                            ItemTemplate="{StaticResource ChoiceCard}"
-                            IsEnabled="{Binding Field.IsEnabled}">
-                <ItemsControl.ItemsPanel>
+              <controls:RowList ItemsSource="{Binding Field.Offered}"
+                                ItemTemplate="{StaticResource ChoiceCard}"
+                                IsEnabled="{Binding Field.IsEnabled}">
+                <controls:RowList.ItemsPanel>
                   <ItemsPanelTemplate>
                     <controls:ChoiceRowPanel />
                   </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-              </ItemsControl>
+                </controls:RowList.ItemsPanel>
+              </controls:RowList>
 
               <!-- The refused entries under their own disclosure, so revealing them moves no card above it. -->
               <Button Theme="{StaticResource LinkButton}"
@@ -115,14 +115,14 @@
               </Button>
 
               <controls:Reveal IsOpen="{Binding Field.RefusedShown}">
-                <ItemsControl ItemsSource="{Binding Field.Refused}"
-                              ItemTemplate="{StaticResource ChoiceCard}">
-                  <ItemsControl.ItemsPanel>
+                <controls:RowList ItemsSource="{Binding Field.Refused}"
+                                  ItemTemplate="{StaticResource ChoiceCard}">
+                  <controls:RowList.ItemsPanel>
                     <ItemsPanelTemplate>
                       <controls:ChoiceRowPanel />
                     </ItemsPanelTemplate>
-                  </ItemsControl.ItemsPanel>
-                </ItemsControl>
+                  </controls:RowList.ItemsPanel>
+                </controls:RowList>
               </controls:Reveal>
 
               <!-- What the picked entry is for, and what the form says at this control, once under the question. -->
