@@ -4,6 +4,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using ScreenShare.App.Contracts;
+using ScreenShare.App.Controls;
 using ScreenShare.App.Features.Fields.ViewModel;
 
 namespace ScreenShare.App.Features.Fields.View;
@@ -39,21 +40,31 @@ public sealed partial class ComparisonSheet : UserControl
         layer.Children.Add(sheet);
     }
 
-    private void Close()
+    /// <summary>Fades the sheet out, then takes it off the layer. A second call changes nothing.</summary>
+    private async Task CloseAsync()
     {
-        _fill?.Dispose();
+        if (_fill is null)
+        {
+            return;
+        }
+
+        _fill.Dispose();
         _fill = null;
+        IsHitTestVisible = false;
+        Opacity = 0;
+        await Task.Delay(PopupMotion.Duration("MotionOpen"));
+
         if (Parent is OverlayLayer layer)
         {
             layer.Children.Remove(this);
         }
     }
 
-    private void DonePressed(object? sender, RoutedEventArgs e) => Close();
+    private void DonePressed(object? sender, RoutedEventArgs e) => _ = CloseAsync();
 
     private void ScrimPressed(object? sender, PointerPressedEventArgs e)
     {
-        Close();
+        _ = CloseAsync();
         e.Handled = true;
     }
 }

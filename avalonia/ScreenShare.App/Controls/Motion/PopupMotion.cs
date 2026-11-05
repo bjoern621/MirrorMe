@@ -170,7 +170,7 @@ public static class PopupMotion
         },
     };
 
-    private static TimeSpan Duration(string key)
+    internal static TimeSpan Duration(string key)
     {
         var found = Application.Current?.FindResource(key);
         Assert.That(found is TimeSpan, "Design/Metrics.axaml declares each motion duration as a TimeSpan", key);

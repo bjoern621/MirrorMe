@@ -5,6 +5,12 @@
              x:Class="ScreenShare.App.Features.Fields.View.ComparisonSheet"
              x:DataType="vm:ComparisonViewModel">
 
+  <UserControl.Transitions>
+    <Transitions>
+      <DoubleTransition Property="Opacity" Duration="{StaticResource MotionOpen}" Easing="{StaticResource MotionEase}" />
+    </Transitions>
+  </UserControl.Transitions>
+
   <!-- Rises from the foot over a dimmed window (docs/design-language.md, "Narrow windows"). -->
   <Grid>
     <Border Classes="scrim mounting" PointerPressed="ScrimPressed" />
