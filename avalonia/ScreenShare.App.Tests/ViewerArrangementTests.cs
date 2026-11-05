@@ -149,6 +149,25 @@ public sealed class ViewerArrangementTests
         Assert.True(viewer.IsGrid);
     }
 
+    /// <summary>
+    /// A lone tile holds the stage whichever arrangement it sits in.
+    /// Tiles sharing the grid hold none, and the focus takes it back with the stage.
+    /// </summary>
+    [Fact]
+    public void ALoneTileStaysStagedInTheGrid()
+    {
+        var lone = Grid("one");
+        Assert.Equal(LayoutMode.Grid, lone.Mode);
+        Assert.True(Tile(lone, "one").IsStaged);
+
+        var viewer = Grid("one", "two");
+        Assert.True(Tile(viewer, "one").IsStaged);
+        Assert.False(Tile(viewer, "two").IsStaged);
+
+        viewer.ToggleGrid.Execute(null);
+        Assert.DoesNotContain(viewer.Tiles, tile => tile.IsStaged);
+    }
+
     /// <summary>A tile in the grid asks for the stage and gets it.</summary>
     [Fact]
     public void FocusingATileInTheGridStagesIt()

@@ -532,6 +532,7 @@ public sealed class ViewerViewModel : Observable
         {
             tile.Apply(TilePipeline.Of(DecodeOf(tile)), _session.StatsOf(tile.Name, tile.Transport));
             tile.IsFocused = tile.Name == Focused;
+            tile.IsStaged = tile.IsFocused || Tiles.Count == 1;
             tile.HasStrip = tile.IsFocused;
             tile.StripHidden = tile.IsFocused && Mode == LayoutMode.Stage;
             tile.IsPoppedOut = _popped.Contains(tile.Name);

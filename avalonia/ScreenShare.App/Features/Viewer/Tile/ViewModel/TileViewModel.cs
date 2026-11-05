@@ -144,6 +144,15 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
     /// </summary>
     public bool IsFocused { get => _isFocused; set => Set(ref _isFocused, value); }
 
+    private bool _isStaged;
+
+    /// <summary>
+    /// Whether this tile holds the picture the reader is looking at: the focus, or the only tile there is.
+    /// A lone tile keeps it as a row joining it turns the grid into a stage, so its frame does not fade in again.
+    /// Written by the screen that owns the arrangement, like <see cref="IsFocused"/>.
+    /// </summary>
+    public bool IsStaged { get => _isStaged; set => Set(ref _isStaged, value); }
+
     private bool _hasStrip;
     private bool _stripHidden;
 

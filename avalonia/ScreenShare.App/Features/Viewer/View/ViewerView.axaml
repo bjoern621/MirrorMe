@@ -140,7 +140,7 @@
             -->
             <DataTemplate x:DataType="tile:TileViewModel">
               <tiles:TileCard PictureElsewhere="{Binding PictureElsewhere}" InGrid="True"
-                              Classes.staged="{Binding IsFocused}"
+                              Classes.staged="{Binding IsStaged}"
                               Classes.alone="{Binding StripHidden}"
                               Classes.beside="{Binding !StripHidden}" />
             </DataTemplate>
