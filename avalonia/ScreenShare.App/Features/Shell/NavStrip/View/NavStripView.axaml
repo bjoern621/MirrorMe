@@ -54,7 +54,8 @@
           The watch group, which acts on the viewer alone and which the publish wizard does not draw
           (Features/Fields/Model/GroupPlacement.cs).
         -->
-        <Button Theme="{StaticResource IconButton}"
+        <Button Classes="fadesin"
+                Theme="{StaticResource IconButton}"
                 IsVisible="{Binding ShowsWatch}"
                 Command="{Binding Watch.Toggle, FallbackValue={x:Null}}"
                 ToolTip.Tip="{Binding Watch.ToggleTip, FallbackValue={x:Null}}">

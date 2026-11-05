@@ -58,13 +58,15 @@
             Anchored nowhere: every screen fixing one of these is behind this dialog
             (SharePicker/ViewModel/SharePickerViewModel.cs).
           -->
-          <ItemsControl Grid.Row="2" ItemsSource="{Binding Blocking}" Margin="0,14,0,0">
-            <ItemsControl.ItemTemplate>
-              <DataTemplate x:DataType="setup:PreflightCheckRow">
-                <controls:CheckItem Margin="0,0,0,9" Text="{Binding Text}" State="{Binding State}" />
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
+          <controls:Reveal Grid.Row="2" IsOpen="{Binding !!Blocking.Count}" FollowsOpening="False">
+            <ItemsControl ItemsSource="{Binding Blocking}" Margin="0,14,0,0">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="setup:PreflightCheckRow">
+                  <controls:CheckItem Margin="0,0,0,9" Text="{Binding Text}" State="{Binding State}" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </controls:Reveal>
 
           <StackPanel Grid.Row="3"
                       Orientation="Horizontal"

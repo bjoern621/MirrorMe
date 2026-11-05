@@ -239,13 +239,6 @@
       </Style.Animations>
     </Style>
 
-    <Style Selector="tiles|TileCard tiles|StreamTile">
-      <Setter Property="Transitions">
-        <Transitions>
-          <DoubleTransition Property="Opacity" Duration="{StaticResource MotionPicture}" Easing="{StaticResource MotionEase}" />
-        </Transitions>
-      </Setter>
-    </Style>
     <Style Selector="tiles|TileCard.dark tiles|StreamTile">
       <Setter Property="Opacity" Value="0" />
     </Style>
@@ -255,6 +248,16 @@
     </Style>
     <Style Selector="tiles|TileCard[PictureElsewhere=True] Border.plate">
       <Setter Property="IsVisible" Value="True" />
+      <Style.Animations>
+        <Animation Duration="{StaticResource MotionMount}" Easing="{StaticResource MotionEase}">
+          <KeyFrame Cue="0%">
+            <Setter Property="Opacity" Value="0" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="Opacity" Value="1" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
     </Style>
 
     <!--
@@ -522,7 +525,8 @@
         Red for the two that broke, the other two being a stream on its way
         (docs/design-language.md, "Palette").
       -->
-      <StackPanel IsVisible="{Binding HasNotice}"
+      <StackPanel Classes="fadesin"
+                  IsVisible="{Binding HasNotice}"
                   HorizontalAlignment="Center" VerticalAlignment="Center"
                   Spacing="{StaticResource GapTight}"
                   Margin="{StaticResource InsetSection}">

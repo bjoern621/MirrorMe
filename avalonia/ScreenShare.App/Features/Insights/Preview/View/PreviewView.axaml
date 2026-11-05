@@ -13,7 +13,7 @@
     <Border Classes="tile" Height="180">
       <Panel>
 
-        <tiles:StreamTile Source="{Binding Tile}" />
+        <tiles:StreamTile Classes.dark="{Binding Tile.HasNotice}" Source="{Binding Tile}" />
 
         <!--
           Selectable, because this carries the backend's own refusal for the end-to-end preview,
@@ -21,7 +21,7 @@
           A reader gets that sentence out of the app by selecting it,
           and the style wraps rather than trims so the characters they came for are still there.
         -->
-        <StackPanel IsVisible="{Binding HasPlaceholder}"
+        <StackPanel Classes="fadesin" IsVisible="{Binding HasPlaceholder}"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Spacing="{StaticResource GapTight}"

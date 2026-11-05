@@ -91,20 +91,25 @@
         (docs/design-language.md, "Palette").
       -->
       <StackPanel DockPanel.Dock="Bottom" Spacing="{StaticResource GapTight}">
-        <ItemsControl ItemsSource="{Binding HintsBelow}" IsVisible="{Binding HasHintsBelow}" Margin="0,10,0,0">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate x:DataType="model:MemberHint">
-              <TextBlock Classes="hint" Text="{Binding Line}" TextWrapping="Wrap" TextTrimming="None" />
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
-        <SelectableTextBlock Classes="hint" Text="{Binding Notice}" TextWrapping="Wrap"
-                             Classes.danger="{Binding NoticeIsFailure}"
-                             IsVisible="{Binding NoticeBelow}" Margin="0,10,0,0" />
-        <SelectableTextBlock Classes="hint danger" Text="{Binding Refusal}" TextWrapping="Wrap"
-                             IsVisible="{Binding HasRefusal}" Margin="0,10,0,0" />
-        <SelectableTextBlock Classes="hint danger" Text="{Binding GroupRefusal}" TextWrapping="Wrap"
-                             IsVisible="{Binding HasGroupRefusal}" Margin="0,10,0,0" />
+        <controls:Reveal IsOpen="{Binding HasHintsBelow}" FollowsOpening="False" LeavesNoGap="True">
+          <ItemsControl ItemsSource="{Binding HintsBelow}" Margin="0,10,0,0">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="model:MemberHint">
+                <TextBlock Classes="hint" Text="{Binding Line}" TextWrapping="Wrap" TextTrimming="None" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </controls:Reveal>
+        <controls:Reveal IsOpen="{Binding NoticeBelow}" FollowsOpening="False" LeavesNoGap="True">
+          <SelectableTextBlock Classes="hint" Text="{Binding Notice}" TextWrapping="Wrap"
+                               Classes.danger="{Binding NoticeIsFailure}" Margin="0,10,0,0" />
+        </controls:Reveal>
+        <controls:Reveal IsOpen="{Binding HasRefusal}" FollowsOpening="False" LeavesNoGap="True">
+          <SelectableTextBlock Classes="hint danger" Text="{Binding Refusal}" TextWrapping="Wrap" Margin="0,10,0,0" />
+        </controls:Reveal>
+        <controls:Reveal IsOpen="{Binding HasGroupRefusal}" FollowsOpening="False" LeavesNoGap="True">
+          <SelectableTextBlock Classes="hint danger" Text="{Binding GroupRefusal}" TextWrapping="Wrap" Margin="0,10,0,0" />
+        </controls:Reveal>
       </StackPanel>
 
       <Panel>
@@ -147,7 +152,7 @@
 
             <!-- A stopped stream: a press plays it, and its menu opens it outside this window. -->
             <DataTemplate x:DataType="vm:StreamRowViewModel">
-              <Button Theme="{StaticResource TileButton}" VerticalContentAlignment="Stretch"
+              <Button Classes="fadesin" Theme="{StaticResource TileButton}" VerticalContentAlignment="Stretch"
                       Command="{Binding Show}"
                       ToolTip.Tip="{x:Static copy:Cards.PlayAgainTip}"
                       controls:Pending.IsActive="{Binding Show.IsRunning}">
@@ -221,7 +226,7 @@
 
             <!-- A member sharing nothing, dashed as every empty place in this app is. -->
             <DataTemplate x:DataType="model:MemberHint">
-              <Panel>
+              <Panel Classes="fadesin">
                 <Rectangle Stroke="{StaticResource DividerBrush}"
                            StrokeThickness="1"
                            StrokeDashArray="4,4"
@@ -234,7 +239,7 @@
             </DataTemplate>
 
             <DataTemplate x:DataType="vm:GridSwitch">
-              <Button Theme="{StaticResource TileButton}" VerticalContentAlignment="Stretch"
+              <Button Classes="fadesin" Theme="{StaticResource TileButton}" VerticalContentAlignment="Stretch"
                       Command="{Binding Toggle}" ToolTip.Tip="{Binding Tip}">
                 <Border Classes="cell">
                   <StackPanel Orientation="Horizontal" Spacing="{StaticResource GapTight}"
@@ -256,7 +261,7 @@
         nothing to press (docs/design-language.md, "Empty states").
         The sentence is per cause and quiet where the relay notice speaks (Model/GridEmpty.cs).
       -->
-      <Grid IsVisible="{Binding ShowsGridEmpty}">
+      <Grid Classes="fadesin" IsVisible="{Binding ShowsGridEmpty}">
         <Rectangle Stroke="{StaticResource DividerBrush}"
                    StrokeThickness="1"
                    StrokeDashArray="4,4"
@@ -285,7 +290,7 @@
           What the relay answered, the reader's only account of an unreachable one.
           Red for the backend's own sentence alone.
         -->
-        <StackPanel IsVisible="{Binding NoticeCentred}" Spacing="{StaticResource GapTight}">
+        <StackPanel Classes="fadesin" IsVisible="{Binding NoticeCentred}" Spacing="{StaticResource GapTight}">
           <SelectableTextBlock Classes="hint" Text="{Binding Notice}"
                                Classes.danger="{Binding NoticeIsFailure}"
                                TextWrapping="Wrap" TextAlignment="Center" />
@@ -306,7 +311,7 @@
           Outside a group the stage asks the way in (Model/GridEmpty.cs).
           The press leads to the control that sets the picked way, so the setting keeps one editor.
         -->
-        <StackPanel IsVisible="{Binding ShowsJoinCard}" Spacing="{StaticResource GapControl}">
+        <StackPanel Classes="fadesin" IsVisible="{Binding ShowsJoinCard}" Spacing="{StaticResource GapControl}">
           <StackPanel Spacing="4" Margin="0,0,0,6">
             <TextBlock Classes="heading" TextAlignment="Center" TextWrapping="Wrap" TextTrimming="None"
                        Text="{x:Static copy:Cards.JoinTitle}" />
@@ -378,20 +383,21 @@
       A TileGrid of one card letterboxes the picture, one definition of a letterbox serving both
       (Features/Viewer/Model/TileLayout.cs).
     -->
-    <Panel Background="{StaticResource TileBrush}"
-           IsVisible="{Binding HasFullscreen}">
-      <ContentControl Content="{Binding FullscreenTile}"
-                      HorizontalContentAlignment="Stretch"
-                      VerticalContentAlignment="Stretch">
-        <ContentControl.ContentTemplate>
-          <DataTemplate x:DataType="tile:TileViewModel">
-            <view:TileGrid>
-              <tiles:TileCard view:TileGrid.Aspect="{Binding Aspect}" />
-            </view:TileGrid>
-          </DataTemplate>
-        </ContentControl.ContentTemplate>
-      </ContentControl>
-    </Panel>
+    <controls:Overlay IsOpen="{Binding HasFullscreen}">
+      <Panel Background="{StaticResource TileBrush}">
+        <ContentControl Content="{Binding FullscreenTile}"
+                        HorizontalContentAlignment="Stretch"
+                        VerticalContentAlignment="Stretch">
+          <ContentControl.ContentTemplate>
+            <DataTemplate x:DataType="tile:TileViewModel">
+              <view:TileGrid>
+                <tiles:TileCard view:TileGrid.Aspect="{Binding Aspect}" />
+              </view:TileGrid>
+            </DataTemplate>
+          </ContentControl.ContentTemplate>
+        </ContentControl>
+      </Panel>
+    </controls:Overlay>
 
   </Grid>
 

@@ -1,6 +1,7 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:controls="using:ScreenShare.App.Controls">
+        xmlns:controls="using:ScreenShare.App.Controls"
+        xmlns:tiles="using:ScreenShare.App.Features.Viewer.Tile.View">
 
   <!--
     Every fill and every edge in the app.
@@ -33,11 +34,23 @@
     </Style.Animations>
   </Style>
 
+  <!-- A picture fades in over its ground once frames arrive, and out while the tile is dark. -->
+  <Style Selector="tiles|StreamTile">
+    <Setter Property="Transitions">
+      <Transitions>
+        <DoubleTransition Property="Opacity" Duration="{StaticResource MotionPicture}" Easing="{StaticResource MotionEase}" />
+      </Transitions>
+    </Setter>
+  </Style>
+  <Style Selector="tiles|StreamTile.dark">
+    <Setter Property="Opacity" Value="0" />
+  </Style>
+
   <!--
-    A step, tab or section fades in each time it is shown.
+    A step, tab, section or whole screen fades in each time it is shown.
     Matched on its own IsVisible, as a card is: a card inside keeps its own flag and rises on its first showing alone.
   -->
-  <Style Selector=":is(Control).fadesin[IsVisible=True]">
+  <Style Selector=":is(Control).fadesin[IsVisible=True], ContentControl.screens > :is(Control)">
     <Style.Animations>
       <Animation Duration="{StaticResource MotionMount}" Easing="{StaticResource MotionEase}">
         <KeyFrame Cue="0%">

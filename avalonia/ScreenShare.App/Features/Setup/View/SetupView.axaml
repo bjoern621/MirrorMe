@@ -32,35 +32,36 @@
       so no step can be drawn from anything newer.
       No form is invented in its place (docs/ipc-api.md, "What each side owes").
     -->
-    <Border DockPanel.Dock="Top"
-            Classes="panel"
-            Padding="12,10"
-            Margin="12,12,12,0"
-            IsVisible="{Binding IsUnavailable}">
-      <Grid ColumnDefinitions="*,Auto,Auto">
-        <SelectableTextBlock Grid.Column="0"
-                             Classes="hint danger"
-                             VerticalAlignment="Center"
-                             Text="{Binding Unavailable}" />
-
-        <!--
-          The same turning arc a pressed control wears: connecting speaks one vocabulary across this app
-          (docs/design-language.md, "Status language").
-          Carries a tip, the sentence beside it saying what failed rather than that anything is still coming.
-        -->
-        <controls:Waiting Grid.Column="1"
-                          Margin="12,0,0,0"
-                          IsVisible="{Binding IsDialling}"
-                          ToolTip.Tip="{x:Static copy:Cards.Redialling}" />
-
-        <Button Grid.Column="2"
-                Margin="12,0,0,0"
-                VerticalAlignment="Center"
-                Content="Look again"
-                Command="{Binding RetryCommand}"
-                controls:Pending.IsActive="{Binding RetryCommand.IsRunning}" />
-      </Grid>
-    </Border>
+    <controls:Reveal IsOpen="{Binding IsUnavailable}" FollowsOpening="False" LeavesNoGap="True" DockPanel.Dock="Top">
+      <Border
+              Classes="panel"
+              Padding="12,10"
+              Margin="12,12,12,0">
+        <Grid ColumnDefinitions="*,Auto,Auto">
+          <SelectableTextBlock Grid.Column="0"
+                               Classes="hint danger"
+                               VerticalAlignment="Center"
+                               Text="{Binding Unavailable}" />
+  
+          <!--
+            The same turning arc a pressed control wears: connecting speaks one vocabulary across this app
+            (docs/design-language.md, "Status language").
+            Carries a tip, the sentence beside it saying what failed rather than that anything is still coming.
+          -->
+          <controls:Waiting Grid.Column="1"
+                            Margin="12,0,0,0"
+                            IsVisible="{Binding IsDialling}"
+                            ToolTip.Tip="{x:Static copy:Cards.Redialling}" />
+  
+          <Button Grid.Column="2"
+                  Margin="12,0,0,0"
+                  VerticalAlignment="Center"
+                  Content="Look again"
+                  Command="{Binding RetryCommand}"
+                  controls:Pending.IsActive="{Binding RetryCommand.IsRunning}" />
+        </Grid>
+      </Border>
+    </controls:Reveal>
 
     <!--
       What the backend said when a setting could not be stored, separate news from the banner above:
@@ -68,13 +69,14 @@
       a write that failed leaves what was typed on screen while the backend runs on the value before it.
       Nothing to look again at, so no button (Backend/FormSession.cs).
     -->
-    <Border DockPanel.Dock="Top"
-            Classes="panel"
-            Padding="12,10"
-            Margin="12,12,12,0"
-            IsVisible="{Binding HasUnsaved}">
-      <SelectableTextBlock Classes="hint danger" Text="{Binding Unsaved}" />
-    </Border>
+    <controls:Reveal IsOpen="{Binding HasUnsaved}" FollowsOpening="False" LeavesNoGap="True" DockPanel.Dock="Top">
+      <Border
+              Classes="panel"
+              Padding="12,10"
+              Margin="12,12,12,0">
+        <SelectableTextBlock Classes="hint danger" Text="{Binding Unsaved}" />
+      </Border>
+    </controls:Reveal>
 
     <!--
       The step column's foot, floating over it on every step: moving between steps,
@@ -88,7 +90,7 @@
               Padding="{StaticResource InsetPanel}"
               MaxWidth="{StaticResource StepColumnWidth}">
         <Panel>
-          <Grid ColumnDefinitions="Auto,*,Auto" IsVisible="{Binding !ShowsCommit}">
+          <Grid Classes="fadesin" ColumnDefinitions="Auto,*,Auto" IsVisible="{Binding !ShowsCommit}">
             <Button Grid.Column="0"
                     Theme="{StaticResource LinkButton}"
                     Height="{StaticResource FooterButtonHeight}"
@@ -113,7 +115,7 @@
             </Button>
           </Grid>
 
-          <Panel IsVisible="{Binding ShowsCommit}">
+          <Panel Classes="fadesin" IsVisible="{Binding ShowsCommit}">
             <commit:CommitCardView DataContext="{Binding Commit}" />
           </Panel>
         </Panel>

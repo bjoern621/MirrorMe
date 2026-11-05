@@ -32,6 +32,13 @@ public sealed class Reveal : Decorator
     public static readonly StyledProperty<bool> FollowsOpeningProperty =
         AvaloniaProperty.Register<Reveal, bool>(nameof(FollowsOpening), defaultValue: true);
 
+    /// <summary>True on a reveal in a spaced stack, which would keep a gap for a closed body.</summary>
+    public static readonly StyledProperty<bool> LeavesNoGapProperty =
+        AvaloniaProperty.Register<Reveal, bool>(nameof(LeavesNoGap));
+
+    /// <summary>Body height held while closing, since a line bound to its text closes as the text clears.</summary>
+    private double _heldHeight;
+
     static Reveal()
     {
         AffectsMeasure<Reveal>(OpennessProperty);
@@ -61,6 +68,12 @@ public sealed class Reveal : Decorator
         set => SetValue(FollowsOpeningProperty, value);
     }
 
+    public bool LeavesNoGap
+    {
+        get => GetValue(LeavesNoGapProperty);
+        set => SetValue(LeavesNoGapProperty, value);
+    }
+
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
@@ -70,7 +83,8 @@ public sealed class Reveal : Decorator
             Openness = IsOpen ? 1 : 0;
         }
 
-        if (change.Property == IsOpenProperty || change.Property == OpennessProperty || change.Property == ChildProperty)
+        if (change.Property == IsOpenProperty || change.Property == OpennessProperty
+            || change.Property == ChildProperty || change.Property == LeavesNoGapProperty)
         {
             Draw();
         }
@@ -92,12 +106,15 @@ public sealed class Reveal : Decorator
     /// <summary>Writes the body's presence and fade from the two properties. Idempotent.</summary>
     private void Draw()
     {
+        var shown = IsOpen || Openness > 0;
+        IsVisible = shown || !LeavesNoGap;
+
         if (Child is not { } body)
         {
             return;
         }
 
-        body.IsVisible = IsOpen || Openness > 0;
+        body.IsVisible = shown;
         body.Opacity = Openness;
     }
 
@@ -112,7 +129,8 @@ public sealed class Reveal : Decorator
         }
 
         body.Measure(availableSize.WithHeight(double.PositiveInfinity));
-        var full = body.DesiredSize;
+        _heldHeight = IsOpen ? body.DesiredSize.Height : Math.Max(_heldHeight, body.DesiredSize.Height);
+        var full = body.DesiredSize.WithHeight(_heldHeight);
         var shown = new Size(full.Width, full.Height * Openness);
 
         Assert.That(shown.Height <= full.Height, "a fold never asks for more than its body's height", shown, full);

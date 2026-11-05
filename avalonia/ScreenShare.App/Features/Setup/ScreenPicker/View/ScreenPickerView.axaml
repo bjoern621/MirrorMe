@@ -16,7 +16,7 @@
 
   <controls:CardColumn Spacing="{StaticResource GapTight}">
 
-    <controls:RowList ItemsSource="{Binding Screens}" IsVisible="{Binding IsVisible}">
+    <controls:RowList ItemsSource="{Binding Screens}">
       <controls:RowList.ItemsPanel>
         <ItemsPanelTemplate>
           <WrapPanel Orientation="Horizontal" />
@@ -34,7 +34,7 @@
               <Panel>
                 <Border Classes="tile" Height="121">
                   <Panel>
-                    <tiles:StreamTile Source="{Binding Tile}" IsVisible="{Binding HasTile}" />
+                    <tiles:StreamTile Classes.dark="{Binding Tile.HasNotice}" Source="{Binding Tile}" IsVisible="{Binding HasTile}" />
 
                     <!--
                       Two sentences for a dark tile, from opposite sides.
@@ -43,7 +43,7 @@
                       Once there is one, the tile's own three take over:
                       read with no picture yet, the reading ended, or this window could not draw what it was handed.
                     -->
-                    <StackPanel IsVisible="{Binding HasPlaceholder}"
+                    <StackPanel Classes="fadesin" IsVisible="{Binding HasPlaceholder}"
                                 Spacing="{StaticResource GapTight}"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"

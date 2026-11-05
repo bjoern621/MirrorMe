@@ -33,7 +33,8 @@
           Where this copy checks nothing the button is disabled and its tip says why,
           which is the whole of what a reader can do about it.
         -->
-        <Button Theme="{StaticResource LinkButton}"
+        <Button Classes="fadesin"
+                Theme="{StaticResource LinkButton}"
                 Foreground="{DynamicResource MutedBrush}"
                 Margin="-7,0,-7,0"
                 Content="{Binding Release}"

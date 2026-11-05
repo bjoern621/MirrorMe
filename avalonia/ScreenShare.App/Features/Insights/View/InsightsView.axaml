@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:ScreenShare.App.Controls"
              xmlns:chart="using:ScreenShare.App.Features.Insights.Chart.View"
              xmlns:chartvm="using:ScreenShare.App.Features.Insights.Chart.ViewModel"
              xmlns:model="using:ScreenShare.App.Features.Insights.Model"
@@ -47,9 +48,11 @@
       </StackPanel>
 
       <!-- What the backend refused this screen, in its own words. Stop is pressed from the tray or the Go-strip. -->
-      <Border Classes="panel" Padding="12,10" IsVisible="{Binding HasRefusal}">
-        <SelectableTextBlock Classes="hint danger" TextWrapping="Wrap" Text="{Binding Refusal}" />
-      </Border>
+      <controls:Reveal IsOpen="{Binding HasRefusal}" FollowsOpening="False" LeavesNoGap="True">
+        <Border Classes="panel" Padding="12,10">
+          <SelectableTextBlock Classes="hint danger" TextWrapping="Wrap" Text="{Binding Refusal}" />
+        </Border>
+      </controls:Reveal>
 
       <verdict:VerdictView DataContext="{Binding Verdict}" />
 

@@ -15,7 +15,7 @@
     Over both, the rectangle as it stands: the same picture the screen grid draws, cropped to it.
   -->
 
-  <controls:CardColumn Spacing="{StaticResource GapTight}" IsVisible="{Binding IsVisible}">
+  <controls:CardColumn Spacing="{StaticResource GapTight}">
 
     <!--
       Width from the layout and height from the rectangle's own shape, so a wide rectangle reads as one
@@ -32,14 +32,14 @@
                             CropY="{Binding CropY}"
                             CropWidth="{Binding CropWidth}"
                             CropHeight="{Binding CropHeight}">
-          <tiles:StreamTile Source="{Binding Tile}" IsVisible="{Binding HasTile}" />
+          <tiles:StreamTile Classes.dark="{Binding Tile.HasNotice}" Source="{Binding Tile}" IsVisible="{Binding HasTile}" />
         </regions:RegionCrop>
 
         <!--
           Two sentences for an empty box, from opposite sides, as the screen grid takes them:
           the screen is opening or was refused, and once there is a tile its own three take over.
         -->
-        <StackPanel IsVisible="{Binding HasPlaceholder}"
+        <StackPanel Classes="fadesin" IsVisible="{Binding HasPlaceholder}"
                     Spacing="{StaticResource GapTight}"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"

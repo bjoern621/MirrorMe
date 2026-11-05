@@ -78,6 +78,7 @@
                            DataContext="{Binding Nav}" />
 
     <ContentControl Grid.Row="2"
+                    Classes="screens"
                     Content="{Binding Body}"
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch" />

@@ -268,43 +268,50 @@
                 ToolTip.Tip="{Binding Action.Tip}" />
 
         <!-- Selectable: what the last attempt answered is what a bug report carries. -->
-        <SelectableTextBlock Classes="hint"
-                             Classes.danger="{Binding ActionNoticeIsFailure}"
-                             TextWrapping="Wrap"
-                             TextTrimming="None"
-                             IsVisible="{Binding HasActionNotice}"
-                             Text="{Binding ActionNotice}" />
+        <controls:Reveal IsOpen="{Binding HasActionNotice}" FollowsOpening="False" LeavesNoGap="True">
+          <SelectableTextBlock Classes="hint"
+                               Classes.danger="{Binding ActionNoticeIsFailure}"
+                               TextWrapping="Wrap"
+                               TextTrimming="None"
+                               Text="{Binding ActionNotice}" />
+        </controls:Reveal>
       </StackPanel>
 
       <!-- Absent where the surface prints the reason over the whole section (FieldViewModel.ShowsReason). -->
-      <SelectableTextBlock Classes="reason"
-                           TextWrapping="Wrap"
-                           TextTrimming="None"
-                           IsVisible="{Binding ShowsReason}"
-                           Text="{Binding Reason}" />
+      <controls:Reveal IsOpen="{Binding ShowsReason}" FollowsOpening="False" LeavesNoGap="True">
+        <SelectableTextBlock Classes="reason"
+                             TextWrapping="Wrap"
+                             TextTrimming="None"
+                             Text="{Binding Reason}" />
+      </controls:Reveal>
 
       <!--
         A note, not a third treatment of inapplicability: the field is live and the value does reach the encoder
         (docs/field-availability.md, "The treatments").
       -->
-      <TextBlock Classes="hint"
-                 TextWrapping="Wrap"
-                 TextTrimming="None"
-                 IsVisible="{Binding HasNote}"
-                 Text="{Binding Note}" />
+      <controls:Reveal IsOpen="{Binding HasNote}" FollowsOpening="False" LeavesNoGap="True">
+        <TextBlock Classes="hint"
+                   TextWrapping="Wrap"
+                   TextTrimming="None"
+                   Text="{Binding Note}" />
+      </controls:Reveal>
 
       <!-- Warnings under the control, where the reader fixes them, then its notes as chips. -->
-      <ItemsControl ItemsSource="{Binding Diagnostics}" IsVisible="{Binding HasDiagnostics}" Margin="0,4,0,0">
-        <ItemsControl.ItemTemplate>
-          <DataTemplate x:DataType="model:Impact">
-            <controls:CheckItem Margin="0,0,0,7" Text="{Binding Text}" State="{Binding State}" />
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
-      <ItemsControl IsVisible="{Binding HasNotes}"
-                    ItemsSource="{Binding Notes}"
-                    ItemsPanel="{StaticResource ChipPanel}"
-                    ItemTemplate="{StaticResource ImpactChip}" />
+      <controls:Reveal IsOpen="{Binding HasDiagnostics}" FollowsOpening="False" LeavesNoGap="True">
+        <ItemsControl ItemsSource="{Binding Diagnostics}" Margin="0,4,0,0">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="model:Impact">
+              <controls:CheckItem Margin="0,0,0,7" Text="{Binding Text}" State="{Binding State}" />
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </controls:Reveal>
+      <controls:Reveal IsOpen="{Binding HasNotes}" FollowsOpening="False" LeavesNoGap="True">
+        <ItemsControl
+                      ItemsSource="{Binding Notes}"
+                      ItemsPanel="{StaticResource ChipPanel}"
+                      ItemTemplate="{StaticResource ImpactChip}" />
+      </controls:Reveal>
     </StackPanel>
   </DataTemplate>
 

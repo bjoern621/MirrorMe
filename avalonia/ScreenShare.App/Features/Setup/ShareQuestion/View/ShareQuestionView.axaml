@@ -31,9 +31,15 @@
                       ContentTemplate="{StaticResource FieldRow}"
                       IsVisible="{Binding Kind, Converter={x:Static ObjectConverters.IsNotNull}}" />
 
-      <screens:ScreenPickerView DataContext="{Binding Screens}" />
-      <windows:WindowPickerView DataContext="{Binding Windows}" />
-      <regions:RegionPickerView DataContext="{Binding Region}" />
+      <controls:Reveal IsOpen="{Binding Screens.IsVisible}" FollowsOpening="False" LeavesNoGap="True">
+        <screens:ScreenPickerView DataContext="{Binding Screens}" />
+      </controls:Reveal>
+      <controls:Reveal IsOpen="{Binding Windows.IsVisible}" FollowsOpening="False" LeavesNoGap="True">
+        <windows:WindowPickerView DataContext="{Binding Windows}" />
+      </controls:Reveal>
+      <controls:Reveal IsOpen="{Binding Region.IsVisible}" FollowsOpening="False" LeavesNoGap="True">
+        <regions:RegionPickerView DataContext="{Binding Region}" />
+      </controls:Reveal>
 
       <!-- Anything the group grows past the question, in the backend's own order. -->
       <ItemsControl ItemsSource="{Binding Rest}" ItemTemplate="{StaticResource FieldRow}" />

@@ -15,7 +15,7 @@
     and it sits where a reader compares one row against the next.
   -->
 
-  <controls:CardColumn Spacing="{StaticResource GapTight}" IsVisible="{Binding IsVisible}">
+  <controls:CardColumn Spacing="{StaticResource GapTight}">
 
     <controls:RowList ItemsSource="{Binding Windows}">
       <controls:RowList.ItemTemplate>
