@@ -61,7 +61,13 @@
               <SelectableTextBlock Name="Body"
                                    Text="{TemplateBinding Text}"
                                    Classes="muted"
-                                   LineHeight="{StaticResource LineHeightSmall}" />
+                                   LineHeight="{StaticResource LineHeightSmall}">
+                <SelectableTextBlock.Transitions>
+                  <Transitions>
+                    <controls:BrushFade Property="Foreground" Duration="{StaticResource MotionMark}" Easing="{StaticResource MotionEase}" />
+                  </Transitions>
+                </SelectableTextBlock.Transitions>
+              </SelectableTextBlock>
 
               <!-- Where the fault is fixed. Text rather than a control, the press being the line around it. -->
               <TextBlock Name="FixIn"
@@ -70,7 +76,13 @@
                          TextWrapping="Wrap"
                          TextTrimming="None"
                          IsVisible="{Binding $parent[controls:CheckItem].FixedInStep,
-                                             Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                             Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                <TextBlock.Transitions>
+                  <Transitions>
+                    <controls:BrushFade Property="Foreground" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+                  </Transitions>
+                </TextBlock.Transitions>
+              </TextBlock>
             </StackPanel>
           </Grid>
         </Border>

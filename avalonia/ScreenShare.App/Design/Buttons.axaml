@@ -148,6 +148,12 @@
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}" />
     </Style>
+    <Style Selector="^.off:pointerover:not(:disabled) /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource ControlHoverBrush}" />
+    </Style>
+    <Style Selector="^.off:pressed:not(:disabled) /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource ControlPressedBrush}" />
+    </Style>
   </ControlTheme>
 
   <ControlTheme x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource HueButton}">
@@ -246,6 +252,7 @@
     </Style>
     <!-- A row as wide as its list gives less under the press, the same squeeze reading larger there. -->
     <Style Selector="^:pressed:not(:disabled) /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource ControlPressedBrush}" />
       <Setter Property="RenderTransform" Value="scale(0.985)" />
     </Style>
     <Style Selector="^:disabled /template/ Border#Root">
@@ -313,6 +320,11 @@
     </Style>
     <Style Selector="^.picked:pointerover /template/ Border#Root">
       <Setter Property="Background" Value="{StaticResource ControlForegroundBrush}" />
+    </Style>
+    <!-- The dark press fill would turn the dark text unreadable, so a picked card dims as PrimaryButton does. -->
+    <Style Selector="^.picked:pressed /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource SelectedBrush}" />
+      <Setter Property="Opacity" Value="0.85" />
     </Style>
     <Style Selector="^:pressed:not(:disabled) /template/ Border#Root">
       <Setter Property="RenderTransform" Value="scale(0.985)" />

@@ -19,11 +19,13 @@
                 BorderBrush="{TemplateBinding BorderBrush}"
                 BorderThickness="{TemplateBinding BorderThickness}"
                 CornerRadius="{TemplateBinding CornerRadius}"
-                Padding="{TemplateBinding Padding}">
+                Padding="{TemplateBinding Padding}"
+                RenderTransform="none">
           <Border.Transitions>
             <Transitions>
               <controls:BrushFade Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
               <controls:BrushFade Property="BorderBrush" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              <TransformOperationsTransition Property="RenderTransform" Duration="{StaticResource MotionPress}" Easing="{StaticResource MotionEase}" />
             </Transitions>
           </Border.Transitions>
           <StackPanel Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
@@ -31,7 +33,13 @@
                        Text="{TemplateBinding Label}"
                        Foreground="{TemplateBinding Foreground}"
                        FontSize="{TemplateBinding FontSize}"
-                       VerticalAlignment="Center" />
+                       VerticalAlignment="Center">
+              <TextBlock.Transitions>
+                <Transitions>
+                  <controls:BrushFade Property="Foreground" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+                </Transitions>
+              </TextBlock.Transitions>
+            </TextBlock>
             <TextBlock Name="DetailText"
                        Text="{TemplateBinding Detail}"
                        Classes="figure"
@@ -63,6 +71,10 @@
 
     <Style Selector="^:pointerover /template/ Border#Root">
       <Setter Property="Background" Value="{StaticResource ControlHoverBrush}" />
+    </Style>
+    <Style Selector="^:pressed /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource ControlPressedBrush}" />
+      <Setter Property="RenderTransform" Value="scale(0.96)" />
     </Style>
   </ControlTheme>
 

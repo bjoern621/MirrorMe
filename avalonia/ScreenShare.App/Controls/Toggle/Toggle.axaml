@@ -61,6 +61,13 @@
       <Setter Property="BorderBrush" Value="{StaticResource MutedBrush}" />
     </Style>
 
+    <Style Selector="^:pressed:not(:disabled) /template/ Ellipse#Knob">
+      <Setter Property="RenderTransform" Value="scale(0.85)" />
+    </Style>
+    <Style Selector="^:pressed:checked:not(:disabled) /template/ Ellipse#Knob">
+      <Setter Property="RenderTransform" Value="translateX(14px) scale(0.85)" />
+    </Style>
+
     <Style Selector="^:disabled /template/ Border#Track">
       <Setter Property="Background" Value="{StaticResource PanelBrush}" />
       <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}" />

@@ -37,10 +37,12 @@
         <Border Name="Root"
                 Background="{TemplateBinding Background}"
                 CornerRadius="{TemplateBinding CornerRadius}"
-                Padding="{TemplateBinding Padding}">
+                Padding="{TemplateBinding Padding}"
+                RenderTransform="none">
           <Border.Transitions>
             <Transitions>
               <controls:BrushFade Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              <TransformOperationsTransition Property="RenderTransform" Duration="{StaticResource MotionPress}" Easing="{StaticResource MotionEase}" />
             </Transitions>
           </Border.Transitions>
           <ContentPresenter Content="{TemplateBinding Content}"
@@ -53,6 +55,10 @@
 
     <Style Selector="^:pointerover /template/ Border#Root">
       <Setter Property="Background" Value="{StaticResource ControlHoverBrush}" />
+    </Style>
+
+    <Style Selector="^:pressed /template/ Border#Root">
+      <Setter Property="RenderTransform" Value="scale(0.97)" />
     </Style>
 
     <Style Selector="^:selected /template/ Border#Root">
