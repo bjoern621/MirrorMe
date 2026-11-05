@@ -363,6 +363,30 @@ public sealed class TileStatsTests
         Assert.Equal("Opus", Value(panel, "Audio", "Codec"));
     }
 
+    /// <summary>A block rebuilt around an open reader stays open, its rows standing where they stood.</summary>
+    [Fact]
+    public void ARebuiltBlockStaysOpen()
+    {
+        var silent = Sample();
+        silent.AudioCodecDescription = "";
+        silent.AudioDecoder = "";
+        silent.AudioFormat = "";
+        silent.AudioRate = 0;
+        silent.AudioChannels = 0;
+        silent.AudioBytes = 0;
+        silent.ClearAudioKbps();
+
+        var panel = new ObservableCollection<StatSection>();
+        TileStats.Merge(panel, TileStats.Of(silent, Report()));
+        var opened = panel[0];
+        opened.IsOpen = true;
+
+        TileStats.Merge(panel, TileStats.Of(Sample(), Report()));
+
+        Assert.NotSame(opened, panel[0]);
+        Assert.True(panel[0].IsOpen);
+    }
+
     private static ReceiveStatGroup SrtGroup()
     {
         var group = new ReceiveStatGroup { Factory = "srtsrc", Element = "srtsrc0" };

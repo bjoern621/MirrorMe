@@ -101,6 +101,12 @@ public static class TileStats
         Assert.NotNull(held, "a merge converges the panel a tile is holding");
         Assert.NotNull(built, "a merge converges onto the panel the readings describe");
 
+        // A rebuilt block starts closed, which would collapse the rows the reader has open and unroll them again.
+        foreach (var section in built)
+        {
+            section.IsOpen = held.Any(block => block.Heading == section.Heading && block.IsOpen);
+        }
+
         if (!held.Select(section => section.Heading).SequenceEqual(built.Select(section => section.Heading)))
         {
             held.Clear();
