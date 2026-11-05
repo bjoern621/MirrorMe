@@ -289,7 +289,7 @@
     <Style Selector="Panel.stats TextBlock.lead">
       <Setter Property="Transitions">
         <Transitions>
-          <DoubleTransition Property="Opacity" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+          <DoubleTransition Property="Opacity" Duration="{StaticResource MotionFold}" Easing="{StaticResource MotionEase}" />
         </Transitions>
       </Setter>
     </Style>

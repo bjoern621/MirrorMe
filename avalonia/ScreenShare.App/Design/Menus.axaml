@@ -210,6 +210,9 @@
     <Style Selector="^:open /template/ Border#Root">
       <Setter Property="Background" Value="{StaticResource ControlBrush}" />
     </Style>
+    <Style Selector="^:pressed:not(:disabled) /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource ControlPressedBrush}" />
+    </Style>
 
     <!--
       A refused row keeps its place and greys, since the configuration that would allow it is a neighbouring one

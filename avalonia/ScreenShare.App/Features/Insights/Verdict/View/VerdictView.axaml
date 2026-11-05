@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:ScreenShare.App.Controls"
              xmlns:ti="using:TablerIcons"
              xmlns:vm="using:ScreenShare.App.Features.Insights.Verdict.ViewModel"
              x:Class="ScreenShare.App.Features.Insights.Verdict.View.VerdictView"
@@ -11,6 +12,11 @@
       <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="{StaticResource RadiusButton}" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <controls:BrushFade Property="BorderBrush" Duration="{StaticResource MotionMark}" Easing="{StaticResource MotionEase}" />
+        </Transitions>
+      </Setter>
     </Style>
     <Style Selector="Border.verdict.caution">
       <Setter Property="BorderBrush" Value="{StaticResource CautionBrush}" />

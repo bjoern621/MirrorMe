@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:ScreenShare.App.Controls"
              xmlns:view="using:ScreenShare.App.Features.Setup.CostBar.View"
              xmlns:vm="using:ScreenShare.App.Features.Setup.CostBar.ViewModel"
              x:Class="ScreenShare.App.Features.Setup.CostBar.View.CostBarView"
@@ -10,6 +11,13 @@
          style setter, so the overrun below would never paint. -->
     <Style Selector="view|MeterBar">
       <Setter Property="FillBrush" Value="{StaticResource ForegroundBrush}" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="view:MeterBar.Fill" Duration="{StaticResource MotionMove}" Easing="{StaticResource MotionEase}" />
+          <DoubleTransition Property="view:MeterBar.Limit" Duration="{StaticResource MotionMove}" Easing="{StaticResource MotionEase}" />
+          <controls:BrushFade Property="view:MeterBar.FillBrush" Duration="{StaticResource MotionMove}" Easing="{StaticResource MotionEase}" />
+        </Transitions>
+      </Setter>
     </Style>
     <!-- Amber over the limit: a setting asking for more than the line measured still publishes. -->
     <Style Selector="view|MeterBar.over">
