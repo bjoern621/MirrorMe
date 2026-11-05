@@ -29,12 +29,13 @@ jobs:
       # Then what the Go suite needs to answer at all:
       # ffmpeg and the plugin set its pipelines build, and an X server for the x11grab paths.
       #
-      # Three of them are on the list for what they carry rather than what they are named for.
+      # Four of them are on the list for what they carry rather than what they are named for.
       # gstreamer1.0-x holds the pango plugin, so timeoverlay comes from there,
       # which the test streams build (internal/publish).
       # gstreamer1.0-gl holds the glupload chain,
       # and the render chain a draft is repaired towards is the one the machine can run,
       # so a lean plugin set moves a legal value and internal/form reads that as a repair.
+      # gstreamer1.0-rtsp holds rtspclientsink, which the leg test in internal/app publishes through.
       # xauth is named because xvfb-run runs it, and --no-install-recommends drops it.
       #
       # The image is named rather than taken as -latest.
@@ -57,8 +58,19 @@ jobs:
             gstreamer1.0-libav \
             gstreamer1.0-x \
             gstreamer1.0-gl \
+            gstreamer1.0-rtsp \
             xvfb \
             xauth
+
+      # The relay that the leg test in internal/app drives, at the version flake.nix pins.
+      # No apt package carries it.
+      - name: Install relay
+        run: |
+          curl -fsSL -o mediamtx.tar.gz \
+            https://github.com/bluenviron/mediamtx/releases/download/v1.20.0/mediamtx_v1.20.0_linux_amd64.tar.gz
+          echo "952d5f7d31d1b448ab4da4509550594c511d42636db9d7bb175d377f4ede81df  mediamtx.tar.gz" | sha256sum -c -
+          sudo tar -xzf mediamtx.tar.gz -C /usr/local/bin mediamtx
+          rm mediamtx.tar.gz
 
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
