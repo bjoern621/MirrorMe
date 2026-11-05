@@ -28,12 +28,6 @@
     <Setter Property="HorizontalContentAlignment" Value="Center" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="Cursor" Value="Hand" />
-    <!-- The label's colour moves with the fill, and a glyph bound to it follows. -->
-    <Setter Property="Transitions">
-      <Transitions>
-        <controls:BrushFade Property="Foreground" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
-      </Transitions>
-    </Setter>
     <Setter Property="Template">
       <ControlTemplate>
         <Border Name="Root"

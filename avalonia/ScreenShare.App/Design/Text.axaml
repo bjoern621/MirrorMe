@@ -262,7 +262,8 @@
 
   <!--
     Text inside a button, and a caption under a picture, takes its colour from a pick or a pointer.
-    The colour eases with the fill behind it, so the two never part for a frame.
+    The colour eases here and on a glyph, each on one fade.
+    A fade on the button as well would restart this one on every frame and leave the text a full fade behind.
   -->
   <Style Selector="Button :is(TextBlock), :is(TextBlock).cropcaption">
     <Setter Property="Transitions">
