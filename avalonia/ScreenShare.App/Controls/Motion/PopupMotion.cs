@@ -84,7 +84,12 @@ public static class PopupMotion
         }
 
         close.Cancel = true;
-        _ = LeaveAsync(flyout, surface);
+
+        // A second dismiss during the fade leaves it running: a new transition list would drop the fade in one frame.
+        if (!Exits.TryGetValue(surface, out _))
+        {
+            _ = LeaveAsync(flyout, surface);
+        }
     }
 
     /// <summary>
