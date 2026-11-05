@@ -394,20 +394,31 @@ Publishing is an external child, which keeps a pipeline that dies from taking th
 So there is no in-process pipeline to hang a sink on, and nothing this process can do to the encoded stream before the child has sent it somewhere.
 What both engines can do is send it twice, off one encoder, the second copy going to a loopback port this side reads.
 
-The local carriage is RTP over loopback, for the reason RTSP carries the whole codec table: a payload format for every format this app publishes, and a depayloader that reads it back.
-MPEG-TS would have needed no caps and would have carried the two H.26x formats alone.
+**The local carriage: Matroska over TCP.**
+A keyframe leaves the encoder as one burst.
+A datagram socket drops whatever overflows its receive buffer, which corrupts every frame up to the next keyframe.
+TCP makes the burst wait for the reader.
+Matroska carries every format that this app publishes and states the format in its own header, so nothing negotiates caps.
 
-The payloader the child is given and the caps the receiving pipeline is built with have to agree on a payload type and an encoding name, and no session protocol here negotiates one, so one process writes both ends.
+**The child listens and the decode connects.**
+A sink connecting out ends the pipeline once its peer dies, which would let a decode crash end the stream.
+A listening sink drops a dead reader and keeps running.
+A reader that falls behind drops to the next keyframe.
+With ffmpeg, a reader that dies leaves the preview dark until the next publish.
 
 **The port is allocated per run and reported**, so a reader can see it and nothing assumes it.
 It stays out of the rendered command, which is what the rebuild decision compares.
 
 **The publish opens it and the publish closes it.**
 The port has to be in the child's arguments, so the decision belongs to the launch, and there is nothing for a shell to call.
+The child's first report opens the decode, a child reporting frames having opened its outputs.
+A decode that draws nothing gets a few more tries.
+A frame subscription waits for the first frame.
 Both halves are idempotent, every path that ends the child ends the preview, and a preview that fails to come up leaves the stream running.
 
 **The local picture gives up the delivery half, and the card says so.**
-It shows what is being sent and nothing about what anybody receives, so a congested uplink, a relay dropping packets and a viewer on a bad link all leave it looking perfect.
+It shows what is being sent and nothing about what anybody receives, so a relay dropping packets and a viewer on a bad link both leave it looking perfect.
+A congested uplink stalls it as well: the relay leg holds up the encoder that both legs share, so frames stop reaching the preview too.
 
 **One decode serves every window drawing it**, keyed by the stream and the leg, so a tile in the grid on the same pair is the same pipeline.
 The preview reads the grid's answer through before closing anything, and asks again for a decode it saw running and does not find, making a pipeline another window closed a blink rather than a card that stays dark.

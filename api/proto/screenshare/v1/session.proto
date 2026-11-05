@@ -53,7 +53,7 @@ message PublishState {
   // a render chain falls back on a machine that cannot run its elements,
   // and a hardware decoder may download its own frames.
   message Preview {
-    // Loopback UDP port the publish child sends the copy to, and the backend receives it on.
+    // Loopback TCP port the publish child serves the copy on, and the decode host reads it from.
     // The kernel picks it per run.
     uint32 port = 1;
     // Whether a decoded frame has left the pipeline.

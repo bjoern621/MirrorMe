@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"strconv"
+	"time"
 
 	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
 	"bjoernblessin.de/screenshare/internal/text"
@@ -14,93 +15,52 @@ import (
 	"bjoernblessin.de/screenshare/internal/ffmpeg"
 )
 
-// The local preview leg: how a publish child hands a copy of the stream it is already encoding
-// to a decoder in this process, without the relay ever seeing it (docs/viewer-architecture.md,
+// The local preview leg: a publish child serves a copy of its encoded stream on a loopback port,
+// and the decode host reads it from there (docs/viewer-architecture.md,
 // "What the insights preview draws").
 //
-// The encoder is an external child.
-// Both engines run one, a gst-launch-1.0 pipeline or an ffmpeg command, keeping a dying pipeline
-// from taking the backend with it (supervise.go), so there is no in-process appsink to attach
-// to the encoder's output.
-// What both engines do have is a way to write the encoded stream twice, so the child writes it
-// to the relay and to a loopback port, and this process decodes what arrives there.
+// The leg carries Matroska over TCP.
+// A keyframe arrives as one burst, and TCP makes a burst wait for the reader where a datagram
+// socket drops whatever overflows its buffer.
+// The child listens and the reader connects, because a tcpclientsink ends the pipeline once its peer
+// dies.
 //
-// Both halves of that wire format live here, for the reason gststats.go holds both halves
-// of the progress format: the payloader the child is given and the caps the receiving pipeline
-// is built with have to agree on a payload type and an encoding name, and two files stating
-// that agreement are two places for it to stop being true.
+// Both halves of the wire format live here.
 
-// previewHost is the address the child sends the copy to and this process receives it on.
-// Loopback alone: what travels here is the user's screen, and its only intended peer is the process
-// that spawned the child.
+// previewHost is the address the child listens on.
+// Loopback alone, since what travels here is the user's screen.
 const previewHost = "127.0.0.1"
 
-// previewPayloadType is the RTP payload type both halves pin.
-//
-// RTP has no static type for any format here, so each is a dynamic type, and which number a dynamic
-// type takes is normally negotiated out of band: in an SDP, or in the RTSP or WHEP exchange.
-// This leg has no such exchange and needs none, one process writing both of its ends, so the number
-// is stated once and read by both.
-// 96 is the first of the dynamic range.
-const previewPayloadType = 96
+// A reader that falls behind stays attached up to the soft limit, then drops to the next keyframe.
+// The hard limit disconnects it.
+const (
+	previewBacklogSoft = 500 * time.Millisecond
+	previewBacklogMax  = 10 * time.Second
+)
 
-// previewClockRate is the RTP timestamp rate every video payload format here runs at.
-// 90 kHz for all of them, hence a constant rather than a carriage column.
-const previewClockRate = 90000
+// previewFifoPackets is how many packets the ffmpeg slave queues ahead of its reader.
+// The queue also covers the wait for the reader to connect.
+const previewFifoPackets = 120
 
-// previewCarriage is one bitstream format's local preview leg: how the GStreamer child payloads it,
-// how the ffmpeg child does, and what the receiving pipeline is told to expect.
+// previewCarriages is the parser that the preview branch runs, per bitstream format.
+// The keys are capabilities.Codec.Format values, and a format with no row has no local preview.
 //
-// A format belongs here when the three facts transport.Carriage is written against hold together:
-// RTP has a payload format for it, both publish engines implement the payloader, and a receiving
-// pipeline has a depayloader that reads it back.
-// Every format the app publishes satisfies them, which is the same reason RTSP carries the whole
-// codec table: this leg is RTP over UDP with the session exchange left out, so it inherits exactly
-// RTP's reach.
-//
-// A format with no row is a format with no local preview.
-// Nothing else about the publish changes for it: the child is launched without the second sink and
-// the state reports no preview, what the insights screen says rather than drawing a picture
-// that would never arrive.
-type previewCarriage struct {
-	// payloader is the GStreamer payloader element and its properties, one argument per token the way
-	// every element list in this package is written.
-	payloader []string
-	// encoding is the RTP encoding name the receiving caps state, and what the depayloader
-	// is autoplugged from.
-	// The half of the agreement the child never spells out: both payloaders write the payload format
-	// this names and neither announces which one it wrote.
-	encoding string
-	// draft says the RTP payload format is an IETF draft, which ffmpeg's RTP muxer refuses to write
-	// without compliance loosened.
-	// The same fact transport.draftRtpFormats carries for the RTSP publish leg, restated here
-	// as a property of the payload format this leg also writes.
-	draft bool
+// The parser sits inside the branch because matroskamux takes H.26x length-prefixed.
+// Upstream of the tee that demand reaches the trunk, and a trunk ending in mpegtsmux fails to
+// negotiate.
+// VP8 has no parser element, and matroskamux demands nothing of it.
+var previewCarriages = map[string][]string{
+	"h264": {"h264parse"},
+	"hevc": {"h265parse"},
+	"av1":  {"av1parse"},
+	"vp9":  {"vp9parse"},
+	"vp8":  nil,
 }
 
-// previewCarriages is the local preview leg per bitstream format.
-// The keys are capabilities.Codec.Format values, because the payload format follows the bitstream,
-// so two encoders emitting one format share a row.
-//
-// config-interval=1 on the H.26x payloaders repeats the parameter sets in band once a second.
-// The receiving side is a udpsrc with no session exchange, so nothing carries an SPS out of band,
-// and a decoder joining between two of them would sit on a stream it cannot start.
-// The rest carry their sequence headers in the bitstream already.
-var previewCarriages = map[string]previewCarriage{
-	"h264": {payloader: []string{"rtph264pay", "config-interval=1"}, encoding: "H264"},
-	"hevc": {payloader: []string{"rtph265pay", "config-interval=1"}, encoding: "H265"},
-	"av1":  {payloader: []string{"rtpav1pay"}, encoding: "AV1", draft: true},
-	"vp9":  {payloader: []string{"rtpvp9pay"}, encoding: "VP9", draft: true},
-	"vp8":  {payloader: []string{"rtpvp8pay"}, encoding: "VP8"},
-}
-
-// PreviewLeg is where a publish child copies its already-encoded video to for the local preview.
-// The zero value is a run with no preview, what Command renders and what a format with no carriage
-// row gets.
+// PreviewLeg is where a publish child serves its already-encoded video for the local preview.
+// The zero value is a run with no preview, what Command renders.
 type PreviewLeg struct {
-	// Port is the loopback UDP port the child sends to.
-	// The backend allocates it per run (AllocatePreviewPort) rather than this package picking
-	// a number, so two launches in a row cannot land on one socket.
+	// Port is the loopback TCP port the child listens on (AllocatePreviewPort).
 	Port int
 }
 
@@ -117,76 +77,39 @@ func PreviewCarried(codec string) (format string, carried bool) {
 	return c.Format, carried
 }
 
-// AllocatePreviewPort returns a loopback UDP port nothing else holds.
+// AllocatePreviewPort returns a loopback TCP port nothing else holds.
 //
-// The kernel picks it and this reads it off the socket, the same arrangement the progress meter's
-// listener has (gststats.go): a number chosen here could collide with the run before it, and a run
-// whose preview landed on another run's port would decode a picture it is not publishing.
-//
-// The socket closes before the port is handed out, and the window that opens is stated rather than
-// hidden.
-// Nothing here can hold it: the receiving pipeline's udpsrc binds the port itself, and two binds
-// on one datagram socket deliver to whichever of them the operating system feels like.
-// Losing that race costs a receiver that fails to bind and says so,
-// so the publish comes up while the preview beside it does not.
+// The socket closes before the port is handed out, because the child binds it.
+// Something else binding the port in that window makes the child fail to start, and the publish
+// retries on a port of its own.
 func AllocatePreviewPort() (int, error) {
-	conn, err := net.ListenUDP("udp", &net.UDPAddr{IP: net.ParseIP(previewHost), Port: 0})
+	listener, err := net.ListenTCP("tcp", &net.TCPAddr{IP: net.ParseIP(previewHost), Port: 0})
 	if err != nil {
 		return 0, text.Because(err, screensharev1.TextCode_TEXT_CODE_LOOPBACK_PORT_UNAVAILABLE)
 	}
-	defer conn.Close()
+	defer listener.Close()
 
-	addr, ok := conn.LocalAddr().(*net.UDPAddr)
-	assert.Assert(ok, "a udp socket has a udp address", conn.LocalAddr().String())
+	addr, ok := listener.Addr().(*net.TCPAddr)
+	assert.Assert(ok, "a tcp listener has a tcp address", listener.Addr().String())
 	assert.Assert(addr.Port > 0, "the kernel answers an allocation with a port", addr.Port)
 	return addr.Port, nil
 }
 
-// PreviewSource returns the launch-line fragment a receiving pipeline decodes the local preview
-// from, up to the encoded stream.
-// The same shape transport.GstSource yields for a relay decode, so internal/receive is handed one
-// kind of thing whichever side the frames came from.
-//
-// The caps are stated rather than discovered because a udpsrc has nothing to discover them from:
-// RTP carries no format announcement, and the exchange that normally supplies one is what this leg
-// leaves out.
-// They are the other half of previewCarriages, and a depayloader is autoplugged from them
-// by the decodebin3 the chain already ends the source in.
-//
-// The jitter buffer holds one frame rather than the tens of milliseconds a network leg is given.
-// Reordering and loss are what a jitter buffer absorbs and neither happens on loopback, so what
-// is left for it to do is hold the RTP timestamps against the pipeline clock.
-// Sized for a network it does not cross, it would spend the preview's whole latency budget
-// on jitter that cannot occur.
-func PreviewSource(codec string, port int) (string, error) {
-	assert.Assert(port > 0, "a preview source names the port it receives on", codec, port)
+// PreviewSource returns the launch-line fragment a receiving pipeline reads the local preview from,
+// up to the encoded stream, in the shape of transport.GstSource.
+// The decodebin3 that ends the chain autoplugs the format out of the Matroska header.
+func PreviewSource(port int) string {
+	assert.Assert(port > 0, "a preview source names the port it reads", port)
 
-	c, ok := capabilities.Get(codec)
-	if !ok {
-		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(codec))
-	}
-	carriage, ok := previewCarriages[c.Format]
-	if !ok {
-		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_PREVIEW_HAS_NO_LEG, text.Codec(codec), text.Format(c.Format))
-	}
-
-	caps := fmt.Sprintf("application/x-rtp,media=video,clock-rate=%d,encoding-name=%s,payload=%d",
-		previewClockRate, carriage.encoding, previewPayloadType)
-	return fmt.Sprintf("udpsrc address=%s port=%d caps=%q ! rtpjitterbuffer latency=%d",
-		previewHost, port, caps, previewJitterMs), nil
+	return fmt.Sprintf("tcpclientsrc host=%s port=%d ! matroskademux", previewHost, port)
 }
 
-// previewJitterMs is the reorder window the preview's jitter buffer holds, in milliseconds.
-// PreviewSource says why it is this small.
-const previewJitterMs = 20
-
-// gstPreviewTap returns the branch a GStreamer publish pipeline copies its encoded video to,
-// empty for a format with no local preview leg.
+// gstPreviewTap returns the branch a GStreamer publish pipeline copies its encoded video to.
+// A format with no local preview leg is an error.
 //
-// The queue leaks downstream and the sink neither synchronizes to the clock nor prerolls, the same
-// shape the meter's branch has and for the same reason: a branch able to backpressure the encode
-// path is a preview able to stall the stream it previews.
-// What a slow process costs here is preview frames, what a leaky queue drops.
+// tcpserversink never blocks its branch, and the queue leaks on top of that, so a stalled reader
+// cannot hold up the encode.
+// A reader joining mid-stream starts at a keyframe.
 func gstPreviewTap(codec string, preview PreviewLeg) ([]string, error) {
 	assert.Assert(preview.Wanted(), "a preview branch is built for a run that wants one", codec)
 
@@ -194,34 +117,42 @@ func gstPreviewTap(codec string, preview PreviewLeg) ([]string, error) {
 	if !ok {
 		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(codec))
 	}
-	carriage, ok := previewCarriages[c.Format]
+	parser, ok := previewCarriages[c.Format]
 	if !ok {
 		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_PREVIEW_HAS_NO_LEG, text.Codec(codec), text.Format(c.Format))
 	}
 
 	tap := []string{"queue", "max-size-buffers=8", "leaky=downstream", "!"}
-	tap = append(tap, carriage.payloader...)
+	if len(parser) > 0 {
+		tap = append(append(tap, parser...), "!")
+	}
 	return append(tap,
-		"pt="+strconv.Itoa(previewPayloadType),
-		"!", "udpsink",
+		"matroskamux", "streamable=true",
+		"!", "tcpserversink",
 		"host="+previewHost,
 		"port="+strconv.Itoa(preview.Port),
 		"sync=false", "async=false",
+		"sync-method=latest-keyframe",
+		"recover-policy=keyframe",
+		"unit-format=time",
+		"units-soft-max="+strconv.FormatInt(previewBacklogSoft.Nanoseconds(), 10),
+		"units-max="+strconv.FormatInt(previewBacklogMax.Nanoseconds(), 10),
 	), nil
 }
 
 // ffmpegPreviewTap returns the second output an ffmpeg publish command copies its already-encoded
 // video to, and false for a format with no local preview leg.
 //
-// select=v keeps it to the video alone.
-// The RTP muxer writes one stream and the preview draws pictures, so an audio track on this leg
-// would be a track nothing reads, and the mux would refuse it before it got the chance.
+// select=v drops the audio, since the preview draws pictures alone.
+// onfail=ignore keeps a slave that cannot open from ending the stream.
+// use_fifo moves the slave onto a thread of its own, which the listener's wait for a reader needs:
+// it would otherwise hold up the relay's slave.
+// A fifo that overflows drops packets, and a reader that dies leaves the output closed until
+// the next publish.
 //
-// onfail=ignore keeps the preview from ending the stream.
-// Every other slave of the tee aborts the whole command when it cannot be opened, right
-// for the relay leg and wrong here.
-// A publish that fails because this process could not hold a loopback port loses the stream, and
-// loses it for a picture nobody outside the window would have seen.
+// global_header puts the parameter sets where the Matroska header reads them, and takes them out of
+// the bitstream.
+// dump_extra writes them back at each keyframe for the relay leg.
 func ffmpegPreviewTap(codec string, preview PreviewLeg) (ffmpeg.Tap, bool) {
 	assert.Assert(preview.Wanted(), "a preview output is built for a run that wants one", codec)
 
@@ -229,22 +160,19 @@ func ffmpegPreviewTap(codec string, preview PreviewLeg) (ffmpeg.Tap, bool) {
 	if !ok {
 		return ffmpeg.Tap{}, false
 	}
-	carriage, ok := previewCarriages[c.Format]
-	if !ok {
+	if _, ok := previewCarriages[c.Format]; !ok {
 		return ffmpeg.Tap{}, false
 	}
 
-	options := []string{
-		"select=v",
-		"f=rtp",
-		"onfail=ignore",
-		"payload_type=" + strconv.Itoa(previewPayloadType),
-	}
-	if carriage.draft {
-		options = append(options, "strict=experimental")
-	}
 	return ffmpeg.Tap{
-		Options: options,
-		URL:     fmt.Sprintf("rtp://%s:%d", previewHost, preview.Port),
+		Options: []string{
+			"select=v",
+			"f=matroska",
+			"onfail=ignore",
+			"use_fifo=1",
+			fmt.Sprintf(`fifo_options=drop_pkts_on_overflow=1\\:attempt_recovery=0\\:queue_size=%d`, previewFifoPackets),
+		},
+		URL:         fmt.Sprintf("tcp://%s:%d?listen=1", previewHost, preview.Port),
+		EncoderArgs: []string{"-flags", "+global_header", "-bsf:v", "dump_extra=freq=keyframe"},
 	}, true
 }

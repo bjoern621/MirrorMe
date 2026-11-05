@@ -2,8 +2,10 @@ package app
 
 import (
 	"testing"
+	"time"
 
 	"bjoernblessin.de/screenshare/internal/events"
+	"bjoernblessin.de/screenshare/internal/receive"
 	"bjoernblessin.de/screenshare/internal/settings"
 )
 
@@ -38,7 +40,7 @@ func TestBringingTheLocalPreviewUpTwiceChangesNothing(t *testing.T) {
 
 	// The state a second launch meets, written rather than opened:
 	// what the guard answers from is the field, not the pipeline behind it.
-	running := &previewRun{port: 5004}
+	running := newPreviewRun(5004, receive.Stream{}, receive.Open{})
 	a.preview = running
 
 	second := a.startPreviewLocked(s)
@@ -63,4 +65,80 @@ func TestStoppingALocalPreviewThatIsNotRunning(t *testing.T) {
 		t.Error("stopping when nothing ran left a preview behind")
 	}
 	a.stopPreviewLocked()
+}
+
+// The child has to listen before a decode can connect, so a launching publish names the port
+// and opens nothing.
+// The state still reports the preview, which is what tells the shell to subscribe.
+func TestALaunchNamesThePreviewAndOpensNoDecode(t *testing.T) {
+	a := previewApp()
+	a.procMu.Lock()
+	defer a.procMu.Unlock()
+
+	leg := a.startPreviewLocked(previewSettings())
+	if !leg.Wanted() {
+		t.Fatal("a launch asked for no preview leg")
+	}
+	if a.preview.receiver != nil {
+		t.Error("a launch opened a decode ahead of the child")
+	}
+	snapshot := a.previewSnapshotLocked()
+	if snapshot == nil || snapshot.Port != leg.Port || snapshot.Live {
+		t.Errorf("the state does not report a preview waiting on its child: %+v", snapshot)
+	}
+}
+
+// A subscription arriving ahead of the first frame waits, and a preview that goes releases it.
+func TestASubscriptionWaitsForThePreviewAndEndsWithIt(t *testing.T) {
+	a := previewApp()
+	a.procMu.Lock()
+	a.startPreviewLocked(previewSettings())
+	a.procMu.Unlock()
+
+	done := make(chan error)
+	go func() {
+		_, err := a.SubscribePreviewFrames()
+		done <- err
+	}()
+
+	select {
+	case err := <-done:
+		t.Fatalf("a subscription answered ahead of the first frame: %v", err)
+	case <-time.After(50 * time.Millisecond):
+	}
+
+	a.procMu.Lock()
+	a.stopPreviewLocked()
+	a.procMu.Unlock()
+
+	select {
+	case err := <-done:
+		if err == nil {
+			t.Error("a subscription to a stopped preview was served")
+		}
+	case <-time.After(time.Second):
+		t.Fatal("a stopped preview left a subscription waiting")
+	}
+}
+
+// A child that never answers costs the preview after a bounded number of decodes.
+// The nil decode client refuses each open, what a host that cannot start does.
+func TestAPreviewGivesUpOnAChildThatNeverAnswers(t *testing.T) {
+	a := previewApp()
+	a.procMu.Lock()
+	a.startPreviewLocked(previewSettings())
+	a.procMu.Unlock()
+
+	for range previewAttachBudget {
+		a.attachPreview()
+		if a.preview == nil {
+			t.Fatal("the preview gave up ahead of its budget")
+		}
+	}
+	a.attachPreview()
+	if a.preview != nil {
+		t.Error("the preview outlived its budget")
+	}
+
+	a.attachPreview()
 }

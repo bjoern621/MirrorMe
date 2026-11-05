@@ -324,8 +324,8 @@ func (a *App) launchLocked(s settings.Settings, attempts int) error {
 	// a stream that moved to another backend leaves the one it left holding a screen no child reads.
 	publish.ReleaseSourcesExcept(s.Publish.Capture)
 
-	// The preview comes up first, the child being told the port it bound.
-	// The publish owns its whole lifecycle: no effect on the contract opens one,
+	// The child listens on the preview's port, and its first report opens the decode.
+	// The publish owns the preview's whole lifecycle: no effect on the contract opens one,
 	// and every path that ends this child takes it down (preview.go).
 	preview := a.startPreviewLocked(s)
 
@@ -340,6 +340,7 @@ func (a *App) launchLocked(s settings.Settings, attempts int) error {
 			if !a.isCurrentRun(run) {
 				return
 			}
+			a.attachPreview()
 			a.takePublishDelay(run, stats)
 			a.emit(wire.PublishStatsEvent(stats))
 			if a.timeline.Sample(stats.Fps) {
@@ -360,8 +361,7 @@ func (a *App) launchLocked(s settings.Settings, attempts int) error {
 	})
 	if err != nil {
 		a.run = nil
-		// Nothing will send to the port just bound,
-		// and a preview left up is a pipeline waiting on a child that never started.
+		// A preview left up waits on a child that never started.
 		a.stopPreviewLocked()
 		a.releaseSourcesLocked()
 		return err

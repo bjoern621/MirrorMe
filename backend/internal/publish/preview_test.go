@@ -2,7 +2,6 @@ package publish
 
 import (
 	"net"
-	"strconv"
 	"strings"
 	"testing"
 
@@ -11,10 +10,8 @@ import (
 	"bjoernblessin.de/screenshare/internal/settings"
 )
 
-// previewCodecs is one codec per bitstream format the app publishes, so the tests below cover
-// everything the preview leg carries rather than the format that happens to be the default.
-// RTSP is the transport because it carries every format, which is the same reason the preview leg
-// is RTP.
+// previewCodecs is one codec per bitstream format that the app publishes.
+// RTSP is the transport in these tests because it carries every format.
 var previewCodecs = map[string]string{
 	"h264": "libx264",
 	"hevc": "libx265",
@@ -54,10 +51,9 @@ func previewStream(t *testing.T, capture, codec string) settings.Settings {
 	return s
 }
 
-// Every format the app publishes has a local preview leg, and the two halves of that leg agree.
-// A payloader writing one payload format beside caps naming another is a preview that decodes
-// nothing, and neither half says so on its own.
-func TestEveryPublishableFormatHasAPreviewLegWithBothHalves(t *testing.T) {
+// Every format that the app publishes has a local preview leg.
+// A format with no row publishes with no preview, and nothing else reports the gap.
+func TestEveryPublishableFormatHasAPreviewLeg(t *testing.T) {
 	for _, format := range capabilities.Formats() {
 		codec, ok := previewCodecs[format]
 		if !ok {
@@ -66,34 +62,25 @@ func TestEveryPublishableFormatHasAPreviewLegWithBothHalves(t *testing.T) {
 		if got, carried := PreviewCarried(codec); !carried {
 			t.Fatalf("%s produces %s, which carries no local preview", codec, got)
 		}
-
-		carriage := previewCarriages[format]
-		source, err := PreviewSource(codec, 5000)
-		if err != nil {
+		if _, err := gstPreviewTap(codec, PreviewLeg{Port: 5000}); err != nil {
 			t.Fatalf("%s: %v", codec, err)
-		}
-		if !strings.Contains(source, "encoding-name="+carriage.encoding) {
-			t.Errorf("%s: the receiving caps name no encoding the payloader writes: %s", format, source)
-		}
-		if !strings.Contains(source, "payload="+strconv.Itoa(previewPayloadType)) {
-			t.Errorf("%s: the receiving caps pin no payload type: %s", format, source)
-		}
-
-		tap, err := gstPreviewTap(codec, PreviewLeg{Port: 5000})
-		if err != nil {
-			t.Fatalf("%s: %v", codec, err)
-		}
-		if joined := strings.Join(tap, " "); !strings.Contains(joined, carriage.payloader[0]) ||
-			!strings.Contains(joined, "pt="+strconv.Itoa(previewPayloadType)) {
-			t.Errorf("%s: the branch does not payload what the caps expect: %s", format, joined)
 		}
 	}
 }
 
-// The GStreamer child copies the encoded stream to the loopback port off the same tee the meter
-// hangs on.
-// Both taps and the muxer are branches of one tee,
-// and a pipeline that grew a second tee would be a second copy of the encoded stream.
+// Both halves name one port and one container.
+func TestThePreviewSourceReadsWhatTheTapServes(t *testing.T) {
+	source := PreviewSource(45678)
+	if !strings.Contains(source, "tcpclientsrc host="+previewHost+" port=45678") {
+		t.Errorf("the source reads no loopback port: %s", source)
+	}
+	if !strings.Contains(source, "matroskademux") {
+		t.Errorf("the source demuxes no Matroska: %s", source)
+	}
+}
+
+// The preview hangs off the tee that the meter hangs on.
+// A second tee would be a second copy of the encoded stream.
 func TestTheGstPipelineTeesThePreviewOffTheEncodedStream(t *testing.T) {
 	for format, codec := range previewCodecs {
 		s := previewStream(t, "portal", codec)
@@ -102,7 +89,7 @@ func TestTheGstPipelineTeesThePreviewOffTheEncodedStream(t *testing.T) {
 		if err != nil {
 			t.Fatalf("%s: %v", codec, err)
 		}
-		if line := strings.Join(plain, " "); strings.Contains(line, "udpsink") {
+		if line := strings.Join(plain, " "); strings.Contains(line, "tcpserversink") {
 			t.Errorf("%s: a pipeline built without a preview port carries a preview branch: %s", format, line)
 		}
 
@@ -114,21 +101,24 @@ func TestTheGstPipelineTeesThePreviewOffTheEncodedStream(t *testing.T) {
 		if strings.Count(line, "tee name=") != 1 {
 			t.Errorf("%s: the preview and the meter do not share one tee: %s", format, line)
 		}
-		if !strings.Contains(line, "udpsink host="+previewHost+" port=45678") {
+		if !strings.Contains(line, "tcpserversink host="+previewHost+" port=45678") {
 			t.Errorf("%s: no preview sink on the allocated loopback port: %s", format, line)
 		}
 		if !strings.Contains(line, "tcpclientsink host="+previewHost+" port=54321") {
 			t.Errorf("%s: the preview branch displaced the meter's: %s", format, line)
 		}
-		// The branch leaks rather than backpressures:
-		// a preview able to hold up the encode path is a preview able to stall the stream it previews.
-		payloader := strings.Index(line, previewCarriages[format].payloader[0])
-		leaky := strings.LastIndex(line[:payloader], "leaky=downstream")
+		// A preview able to hold up the encode path can stall the stream that it previews.
+		muxer := strings.Index(line, "matroskamux")
+		leaky := strings.LastIndex(line[:muxer], "leaky=downstream")
 		if leaky < 0 {
 			t.Errorf("%s: the preview branch can backpressure the encoder: %s", format, line)
 		}
-		// The trunk still reaches the muxer, and still through a queue,
-		// since a tee's request pad and a muxer's do not link to each other directly.
+		// A frozen receiver drops back to a keyframe, since a gap inside a GOP corrupts every frame
+		// up to the next one.
+		if !strings.Contains(line, "recover-policy=keyframe") {
+			t.Errorf("%s: a receiver falling behind resumes mid-GOP: %s", format, line)
+		}
+		// A tee's request pad and a muxer's do not link to each other directly.
 		last := strings.LastIndex(line, gstTeeName+". !")
 		if mux := strings.Index(line, "name="+"mux"); last < 0 || mux < last || !strings.Contains(line[last:], "queue") {
 			t.Errorf("%s: the muxer is not the last branch off the tee: %s", format, line)
@@ -136,9 +126,7 @@ func TestTheGstPipelineTeesThePreviewOffTheEncodedStream(t *testing.T) {
 	}
 }
 
-// The rendered command carries no preview leg:
-// the port belongs to one launch,
-// and whether two settings build one pipeline is decided by comparing exactly this string (SamePipeline).
+// The port belongs to one launch, and SamePipeline compares this string.
 func TestTheRenderedCommandCarriesNoPreviewLeg(t *testing.T) {
 	for _, capture := range []string{"portal", "gdigrab"} {
 		for _, codec := range previewCodecs {
@@ -153,7 +141,7 @@ func TestTheRenderedCommandCarriesNoPreviewLeg(t *testing.T) {
 				// The shape of the command it would render is.
 				continue
 			}
-			if strings.Contains(line, "udpsink") || strings.Contains(line, "rtp://"+previewHost) ||
+			if strings.Contains(line, "tcpserversink") || strings.Contains(line, "tcp://"+previewHost) ||
 				strings.Contains(line, "-f tee") {
 				t.Errorf("%s/%s: the rendered command carries a run's own preview leg: %s", capture, codec, line)
 			}
@@ -161,10 +149,7 @@ func TestTheRenderedCommandCarriesNoPreviewLeg(t *testing.T) {
 	}
 }
 
-// The ffmpeg child writes the same encoded packets twice through the tee muxer:
-// the relay's leg as the transport states it, and the preview's beside it.
-// Two outputs written any other way are two encoders on one capture,
-// which is why the tee muxer is the shape.
+// The ffmpeg child writes one encoder's packets to two outputs through the tee muxer.
 func TestTheFfmpegCommandTeesThePreviewBesideTheRelayLeg(t *testing.T) {
 	for format, codec := range previewCodecs {
 		s := previewStream(t, "gdigrab", codec)
@@ -185,8 +170,8 @@ func TestTheFfmpegCommandTeesThePreviewBesideTheRelayLeg(t *testing.T) {
 		if !strings.Contains(line, "[f=rtsp:rtsp_transport=tcp") {
 			t.Errorf("%s: the relay leg is not the transport's own arguments as a slave: %s", format, line)
 		}
-		if !strings.Contains(line, "rtp://"+previewHost+":45678") {
-			t.Errorf("%s: no preview slave on the allocated loopback port: %s", format, line)
+		if !strings.Contains(line, "tcp://"+previewHost+":45678?listen=1") {
+			t.Errorf("%s: no preview slave listening on the allocated loopback port: %s", format, line)
 		}
 		if !strings.Contains(line, "select=v") {
 			t.Errorf("%s: the preview slave takes more than the video: %s", format, line)
@@ -199,11 +184,17 @@ func TestTheFfmpegCommandTeesThePreviewBesideTheRelayLeg(t *testing.T) {
 		if !strings.Contains(line, "-map 0:v") {
 			t.Errorf("%s: the video is not mapped into the tee: %s", format, line)
 		}
-		// The RTP muxer refuses a draft payload format unless compliance is loosened, and it is loosened
-		// on the preview slave alone.
-		draft := previewCarriages[format].draft
-		if got := strings.Contains(line, "strict=experimental"); got != draft {
-			t.Errorf("%s: strict=experimental is %v and the payload format's draft status is %v: %s", format, got, draft, line)
+		// A slave waiting on its reader must not hold up the relay's.
+		if !strings.Contains(line, "use_fifo=1") || !strings.Contains(line, "drop_pkts_on_overflow=1") {
+			t.Errorf("%s: a stalled preview reader can stall the relay leg: %s", format, line)
+		}
+		// Matroska states the parameter sets in its header, and the flag takes them out of the
+		// bitstream that the relay leg reads them from.
+		if !strings.Contains(line, "-flags +global_header") || !strings.Contains(line, "dump_extra=freq=keyframe") {
+			t.Errorf("%s: the header or the relay leg goes without parameter sets: %s", format, line)
+		}
+		if strings.Index(line, "-flags +global_header") > strings.Index(line, "-f tee") {
+			t.Errorf("%s: the encoder options land behind the output: %s", format, line)
 		}
 	}
 }
@@ -235,9 +226,7 @@ func TestAFilterSourceIsMappedIntoTheTeeByLabel(t *testing.T) {
 	}
 }
 
-// The port is the kernel's answer rather than a number this package picked,
-// and two allocations in a row do not collide,
-// which is the whole reason it is allocated rather than being a constant.
+// Two allocations in a row do not collide.
 func TestPreviewPortsAreAllocatedAndBindable(t *testing.T) {
 	first, err := AllocatePreviewPort()
 	if err != nil {
@@ -254,9 +243,8 @@ func TestPreviewPortsAreAllocatedAndBindable(t *testing.T) {
 		if port <= 0 || port > 65535 {
 			t.Errorf("port %d is not a port", port)
 		}
-		// The socket is released before the number is handed out, so the receiving pipeline can bind it.
-		// A port that stayed held is one no udpsrc could take.
-		conn, err := net.ListenUDP("udp", &net.UDPAddr{IP: net.ParseIP(previewHost), Port: port})
+		// The child binds it, so the allocation has to let go of it.
+		conn, err := net.ListenTCP("tcp", &net.TCPAddr{IP: net.ParseIP(previewHost), Port: port})
 		if err != nil {
 			t.Errorf("port %d was not released by the allocation that reported it: %v", port, err)
 			continue
@@ -294,7 +282,7 @@ func TestAFormatWithNoLocalCarriagePublishesWithoutAPreview(t *testing.T) {
 	if err != nil {
 		t.Fatalf("the GStreamer pipeline must still build: %v", err)
 	}
-	if line := strings.Join(pipeline, " "); strings.Contains(line, "udpsink") {
+	if line := strings.Join(pipeline, " "); strings.Contains(line, "tcpserversink") {
 		t.Errorf("a format with no carriage still grew a preview branch: %s", line)
 	}
 }

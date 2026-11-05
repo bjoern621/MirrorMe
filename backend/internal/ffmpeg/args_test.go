@@ -868,7 +868,7 @@ func TestEveryTapIsASlaveOfTheOneTee(t *testing.T) {
 	s := baseStream()
 
 	args, err := BuildPublishArgs(s, []Tap{
-		{Options: []string{"select=v", "f=rtp", "onfail=ignore"}, URL: "rtp://127.0.0.1:45678"},
+		{Options: []string{"select=v", "f=matroska", "onfail=ignore"}, URL: "tcp://127.0.0.1:45678?listen=1", EncoderArgs: []string{"-flags", "+global_header"}},
 		{Options: []string{"select=v", "f=data", "onfail=ignore"}, URL: "tcp://127.0.0.1:45679"},
 	})
 	if err != nil {
@@ -879,10 +879,13 @@ func TestEveryTapIsASlaveOfTheOneTee(t *testing.T) {
 	if strings.Count(line, "-f tee") != 1 {
 		t.Errorf("not exactly one tee: %s", line)
 	}
-	for _, want := range []string{"rtp://127.0.0.1:45678", "tcp://127.0.0.1:45679"} {
+	for _, want := range []string{"tcp://127.0.0.1:45678?listen=1", "tcp://127.0.0.1:45679"} {
 		if !strings.Contains(line, want) {
 			t.Errorf("%s is not a slave of the tee: %s", want, line)
 		}
+	}
+	if flags := strings.Index(line, "-flags +global_header"); flags < 0 || flags > strings.Index(line, "-f tee") {
+		t.Errorf("a tap's encoder options do not reach the encoder: %s", line)
 	}
 }
 

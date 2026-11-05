@@ -1329,7 +1329,7 @@ func (x *PublishState_Retry) GetMessage() string {
 // and a hardware decoder may download its own frames.
 type PublishState_Preview struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Loopback UDP port the publish child sends the copy to, and the backend receives it on.
+	// Loopback TCP port the publish child serves the copy on, and the decode host reads it from.
 	// The kernel picks it per run.
 	Port uint32 `protobuf:"varint,1,opt,name=port,proto3" json:"port,omitempty"`
 	// Whether a decoded frame has left the pipeline.

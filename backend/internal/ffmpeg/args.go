@@ -38,10 +38,13 @@ import (
 //
 // Options are the slave's own, already in the tee muxer's key=value spelling,
 // and the caller's business: what to select, which muxer, and whatever that muxer needs.
+// EncoderArgs are the options that the slave needs of the one encoder,
+// rendered ahead of the tee, so they reach every other output as well.
 // This package owns where the tee goes and which streams reach it.
 type Tap struct {
-	Options []string
-	URL     string
+	Options     []string
+	URL         string
+	EncoderArgs []string
 }
 
 // BuildPublishArgs returns the arguments, without the executable, that capture the selected monitor
@@ -249,6 +252,7 @@ func BuildPublishArgs(s settings.Settings, taps []Tap) ([]string, error) {
 	}
 	slaves := relay
 	for _, tap := range taps {
+		args = append(args, tap.EncoderArgs...)
 		slaves += "|" + teeSlave(tap.Options, tap.URL)
 	}
 	return append(args, "-f", "tee", slaves), nil

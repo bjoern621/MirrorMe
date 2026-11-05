@@ -221,7 +221,7 @@ The monitor message carries one index for the mirror-image reason.
 The index is what the catalog enumerates screens under and what `PublishSettings.monitor` holds, so a size or name would be the consumer sending the catalog back.
 
 Separate arms rather than legs in the transport table, two of the three crossing no protocol at all.
-The publish child copies encoded video to a loopback port and the backend decodes it there (`viewer-architecture.md`, "What the insights preview draws").
+The publish child serves encoded video on a loopback port and the decode host reads it there (`viewer-architecture.md`, "What the insights preview draws").
 A monitor preview is read off the screen and crosses no encoder.
 A synthetic transport entry would tell every consumer of that table that some protocol carries them.
 
@@ -234,6 +234,7 @@ A relay decode: `Set receive`.
 The publish preview: the publish itself, the loopback port having to be in the child's argv, so `Set` has no preview arm for a shell to call.
 A monitor preview: `Set monitor_preview`.
 All three the same division: the frame channel finds a picture or is refused with `FAILED_PRECONDITION`.
+A publish preview still waiting on its child holds the subscription until the first frame.
 What tells a shell there is one to ask for is a state it reads first: `PublishState.Live.preview`, present exactly while a preview runs and carrying the port and what the pipeline turned out to be, and `MonitorPreviewState`.
 
 **The monitor preview is a `Set` and the publish preview is not, and the difference is who owns the pipeline.**

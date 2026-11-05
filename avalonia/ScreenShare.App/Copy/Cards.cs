@@ -40,7 +40,7 @@ public static class Cards
     /// <summary>
     /// Local route's cost, and its warning.
     /// The picture is taken before the relay,
-    /// so a congested uplink, a dropping relay and a bad viewer link all leave this card looking perfect
+    /// so a dropping relay and a bad viewer link both leave this card looking perfect
     /// (<c>docs/viewer-architecture.md</c>, "What the insights preview draws").
     /// Opposite claim to <see cref="PreviewEndToEndCost"/>, so neither stands in for the other.
     /// </summary>
