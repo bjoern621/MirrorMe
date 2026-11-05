@@ -98,6 +98,8 @@ so a second channel would carry samples across a process boundary to reach the s
 
 Which pad the branch grows from depends on how the leg carries its tracks.
 A transport handing over one muxed stream leaves the separating to the decoder.
+One thread then feeds both tracks, so the branch's queue leaks.
+Blocking there would stop the keyframe from reaching the picture while the sound waits for it.
 RTSP carries each track as its own stream, so the source hands out a pad per track.
 The fragment pins one to the picture,
 a decoder taking any caps otherwise taking whichever track the relay announced first.

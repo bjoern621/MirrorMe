@@ -19,6 +19,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-gst/go-gst/pkg/gst"
+
 	"bjoernblessin.de/screenshare/internal/gstrun"
 	"bjoernblessin.de/screenshare/internal/receive"
 	"bjoernblessin.de/screenshare/internal/settings"
@@ -35,6 +37,15 @@ const (
 	// legSettleDuration lets a jitter buffer fill before the interval that counts.
 	legSettleDuration = 3 * time.Second
 	legSampleDuration = 3 * time.Second
+	// legGopFrames spaces keyframes 1 s apart at 30 fps, HLS cutting a segment at each.
+	legGopFrames = 30
+	// sparseGopFrames spaces them 5 s apart.
+	sparseGopFrames      = 150
+	sparseKeyframeStream = "leg-sparse-keyframes"
+	// postKeyframeJoinDelay lands a join about 2 s behind a keyframe, the first picture of the join
+	// before it showing up to 1 s behind one.
+	// A join between 1 and 2 s behind one is where a demuxer feeding both tracks hung on SRT.
+	postKeyframeJoinDelay = time.Second
 	// windowRaiseMs is what the window test adds to a leg's window.
 	windowRaiseMs = 400
 	// windowToleranceMs covers what two runs differ by on a loaded machine.
@@ -42,6 +53,9 @@ const (
 )
 
 var everyLeg = []string{"rtsp", "webrtc", "srt", "hls", "rtmp"}
+
+// legsJoiningMidGop leaves out HLS, whose every segment opens on a keyframe.
+var legsJoiningMidGop = []string{"rtsp", "webrtc", "srt", "rtmp"}
 
 func TestEveryLegMeasuresItsDelayThroughARelay(t *testing.T) {
 	s := servedRelay(t)
@@ -57,6 +71,41 @@ func TestEveryLegMeasuresItsDelayThroughARelay(t *testing.T) {
 		{"srt", func(s *settings.Settings) *int { return &s.Viewer.SrtWatchLatencyMs }},
 	} {
 		t.Run(c.leg+" window", func(t *testing.T) { checkWindowHeldOnce(t, s, c.leg, c.window) })
+	}
+
+	for _, leg := range legsJoiningMidGop {
+		t.Run(leg+" join ahead of a keyframe", func(t *testing.T) {
+			checkJoinReachesThePicture(t, s.WithStreamName(sparseKeyframeStream), leg)
+		})
+	}
+}
+
+// checkJoinReachesThePicture joins while audio flows and the next keyframe stays seconds away.
+// The first join finds where a keyframe falls, the second lands behind it.
+func checkJoinReachesThePicture(t *testing.T, s settings.Settings, leg string) {
+	joinUntilPicture(t, s, leg)
+	time.Sleep(postKeyframeJoinDelay)
+	joinUntilPicture(t, s, leg)
+}
+
+func joinUntilPicture(t *testing.T, s settings.Settings, leg string) {
+	t.Helper()
+
+	live := make(chan struct{})
+	ended := make(chan string, 1)
+	r := openLeg(t, s, leg, receive.Events{
+		OnLive:  func() { close(live) },
+		OnAudio: func() {},
+		OnEnd:   func(message string) { ended <- message },
+	})
+	defer r.Stop()
+
+	select {
+	case <-live:
+	case message := <-ended:
+		t.Fatalf("%s ended: %s", leg, message)
+	case <-time.After(legOpenTimeout):
+		t.Fatalf("%s shows no picture %v after joining", leg, legOpenTimeout)
 	}
 }
 
@@ -112,15 +161,11 @@ func measureLeg(t *testing.T, s settings.Settings, leg string) wire.DelayBudget 
 	t.Helper()
 
 	ended := make(chan string, 1)
-	r, err := receive.New(receive.Stream{Name: s.StreamName(), Transport: leg, Source: openableSource(t, s, leg)},
-		receive.Open{Chain: "cpu"}, receive.Events{
-			OnLive:  func() {},
-			OnAudio: func() {},
-			OnEnd:   func(message string) { ended <- message },
-		})
-	if err != nil {
-		t.Fatalf("opening %s: %v", leg, err)
-	}
+	r := openLeg(t, s, leg, receive.Events{
+		OnLive:  func() {},
+		OnAudio: func() {},
+		OnEnd:   func(message string) { ended <- message },
+	})
 	defer r.Stop()
 
 	deadline := time.After(legOpenTimeout)
@@ -140,6 +185,21 @@ func measureLeg(t *testing.T, s settings.Settings, leg string) wire.DelayBudget 
 	return receiveDelayOf(r.Stats(), last, true, publishDelay{})
 }
 
+func openLeg(t *testing.T, s settings.Settings, leg string, events receive.Events) *receive.Receiver {
+	t.Helper()
+
+	source := openableSource(t, s, leg)
+	if element := strings.Fields(source)[0]; gst.ElementFactoryFind(element) == nil {
+		t.Skipf("this GStreamer registers no %s", element)
+	}
+	r, err := receive.New(receive.Stream{Name: s.StreamName(), Transport: leg, Source: source},
+		receive.Open{Chain: "cpu"}, events)
+	if err != nil {
+		t.Fatalf("opening %s: %v", leg, err)
+	}
+	return r
+}
+
 // openableSource waits for the relay to serve leg, HLS holding no playlist until its first segments.
 func openableSource(t *testing.T, s settings.Settings, leg string) string {
 	t.Helper()
@@ -157,8 +217,8 @@ func openableSource(t *testing.T, s settings.Settings, leg string) string {
 	}
 }
 
-// servedRelay starts a relay and publishes one stamped stream to it,
-// and is the settings that reach both.
+// servedRelay starts a relay and publishes two stamped streams to it,
+// and is the settings that reach the relay and the first.
 func servedRelay(t *testing.T) settings.Settings {
 	t.Helper()
 
@@ -169,6 +229,7 @@ func servedRelay(t *testing.T) settings.Settings {
 	if err != nil {
 		t.Skip("needs mediamtx on the PATH")
 	}
+	gst.Init()
 
 	s := settings.Defaults()
 	s.Relay.Host = "127.0.0.1"
@@ -177,7 +238,8 @@ func servedRelay(t *testing.T) settings.Settings {
 	s.Publish.Transport = "rtsp"
 
 	startRelay(t, binary, s)
-	publishStamped(t, s)
+	publishStamped(t, s, legGopFrames)
+	publishStamped(t, s.WithStreamName(sparseKeyframeStream), sparseGopFrames)
 	// The relay holds no playlist before the stream reaches it, whichever leg opens first.
 	openableSource(t, s, "hls")
 	return s
@@ -229,7 +291,7 @@ func startRelay(t *testing.T, binary string, s settings.Settings) {
 }
 
 // publishStamped runs a publisher in this process until the test ends.
-func publishStamped(t *testing.T, s settings.Settings) {
+func publishStamped(t *testing.T, s settings.Settings, gopFrames int) {
 	t.Helper()
 
 	sink, ok := transport.GstSink(s)
@@ -237,7 +299,7 @@ func publishStamped(t *testing.T, s settings.Settings) {
 		t.Fatalf("%s terminates no GStreamer pipeline", s.Publish.Transport)
 	}
 	description := "videotestsrc is-live=true pattern=ball ! video/x-raw,width=640,height=360,framerate=30/1 ! " +
-		"x264enc speed-preset=ultrafast tune=zerolatency key-int-max=30 bitrate=1000 ! " +
+		"x264enc speed-preset=ultrafast tune=zerolatency key-int-max=" + strconv.Itoa(gopFrames) + " bitrate=1000 ! " +
 		"h264parse config-interval=-1 ! identity name=stats ! " + strings.Join(sink, " ") + " " +
 		"audiotestsrc is-live=true wave=ticks ! audio/x-raw,rate=48000,channels=2 ! " +
 		"opusenc bitrate=64000 ! opusparse ! mux."

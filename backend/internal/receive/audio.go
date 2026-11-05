@@ -309,6 +309,11 @@ func (r *Receiver) buildAudioChain() ([]gst.Element, bool) {
 	lvl.SetObjectProperty("post-messages", true)
 	lvl.SetObjectProperty("interval", uint64(LevelInterval.Nanoseconds()))
 
+	// tsdemux feeds both tracks from one thread.
+	// A blocking queue behind the prerolled audio sink stops that thread before the next keyframe
+	// reaches the video sink, and the join hangs. What leaks is sound from before the first picture.
+	gst.UtilSetObjectArg(branch[slices.Index(audioChain, "queue")], "leaky", "downstream")
+
 	pipeline := r.heldPipeline()
 	if pipeline == nil {
 		return nil, false
