@@ -34,6 +34,23 @@
   </Style>
 
   <!--
+    A step, tab or section fades in each time it is shown.
+    Matched on its own IsVisible, as a card is: a card inside keeps its own flag and rises on its first showing alone.
+  -->
+  <Style Selector=":is(Control).fadesin[IsVisible=True]">
+    <Style.Animations>
+      <Animation Duration="{StaticResource MotionMount}" Easing="{StaticResource MotionEase}">
+        <KeyFrame Cue="0%">
+          <Setter Property="Opacity" Value="0" />
+        </KeyFrame>
+        <KeyFrame Cue="100%">
+          <Setter Property="Opacity" Value="1" />
+        </KeyFrame>
+      </Animation>
+    </Style.Animations>
+  </Style>
+
+  <!--
     The dimmed ground a dialog stands on, over the whole window.
     The Overlay around it fades it in and out (Controls/Overlay/Overlay.cs), and the dialog's panel grows into place on it.
     A sheet mounted for one showing has no Overlay and fades in on its own.

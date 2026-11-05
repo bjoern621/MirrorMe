@@ -151,7 +151,7 @@
           <controls:Waiting />
         </StackPanel>
 
-        <controls:CardColumn Spacing="{StaticResource GapPanel}" IsVisible="{Binding ShowsQuality}">
+        <controls:CardColumn Classes="fadesin" Spacing="{StaticResource GapPanel}" IsVisible="{Binding ShowsQuality}">
           <!-- A preset sets every field below it at once, so its card leads the step. -->
           <presets:PresetsView DataContext="{Binding Presets}" />
           <quality:QualityStepView DataContext="{Binding Quality}" />
@@ -163,7 +163,7 @@
           The wrapper is load-bearing: IsVisible reads this view's model,
           so it cannot sit on the element that hands its DataContext to the child.
         -->
-        <Panel IsVisible="{Binding ShowsAudio}">
+        <Panel Classes="fadesin" IsVisible="{Binding ShowsAudio}">
           <audio:AudioStepView DataContext="{Binding Audio}" />
         </Panel>
 
@@ -172,7 +172,7 @@
           A hand-written capture screen beside a hand-written encode screen would write down, in this shell,
           what a capture and an encode are (docs/ipc-api.md).
         -->
-        <controls:CardColumn Spacing="{StaticResource GapPanel}" IsVisible="{Binding ShowsFields}">
+        <controls:CardColumn Classes="fadesin" Spacing="{StaticResource GapPanel}" IsVisible="{Binding ShowsFields}">
 
           <!--
             No group, no card:

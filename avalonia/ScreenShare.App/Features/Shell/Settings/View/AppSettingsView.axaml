@@ -125,7 +125,7 @@
           -->
           <Grid Grid.Row="1" ColumnDefinitions="Auto,*">
 
-            <Border Grid.Column="0" Classes="sectionlist" IsVisible="{Binding ShowsList}">
+            <Border Grid.Column="0" Classes="sectionlist fadesin" IsVisible="{Binding ShowsList}">
               <StackPanel>
                 <ListBox Theme="{StaticResource SectionListTheme}"
                          ItemContainerTheme="{StaticResource SectionItemTheme}"
@@ -145,6 +145,7 @@
 
             <ScrollViewer Grid.Column="1"
                           Name="Sections"
+                          Classes="fadesin"
                           IsVisible="{Binding ShowsSection}"
                           HorizontalScrollBarVisibility="Disabled">
               <StackPanel Margin="16,14" Spacing="{StaticResource GapSection}">
@@ -156,7 +157,7 @@
 
                 <Panel>
 
-                  <StackPanel Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Window}}">
+                  <StackPanel Classes="fadesin" Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Window}}">
                     <!--
                       Pulled off the app group by key, so the write path stays the field's own (AppSettingsViewModel.Apply).
                       Margin cancels the row's own trailing 18px (FieldRow.axaml), built for an unspaced list,
@@ -168,7 +169,7 @@
                                     IsVisible="{Binding TrayIcon, Converter={x:Static ObjectConverters.IsNotNull}}" />
                   </StackPanel>
 
-                  <StackPanel Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Logs}}">
+                  <StackPanel Classes="fadesin" Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Logs}}">
                     <Button Theme="{StaticResource PrimaryButton}"
                             HorizontalAlignment="Left"
                             Content="{x:Static model:AppSettingsCopy.SendReport}"
@@ -202,7 +203,7 @@
                             ToolTip.Tip="{x:Static model:AppSettingsCopy.OpenLogsFolderTip}" />
                   </StackPanel>
 
-                  <StackPanel Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Updates}}">
+                  <StackPanel Classes="fadesin" Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Updates}}">
                     <!--
                       One reason over the section, both controls under it being inert for that one fact.
                       The toggle's own row prints none (AppSettingsViewModel.UpdatesRefusal).
@@ -238,7 +239,7 @@
                             controls:Pending.IsActive="{Binding Updates.Check.IsRunning}" />
                   </StackPanel>
 
-                  <StackPanel Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Discord}}">
+                  <StackPanel Classes="fadesin" Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Discord}}">
                     <!-- The account's picture stands where the sentence names the account. -->
                     <Border Classes="card" Padding="12,10">
                       <controls:AccountLine Classes="hint"
@@ -285,7 +286,7 @@
                     </StackPanel>
                   </StackPanel>
 
-                  <StackPanel Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Development}}">
+                  <StackPanel Classes="fadesin" Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.Development}}">
                     <!-- Same cancelling margin as the rows above. -->
                     <ContentControl Content="{Binding TestStreams}"
                                     ContentTemplate="{StaticResource FieldRow}"
@@ -293,7 +294,7 @@
                                     IsVisible="{Binding TestStreams, Converter={x:Static ObjectConverters.IsNotNull}}" />
                   </StackPanel>
 
-                  <StackPanel Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.About}}">
+                  <StackPanel Classes="fadesin" Spacing="{StaticResource GapControl}" IsVisible="{Binding Section, Converter={x:Static view:SectionShown.Instance}, ConverterParameter={x:Static model:SettingsSection.About}}">
                     <!-- Selectable: the build is what a bug report names. -->
                     <SelectableTextBlock Classes="figure" Text="{Binding Version}" />
                   </StackPanel>

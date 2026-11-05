@@ -29,6 +29,19 @@
       </ControlTemplate>
     </Setter>
 
+    <Style Selector="^">
+      <Style.Animations>
+        <Animation Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}">
+          <KeyFrame Cue="0%">
+            <Setter Property="Opacity" Value="0" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="Opacity" Value="1" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+
     <!--
       Constant rate and not eased.
       An eased turn reads as progress towards something, and nothing here knows how far along a

@@ -68,7 +68,7 @@
         </ListBox.ItemTemplate>
       </ListBox>
 
-      <StackPanel IsVisible="{Binding ShowsStream}" Spacing="{StaticResource GapControl}">
+      <StackPanel Classes="fadesin" IsVisible="{Binding ShowsStream}" Spacing="{StaticResource GapControl}">
         <!-- Beside the cards on a wide window, the cards in a row under it on a narrow one. -->
         <Grid ColumnDefinitions="Auto,*"
               RowDefinitions="Auto,Auto"
@@ -119,7 +119,7 @@
         <chart:ChartView DataContext="{Binding Chart}" />
       </StackPanel>
 
-      <StackPanel IsVisible="{Binding ShowsViewers}" Spacing="{StaticResource GapControl}">
+      <StackPanel Classes="fadesin" IsVisible="{Binding ShowsViewers}" Spacing="{StaticResource GapControl}">
         <viewers:ViewerTableView DataContext="{Binding Viewers}" />
         <TextBlock Classes="hint" TextWrapping="Wrap" TextTrimming="None" Text="{Binding ViewersNote}" />
       </StackPanel>
