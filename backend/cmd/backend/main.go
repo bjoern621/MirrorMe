@@ -150,6 +150,10 @@ func runPipeline(elements []string) int {
 			options.Shed, elements = element, elements[1:]
 			continue
 		}
+		if element, ok := strings.CutPrefix(elements[0], gstrun.RelayGateFlag); ok {
+			options.RelayGate, elements = element, elements[1:]
+			continue
+		}
 		break
 	}
 

@@ -73,6 +73,9 @@ type Options struct {
 	Delay string
 	// Shed names the queue whose drops are counted, and the empty name counts none (delay.go).
 	Shed string
+	// RelayGate names the queue ahead of the relay sink that gets gated, and the empty name gates
+	// none, which leaves that queue holding the encoder up (relaygate.go).
+	RelayGate string
 }
 
 // RunWithOptions is Run with whatever this run does beside playing.
@@ -143,12 +146,16 @@ func RunWithOptions(ctx context.Context, description string, options Options, ou
 	if options.Shed != "" {
 		shed = watchShed(pipeline, options.Shed)
 	}
+	var gate *relayGate
+	if options.RelayGate != "" {
+		gate = watchRelayGate(pipeline, options.RelayGate)
+	}
 
 	if ret := pipeline.SetState(gst.StatePlaying); ret == gst.StateChangeFailure {
 		return fmt.Errorf("the pipeline refused to play")
 	}
 	if delay != nil {
-		go reportDelay(ctx, delay, shed, out)
+		go reportDelay(ctx, delay, shed, gate, out)
 	}
 	if pointerAt != nil {
 		go reportPointer(ctx, pointerAt, out)

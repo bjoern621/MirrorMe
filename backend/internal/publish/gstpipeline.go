@@ -2,6 +2,7 @@ package publish
 
 import (
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -25,7 +26,31 @@ import (
 // cost, a picture growing later for as long as the shortfall lasts.
 // Dropping is on this side of the encoder because a dropped encoded frame is a reference a viewer
 // decodes without.
+// The keyframe policy drops encoded frames as well, whole GOP tails at the relay gate (gstRelayQueue).
 var gstEncodeQueue = []string{"queue", "name=" + gstShedName, "max-size-buffers=1", "leaky=downstream"}
+
+// gstRelayQueue renders the queue ahead of the relay sink, up to the link into that sink.
+//
+// The keyframe policy always carries it, named for the child to gate (gstChildArgs).
+// Its bound falls to time alone, a 150 Mbit/s second overrunning the default byte bound ahead of the
+// gate's threshold.
+// The name stays in the rendered command, so SamePipeline relaunches on a change of policy.
+//
+// Under the hold policy, a branched trunk needs a queue anyway.
+// With audio the muxer waits on two pads, and the queue keeps a stall on one from blocking the
+// branch upstream of the other.
+// A tap needs it for a parsing reason: the tee and every muxer and sink here expose request pads
+// only, and gst-launch links no two unnamed request pads.
+// The queue's static sink pad breaks that pair without pinning a tee pad number.
+func gstRelayQueue(s settings.Settings, branched bool) []string {
+	if s.Publish.Congestion == settings.CongestionKeyframe {
+		return []string{"queue", "name=" + gstRelayName, "max-size-buffers=0", "max-size-bytes=0", "!"}
+	}
+	if branched {
+		return []string{"queue", "!"}
+	}
+	return nil
+}
 
 // buildPipeline renders the whole gst-launch description: the source it is handed, the encoder
 // the codec resolves to, and the transport's muxer and sink.
@@ -46,6 +71,9 @@ func buildPipeline(s settings.Settings, capture []string, meterPort string, prev
 	}
 	if err := transport.ValidatePublishSettings(s); err != nil {
 		return nil, err
+	}
+	if !slices.Contains(settings.Congestions, s.Publish.Congestion) {
+		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Value(s.Publish.Congestion))
 	}
 
 	sink, ok := transport.GstSink(s)
@@ -105,14 +133,7 @@ func buildPipeline(s settings.Settings, capture []string, meterPort string, prev
 		}
 	}
 	pipeline = append(pipeline, gstTapElements(taps)...)
-	// With audio the muxer waits on two pads, and the queue keeps a stall on one from blocking
-	// the branch upstream of the other.
-	// A tap needs it for a parsing reason: the tee and every muxer and sink here expose request pads
-	// only, and gst-launch links no two unnamed request pads.
-	// The queue's static sink pad breaks that pair without pinning a tee pad number.
-	if len(audio) > 0 || len(taps) > 0 {
-		pipeline = append(pipeline, "queue", "!")
-	}
+	pipeline = append(pipeline, gstRelayQueue(s, len(audio) > 0 || len(taps) > 0)...)
 	pipeline = append(pipeline, sink...)
 	pipeline = append(pipeline, audio...)
 	return pipeline, nil

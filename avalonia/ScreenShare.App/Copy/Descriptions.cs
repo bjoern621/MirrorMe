@@ -183,6 +183,12 @@ public static class Descriptions
         ["moq"] = "Tracks pushed over QUIC, which a browser subscribes to and decodes itself. The only watch protocol that carries every format offered here, and only a browser opens it. It needs both the TCP and UDP side of its port to reach the relay.",
     };
 
+    private static readonly Dictionary<string, string> Congestions = new()
+    {
+        ["keyframe"] = "The encoder keeps its full rate. Frames that the upload cannot carry are skipped up to the next keyframe, so viewers see a short freeze with a clean picture on either side. The local preview stays smooth.",
+        ["hold"] = "The encoder waits for the upload. Viewers see a lower frame rate with no freeze. The local preview slows down with them.",
+    };
+
     private static readonly Dictionary<string, string> RtspProtocols = new()
     {
         ["tcp"] = "Everything rides the connection the session opened. Nothing is lost, and no extra port has to cross a router or firewall. One late packet holds up everything behind it.",
@@ -234,6 +240,8 @@ public static class Descriptions
     public static string Transport(string id) => Look(Transports, id);
 
     public static string RtspProtocol(string id) => Look(RtspProtocols, id);
+
+    public static string Congestion(string id) => Look(Congestions, id);
 
     public static string RenderChain(string id) => Look(RenderChains, id);
 

@@ -496,7 +496,10 @@ type Publish struct {
 	// The watch leg names its own,
 	// the two crossing different networks and the network deciding whether that pair survives.
 	RtspPublishProtocol string `json:"rtspPublishProtocol"`
-	UplinkMbps          int    `json:"uplinkMbps"` // Mbps of upload the user states, read for warnings
+	// Congestion is what a relay leg slower than the encoder costs, one of Congestions.
+	// The ffmpeg engine has no keyframe-gated drop and reads no such setting.
+	Congestion string `json:"congestion"`
+	UplinkMbps int    `json:"uplinkMbps"` // Mbps of upload the user states, read for warnings
 	// UplinkMeasuredUnix is when UplinkMbps was measured, unix seconds,
 	// and zero while the figure is the stated guess.
 	// Written beside a successful measurement (app.recordUplink);
@@ -664,6 +667,17 @@ func (p Publish) CapabilityOptions() map[string]string {
 // here is only the key, because Defaults writes it.
 const PresetBalanced = "balanced"
 
+// The answers Publish.Congestion takes.
+// CongestionKeyframe keeps the encoder at full rate, and the relay leg freezes up to the next keyframe.
+// CongestionHold stalls the encoder, and every branch off it, until the relay leg catches up.
+const (
+	CongestionKeyframe = "keyframe"
+	CongestionHold     = "hold"
+)
+
+// Congestions lists the Publish.Congestion answers, default first.
+var Congestions = []string{CongestionKeyframe, CongestionHold}
+
 // SrtRelayFloorMs is the retransmit window every relay SRT hop runs at least at.
 // MediaMTX exposes no SRT latency option and runs on its library's 120 ms default,
 // and the handshake takes the larger of the two ends' windows,
@@ -721,6 +735,7 @@ func Defaults() Settings {
 			// UDP depends on its port pair crossing the same NAT and firewall, and never retransmits,
 			// so what it fails as is a connected stream and no picture.
 			RtspPublishProtocol: "tcp",
+			Congestion:          CongestionKeyframe,
 			UplinkMbps:          50,
 		},
 		Viewer: Viewer{

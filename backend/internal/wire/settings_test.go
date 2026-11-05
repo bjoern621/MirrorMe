@@ -64,6 +64,7 @@ func populatedSettings() settings.Settings {
 			Cursor:              "hidden",
 			SrtPublishLatencyMs: 555,
 			RtspPublishProtocol: "udp",
+			Congestion:          settings.CongestionHold,
 			UplinkMbps:          888,
 			UplinkMeasuredUnix:  999,
 			OutputResolution:    "1280x720",

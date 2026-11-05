@@ -541,6 +541,11 @@ func optionRtspProtocols(_ Deps, _ settings.Settings) []*screensharev1.FieldOpti
 	return optionPlainList(transport.RtspProtocols, KeyRtspPublishProtocol)
 }
 
+// optionCongestions offers what a relay leg slower than the encoder may cost.
+func optionCongestions(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
+	return optionPlainList(settings.Congestions, KeyCongestion)
+}
+
 // optionMaxratePresets is the ladder the burst ceiling is offered on: the uncapped answer,
 // the target itself, and twice the target.
 //

@@ -295,6 +295,20 @@ func TestLoadMigratesMissingDrmMapAndPreset(t *testing.T) {
 // and both publish engines refuse a value their table does not carry.
 // The table's own default is the one value every capture and codec pair satisfies,
 // so migrating to it keeps an upgrade from turning a working stream into a refusal.
+func TestLoadFillsAMissingCongestionWithTheDefault(t *testing.T) {
+	isolateConfig(t)
+
+	s := Defaults()
+	s.Publish.Congestion = ""
+	if err := Save(s); err != nil {
+		t.Fatalf("Save: %v", err)
+	}
+
+	if got := mustLoad(t).Publish.Congestion; got != CongestionKeyframe {
+		t.Errorf("congestion = %q, want migrated to %q", got, CongestionKeyframe)
+	}
+}
+
 func TestLoadMigratesMissingCaptureMemory(t *testing.T) {
 	isolateConfig(t)
 

@@ -64,6 +64,9 @@ type Delay struct {
 	// shed.
 	// Cumulative like the pair above, so the parent divides two readings by the interval between them.
 	Dropped *uint64 `json:"dropped,omitempty"`
+	// RelayDropped is what the gate kept off the relay leg since the pipeline started, absent on a run
+	// carrying no gate (relaygate.go).
+	RelayDropped *uint64 `json:"relayDropped,omitempty"`
 }
 
 // watchDelay attaches the probe one reading is taken off, and nil where this pipeline cannot carry
@@ -87,8 +90,8 @@ func watchDelay(pipeline gst.Pipeline, element string) *pipedelay.Probe {
 }
 
 // reportDelay writes one reading per tick until the context ends, on its own goroutine.
-// shed is nil on a pipeline carrying none, which reports no drop rather than a drop of nothing.
-func reportDelay(ctx context.Context, probe *pipedelay.Probe, shed *shedCount, out io.Writer) {
+// shed and gate are nil on a pipeline carrying none, which reports no drop rather than a drop of nothing.
+func reportDelay(ctx context.Context, probe *pipedelay.Probe, shed *shedCount, gate *relayGate, out io.Writer) {
 	assert.IsNotNil(ctx, "a delay report runs under a context")
 	assert.IsNotNil(out, "a delay report is written to a writer")
 	assert.IsNotNil(probe, "a delay report reads a probe")
@@ -106,6 +109,9 @@ func reportDelay(ctx context.Context, probe *pipedelay.Probe, shed *shedCount, o
 		delay := Delay{TransitNs: uint64(reading.Total), Frames: reading.Frames}
 		if dropped, counted := shed.Read(); counted {
 			delay.Dropped = &dropped
+		}
+		if dropped, counted := gate.Read(); counted {
+			delay.RelayDropped = &dropped
 		}
 		writeDelay(out, delay)
 	}

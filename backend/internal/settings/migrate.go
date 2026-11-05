@@ -45,6 +45,7 @@ type flat struct {
 	CaptureMemory       *string `json:"captureMemory"`
 	SrtPublishLatencyMs *int    `json:"srtPublishLatencyMs"`
 	RtspPublishProtocol *string `json:"rtspPublishProtocol"`
+	Congestion          *string `json:"congestion"`
 	UplinkMbps          *int    `json:"uplinkMbps"`
 	OutputResolution    *string `json:"outputResolution"`
 
@@ -108,6 +109,7 @@ func decodeFlat(data []byte) (Settings, bool) {
 	set(&s.Publish.CaptureMemory, f.CaptureMemory)
 	set(&s.Publish.SrtPublishLatencyMs, f.SrtPublishLatencyMs)
 	set(&s.Publish.RtspPublishProtocol, f.RtspPublishProtocol)
+	set(&s.Publish.Congestion, f.Congestion)
 	set(&s.Publish.UplinkMbps, f.UplinkMbps)
 	set(&s.Publish.OutputResolution, f.OutputResolution)
 
@@ -283,6 +285,7 @@ func migratePublish(p, d Publish) Publish {
 	// The publish leg's protocol was fixed before it was a field,
 	// so a file from then names none and the transport refuses the publish over the empty value.
 	fillText(&p.RtspPublishProtocol, d.RtspPublishProtocol)
+	fillText(&p.Congestion, d.Congestion)
 	// A file written while the encode was one field carries an encoder name under the old key,
 	// which the ordinary decode never reads:
 	// the pair replaced it and neither half spells a codec.

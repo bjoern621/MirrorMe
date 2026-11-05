@@ -26,6 +26,9 @@ const (
 	// gstShedName names the queue ahead of the encoder, which is counted at both ends so what it drops
 	// is a figure rather than a silence (gstpipeline.go, gstrun/delay.go).
 	gstShedName = "shed"
+	// gstRelayName names the queue ahead of the relay sink, where the keyframe policy gates the leg
+	// (gstrun/relaygate.go).
+	gstRelayName = "relay"
 )
 
 // gstCaptureProbe is the progressreport element a capture backend splices in to count what
@@ -114,7 +117,8 @@ const gstMeterHost = "127.0.0.1"
 // the byte counter as it stands.
 //
 // Stats.Drop is what the shed ahead of the encoder threw away, counted at both its ends
-// by the child (gstEncodeQueue, gstrun/delay.go).
+// by the child (gstEncodeQueue, gstrun/delay.go), plus what the gate kept off the relay leg.
+// Stats.Fps leaves those gated frames out, since no viewer receives them.
 // The leaky queue on the damage path keeps no count and needs none: it drops a frame a newer one
 // supersedes, which costs the stream nothing.
 type gstMeter struct {
@@ -147,13 +151,15 @@ type gstMeter struct {
 
 	// Previous and first sample, for the deltas the derived figures need.
 	// Touched by parse alone, from the one goroutine that reads stdout.
-	prevFrames   int
-	prevBytes    int64
-	prevCaptured int
-	prevWall     time.Time
-	startRun     float64
-	startWall    time.Time
-	havePrev     bool
+	prevFrames int
+	// prevRelayDropped is the gate's count at the previous sample, which the frame rate takes off.
+	prevRelayDropped int
+	prevBytes        int64
+	prevCaptured     int
+	prevWall         time.Time
+	startRun         float64
+	startWall        time.Time
+	havePrev         bool
 	// The delay reading the previous sample was taken against, and whether there was one.
 	// A mean transit is one interval's summed delay over that interval's frames, so it needs
 	// the reading before it as much as a rate does.
@@ -274,6 +280,7 @@ func (m *gstMeter) timing(stats *Stats) {
 	if delay.Dropped != nil {
 		stats.Drop = int(*delay.Dropped)
 	}
+	stats.Drop += gatedFrames(delay)
 
 	prev, havePrev := m.prevDelay, m.havePrevDelay
 	m.prevDelay, m.havePrevDelay = delay, true
@@ -285,6 +292,14 @@ func (m *gstMeter) timing(stats *Stats) {
 		return
 	}
 	stats.TransitMs = float64(delay.TransitNs-prev.TransitNs) / float64(delay.Frames-prev.Frames) / 1e6
+}
+
+// gatedFrames is what the gate has kept off the relay leg, zero on a run carrying no gate.
+func gatedFrames(delay gstrun.Delay) int {
+	if delay.RelayDropped == nil {
+		return 0
+	}
+	return int(*delay.RelayDropped)
 }
 
 // takeDelay records the newest reading the child reported, for the next sample to measure against.
@@ -314,6 +329,8 @@ func (m *gstMeter) sample(frames int, runSec float64) {
 		TimeSec: runSec,
 	}
 	m.timing(&stats)
+	delay, _ := m.readDelay()
+	gated := gatedFrames(delay)
 	// A per-interval figure has no value on the first line of a run, and this engine measures no
 	// capture rate at all unless the backend placed the probe.
 	// Both are unmeasured rather than zero, zero being the reading that marks a stalled encoder.
@@ -328,7 +345,8 @@ func (m *gstMeter) sample(frames int, runSec float64) {
 	}
 	if m.havePrev {
 		if d := now.Sub(m.prevWall).Seconds(); d > 0 {
-			stats.Fps = float64(frames-m.prevFrames) / d
+			// The gate's count lands on its own tick, which can put more drops in one interval than frames.
+			stats.Fps = float64(max(frames-m.prevFrames-(gated-m.prevRelayDropped), 0)) / d
 			stats.InstMbps = float64(total-m.prevBytes) * 8 / d / 1_000_000
 			stats.CaptureFps = float64(captured-m.prevCaptured) / d
 		}
@@ -342,6 +360,7 @@ func (m *gstMeter) sample(frames int, runSec float64) {
 		m.startRun, m.startWall = runSec, now
 	}
 	m.prevFrames, m.prevBytes, m.prevCaptured, m.prevWall, m.havePrev = frames, total, captured, now, true
+	m.prevRelayDropped = gated
 
 	m.onStats(stats)
 }

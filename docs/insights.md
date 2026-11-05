@@ -13,7 +13,7 @@ A dip ends once output climbs back to 90 % of the target.
 Between the two thresholds the verdict holds, so a rate hovering at one line does not flicker.
 A restart ends with the first reading of the relaunched pipeline.
 
-Rate read: frames the encoder emitted.
+Rate read: frames that reached the relay leg (`viewer-architecture.md`, "What a slow relay leg costs").
 Capture rate stays out, a still screen producing no new pictures while the viewer sees nothing wrong.
 
 A stopped run carries the pipeline's own words and its log path, and keeps them until the next start.

@@ -317,6 +317,12 @@ message PublishSettings {
   // and the network decides whether a port pair survives.
   string rtsp_publish_protocol = 31;
 
+  // What a relay leg slower than the encoder costs, on the GStreamer engine:
+  // "keyframe" drops frames on that leg up to the next keyframe,
+  // "hold" stalls the encoder until the leg catches up.
+  // The ffmpeg engine always holds.
+  string congestion = 48;
+
   // Upload capacity the user says this machine has.
   // Nothing is enforced against it: the warnings in Form.summary are weighed against it,
   // and MeasureUplink replaces the guess with a measurement.

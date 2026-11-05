@@ -558,6 +558,11 @@ type PublishSettings struct {
 	// The watch leg names its own, because the two cross different networks,
 	// and the network decides whether a port pair survives.
 	RtspPublishProtocol string `protobuf:"bytes,31,opt,name=rtsp_publish_protocol,json=rtspPublishProtocol,proto3" json:"rtsp_publish_protocol,omitempty"`
+	// What a relay leg slower than the encoder costs, on the GStreamer engine:
+	// "keyframe" drops frames on that leg up to the next keyframe,
+	// "hold" stalls the encoder until the leg catches up.
+	// The ffmpeg engine always holds.
+	Congestion string `protobuf:"bytes,48,opt,name=congestion,proto3" json:"congestion,omitempty"`
 	// Upload capacity the user says this machine has.
 	// Nothing is enforced against it: the warnings in Form.summary are weighed against it,
 	// and MeasureUplink replaces the guess with a measurement.
@@ -797,6 +802,13 @@ func (x *PublishSettings) GetSrtPublishLatencyMs() int32 {
 func (x *PublishSettings) GetRtspPublishProtocol() string {
 	if x != nil {
 		return x.RtspPublishProtocol
+	}
+	return ""
+}
+
+func (x *PublishSettings) GetCongestion() string {
+	if x != nil {
+		return x.Congestion
 	}
 	return ""
 }
@@ -1147,7 +1159,7 @@ const file_screenshare_v1_settings_proto_rawDesc = "" +
 	"\tgroup_key\x18\b \x01(\tR\bgroupKey\x12!\n" +
 	"\fdisplay_name\x18\f \x01(\tR\vdisplayName\x12!\n" +
 	"\fdiscord_link\x18\x0e \x01(\tR\vdiscordLinkJ\x04\b\r\x10\x0eJ\x04\b\x0f\x10\x10J\x04\b\t\x10\n" +
-	"J\x04\b\x03\x10\x04R\fdiscord_modeR\x15discord_rich_presenceR\x0esrt_passphraseR\bapi_port\"\x80\n" +
+	"J\x04\b\x03\x10\x04R\fdiscord_modeR\x15discord_rich_presenceR\x0esrt_passphraseR\bapi_port\"\xa0\n" +
 	"\n" +
 	"\x0fPublishSettings\x12+\n" +
 	"\x11publish_transport\x18\n" +
@@ -1179,7 +1191,10 @@ const file_screenshare_v1_settings_proto_rawDesc = "" +
 	"\fshare_region\x18/ \x01(\tR\vshareRegion\x12%\n" +
 	"\x0ecapture_memory\x18\x1c \x01(\tR\rcaptureMemory\x123\n" +
 	"\x16srt_publish_latency_ms\x18\x1d \x01(\x05R\x13srtPublishLatencyMs\x122\n" +
-	"\x15rtsp_publish_protocol\x18\x1f \x01(\tR\x13rtspPublishProtocol\x12\x1f\n" +
+	"\x15rtsp_publish_protocol\x18\x1f \x01(\tR\x13rtspPublishProtocol\x12\x1e\n" +
+	"\n" +
+	"congestion\x180 \x01(\tR\n" +
+	"congestion\x12\x1f\n" +
 	"\vuplink_mbps\x18\" \x01(\x05R\n" +
 	"uplinkMbps\x120\n" +
 	"\x14uplink_measured_unix\x18, \x01(\x03R\x12uplinkMeasuredUnix\x12+\n" +

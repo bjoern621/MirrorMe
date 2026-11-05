@@ -77,6 +77,7 @@ const (
 
 	KeySrtPublishLatencyMs = "publish.srt_publish_latency_ms"
 	KeyRtspPublishProtocol = "publish.rtsp_publish_protocol"
+	KeyCongestion          = "publish.congestion"
 
 	KeyUplinkMbps = "publish.uplink_mbps"
 

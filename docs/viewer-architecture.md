@@ -420,7 +420,7 @@ Both halves are idempotent, every path that ends the child ends the preview, and
 
 **The local picture gives up the delivery half, and the card says so.**
 It shows what is being sent and nothing about what anybody receives, so a relay dropping packets and a viewer on a bad link both leave it looking perfect.
-A congested uplink stalls it as well: the relay leg holds up the encoder that both legs share, so frames stop reaching the preview too.
+A congested uplink leaves it at encode quality under the keyframe policy ("What a slow relay leg costs").
 
 **One decode serves every window drawing it**, keyed by the stream and the leg, so a tile in the grid on the same pair is the same pipeline.
 The preview reads the grid's answer through before closing anything, and asks again for a decode it saw running and does not find, making a pipeline another window closed a blink rather than a card that stays dark.
@@ -428,6 +428,28 @@ The preview reads the grid's answer through before closing anything, and asks ag
 **The card opens drawing and follows only whether the window is on screen.**
 A publisher's window stands behind the thing being shared for most of a session, so a card that stopped whenever nobody was looking would be dark at the moment a reader came back to check on it.
 A window closed to the tray draws nothing, so the card's decode closes and its tile goes, and the stored route brings both back with the window.
+
+## What a slow relay leg costs
+
+One encoder feeds every branch off the tee, so a branch that blocks stops them all.
+`publish.congestion` picks the answer on the GStreamer engine.
+The ffmpeg engine has no keyframe-gated drop, always holds and hides the control.
+
+| Value | Encoder | Viewers | Local preview |
+| --- | --- | --- | --- |
+| `keyframe`, default | full rate | short freeze | full rate |
+| `hold` | waits for the relay leg | lower frame rate | slows with them |
+
+**Gate:** a probe on the queue ahead of the relay sink, in the child (`internal/gstrun/relaygate.go`).
+Past half a second of backlog it drops every frame up to the next keyframe with room behind it.
+A decoder needs every frame back to the last keyframe, so a gap always ends on one.
+
+**Figures:** the meter counts ahead of the tee, so the frame rate takes off what the gate dropped.
+Those frames join the drop count.
+The chart keeps showing a congested uplink while the preview stays smooth.
+
+**One encoder stays.**
+A second one would spend a second GPU session and show a picture other than the one viewers get.
 
 ## What the screen picker draws
 

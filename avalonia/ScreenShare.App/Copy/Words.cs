@@ -328,6 +328,13 @@ public static class Words
         ["readability"] = "Text and detail",
     };
 
+    /// <summary>What a relay leg slower than the encoder costs.</summary>
+    private static readonly Dictionary<string, string> Congestions = new()
+    {
+        ["keyframe"] = "Skip to the next keyframe",
+        ["hold"] = "Slow the encoder",
+    };
+
     /// <summary>Lower transport RTP takes inside an RTSP session, not the session's own.</summary>
     private static readonly Dictionary<string, string> RtspProtocols = new()
     {
@@ -485,6 +492,8 @@ public static class Words
     public static string Preset(string id) => Look(Presets, id);
 
     public static string RtspProtocol(string id) => Look(RtspProtocols, id);
+
+    public static string Congestion(string id) => Look(Congestions, id);
 
     public static string RenderChain(string id) => Look(RenderChains, id);
 

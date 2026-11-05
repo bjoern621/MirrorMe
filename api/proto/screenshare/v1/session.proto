@@ -142,7 +142,8 @@ message PublishStats {
   // Below one is an encoder falling behind the capture.
   optional double speed = 6;
   // duplicated_frames were repeated to hold the output rate,
-  // dropped_frames arrived faster than the encoder took them.
+  // dropped_frames arrived faster than the encoder took them,
+  // or left the encoder and never reached the relay leg.
   int64 duplicated_frames = 13;
   int64 dropped_frames = 14;
   // inst_mbps is the rate over the last interval, avg_mbps over the run.

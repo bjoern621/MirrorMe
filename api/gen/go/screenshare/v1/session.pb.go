@@ -179,7 +179,8 @@ type PublishStats struct {
 	// Below one is an encoder falling behind the capture.
 	Speed *float64 `protobuf:"fixed64,6,opt,name=speed,proto3,oneof" json:"speed,omitempty"`
 	// duplicated_frames were repeated to hold the output rate,
-	// dropped_frames arrived faster than the encoder took them.
+	// dropped_frames arrived faster than the encoder took them,
+	// or left the encoder and never reached the relay leg.
 	DuplicatedFrames int64 `protobuf:"varint,13,opt,name=duplicated_frames,json=duplicatedFrames,proto3" json:"duplicated_frames,omitempty"`
 	DroppedFrames    int64 `protobuf:"varint,14,opt,name=dropped_frames,json=droppedFrames,proto3" json:"dropped_frames,omitempty"`
 	// inst_mbps is the rate over the last interval, avg_mbps over the run.

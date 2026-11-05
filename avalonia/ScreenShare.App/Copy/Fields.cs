@@ -230,6 +230,10 @@ public static class Fields
             "How the media travels inside the RTSP session on its way out. TCP needs nothing beyond the connection already open. UDP needs a port pair to get out too. A home router normally allows that, a corporate network often does not.",
             DocRtsp),
 
+        ["publish.congestion"] = new(
+            "When upload falls behind",
+            "What the stream gives up when the connection cannot carry everything that the encoder makes."),
+
         ["publish.uplink_mbps"] = new(
             "Upload speed",
             "What the connection uploads in practice, which is usually below the advertised figure. The prediction is weighed against it, and the Balanced preset prices its bitrate from a measured figure. The first start measures it once in the background, uploading 20 MB to a public test endpoint (speed.cloudflare.com). Measure again after switching networks."),

@@ -101,6 +101,7 @@ func PublishSettings(p settings.Publish) *screensharev1.PublishSettings {
 
 		SrtPublishLatencyMs: int32(p.SrtPublishLatencyMs),
 		RtspPublishProtocol: p.RtspPublishProtocol,
+		Congestion:          p.Congestion,
 
 		UplinkMbps:         int32(p.UplinkMbps),
 		UplinkMeasuredUnix: p.UplinkMeasuredUnix,
@@ -218,6 +219,7 @@ func ToPublish(m *screensharev1.PublishSettings) settings.Publish {
 
 		SrtPublishLatencyMs: int(m.GetSrtPublishLatencyMs()),
 		RtspPublishProtocol: m.GetRtspPublishProtocol(),
+		Congestion:          m.GetCongestion(),
 
 		UplinkMbps:         int(m.GetUplinkMbps()),
 		UplinkMeasuredUnix: m.GetUplinkMeasuredUnix(),

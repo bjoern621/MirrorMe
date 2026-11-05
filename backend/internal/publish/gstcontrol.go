@@ -139,5 +139,8 @@ func gstChildArgs(s settings.Settings, socket string, metered bool) []string {
 	if metered {
 		args = append(args, gstrun.DelayFlag+gstStatsName, gstrun.ShedFlag+gstShedName)
 	}
+	if s.Publish.Congestion == settings.CongestionKeyframe {
+		args = append(args, gstrun.RelayGateFlag+gstRelayName)
+	}
 	return args
 }

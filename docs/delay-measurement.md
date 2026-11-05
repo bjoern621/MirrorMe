@@ -92,7 +92,8 @@ Being a fixed size on every picture, it scales with frame rate.
 
 Two things stop the capture-and-encode figure growing without limit.
 
-The trunk sheds ahead of the encoder, holding the newest frame and dropping the rest, so an encoder or a leg short of the capture rate costs frames instead of ageing every frame behind it.
+The trunk sheds ahead of the encoder, holding the newest frame and dropping the rest, so an encoder short of the capture rate costs frames instead of ageing every frame behind it.
+A leg short of it costs the same under the hold policy (`viewer-architecture.md`, "What a slow relay leg costs").
 What it dropped is counted and crosses on the same line, the two being one reading: what the shed threw away is what the delay did not grow by.
 
 The software encoders run with their lookahead pinned off, frames an element holds leaving at whatever rate the transport takes.

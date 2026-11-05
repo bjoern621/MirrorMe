@@ -36,6 +36,7 @@ var fieldDeclaredKeys = []string{
 	KeyCursor,
 	KeySrtPublishLatencyMs, KeySrtWatchLatencyMs,
 	KeyRtspPublishProtocol, KeyRtspWatchProtocol,
+	KeyCongestion,
 	KeyUplinkMbps,
 	KeyOutputResolution,
 	KeyTileWatchTransport, KeyRtspWatchLatencyMs, KeyRenderChain, KeyConstantVolume,
@@ -839,6 +840,7 @@ func TestTheDefaultsAreValuesTheFormOffers(t *testing.T) {
 		KeyTransport:           s.Publish.Transport,
 		KeyTileWatchTransport:  s.Viewer.TileWatchTransport,
 		KeyRtspPublishProtocol: s.Publish.RtspPublishProtocol,
+		KeyCongestion:          s.Publish.Congestion,
 		KeyRtspWatchProtocol:   s.Viewer.RtspWatchProtocol,
 	}
 	for key, value := range cases {
@@ -1433,6 +1435,17 @@ func TestTheEncodeGroupHoldsWhatAViewerNotices(t *testing.T) {
 					t.Errorf("%s sits under %s, away from the encode it is weighed against", f.GetKey(), g.GetKey())
 				}
 			}
+		}
+	}
+}
+
+// The ffmpeg engine has no keyframe-gated drop, so a control there would change nothing.
+func TestTheCongestionControlFollowsTheEngine(t *testing.T) {
+	for capture, shown := range map[string]bool{"portal": true, "gdigrab": false} {
+		s := settings.Defaults()
+		s.Publish.Capture = capture
+		if got := fieldState(Deps{}, s, KeyCongestion, noEntry).visible; got != shown {
+			t.Errorf("%s: shown = %v, want %v", capture, got, shown)
 		}
 	}
 }

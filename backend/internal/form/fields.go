@@ -381,6 +381,13 @@ var fieldTable = []field{
 		options: optionRtspProtocols,
 	},
 	{
+		key:     KeyCongestion,
+		group:   GroupTransport,
+		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
+		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.Congestion) },
+		options: optionCongestions,
+	},
+	{
 		key:     KeyUplinkMbps,
 		group:   GroupTransport,
 		control: screensharev1.ControlKind_CONTROL_KIND_NUMBER,

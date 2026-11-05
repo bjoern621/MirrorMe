@@ -153,7 +153,7 @@ func PublishState(p PublishSnapshot) *screensharev1.PublishState {
 // Dup and Drop cross as duplicated_frames and dropped_frames,
 // the contract spelling out what the domain abbreviates:
 // frames the encoder repeated to hold the output rate,
-// and input frames discarded for arriving faster than it took them.
+// and frames discarded, ahead of the encoder or ahead of the relay leg.
 // The frame counts carry no presence, a run that has encoded no frames having encoded zero of them.
 func PublishStats(s ffmpeg.Stats) *screensharev1.PublishStats {
 	out := &screensharev1.PublishStats{

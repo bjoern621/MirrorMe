@@ -375,6 +375,10 @@ var availabilityRules = map[string]func(availability) state{
 	KeyRtspPublishProtocol: func(av availability) state {
 		return availabilityShownFor(av.s.Publish.Transport == availabilityRtsp)
 	},
+	// Hidden on the ffmpeg engine, which holds the encoder on every run and offers no other answer.
+	KeyCongestion: func(av availability) state {
+		return availabilityShownFor(av.engine == capabilities.EngineGst)
+	},
 	// The SRT window and the RTP lower transport belong to the link rather than to one reader,
 	// so they follow either receiver (watchesOver).
 	KeySrtWatchLatencyMs: func(av availability) state {
