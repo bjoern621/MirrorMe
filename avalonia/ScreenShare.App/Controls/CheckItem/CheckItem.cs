@@ -41,6 +41,7 @@ public sealed class CheckItem : TemplatedControl
 {
     /// <summary>Pseudo-class the hover fill and the hand cursor hang off (<c>CheckItem.axaml</c>).</summary>
     private const string LeadsPseudoClass = ":leads";
+    private const string PressedPseudoClass = ":pressed";
 
     /// <summary>How far a press may travel and still count as one. px.</summary>
     private const double PressSlack = 3;
@@ -49,8 +50,11 @@ public sealed class CheckItem : TemplatedControl
     private Point? _pressedAt;
 
     public CheckItem()
+    {
         // Tunnelled: the sentence takes its own press for the selection, so the bubble never arrives here.
-        => AddHandler(PointerPressedEvent, RecordPress, RoutingStrategies.Tunnel);
+        AddHandler(PointerPressedEvent, RecordPress, RoutingStrategies.Tunnel);
+        AddHandler(PointerReleasedEvent, EndPress, RoutingStrategies.Tunnel);
+    }
 
     public static readonly StyledProperty<string> TextProperty =
         AvaloniaProperty.Register<CheckItem, string>(nameof(Text), "");
@@ -101,7 +105,12 @@ public sealed class CheckItem : TemplatedControl
     }
 
     private void RecordPress(object? sender, PointerPressedEventArgs e)
-        => _pressedAt = e.GetCurrentPoint(this).Properties.IsLeftButtonPressed ? e.GetPosition(this) : null;
+    {
+        _pressedAt = e.GetCurrentPoint(this).Properties.IsLeftButtonPressed ? e.GetPosition(this) : null;
+        PseudoClasses.Set(PressedPseudoClass, _pressedAt is not null);
+    }
+
+    private void EndPress(object? sender, PointerReleasedEventArgs e) => PseudoClasses.Set(PressedPseudoClass, false);
 
     /// <summary>
     /// A press anywhere on the line stands on the step that fixes it.
