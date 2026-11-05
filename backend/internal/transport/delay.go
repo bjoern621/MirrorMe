@@ -11,7 +11,7 @@ import "time"
 var pathDelays = map[string]time.Duration{
 	RTSP{}.Name():   160 * time.Millisecond,
 	WebRTC{}.Name(): 110 * time.Millisecond,
-	SRT{}.Name():    430 * time.Millisecond,
+	SRT{}.Name():    400 * time.Millisecond,
 	HLS{}.Name():    3350 * time.Millisecond,
 	RTMP{}.Name():   32 * time.Millisecond,
 }

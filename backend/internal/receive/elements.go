@@ -137,10 +137,9 @@ type elementTuning struct {
 //
 // tsdemux answers a latency query with 700 ms by default, H.222.0's widest gap between two
 // timestamps, and the sink holds every frame for it.
-// A stream here carries a timestamp per frame, so 100 ms covers it.
-// At 0 a decode carrying desktop audio stalls.
+// A stream here carries a timestamp per frame and the leg's own window takes up its jitter.
 var elementTunings = []elementTuning{
-	{factory: "tsdemux", property: "latency", value: int32(100)},
+	{factory: "tsdemux", property: "latency", value: int32(0)},
 }
 
 // elementStats pairs an element found in the pipeline with the table entry stating
