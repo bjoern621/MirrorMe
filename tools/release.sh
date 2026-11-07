@@ -11,6 +11,21 @@ cd "$root"
 die() { echo "release: $*" >&2; exit 1; }
 step() { go -C backend run ./cmd/release -root "$root" "$@"; }
 
+# Prints a line whenever the run or one of its jobs changes state, then the finished run.
+# gh run watch redraws on the alternate screen, which keeps no scrollback.
+follow() {
+  local run=$1 seen="" state
+  while :; do
+    state=$(gh run view "$run" --json status,jobs --jq '.status + ": " + (.jobs
+      | map(.name + " " + (if .status == "completed" then .conclusion else .status end)) | join(", "))')
+    [[ $state == "$seen" ]] || echo "$state"
+    seen=$state
+    [[ $state == completed:* ]] && break
+    sleep 10
+  done
+  GH_PAGER=cat gh run view "$run" --exit-status
+}
+
 command -v gh >/dev/null || die "gh is not on PATH: run inside nix develop"
 gh auth status >/dev/null 2>&1 || die "gh has no login: run gh auth login or set GH_TOKEN"
 
@@ -36,7 +51,7 @@ git merge-base --is-ancestor "$sha" origin/main || die "push $sha first, so the 
 
 run=$(gh run list --workflow check.yml --commit "$sha" --limit 1 --json databaseId --jq '.[0].databaseId // empty')
 [[ -n $run ]] || die "the check workflow holds no run for $sha"
-gh run watch "$run" --exit-status || die "the check workflow failed on $sha: gh run view $run"
+follow "$run" || die "the check workflow failed on $sha: gh run view $run"
 
 read -r -p "Release $version from $(git rev-parse --short HEAD)? [y/N] " confirm
 [[ $confirm == y ]] || die "stopped before the cut"
@@ -68,7 +83,7 @@ for _ in $(seq 30); do
   sleep 2
 done
 [[ -n $run ]] || die "no release workflow run started for $version: gh run list --workflow release.yml"
-gh run watch "$run" --exit-status || die "the release workflow failed: gh run view $run --log-failed"
+follow "$run" || die "the release workflow failed: gh run view $run --log-failed"
 
 echo "Published $version: $(gh release view "$version" --json url --jq .url)"
 echo "Record a test run on each machine with task qa:record -- -version $version"
