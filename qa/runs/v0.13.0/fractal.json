@@ -11,7 +11,7 @@
       {
         "name": "NVIDIA Corporation GB203 [GeForce RTX 5080] (rev a1)",
         "driver": "nvidia",
-        "driver_version": "for"
+        "driver_version": "615.78.08"
       },
       {
         "name": "Advanced Micro Devices, Inc. [AMD/ATI] Raphael [Radeon 610M] (rev cb)",
@@ -24,11 +24,10 @@
     "ffmpeg": "9.0.2"
   },
   "tests": {
-    "passed": 1966,
-    "failed": 15,
+    "passed": 1967,
+    "failed": 14,
     "skipped": 79,
     "failures": [
-      "encoderate.TestMeasureBracketsTheContentRange",
       "publish.TestGstEncodersAgainstGstLaunch/h264_nvenc/lossless",
       "publish.TestGstEncodersAgainstGstLaunch/hevc_nvenc/lossless",
       "publish.TestPublishedColorimetryReachesTheDecoder/av1_nvenc/gpu/pc",
@@ -363,5 +362,30 @@
       }
     ]
   },
-  "checklist": null
+  "checklist": [
+    {
+      "id": "publish",
+      "result": "skip"
+    },
+    {
+      "id": "encoder",
+      "result": "skip"
+    },
+    {
+      "id": "watch",
+      "result": "skip"
+    },
+    {
+      "id": "audio",
+      "result": "skip"
+    },
+    {
+      "id": "restart",
+      "result": "skip"
+    },
+    {
+      "id": "update",
+      "result": "skip"
+    }
+  ]
 }
