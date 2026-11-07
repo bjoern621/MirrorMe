@@ -3,8 +3,6 @@ package app
 import (
 	"context"
 	"math"
-	"os/exec"
-	goruntime "runtime"
 	"time"
 
 	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
@@ -253,23 +251,14 @@ func (a *App) OpenLogsFolder() error {
 	return openInShell(dir)
 }
 
-// openInShell opens a file or folder with the platform's default handler.
+// openInShell opens a file, a folder or a URL with the platform's default handler.
 //
-// The path is asserted rather than checked: both callers refuse an empty one above,
-// so nothing reaching here is a caller that forgot,
+// The path is asserted rather than checked: every caller refuses an empty one,
 // and handing a default handler no argument would open whatever it opens for one.
 func openInShell(path string) error {
 	assert.Assert(path != "", "a default handler is pointed at something to open")
 
-	switch goruntime.GOOS {
-	case "windows":
-		// The empty argument is start's window title, which the path would otherwise be taken for.
-		return exec.Command("cmd", "/c", "start", "", path).Run()
-	case "darwin":
-		return exec.Command("open", path).Run()
-	default:
-		return exec.Command("xdg-open", path).Run()
-	}
+	return openWithDefaultHandler(path)
 }
 
 // audioDevices is what this machine offers inside each audio kind.
