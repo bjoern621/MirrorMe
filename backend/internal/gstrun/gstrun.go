@@ -152,7 +152,7 @@ func RunWithOptions(ctx context.Context, description string, options Options, ou
 	}
 
 	if ret := pipeline.SetState(gst.StatePlaying); ret == gst.StateChangeFailure {
-		return fmt.Errorf("the pipeline refused to play")
+		return refusal(pipeline, out)
 	}
 	if delay != nil {
 		go reportDelay(ctx, delay, shed, gate, out)
@@ -185,6 +185,23 @@ func RunWithOptions(ctx context.Context, description string, options Options, ou
 	}
 	// The channel ended, the supervisor cancelling: stopping is not a failure.
 	return nil
+}
+
+// refusal returns the error that a pipeline refusing to play posted, and writes its debug detail
+// to out as the bus loop does.
+// The element failing its state change posts the error before SetState answers.
+// The bus loop never starts on a refused pipeline, so nothing else reads it.
+// The error names the element and its reason, which "refused to play" alone leaves out.
+func refusal(pipeline gst.Pipeline, out io.Writer) error {
+	msg := pipeline.GetBus().TimedPopFiltered(0, gst.MessageError)
+	if msg == nil {
+		return fmt.Errorf("the pipeline refused to play")
+	}
+	debug, err := msg.ParseError()
+	if debug != "" {
+		fmt.Fprintf(out, "%s\n", debug)
+	}
+	return fmt.Errorf("the pipeline refused to play: %w", err)
 }
 
 // reportCaps writes the capture's negotiated caps and reports whether it found any.
