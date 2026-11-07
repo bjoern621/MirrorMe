@@ -8,7 +8,7 @@ A test count links its record, which names every failure and every skip with its
 
 | Machine | OS | CPU | GPU | Media stack | Tests | Checklist |
 | --- | --- | --- | --- | --- | --- | --- |
-| fractal | NixOS 26.11 (Zokor), kernel 7.2.11-zen1, amd64 | AMD Ryzen 7 7800X3D 8-Core Processor | NVIDIA Corporation GB203 [GeForce RTX 5080] (rev a1) (nvidia 615.78.08)<br>Advanced Micro Devices, Inc. [AMD/ATI] Raphael [Radeon 610M] (rev cb) (amdgpu) | GStreamer 1.28.7, FFmpeg 9.0.2, VA-API NVDEC driver [direct backend] | [1967 passed, 14 failed, 79 skipped](runs/v0.13.0/fractal.json) | 0 passed, 0 failed, 6 skipped |
+| fractal | NixOS 26.11 (Zokor), kernel 7.2.11-zen1, amd64 | AMD Ryzen 7 7800X3D 8-Core Processor | NVIDIA Corporation GB203 [GeForce RTX 5080] (rev a1) (nvidia 615.78.08)<br>Advanced Micro Devices, Inc. [AMD/ATI] Raphael [Radeon 610M] (rev cb) (amdgpu) | GStreamer 1.28.7, FFmpeg 9.0.2, VA-API NVDEC driver [direct backend] | [1966 passed, 15 failed, 79 skipped](runs/v0.13.0/fractal.json) | 1 passed, 0 failed, 5 skipped |
 
 ## v0.12.1
 

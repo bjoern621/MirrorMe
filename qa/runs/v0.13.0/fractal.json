@@ -24,10 +24,11 @@
     "ffmpeg": "9.0.2"
   },
   "tests": {
-    "passed": 1967,
-    "failed": 14,
+    "passed": 1966,
+    "failed": 15,
     "skipped": 79,
     "failures": [
+      "encoderate.TestMeasureBracketsTheContentRange",
       "publish.TestGstEncodersAgainstGstLaunch/h264_nvenc/lossless",
       "publish.TestGstEncodersAgainstGstLaunch/hevc_nvenc/lossless",
       "publish.TestPublishedColorimetryReachesTheDecoder/av1_nvenc/gpu/pc",
@@ -365,7 +366,7 @@
   "checklist": [
     {
       "id": "publish",
-      "result": "skip"
+      "result": "pass"
     },
     {
       "id": "encoder",
