@@ -17,7 +17,7 @@ pkgver=${VERSION:?the version this package is, as VERSION=0.6.1 makepkg}
 pkgrel=1
 pkgdesc="Self-hosted, high-quality group screen sharing"
 arch=('x86_64')
-url="https://github.com/bjoern621/screen-sharing"
+url="https://github.com/bjoern621/MirrorMe"
 license=('Apache-2.0')
 depends=(
   # Capture, encode and publish on the ffmpeg engine, and the single-stream viewer.

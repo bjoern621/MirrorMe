@@ -1,6 +1,6 @@
 # Installing
 
-The downloads are on the [releases page](https://github.com/bjoern621/screen-sharing/releases), one file per platform.
+The downloads are on the [releases page](https://github.com/bjoern621/MirrorMe/releases), one file per platform.
 Nix builds from the flake and downloads nothing.
 
 The app is one window with two programs behind it: a headless backend that captures, encodes, publishes and decodes, and the shell in front of it.
@@ -55,13 +55,13 @@ What is missing afterwards is Fedora's packaging rather than the app's:
 Run it without installing anything:
 
 ```sh
-nix run github:bjoern621/screen-sharing
+nix run github:bjoern621/MirrorMe
 ```
 
 Install it from a flake:
 
 ```nix
-inputs.mirrorme.url = "github:bjoern621/screen-sharing";
+inputs.mirrorme.url = "github:bjoern621/MirrorMe";
 
 environment.systemPackages = [ inputs.mirrorme.packages.${system}.default ];
 ```

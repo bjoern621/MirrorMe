@@ -75,7 +75,7 @@ Run mirrorme.exe. It starts the backend beside it, so there is
 nothing else to launch, and nothing to install first.
 
 To reach a relay, or to run one:
-https://github.com/bjoern621/screen-sharing/blob/main/docs/install.md
+https://github.com/bjoern621/MirrorMe/blob/main/docs/install.md
 "@
 Set-Content -Path (Join-Path $stage 'README.txt') -Value $readme -Encoding UTF8
 

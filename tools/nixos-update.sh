@@ -22,24 +22,27 @@ flake=${NIXOS_FLAKE:-/etc/nixos}
 [[ -f $flake/flake.lock ]] || die "no flake.lock in $flake: build the system from it once first"
 flake=$(cd "$flake" && pwd)
 
-# Matched by source, since the input may take any name: mirrorme in docs/install.md, screen-sharing elsewhere.
+# Matched by source, since the input may take any name.
 inputs=$(LOCK="$flake/flake.lock" nix eval --raw --impure --expr "$(cat <<'EOF'
 let
   lock = builtins.fromJSON (builtins.readFile (builtins.getEnv "LOCK"));
   root = lock.nodes.${lock.root}.inputs;
+  # GitHub takes a repository name in any case.
+  # A lock file may name the former one, screen-sharing, which GitHub redirects.
+  repo = "([Mm][Ii][Rr][Rr][Oo][Rr][Mm][Ee]|screen-sharing)";
   ours = name:
     let
       node = root.${name};
       o = if builtins.isString node then lock.nodes.${node}.original or { } else { };
     in
-    (o.type or "" == "github" && o.owner or "" == "bjoern621" && o.repo or "" == "screen-sharing")
-    || (o.type or "" == "git" && builtins.match "https://github.com/bjoern621/screen-sharing(\\.git)?" (o.url or "") != null);
+    (o.type or "" == "github" && o.owner or "" == "bjoern621" && builtins.match repo (o.repo or "") != null)
+    || (o.type or "" == "git" && builtins.match "https://github.com/bjoern621/${repo}(\\.git)?" (o.url or "") != null);
 in
 builtins.concatStringsSep " " (builtins.filter ours (builtins.attrNames root))
 EOF
 )")
 if [[ -z $inputs ]]; then
-  echo "nixos:update: $flake takes no input on github:bjoern621/screen-sharing, nothing to update"
+  echo "nixos:update: $flake takes no input on github:bjoern621/MirrorMe, nothing to update"
   exit 0
 fi
 

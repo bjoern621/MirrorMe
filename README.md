@@ -1,7 +1,7 @@
 # MirrorMe
 
-[![Release](https://img.shields.io/github/v/release/bjoern621/screen-sharing)](https://github.com/bjoern621/screen-sharing/releases)
-[![License](https://img.shields.io/github/license/bjoern621/screen-sharing)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/bjoern621/MirrorMe)](https://github.com/bjoern621/MirrorMe/releases)
+[![License](https://img.shields.io/github/license/bjoern621/MirrorMe)](LICENSE)
 
 Screen sharing for a group, at the quality the machine can produce.
 Everyone shares and everyone watches, at once.
@@ -30,7 +30,7 @@ Windows and Linux.
 
 ## Install
 
-Downloads are on the [releases page](https://github.com/bjoern621/screen-sharing/releases), one file per platform.
+Downloads are on the [releases page](https://github.com/bjoern621/MirrorMe/releases), one file per platform.
 [`docs/install.md`](docs/install.md) covers what each one carries and what a first run asks for.
 
 | Platform | Get it |
@@ -39,7 +39,7 @@ Downloads are on the [releases page](https://github.com/bjoern621/screen-sharing
 | Arch Linux | `sudo pacman -U mirrorme-<version>-1-x86_64.pkg.tar.zst` |
 | Fedora | `sudo dnf install ./mirrorme-*.rpm` |
 | Flatpak | `flatpak install --user ./mirrorme-<version>-x86_64.flatpak` |
-| Nix | `nix run github:bjoern621/screen-sharing` |
+| Nix | `nix run github:bjoern621/MirrorMe` |
 | Other Linux | `mirrorme-<version>-linux-x86_64-portable.tar.gz` |
 
 One window, and no second program to install beside it.

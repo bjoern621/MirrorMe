@@ -46,7 +46,7 @@ Summary:        Self-hosted, high-quality group screen sharing
 # ffmpeg and GStreamer are Requires rather than bundled copies,
 # so their terms are theirs to declare.
 License:        Apache-2.0
-URL:            https://github.com/bjoern621/screen-sharing
+URL:            https://github.com/bjoern621/MirrorMe
 Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 
 ExclusiveArch:  x86_64

@@ -324,7 +324,7 @@ symlinkJoin {
 
   meta = {
     description = "Self-hosted, high-quality group screen sharing";
-    homepage = "https://github.com/bjoern621/screen-sharing";
+    homepage = "https://github.com/bjoern621/MirrorMe";
     mainProgram = "mirrorme";
     platforms = lib.platforms.linux;
     # The project's own code alone.

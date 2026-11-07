@@ -2,7 +2,7 @@
 
 What changes for somebody taking each release, newest first.
 `task release` moves the entries under the new version and posts them as the release text ([releasing](docs/releasing.md)).
-Releases before v0.11.0 carry no notes, and their commits sit in the [history](https://github.com/bjoern621/screen-sharing/commits/v0.10.3).
+Releases before v0.11.0 carry no notes, and their commits sit in the [history](https://github.com/bjoern621/MirrorMe/commits/v0.10.3).
 
 ## Unreleased
 

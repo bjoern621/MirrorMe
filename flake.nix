@@ -340,7 +340,7 @@
         # each wrapped so it finds the programs and libraries it resolves at run time
         # (packaging/nix/package.nix).
         #
-        #   nix run github:bjoern621/screen-sharing
+        #   nix run github:bjoern621/MirrorMe
         #   environment.systemPackages = [ mirrorme.packages.${system}.default ];
         packages.mirrorme = pkgs.callPackage ./packaging/nix/package.nix { inherit version; };
         packages.default = self.packages.${system}.mirrorme;

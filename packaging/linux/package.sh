@@ -54,7 +54,7 @@ else to launch.
 
 ffmpeg (with ffplay) and GStreamer come from the distribution and have to be
 installed first. What to install, and how to reach a relay:
-https://github.com/bjoern621/screen-sharing/blob/main/docs/install.md
+https://github.com/bjoern621/MirrorMe/blob/main/docs/install.md
 EOF
 
 # The license travels with the binaries,

@@ -29,7 +29,7 @@ import (
 )
 
 // Repo is this project on its forge, as "owner/name".
-const Repo = "bjoern621/screen-sharing"
+const Repo = "bjoern621/MirrorMe"
 
 // LatestURL is the release this project publishes, as its forge answers it.
 const LatestURL = "https://api.github.com/repos/" + Repo + "/releases/latest"
