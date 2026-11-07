@@ -192,7 +192,7 @@ The build task copies `ffmpeg.exe` and `ffplay.exe` next to the backend binary, 
 Both are fetched into `build/windows/redist` once per machine, by `packaging/windows/get-ffmpeg.ps1`.
 `build/bin` is a build output and is rebuilt, so a pair kept there is downloaded again every build.
 A development run needs no bundle, `FindExe` falling back to `PATH`.
-The bundle takes a third-party build (Gyan or BtbN) carrying `ddagrab`, static, so the copied pair carries no DLL of its own.
+The bundle takes BtbN's static GPL build, which carries `ddagrab` and ffplay, so the copied pair carries no DLL of its own.
 No privilege step: `ddagrab` and `gdigrab` capture without elevation.
 
 A receive pipeline ends in `appsink`, which is core, so the tile path needs no plugin of its own.

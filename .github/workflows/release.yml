@@ -173,25 +173,8 @@ jobs:
 
       # ffmpeg and ffplay ship inside the zip, so they are fetched rather than installed:
       # the build tasks copy whatever is in build/windows/redist next to the binaries.
-      # A full build rather than an essentials one, because ddagrab and ffplay are both
-      # needed and the smaller builds drop one or the other.
       - name: Fetch ffmpeg
-        run: |
-          $url = 'https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip'
-          Invoke-WebRequest -Uri $url -OutFile ffmpeg.zip
-          Expand-Archive ffmpeg.zip -DestinationPath ffmpeg-dist
-          New-Item -ItemType Directory -Force -Path build/windows/redist | Out-Null
-          foreach ($exe in 'ffmpeg.exe', 'ffplay.exe') {
-            $found = Get-ChildItem -Path ffmpeg-dist -Recurse -Filter $exe | Select-Object -First 1
-            if (-not $found) { throw "$exe is not in the downloaded build" }
-            Copy-Item $found.FullName build/windows/redist/
-          }
-
-          # A GPL build, so its license text is part of what the zip has to carry
-          # (THIRD-PARTY-NOTICES.md). The packaging script picks it up under this name.
-          $license = Get-ChildItem -Path ffmpeg-dist -Recurse -Filter LICENSE.txt | Select-Object -First 1
-          if (-not $license) { throw "the downloaded ffmpeg build carries no LICENSE.txt" }
-          Copy-Item $license.FullName build/windows/redist/ffmpeg-LICENSE.txt
+        run: ./packaging/windows/get-ffmpeg.ps1
 
       # The installer compiler, which the runner image does not carry.
       # Chocolatey is what it does carry, and this is the package Inno Setup publishes there.
