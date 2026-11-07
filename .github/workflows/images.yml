@@ -1,8 +1,9 @@
-# The relay, the proxy and the group service as container images, for a Kubernetes deployment.
+# The relay, the proxy, the group service, the Discord manager and the viewer service as container images,
+# for a Kubernetes deployment.
 #
 # Separate from release.yml because these are the only artifacts needing registry write access.
 #
-# A published release builds all three and pushes them,
+# A published release builds every one and pushes them,
 # so an image tag names a release and never moves:
 # the cluster repository pins an exact tag and Renovate bumps it,
 # and a tag rewritten on every commit to main would make that pin a lie.

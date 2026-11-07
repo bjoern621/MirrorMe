@@ -354,11 +354,11 @@
         # The viewer service beside it (packaging/nix/watchd.nix, docs/viewer-reports.md).
         packages.watchd = pkgs.callPackage ./packaging/nix/watchd.nix { inherit version; };
 
-        # A relay deployment's three processes as container images,
+        # A relay deployment's processes as container images,
         # for a relay on Kubernetes instead of on a host of its own.
         # They are what a NixOS relay host runs,
         # and they expect the same loopback between them,
-        # so a pod holding all three is the host layout unchanged.
+        # so a pod holding them is the host layout unchanged.
         #
         # Each builds a docker-archive tarball, which `docker load` reads:
         #
@@ -374,8 +374,7 @@
           inherit version;
           screenshare-groupd = self.packages.${system}.groupd;
         };
-        # The fourth process is opt-in per deployment,
-        # and its image rides beside the three the pod always holds.
+        # discordd is opt-in per deployment.
         packages.discordd-image = pkgs.callPackage ./packaging/nix/discordd-image.nix {
           inherit version;
           screenshare-discordd = self.packages.${system}.discordd;

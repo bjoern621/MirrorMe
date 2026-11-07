@@ -14,7 +14,7 @@ One directory per channel, each holding what that channel's tooling reads.
 | `flatpak/` | the Flatpak manifest, which assembles what `linux/package.sh` staged |
 | `linux/` | the desktop entry, and `package.sh` for the portable tarball |
 | `windows/` | the Inno Setup script, and the scripts that stage, bundle and compile |
-| `nix/` | the derivations `flake.nix` exposes: the app, the group service, three container images, the NixOS module |
+| `nix/` | the derivations `flake.nix` exposes: the app, the services beside the relay, their container images, the NixOS module |
 | `icons/` | `appicon.svg`, the master raster drawn from it, the hicolor sizes, and the Discord bot's two assets |
 
 ## Building
@@ -33,7 +33,7 @@ Nix builds from the flake and reads nothing under `build/`:
 ```bash
 nix build .#mirrorme       # the app
 nix build .#groupd         # the service beside the relay
-nix build .#relay-image    # and .#proxy-image, .#groupd-image
+nix build .#relay-image    # and .#proxy-image, .#groupd-image, .#discordd-image, .#watchd-image
 ```
 
 Arch and Fedora build from a `git archive` of a tag, which is what the release workflow hands them (`.github/workflows/release.yml`).

@@ -63,7 +63,7 @@ Every rule, every greyed option and every offered value derives from them.
 | Directory | Holds |
 | --- | --- |
 | `api/` | the contract between backend and shell |
-| `backend/` | the backend, groupd and discordd |
+| `backend/` | the backend, groupd, discordd and watchd |
 | `avalonia/` | the shell |
 | `deploy/` | what the relay host runs |
 | `packaging/` | every installer and package |

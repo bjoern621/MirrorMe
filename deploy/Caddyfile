@@ -15,7 +15,7 @@
 #
 # The name and the upstreams are environment variables, so a deployment states its own domain
 # and reaches the other two wherever it puts them.
-# The defaults are the loopback ones, the shape of three processes in one pod,
+# The defaults are the loopback ones, the shape of every process in one pod,
 # so the file is valid on its own and `caddy validate` needs no environment.
 # One routing table, because two would drift.
 

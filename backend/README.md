@@ -1,6 +1,6 @@
 # backend
 
-Go module holding three binaries: the headless backend the shell talks to, the group service beside the relay, and the Discord manager beside that.
+Go module holding the headless backend the shell talks to and the services beside the relay: the group service, the Discord manager and the viewer service.
 
 Every Go command runs from this directory.
 
@@ -17,6 +17,9 @@ backend/
   cmd/groupd/      the key, token and index service, installed on the relay's machine
   cmd/discordd/    the Discord manager: voice channels as groups (docs/discord-mode.md)
   cmd/watchd/      the viewer service: each viewer's figures for the stream's publisher (docs/viewer-reports.md)
+  cmd/qa/          records a test run of a release on this machine and draws qa/README.md (docs/releasing.md)
+  cmd/release/     the CHANGELOG.md steps tools/release.sh runs: next version, cut, notes (docs/releasing.md)
+  cmd/soak/        drives the control contract with random legal settings and reports what the backend did
   internal/        what the binaries draw on
   go.mod           module bjoernblessin.de/screenshare
 ```

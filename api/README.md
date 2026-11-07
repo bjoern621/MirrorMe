@@ -21,6 +21,7 @@ api/
     events.proto              Event, the server-push envelope
     control.proto             ControlService: Hello, Read, Watch, Ask, Set, Do
     frame.proto               FrameService: the frame channel's handles and loans
+    text.proto                Text: a statement code and the values it names, worded by the shell
   gen/go/screenshare/v1/    generated Go, committed
   buf.yaml                  lint and breaking-change configuration
   buf.gen.yaml              what buf generates
