@@ -34,7 +34,7 @@ var nvencTuneProperties = map[string]string{
 //   - abr: rc-mode=vbr toward the bitrate with no ceiling.
 //   - vbr: rc-mode=vbr toward the bitrate with max-bitrate as the ceiling.
 //   - cbr: rc-mode=cbr with zerolatency reordering.
-//   - lossless: the lossless tune, rate control dropped.
+//   - lossless: the lossless tune at rc-mode=constqp.
 //
 // preset takes the row's p1-p7 step and tune the row's step in this engine's spelling,
 // so an NVENC stream encodes at the step the form shows whichever engine built it.
@@ -68,7 +68,10 @@ func nvencEncoder(elem string) func(settings.Settings, gstRates, capabilities.St
 			// init with NV_ENC_ERR_INVALID_PARAM on the H.264 encoder at 4:2:0,
 			// where the tune reaches every element and chroma the mode is offered on.
 			// The row declares that tune for this mode, so it arrives through base.
-			return append(base, "gop-size="+r.gop)
+			//
+			// constqp because the driver refuses the transform bypass under any other rate control:
+			// "RC Mode / Profile not supported with qpPrimeYZeroTransformBypassFlag" (NVIDIA 615).
+			return append(base, "rc-mode=constqp", "gop-size="+r.gop)
 		case "crf":
 			// The quantizer goes on the three frame types rather than through qp-const: nvav1enc exposes
 			// qp-const-i, -p and -b and no combined property, where the H.26x elements expose both.
