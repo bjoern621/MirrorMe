@@ -1,0 +1,55 @@
+version: "3"
+
+# The including Taskfile's `vars:` settle the project's settings, and those beat the command line.
+# PART, VERSION and NOTES come from the command line.
+# release.sh beside this file does the work (README.md).
+vars:
+  # The prefix in front of every version tag: "v" for v1.2.3, unset or "" for 1.2.3.
+  # It takes no default, since `default` would replace an empty prefix as well.
+  TAG_PREFIX: "{{.TAG_PREFIX}}"
+  # github creates a GitHub release on the tag. tag pushes the tag alone, for a forge whose CI publishes from it.
+  FORGE: '{{.FORGE | default "github"}}'
+  BRANCH: '{{.BRANCH | default "main"}}'
+  # A Keep a Changelog file whose Unreleased entries pick the bump and fill the release text.
+  CHANGELOG: "{{.CHANGELOG}}"
+  # A shell command run after the changelog cut, with TAG and VERSION set. The release commit takes what it changes.
+  PREPARE: "{{.PREPARE}}"
+  # true waits for CI on the release branch before tagging and follows CI on the tag after.
+  CI: '{{.CI | default "false"}}'
+  # major, minor or patch, for a project without CHANGELOG.
+  PART: '{{.PART | default "minor"}}'
+  VERSION: "{{.VERSION}}"
+  NOTES: "{{.NOTES}}"
+
+tasks:
+  version:
+    desc: Print the published version and the one that a release would create
+    env: &settings
+      TAG_PREFIX: "{{.TAG_PREFIX}}"
+      FORGE: "{{.FORGE}}"
+      BRANCH: "{{.BRANCH}}"
+      CHANGELOG: "{{.CHANGELOG}}"
+      PREPARE: "{{.PREPARE}}"
+      CI: "{{.CI}}"
+      PART: "{{.PART}}"
+      VERSION: "{{.VERSION}}"
+      NOTES: "{{.NOTES}}"
+      YES: "{{.CLI_ASSUME_YES}}"
+    cmds:
+      - bash "{{.TASKFILE_DIR}}/release.sh" version
+    silent: true
+
+  notes:
+    desc: Print the notes of the newest GitHub release
+    env: *settings
+    cmds:
+      - bash "{{.TASKFILE_DIR}}/release.sh" notes
+    silent: true
+
+  release:
+    desc: Release the next version from the release branch. VERSION=<tag> names it, PART=major, minor or patch without CHANGELOG, NOTES=<file>, --yes skips the question
+    interactive: true
+    env: *settings
+    cmds:
+      - bash "{{.TASKFILE_DIR}}/release.sh" release
+    silent: true

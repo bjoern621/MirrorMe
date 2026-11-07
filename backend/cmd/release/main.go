@@ -1,8 +1,5 @@
-// Command release reads CHANGELOG.md for the steps of a release that tools/release.sh runs
-// (docs/releasing.md).
+// Command release renders the GitHub release text that the notes workflow writes (docs/releasing.md).
 //
-//	release next              the version the Unreleased entries call for
-//	release cut <v> <date>    move the Unreleased entries under v, dated YYYY-MM-DD
 //	release notes <v>         the GitHub release text for v, with the machines that tested it
 //	release versions          every version CHANGELOG.md holds, newest first
 //
@@ -44,7 +41,7 @@ func run(root string, args []string) error {
 		root = top
 	}
 	if len(args) == 0 {
-		return fmt.Errorf("name a step: next, cut, notes or versions")
+		return fmt.Errorf("name a step: notes or versions")
 	}
 
 	log, err := readLog(root)
@@ -52,22 +49,6 @@ func run(root string, args []string) error {
 		return err
 	}
 	switch step := args[0]; {
-	case step == "next" && len(args) == 1:
-		tags, err := tags(root)
-		if err != nil {
-			return err
-		}
-		next, err := log.Next(changelog.Newest(tags))
-		if err != nil {
-			return err
-		}
-		fmt.Println(next)
-	case step == "cut" && len(args) == 3:
-		cut, err := log.Cut(args[1], args[2])
-		if err != nil {
-			return err
-		}
-		return os.WriteFile(filepath.Join(root, "CHANGELOG.md"), []byte(cut.String()), 0o644)
 	case step == "notes" && len(args) == 2:
 		notes, err := notes(root, log, args[1])
 		if err != nil {
@@ -79,7 +60,7 @@ func run(root string, args []string) error {
 			fmt.Println(v)
 		}
 	default:
-		return fmt.Errorf("unknown step %q: next, cut <v> <date>, notes <v> or versions", strings.Join(args, " "))
+		return fmt.Errorf("unknown step %q: notes <v> or versions", strings.Join(args, " "))
 	}
 	return nil
 }

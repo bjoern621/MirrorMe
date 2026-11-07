@@ -1,9 +1,9 @@
-// Package changelog reads and cuts CHANGELOG.md, the one place that holds a release's notes.
+// Package changelog reads CHANGELOG.md, the one place that holds a release's notes.
 //
 // The file holds an Unreleased section on top and one section per release below it, newest first.
 // Each section groups its entries under the kinds in Kinds.
-// A release's GitHub text, the next version's number and the cut that a release commits
-// all derive from this file (docs/releasing.md).
+// A release's GitHub text derives from this file.
+// `task release` picks the next version from it and cuts it (docs/releasing.md).
 package changelog
 
 import (
@@ -11,28 +11,22 @@ import (
 	"fmt"
 	"slices"
 	"strings"
-	"time"
-
-	"bjoernblessin.de/go-utils/util/assert"
 
 	"bjoernblessin.de/mirrorme/internal/release"
 )
 
 // Kinds lists every heading that a section may group its entries under.
-// The bump that each kind asks for sits in Next.
+// `task release` picks the bump from them (taskfiles/release.sh).
 var Kinds = []string{"Added", "Changed", "Fixed", "Removed"}
 
 // unreleased names the section that collects entries between releases.
 const unreleased = "Unreleased"
 
 var (
-	ErrUnknownKind       = errors.New("entry kind outside changelog.Kinds")
-	ErrNoUnreleased      = errors.New("no Unreleased section")
-	ErrNothingUnreleased = errors.New("no entries under Unreleased")
-	ErrAlreadyCut        = errors.New("version cut already, with more entries under Unreleased")
-	ErrNotNewer          = errors.New("version not past the newest one in the changelog")
-	ErrNotAVersion       = errors.New("no vX.Y.Z version")
-	ErrNoSuchVersion     = errors.New("no section for this version")
+	ErrUnknownKind   = errors.New("entry kind outside changelog.Kinds")
+	ErrNoUnreleased  = errors.New("no Unreleased section")
+	ErrNotAVersion   = errors.New("no vX.Y.Z version")
+	ErrNoSuchVersion = errors.New("no section for this version")
 )
 
 // Log holds a parsed changelog.
@@ -131,65 +125,6 @@ func (l Log) Versions() []string {
 		out = append(out, s.version)
 	}
 	return out
-}
-
-// Next answers the version that a release of the Unreleased entries takes, counting up from latest.
-// A fix alone takes a patch, and any other kind a minor.
-// A removal takes a major from 1.0.0 on.
-// Errors if Unreleased holds no entries or latest carries no version.
-func (l Log) Next(latest string) (string, error) {
-	pending, err := kinds(l.sections[0].body)
-	assert.Assert(err == nil, "Parse checks every section's kinds", err)
-	if len(pending) == 0 {
-		return "", ErrNothingUnreleased
-	}
-	v, ok := release.Parse(latest)
-	if !ok {
-		return "", fmt.Errorf("latest release %q: %w", latest, ErrNotAVersion)
-	}
-
-	switch {
-	case slices.Contains(pending, "Removed") && v[0] >= 1:
-		v = [3]int{v[0] + 1, 0, 0}
-	case slices.ContainsFunc(pending, func(k string) bool { return k != "Fixed" }):
-		v = [3]int{v[0], v[1] + 1, 0}
-	default:
-		v[2]++
-	}
-	return fmt.Sprintf("v%d.%d.%d", v[0], v[1], v[2]), nil
-}
-
-// Cut moves the Unreleased entries under a new section for version, dated date (YYYY-MM-DD).
-// A version cut already with nothing left under Unreleased answers the log unchanged,
-// so a release interrupted after its cut can run again.
-// Errors if version is not vX.Y.Z or not past the newest release in the log,
-// if Unreleased is empty, or if version is cut already and Unreleased holds more entries.
-func (l Log) Cut(version, date string) (Log, error) {
-	_, err := time.Parse(time.DateOnly, date)
-	assert.Assert(err == nil, "a cut is dated YYYY-MM-DD", date)
-
-	if _, ok := release.Parse(version); !ok || !strings.HasPrefix(version, "v") {
-		return Log{}, fmt.Errorf("%q: %w", version, ErrNotAVersion)
-	}
-	pending, err := kinds(l.sections[0].body)
-	assert.Assert(err == nil, "Parse checks every section's kinds", err)
-
-	if slices.Contains(l.Versions(), version) {
-		if len(pending) > 0 {
-			return Log{}, fmt.Errorf("%s: %w", version, ErrAlreadyCut)
-		}
-		return l, nil
-	}
-	if len(pending) == 0 {
-		return Log{}, ErrNothingUnreleased
-	}
-	if newest := l.Versions(); len(newest) > 0 && release.Compare(newest[0], version) != release.StateBehind {
-		return Log{}, fmt.Errorf("%s against %s: %w", version, newest[0], ErrNotNewer)
-	}
-
-	released := section{heading: version + " (" + date + ")", version: version, body: l.sections[0].body}
-	sections := []section{{heading: unreleased, body: "\n"}, released}
-	return Log{preamble: l.preamble, sections: append(sections, l.sections[1:]...)}, nil
 }
 
 // Entries answers the body of version's section, without the blank lines around it.

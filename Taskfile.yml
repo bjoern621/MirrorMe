@@ -1,5 +1,19 @@
 version: "3"
 
+# task release, task version and task notes (docs/releasing.md).
+includes:
+  release:
+    taskfile: ./taskfiles/release.yml
+    dir: .
+    flatten: true
+    vars:
+      TAG_PREFIX: v
+      FORGE: github
+      BRANCH: main
+      CHANGELOG: CHANGELOG.md
+      PREPARE: tools/release-json.sh
+      CI: true
+
 vars:
   # MSYS2 prefix: the Windows toolchain and the GStreamer the backend links through cgo.
   # Named here rather than read from the shell, so a build works from whichever shell is open:
@@ -241,13 +255,6 @@ tasks:
       CGO_ENABLED: "1"
     cmds:
       - go test -tags hardware ./...
-
-  release:
-    desc: Publish a release from main, the version suggested by CHANGELOG.md or named after --
-    platforms: [linux, darwin]
-    interactive: true
-    cmds:
-      - tools/release.sh {{.CLI_ARGS}}
 
   nixos:update:
     desc: Update the NixOS system flake's MirrorMe input and switch to it (NIXOS_FLAKE=<dir>, else /etc/nixos)

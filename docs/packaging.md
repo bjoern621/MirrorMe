@@ -82,7 +82,7 @@ The dev tasks leave it at that default.
 The flake reads the same variable under `--impure`, which the image pipeline passes.
 `builtins.getEnv` answers empty under pure evaluation, which every other Nix build is, and the tag never reaches a flake.
 The release commit names its version in `packaging/nix/release.json` instead, together with the hash of the source that the app compiles from (`packaging/nix/source.nix`).
-`tools/release.sh` writes both while it cuts the release.
+`task release` writes both while it cuts the release (`tools/release-json.sh`).
 A build from that same source carries the version: the release commit, and a test record or a changelog edit after it.
 A build from any other source carries the revision, `0-unstable-<commit>`.
 The file can name no version that the build disagrees with, since a source it was not cut from ignores it.

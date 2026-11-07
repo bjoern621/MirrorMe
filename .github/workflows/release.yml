@@ -328,7 +328,7 @@ jobs:
   # and a release with four downloads beside a red run says more than a release with none.
   #
   # Only the assets are written.
-  # The release text renders from CHANGELOG.md and qa/runs, which tools/release.sh and notes.yml write.
+  # The release text renders from CHANGELOG.md and qa/runs, which `task release` and notes.yml write.
   release:
     if: ${{ always() && github.event_name == 'release' }}
     needs: [version, tarball, flatpak, windows, nix, arch, fedora]

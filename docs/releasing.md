@@ -21,18 +21,21 @@ The kinds pending decide the next number:
 
 ## Cutting a release
 
-`task release` must run from a clean main with every commit pushed:
+`task release` comes from the shared [taskfiles](https://github.com/bjoern621/taskfiles) release, copied into `taskfiles/`.
+It must run from a clean main with every commit pushed:
 
-1. Takes the suggested version, or the one named after `--`: `task release -- v0.13.0`.
-2. Waits for the check workflow on the last commit that touches more than `CHANGELOG.md` and `packaging/nix/release.json`, and stops on red.
-3. Asks before it changes anything.
-4. Moves the Unreleased entries under `## v0.13.0 (date)`, binds the version to the app's source in `packaging/nix/release.json` and commits both as `Release v0.13.0`.
-5. Tags, pushes main and the tag, and creates the GitHub release with its text.
-6. Follows the release workflow to its end.
+1. Takes the version that `task version` prints, or the one named as `task release VERSION=v0.13.0`.
+2. Asks before it changes anything.
+3. Waits for every workflow on the tip of main, the check workflow among them, and stops on red.
+4. Moves the Unreleased entries under `## v0.13.0 (date)`.
+5. Binds the version to the app's source in `packaging/nix/release.json` (`tools/release-json.sh`).
+6. Commits both as `Release v0.13.0`, tags it, pushes main and the tag and creates the GitHub release with the changelog section.
+7. Follows the workflows on the tag to their end: the release workflow builds the packages, the notes workflow renders the full text.
 
 Every step leaves a state already reached as it is.
-A run stopped by a red build or a lost connection runs again with the version named: `task release -- v0.13.0`.
+A run stopped by a red build or a lost connection runs again as `task release` and finishes the release that it started.
 
+Take a newer shared release with the copy command in the taskfiles README.
 `gh` comes with the dev shell and must be logged in (`gh auth login` or `GH_TOKEN`).
 
 ## Updating a NixOS machine

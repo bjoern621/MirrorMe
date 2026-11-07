@@ -25,12 +25,12 @@
       appSource = import ./packaging/nix/source.nix { inherit (nixpkgs) lib; };
 
       # The hash part of the app source's store path, which names what the app compiles from.
-      # tools/release.sh reads it through the lib output below when it cuts a release.
+      # tools/release-json.sh reads it through the lib output below when `task release` cuts a release.
       sourceKey = builtins.substring 0 32 (
         baseNameOf (builtins.unsafeDiscardStringContext "${appSource}")
       );
 
-      # The release that tools/release.sh last cut, with the sourceKey it was cut from.
+      # The release that `task release` last cut, with the sourceKey it was cut from.
       published = builtins.fromJSON (builtins.readFile ./packaging/nix/release.json);
 
       # What every package here is stamped with, and what an image built here is tagged.
@@ -424,7 +424,7 @@
               mediamtx # the relay, run natively by deploy/relay.sh
               openssl # draws that relay's certificate, the TLS listeners taking one either way
               go-task # runs Taskfile.yml
-              gh # creates a release and follows its workflows (tools/release.sh)
+              gh # creates a release and follows its workflows (task release)
               # The contract's own toolchain, which `task api` runs:
               # buf lints and drives the generation,
               # and shells out to these two for the committed Go output (api/buf.gen.yaml).

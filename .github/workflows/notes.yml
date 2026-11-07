@@ -1,5 +1,6 @@
 # Every release's GitHub text, rewritten from CHANGELOG.md and the records under qa/runs.
 #
+# `task release` publishes a release with its changelog section alone, and the run on publishing renders the rest.
 # A record lands after its release is out, so the "Tested on" table grows on the push that carries it.
 # A release whose text matches what the files render is left as it is.
 # A release that CHANGELOG.md holds no section for stays untouched.
@@ -12,6 +13,8 @@ on:
     paths:
       - CHANGELOG.md
       - qa/runs/**
+  release:
+    types: [published]
   workflow_dispatch:
 
 permissions:
