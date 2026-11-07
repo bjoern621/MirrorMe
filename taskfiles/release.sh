@@ -119,7 +119,7 @@ changelog_pending() {
 }
 
 # Prints the part that the pending kinds bump, counting up from current.
-# A removal takes a major from 1.0.0 on, any kind besides a fix a minor, fixes alone a patch.
+# A removal takes a major from 1.0.0 on, any kind besides Fixed or Security a minor, Fixed or Security alone a patch.
 changelog_part() {
   local pending found major
   pending=$(changelog_pending)
@@ -216,8 +216,8 @@ current_version() {
 }
 
 # Prints the tag that a release from HEAD takes.
-# A rerun pushing directly finishes the release that HEAD already carries: a tag on origin, or a changelog
-# section cut but never tagged.
+# A rerun pushing directly finishes the release that HEAD already carries: a tag on origin,
+# or a changelog section cut but never tagged.
 next_tag() {
   local tags current tagged cut part
   tags=$(remote_tags)
@@ -279,7 +279,7 @@ github_token() {
 }
 
 # Prints the CI state of a commit (sha) or a tag (tag) as five fields split by \x1f:
-# none, finished, ok, a line naming each run or job with its state, and the links to what failed.
+# none, finished, ok, a line naming each run or job with its state and the links to what failed.
 ci_state() {
   local kind=$1 ref=$2
   if on_github; then

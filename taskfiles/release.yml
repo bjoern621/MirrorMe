@@ -1,6 +1,6 @@
 version: "3"
 
-# The including Taskfile's `vars:` settle the project's settings, and those beat the command line.
+# The including Taskfile's `vars:` settle the project's settings. Those beat the command line.
 # PART, VERSION and NOTES come from the command line.
 # release.sh beside this file does the work (README.md).
 vars:
@@ -9,7 +9,7 @@ vars:
   TAG_PREFIX: "{{.TAG_PREFIX}}"
   # github creates a GitHub release on the tag. tag pushes the tag alone, for a forge whose CI publishes from it.
   FORGE: '{{.FORGE | default "github"}}'
-  # push tags and pushes from here. merge-request opens a merge request with the release commit, and CI publishes it.
+  # push tags and pushes from here. merge-request opens a merge request with the release commit. CI publishes it.
   VIA: '{{.VIA | default "push"}}'
   BRANCH: '{{.BRANCH | default "main"}}'
   # A changelog whose pending entries pick the bump and fill the release text.
