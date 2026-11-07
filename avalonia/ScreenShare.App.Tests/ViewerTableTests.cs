@@ -1,6 +1,5 @@
 using System.Collections.Specialized;
 using ScreenShare.Api.V1;
-using ScreenShare.App.Backend;
 using ScreenShare.App.Copy;
 using ScreenShare.App.Features.Insights.Model;
 using ScreenShare.App.Features.Insights.ViewerTable.ViewModel;
@@ -13,7 +12,7 @@ namespace ScreenShare.App.Tests;
 /// Unmeasured figure reads absent, never zero, so a viewer whose clock nothing could compare never reads as
 /// a viewer with no latency at all.
 /// </summary>
-public sealed class ViewerRosterTests
+public sealed class ViewerTableTests
 {
     private static ViewerReport Report(string name, string transport, double? latencyMs = null, double? fps = null,
         double? droppedFps = null)
