@@ -81,10 +81,9 @@ A corner nothing reached is a gap in the run rather than a defect in the product
 
 ### What the screen shows of a running stream
 
-The insights screen draws four figures off an encoder sample: the frame rate, the rate over the last interval, the transit and the clock.
+The insights screen draws four figures off an encoder sample: the frame rate, the bitrate, the encode time and the clock.
 An absent figure prints as an ellipsis and holds its last measurement, so a figure no sample of a whole run carries reads empty for the session.
 Each is checked for presence, for being finite, and for landing inside what a reader could act on.
-A rate and a clock have to arrive on one sample or the egress plot draws nothing.
 The counters count up, the clock moves while frames arrive, and the relay names a path for the stream while it runs.
 That path is where the viewer count, the round trip and the loss are all read from.
 

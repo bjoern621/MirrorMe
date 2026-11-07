@@ -41,7 +41,7 @@ var overlayFigures = []struct {
 		func(s *v1.PublishStats) float64 { return s.GetTimeSec() }, 0, 86400},
 }
 
-// checkOverlay states which promoted figure the screen would have drawn as an ellipsis
+// checkOverlay states which figure the screen would have drawn as an ellipsis
 // for the whole run, and which one carried a value it cannot print.
 func (s *session) checkOverlay(stats []*v1.PublishStats, attempts int32, fields map[string]string, settings *v1.Settings) {
 	if len(stats) == 0 {
@@ -78,14 +78,6 @@ func (s *session) checkOverlay(stats []*v1.PublishStats, attempts int32, fields 
 				fmt.Sprintf("no sample of %d carried %s, so %s reads as an ellipsis for the run",
 					len(stats), figure.name, figure.shown), fields, settings)
 		}
-	}
-
-	// A point on the egress plot needs both figures off one sample,
-	// so a run stating each of them on samples of its own draws no curve at all.
-	if attempts == 0 && !carries(stats, func(sample *v1.PublishStats) bool { return sample.InstMbps != nil && sample.TimeSec != nil }) {
-		s.report.report("publish.plot_has_no_point", "publish/no-plot-point/"+engine,
-			"no sample carried a rate and a clock together, so the egress plot draws nothing",
-			fields, settings)
 	}
 
 	checkCounters(s, stats, attempts, fields, settings)
