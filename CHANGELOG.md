@@ -8,8 +8,7 @@ Releases before v0.11.0 carry no notes, and their commits sit in the [history](h
 
 ### Added
 
-- MirrorMe starts when you sign in, on Linux and Windows.
-  "Start when you sign in" in the settings dialog turns that off.
+- "Start when you sign in" in the settings dialog starts MirrorMe when you sign in, on Linux and Windows, off by default.
 
 ### Changed
 

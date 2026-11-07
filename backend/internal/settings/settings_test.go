@@ -961,8 +961,8 @@ func TestAFileFromBeforeTheTrayToggleKeepsTheIcon(t *testing.T) {
 }
 
 // A file written before the autostart toggle does not name it.
-// Load decodes over the defaults, so an install from before the toggle starts at sign-in too.
-func TestAFileFromBeforeTheAutostartToggleStartsAtSignIn(t *testing.T) {
+// Load decodes over the defaults, so an update registers no entry the reader never asked for.
+func TestAFileFromBeforeTheAutostartToggleStaysOff(t *testing.T) {
 	isolateConfig(t)
 
 	path := mustSettingsPath(t)
@@ -973,8 +973,8 @@ func TestAFileFromBeforeTheAutostartToggleStartsAtSignIn(t *testing.T) {
 		t.Fatalf("WriteFile: %v", err)
 	}
 
-	if got := mustLoad(t); !got.App.Autostart {
-		t.Errorf("app settings = %+v, want the autostart a fresh installation holds", got.App)
+	if got := mustLoad(t); got.App.Autostart {
+		t.Errorf("app settings = %+v, want autostart off", got.App)
 	}
 }
 

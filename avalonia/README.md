@@ -395,7 +395,7 @@ A hidden window nothing can reopen is gone, so closing the window with no icon u
 
 ## Starting at sign-in
 
-The app setting `app.autostart` has the desktop start the shell when the user signs in, on by default.
+The app setting `app.autostart` has the desktop start the shell when the user signs in, off by default.
 The shell writes the entry itself (`Features/Shell/Model/AutostartEntry.cs`), since the entry names the shell's executable.
 It converges on the setting as the tray icon does: on writes the entry, off removes it, and nothing changes until the settings have been read.
 
