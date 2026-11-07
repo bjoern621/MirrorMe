@@ -54,6 +54,7 @@
         # The key exists from v1.20.0,
         # and deploy/relay.ps1 downloads that same version for Windows,
         # where no dev shell carries a relay.
+        # The leg test in CI downloads it as well, by URL and checksum (.github/workflows/check.yml).
         mediamtx = prev.mediamtx.overrideAttrs (
           finalAttrs: _: {
             version = "1.20.0";
@@ -419,7 +420,7 @@
               nixfmt
             ]
             ++ dotnetDeps
-            ++ pkgs.lib.optionals pkgs.stdenv.isLinux (
+            ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux (
               linuxDeps ++ linuxSpawnedTools ++ gstDeps ++ amfRuntime ++ vplRuntime ++ avaloniaRuntimeDeps
             );
 
@@ -445,7 +446,7 @@
             # into whatever output the task runner shows.
             export DOTNET_CLI_TELEMETRY_OPTOUT=1
           ''
-          + pkgs.lib.optionalString pkgs.stdenv.isLinux ''
+          + pkgs.lib.optionalString pkgs.stdenv.hostPlatform.isLinux ''
             export GST_PLUGIN_SYSTEM_PATH_1_0="${
               pkgs.lib.makeSearchPathOutput "lib" "lib/gstreamer-1.0" gstDeps
             }"
@@ -459,7 +460,7 @@
             # the session's own value carrying the desktop's modules.
             export GIO_EXTRA_MODULES="${pkgs.glib-networking}/lib/gio/modules''${GIO_EXTRA_MODULES:+:$GIO_EXTRA_MODULES}"
           ''
-          + pkgs.lib.optionalString (pkgs.stdenv.isLinux && vplRuntime != [ ]) ''
+          + pkgs.lib.optionalString (pkgs.stdenv.hostPlatform.isLinux && vplRuntime != [ ]) ''
             # The oneVPL dispatcher searches the distro library paths for the runtime,
             # which hold nothing on NixOS,
             # and both engines then report no hardware implementation on a machine that has one.
@@ -467,7 +468,7 @@
             # one directory holding one library, so it shadows nothing else the shell loads.
             export ONEVPL_SEARCH_PATH="${pkgs.lib.makeLibraryPath vplRuntime}"
           ''
-          + pkgs.lib.optionalString (pkgs.stdenv.isLinux && amfRuntime != [ ]) ''
+          + pkgs.lib.optionalString (pkgs.stdenv.hostPlatform.isLinux && amfRuntime != [ ]) ''
             # ffmpeg dlopens libamfrt64.so.1 by soname,
             # so the AMF runtime has to be on the loader path
             # and not merely in the shell closure.
@@ -475,7 +476,7 @@
             # so it shadows no system library for the processes that inherit this.
             export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath amfRuntime}''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           ''
-          + pkgs.lib.optionalString pkgs.stdenv.isLinux ''
+          + pkgs.lib.optionalString pkgs.stdenv.hostPlatform.isLinux ''
             # The X11 backend and libSkiaSharp dlopen their way to these,
             # so a shell carrying them as build inputs alone still fails at the first window:
             # `task avalonia` dies in Avalonia's platform init, before any code in the app runs.
