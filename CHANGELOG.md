@@ -6,6 +6,8 @@ Releases before v0.11.0 carry no notes, and their commits sit in the [history](h
 
 ## Unreleased
 
+## v0.14.0 (2026-11-07)
+
 ### Added
 
 - "Start when you sign in" in the settings dialog starts MirrorMe when you sign in, on Linux and Windows, off by default.
