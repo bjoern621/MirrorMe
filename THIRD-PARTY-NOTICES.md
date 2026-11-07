@@ -12,6 +12,9 @@ Every component keeps its own license; nothing here relicenses anything.
 | Arch package, Fedora package, Nix package | Compiled-in Go and .NET libraries only. ffmpeg and GStreamer are declared dependencies, so the package manager ships them under their own terms. |
 | Linux tarball | The same, plus the .NET runtime, which is published self-contained. |
 | Windows zip | The same, plus ffmpeg, ffplay, the GStreamer runtime and its plugins, which are bundled because Windows has no dependency manager to declare them to (`docs/packaging.md`). |
+| Windows installer | The Windows zip's files, under the same terms. |
+| Flatpak | The Linux tarball's files, plus ffmpeg and ffplay (GPL), libsrt (MPL-2.0), GStreamer's SRT and RTSP server plugins (LGPL-2.1-or-later), its WebRTC and WebRTC-HTTP plugins (MPL-2.0) and vainfo (MIT), each compiled from the upstream source that `packaging/flatpak/de.bjoernblessin.MirrorMe.yml` pins. The freedesktop runtime underneath carries its own notices. |
+| Container images | Each service's own binary. The relay image adds MediaMTX (MIT), busybox (GPL-2.0), curl (curl license) and the Mozilla CA bundle (MPL-2.0), and the proxy image Caddy (Apache-2.0), all built from nixpkgs sources. |
 
 ## Compiled in
 
@@ -26,13 +29,14 @@ Apache-2.0.
 Avalonia, Skia, HarfBuzz, the Inter font package and the Tabler icon set are MIT; gRPC is
 Apache-2.0; Protobuf is BSD-3-Clause.
 The .NET runtime is MIT.
+The JetBrains Mono NL font files in `avalonia/ScreenShare.App/Assets/Fonts` are under OFL-1.1, with the license text beside them.
 
 None of these require more than their copyright notice and license text, which their
 packages carry and which a build reproduces into the output directory.
 
 ## Bundled in the Windows zip
 
-This is the one artifact that redistributes copyleft binaries, so it is the one with
+The zip and the installer carry copyleft binaries built elsewhere, so they carry
 obligations beyond attribution.
 
 | Component | License | Source |
