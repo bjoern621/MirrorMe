@@ -399,7 +399,7 @@ func TestASilentStreamKeepsItsStoredAudioCodec(t *testing.T) {
 // this walks over, so a repair lands on a value the same evaluation leaves offered.
 // Reaching for the absent source by name would put an opinion about which source is safe
 // in repair.go, where the table carries the rule (docs/domain-model.md,
-// "The second-track capture sources").
+// "The capture sources").
 func TestASourceThisMachineDoesNotServeWalksToOneItDoes(t *testing.T) {
 	entry := indexedKey(KeyAudioSource, 0)
 	for _, info := range []platform.Info{{OS: "windows"}, {OS: "darwin"}} {

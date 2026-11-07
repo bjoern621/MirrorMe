@@ -63,7 +63,7 @@ func TestCaptureCapsNameEveryColorimetryComponent(t *testing.T) {
 			t.Fatal(err)
 		}
 		if !strings.Contains(caps, tc.want) {
-			t.Errorf("color range %q: encoder input caps %q lack %q", tc.colorRange, caps, tc.want)
+			t.Errorf("colour range %q: encoder input caps %q lack %q", tc.colorRange, caps, tc.want)
 		}
 	}
 }

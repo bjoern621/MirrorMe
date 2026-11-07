@@ -68,7 +68,7 @@ func ensureJob() {
 // App.shutdown stays the path that stops children on a normal quit,
 // and is the faster and quieter one.
 // This covers the exits that never reach it: a panic, the log.Fatalf behind logger.Errorf,
-// a kill from Task Manager, the WebView2 side taking the process down.
+// a kill from Task Manager.
 // The window closes to the tray, so an app the user believes is gone is a realistic thing to kill
 // from Task Manager, and a publish ffmpeg left behind by that keeps capturing the screen
 // into the relay with no window left to stop it from.

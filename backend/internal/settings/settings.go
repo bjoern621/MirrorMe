@@ -38,7 +38,7 @@ import (
 //
 // Read off the platform table rather than spelled here:
 // which sources exist is that table's question and the absent one is a row of it
-// (docs/domain-model.md, "The second-track capture sources").
+// (docs/domain-model.md, "The capture sources").
 // A constant typed here would be a second spelling, agreeing with the table until one was edited.
 const audioSourceNone = platform.AudioSourceNone
 

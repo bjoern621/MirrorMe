@@ -20,9 +20,9 @@ import (
 // The figures the insights screen draws out of an encoder sample,
 // and the bounds outside which one prints as something a reader would report rather than read.
 //
-// Exactly these four: the header promotes the first three and the pill counts on the fourth,
-// and the egress plot needs a rate and a clock on one sample to place a point
-// (avalonia/.../Insights/Plots/Model/PlotSeries.cs).
+// Exactly these four: the insights chart plots the first three as its metrics,
+// and the sharing pill's clock counts on the fourth
+// (avalonia/.../Insights/Chart/Model/Metric.cs).
 var overlayFigures = []struct {
 	name  string
 	shown string
@@ -31,11 +31,11 @@ var overlayFigures = []struct {
 	floor float64
 	limit float64
 }{
-	{"fps", "the frame rate in the header", func(s *v1.PublishStats) bool { return s.Fps != nil },
+	{"fps", "the frame rate metric", func(s *v1.PublishStats) bool { return s.Fps != nil },
 		func(s *v1.PublishStats) float64 { return s.GetFps() }, 0, 1000},
-	{"inst_mbps", "the rate in the header and the egress plot", func(s *v1.PublishStats) bool { return s.InstMbps != nil },
+	{"inst_mbps", "the bitrate metric", func(s *v1.PublishStats) bool { return s.InstMbps != nil },
 		func(s *v1.PublishStats) float64 { return s.GetInstMbps() }, 0, 10000},
-	{"transit_ms", "the encode delay in the header", func(s *v1.PublishStats) bool { return s.TransitMs != nil },
+	{"transit_ms", "the encode time metric", func(s *v1.PublishStats) bool { return s.TransitMs != nil },
 		func(s *v1.PublishStats) float64 { return s.GetTransitMs() }, 0, 60000},
 	{"time_sec", "the running clock on the sharing pill", func(s *v1.PublishStats) bool { return s.TimeSec != nil },
 		func(s *v1.PublishStats) float64 { return s.GetTimeSec() }, 0, 86400},

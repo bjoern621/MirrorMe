@@ -1,6 +1,6 @@
 // Package receive decodes one stream for the shell's tile grid: the transport's source
 // fragment, then decode and convert into an appsink the frame channel reads
-// (docs/viewer-architecture.md, "The receive package").
+// (docs/viewer-architecture.md, "Render chains").
 //
 // The render chains between the two are a table (chains.go), the only place a launch line
 // is written and the only place stating where a chain holds its frames and what it claims about

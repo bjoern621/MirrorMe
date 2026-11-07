@@ -434,7 +434,7 @@ message ViewerSettings {
   // One value for every tile rather than one per stream,
   // because a chain falls back where a driver cannot run it,
   // and that is a property of the machine
-  // (docs/viewer-architecture.md, "The receive package").
+  // (docs/viewer-architecture.md, "Render chains").
   string render_chain = 6;
 
   // Which picture of this machine's own stream the insights preview draws:

@@ -299,7 +299,7 @@ func GpuPathCost(p gpupath.Path) *screensharev1.Text {
 // with the engine that runs it and the publish legs that engine can carry.
 //
 // available and reason are read through to publish.Available, where the platform and session gate
-// lives (docs/capture-architecture.md, "The backend's platform applicability").
+// lives.
 // It sits beside the registry: a backend that cannot run on this machine and a backend with no
 // engine are one question asked twice,
 // and the sentence a shell shows has to be the one the form greys the control with,
@@ -339,7 +339,7 @@ func catalogCaptures(p platform.Info) []*screensharev1.CaptureBackend {
 //
 // Which sources exist is the platform's answer,
 // so the rows are read from there rather than stated here
-// (docs/domain-model.md, "The second-track capture sources").
+// (docs/domain-model.md, "The capture sources").
 // The table answers for every declared source on every platform,
 // and its two readers want opposite halves of that answer:
 // a catalog names what the machine has, and the form offers all of them and greys what it does not,
