@@ -84,23 +84,44 @@ func gstAvailable() error {
 }
 
 // gstElementExists asks the inspector whether this install registers elem.
+func gstElementExists(ctx context.Context, elem string) bool {
+	assert.IsNotNil(ctx, "an element query runs under a context")
+	assert.Assert(elem != "", "an element query names what it looks up")
+
+	return gstInspect(ctx, "--exists", elem)
+}
+
+// warmGstRegistry has one inspector scan the plugins and write GStreamer's registry cache,
+// so the probes after it read the cache instead of each scanning on its own.
+// Run by every probe at once, a cold scan takes many times as long as one scan alone,
+// past probeTimeout.
+// A killed scan writes no cache, so every GStreamer element reads as absent, on that launch and the next.
+// The cache goes cold whenever another GStreamer install on the machine rewrites it.
+// The verdict is discarded, the probes reading what this install registers either way.
+func warmGstRegistry(ctx context.Context) {
+	assert.IsNotNil(ctx, "a registry scan runs under a context")
+
+	ctx, cancel := context.WithTimeout(ctx, registryScanTimeout)
+	defer cancel()
+
+	gstInspect(ctx, "--version")
+}
+
+// gstInspect runs the inspector with args and reports whether it exited cleanly.
 //
 // The inspector is the bundle's where there is one, and so are the plugins it scans:
 // built against a prefix that exists on no machine but the build host, the bundled inspector
 // answers "no element" for every plugin sitting beside it unless publish.GstChildEnv names them,
 // the same way the launcher is told at spawn.
 // Detect located the inspector first (gstAvailable), so an unresolvable one here is the machine
-// changing under the sweep and reads as the element being absent.
-func gstElementExists(ctx context.Context, elem string) bool {
-	assert.IsNotNil(ctx, "an element query runs under a context")
-	assert.Assert(elem != "", "an element query names what it looks up")
-
+// changing under the sweep and reads as a failed run.
+func gstInspect(ctx context.Context, args ...string) bool {
 	exe, err := publish.FindGstInspect()
 	if err != nil {
 		return false
 	}
 
-	cmd := exec.CommandContext(ctx, exe, "--exists", elem)
+	cmd := exec.CommandContext(ctx, exe, args...)
 	if env := publish.GstChildEnv(); len(env) > 0 {
 		cmd.Env = append(os.Environ(), env...)
 	}
@@ -151,6 +172,10 @@ func gstProbed() []string {
 // A working encoder returns in well under a second, so the bound only catches a hung ffmpeg.
 const probeTimeout = 10 * time.Second
 
+// registryScanTimeout bounds the plugin scan that warmGstRegistry runs ahead of the probes.
+// A cold scan run alone takes seconds, so the bound only catches a plugin hanging at load.
+const registryScanTimeout = time.Minute
+
 // Availability maps each publish engine to the codecs probed on it and whether each one ran.
 // A codec absent from an engine's map was not probed there and counts as available.
 // An engine absent from the outer map restricts nothing.
@@ -189,6 +214,10 @@ func Detect(ctx context.Context) Availability {
 	usable := make(map[string]map[string]bool, len(engineProbes))
 	unprobed := make(map[string]string, len(engineProbes))
 	legs := make(map[string]bool)
+
+	if gstAvailable() == nil {
+		warmGstRegistry(ctx)
+	}
 
 	var mu sync.Mutex
 	var wg sync.WaitGroup
