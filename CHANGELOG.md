@@ -6,6 +6,10 @@ Releases before v0.11.0 carry no notes, and their commits sit in the [history](h
 
 ## Unreleased
 
+### Fixed
+
+- On Windows the tray icon's right-click menu is the system's own menu, light or dark as Windows is set, where it was drawn in MirrorMe's dark style.
+
 ## v0.14.1 (2026-11-07)
 
 ### Fixed

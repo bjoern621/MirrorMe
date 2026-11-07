@@ -41,16 +41,29 @@ public sealed class TrayIconHost : IDisposable
     private readonly string? _env;
     private readonly WindowIcon _idle;
     private readonly WindowIcon _live;
+    private readonly byte[] _idlePng;
+    private readonly byte[] _livePng;
 
-    /// <summary>The registered icon while one stands, null while none does.</summary>
+    /// <summary>The registered icon while one stands, null while none does. Every platform but Windows.</summary>
     private TrayIcon? _icon;
+
+    /// <summary>
+    /// The registered icon on Windows, whose menu Avalonia would draw in the app's own dark theme
+    /// rather than the system's (<see cref="Win32TrayIcon"/>).
+    /// </summary>
+    private Win32TrayIcon? _native;
+
+    /// <summary>Which image <see cref="_native"/> shows, so an unchanged state swaps nothing.</summary>
+    private bool _nativeLive;
 
     private TrayIconHost(TrayViewModel tray)
     {
         _tray = tray;
         _env = Environment.GetEnvironmentVariable(EnvTray);
-        _idle = new WindowIcon(AssetLoader.Open(new Uri("avares://mirrorme/Assets/tray.png")));
-        _live = new WindowIcon(AssetLoader.Open(new Uri("avares://mirrorme/Assets/tray-live.png")));
+        _idlePng = Asset("avares://mirrorme/Assets/tray.png");
+        _livePng = Asset("avares://mirrorme/Assets/tray-live.png");
+        _idle = new WindowIcon(new MemoryStream(_idlePng));
+        _live = new WindowIcon(new MemoryStream(_livePng));
 
         // Disposing an icon takes down the process it is registered against (AvaloniaUI/Avalonia#21979):
         // the DBus watch loop's cancellation escapes an async void into the dispatcher.
@@ -86,7 +99,7 @@ public sealed class TrayIconHost : IDisposable
     /// <summary>
     /// Whether an icon stands in the tray right now, which is what makes a window close a hide.
     /// </summary>
-    public bool IsUp => _icon is not null;
+    public bool IsUp => _icon is not null || _native is not null;
 
     /// <summary>Takes the icon out of the tray. A disposed host stays disposed.</summary>
     public void Dispose() => Remove();
@@ -118,20 +131,48 @@ public sealed class TrayIconHost : IDisposable
         }
 
         Register();
+
+        // The Windows menu reads the rows when it opens, so only the image follows the state here.
+        if (_native is not null)
+        {
+            if (_nativeLive != menu.IsLive)
+            {
+                _nativeLive = menu.IsLive;
+                _native.SetIcon(menu.IsLive ? _livePng : _idlePng);
+            }
+
+            return;
+        }
+
         if (_icon is null)
         {
             return;
         }
 
         _icon.Icon = menu.IsLive ? _live : _idle;
-        _icon.Menu = MenuOf(menu);
+        _icon.Menu = MenuOf(RowsOf(menu));
     }
 
     /// <summary>Puts an icon in the tray, where none stands. A platform serving no tray leaves none.</summary>
     private void Register()
     {
-        if (_icon is not null)
+        if (_icon is not null || _native is not null)
         {
+            return;
+        }
+
+        if (OperatingSystem.IsWindows())
+        {
+            try
+            {
+                _native = Win32TrayIcon.Create(TrayCopy.Tip, _idlePng, _tray.Open, () => RowsOf(_tray.Menu));
+                _nativeLive = false;
+            }
+            catch (Exception)
+            {
+                // Umgebungsfehler: a session with no window station to own an icon.
+            }
+
             return;
         }
 
@@ -159,6 +200,13 @@ public sealed class TrayIconHost : IDisposable
     /// </summary>
     private void Remove()
     {
+        if (_native is not null)
+        {
+            var native = _native;
+            _native = null;
+            native.Dispose();
+        }
+
         if (_icon is null)
         {
             return;
@@ -171,45 +219,46 @@ public sealed class TrayIconHost : IDisposable
         icon.Dispose();
     }
 
-    private NativeMenu MenuOf(TrayMenu menu)
+    private static byte[] Asset(string uri)
     {
-        var built = new NativeMenu();
+        using var stream = AssetLoader.Open(new Uri(uri));
+        using var copy = new MemoryStream();
+        stream.CopyTo(copy);
+        return copy.ToArray();
+    }
+
+    /// <summary>The menu's rows from its state, which both renderers draw.</summary>
+    private List<TrayRow> RowsOf(TrayMenu menu)
+    {
+        var rows = new List<TrayRow>();
 
         // A line to read, inert: the desktop draws a disabled row as text.
         if (menu.State.Length > 0)
         {
-            built.Items.Add(new NativeMenuItem(menu.State) { IsEnabled = false });
-            built.Items.Add(new NativeMenuItemSeparator());
+            rows.Add(new TrayRow(menu.State, IsEnabled: false));
+            rows.Add(TrayRow.Separator);
         }
 
-        var commit = new NativeMenuItem(menu.CommitLabel) { IsEnabled = menu.CanCommit };
-        commit.Click += (_, _) => _tray.Commit();
-        built.Items.Add(commit);
+        rows.Add(new TrayRow(menu.CommitLabel, IsEnabled: menu.CanCommit, Act: _tray.Commit));
 
         if (menu.Presets.Count > 0)
         {
-            built.Items.Add(new NativeMenuItem(menu.IsLive ? TrayCopy.SwitchPreset : TrayCopy.Presets)
-            {
-                Menu = PresetsOf(menu.Presets),
-            });
+            rows.Add(new TrayRow(
+                menu.IsLive ? TrayCopy.SwitchPreset : TrayCopy.Presets,
+                Rows: PresetRowsOf(menu.Presets)));
         }
 
-        built.Items.Add(new NativeMenuItemSeparator());
+        rows.Add(TrayRow.Separator);
+        rows.Add(new TrayRow(TrayCopy.Open, Act: _tray.Open));
+        rows.Add(new TrayRow(TrayCopy.Quit, Command: _tray.QuitCommand));
 
-        var open = new NativeMenuItem(TrayCopy.Open);
-        open.Click += (_, _) => _tray.Open();
-        built.Items.Add(open);
-
-        var quit = new NativeMenuItem(TrayCopy.Quit) { Command = _tray.QuitCommand };
-        built.Items.Add(quit);
-
-        return built;
+        return rows;
     }
 
     /// <summary>A radio row per preset, the built-in half parted from the saved one as the card parts them.</summary>
-    private NativeMenu PresetsOf(IReadOnlyList<TrayPresetEntry> entries)
+    private List<TrayRow> PresetRowsOf(IReadOnlyList<TrayPresetEntry> entries)
     {
-        var built = new NativeMenu();
+        var rows = new List<TrayRow>();
 
         for (var at = 0; at < entries.Count; at++)
         {
@@ -217,17 +266,52 @@ public sealed class TrayIconHost : IDisposable
 
             if (at > 0 && entries[at - 1].Kind != entry.Kind)
             {
-                built.Items.Add(new NativeMenuItemSeparator());
+                rows.Add(TrayRow.Separator);
             }
 
-            var row = new NativeMenuItem(entry.Name)
+            rows.Add(new TrayRow(
+                entry.Name,
+                IsEnabled: entry.IsReachable,
+                Act: () => _tray.UsePreset(entry),
+                IsRadio: true,
+                IsChecked: entry.IsCurrent));
+        }
+
+        return rows;
+    }
+
+    /// <summary>The rows as Avalonia's menu, which the desktop draws where it serves a tray menu of its own.</summary>
+    private static NativeMenu MenuOf(IReadOnlyList<TrayRow> rows)
+    {
+        var built = new NativeMenu();
+
+        foreach (var row in rows)
+        {
+            if (row.IsSeparator)
             {
-                ToggleType = MenuItemToggleType.Radio,
-                IsChecked = entry.IsCurrent,
-                IsEnabled = entry.IsReachable,
-            };
-            row.Click += (_, _) => _tray.UsePreset(entry);
-            built.Items.Add(row);
+                built.Items.Add(new NativeMenuItemSeparator());
+                continue;
+            }
+
+            var item = new NativeMenuItem(row.Label!) { IsEnabled = row.IsEnabled, Command = row.Command };
+
+            if (row.Rows is { } children)
+            {
+                item.Menu = MenuOf(children);
+            }
+
+            if (row.IsRadio)
+            {
+                item.ToggleType = MenuItemToggleType.Radio;
+                item.IsChecked = row.IsChecked;
+            }
+
+            if (row.Act is { } act)
+            {
+                item.Click += (_, _) => act();
+            }
+
+            built.Items.Add(item);
         }
 
         return built;
