@@ -353,7 +353,7 @@ func rav1eArgs(s settings.Settings, r rates, l capabilities.Steps) []string {
 
 // rav1eParams assembles one -rav1e-params string, the option carrying every rav1e setting ffmpeg's
 // wrapper puts no flag of its own on.
-// The rav1enc element takes the same two tunes on a property instead (publish/gstencoders.go),
+// The rav1enc element takes the same two tunes on a property instead (publish/gstsoftwareav1.go),
 // the step being rav1e's own either way.
 func rav1eParams(l capabilities.Steps, rate ...string) []string {
 	params := append([]string{}, rate...)
