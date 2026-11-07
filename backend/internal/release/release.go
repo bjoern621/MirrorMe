@@ -28,8 +28,11 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 )
 
+// Repo is this project on its forge, as "owner/name".
+const Repo = "bjoern621/screen-sharing"
+
 // LatestURL is the release this project publishes, as its forge answers it.
-const LatestURL = "https://api.github.com/repos/bjoern621/screen-sharing/releases/latest"
+const LatestURL = "https://api.github.com/repos/" + Repo + "/releases/latest"
 
 // Timeout bounds the read.
 // A check nobody is waiting on still holds a goroutine and a connection,
@@ -133,11 +136,11 @@ func latestFrom(ctx context.Context, url string) (Latest, error) {
 // A build nobody stamped is the developer's own and is as often ahead of a release as behind it,
 // so it is told nothing.
 func Compare(current, latest string) State {
-	running, ok := parse(current)
+	running, ok := Parse(current)
 	if !ok {
 		return StateUnknown
 	}
-	published, ok := parse(latest)
+	published, ok := Parse(latest)
 	if !ok {
 		return StateUnknown
 	}
@@ -157,13 +160,13 @@ func Compare(current, latest string) State {
 // What separates a released build from every other, no file in the tree holding the number
 // (docs/packaging.md, "The build stamp").
 func Comparable(version string) bool {
-	_, ok := parse(version)
+	_, ok := Parse(version)
 	return ok
 }
 
-// parse reads a release into its three fields, and false where the string carries no version.
+// Parse reads a release into its three fields, and false where the string carries no version.
 // The leading "v" is optional: a tag wears one and a build stamp does not.
-func parse(version string) ([3]int, bool) {
+func Parse(version string) ([3]int, bool) {
 	fields := strings.Split(strings.TrimPrefix(strings.TrimSpace(version), "v"), ".")
 	if len(fields) != 3 {
 		return [3]int{}, false

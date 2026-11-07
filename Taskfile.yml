@@ -239,6 +239,34 @@ tasks:
     cmds:
       - go test -tags hardware ./...
 
+  release:
+    desc: Publish a release from main, the version suggested by CHANGELOG.md or named after --
+    platforms: [linux, darwin]
+    interactive: true
+    cmds:
+      - tools/release.sh {{.CLI_ARGS}}
+
+  qa:record:
+    desc: Test the newest release on this machine and commit the record (-- -version, -machine, -checklist=false)
+    # The suite cgo-links GStreamer, so Windows names MSYS2's compiler, pkg-config and lld
+    # for the reasons build:windows states.
+    dir: backend
+    interactive: true
+    cmds:
+      - cmd: go run ./cmd/qa record {{.CLI_ARGS}}
+        platforms: [linux, darwin]
+      - cmd: >-
+          PATH="$PATH;{{.MSYS2_MINGW}}/bin" CC='{{.MSYS2_MINGW}}/bin/gcc.exe' PKG_CONFIG='{{.MSYS2_MINGW}}/bin/pkg-config.exe'
+          GOFLAGS='-ldflags=-extldflags=-fuse-ld=lld'
+          go run ./cmd/qa record {{.CLI_ARGS}}
+        platforms: [windows]
+
+  qa:matrix:
+    desc: Redraw qa/README.md from the records under qa/runs
+    dir: backend
+    cmds:
+      - go run ./cmd/qa matrix
+
   icons:
     desc: Redraw packaging/icons from the master, for hicolor and for Windows
     # The results are committed, so no packaging recipe carries an ImageMagick build dependency.

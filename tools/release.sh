@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+# Publishes a release from main: cuts CHANGELOG.md, tags, creates the GitHub release with its text
+# and follows the release workflow to its end (docs/releasing.md).
+# Run as `task release`. `task release -- v0.13.0` names the version.
+# A run cut short runs again from the top.
+set -euo pipefail
+
+root=$(git rev-parse --show-toplevel)
+cd "$root"
+
+die() { echo "release: $*" >&2; exit 1; }
+step() { go -C backend run ./cmd/release -root "$root" "$@"; }
+
+command -v gh >/dev/null || die "gh is not on PATH: run inside nix develop"
+gh auth status >/dev/null 2>&1 || die "gh has no login: run gh auth login or set GH_TOKEN"
+
+[[ $(git branch --show-current) == main ]] || die "a release comes from main"
+git diff --quiet HEAD || die "the checkout holds uncommitted changes to tracked files"
+git fetch --quiet --tags origin main
+git merge-base --is-ancestor origin/main HEAD || die "origin/main holds commits this checkout lacks: pull first"
+
+version=${1:-}
+if [[ -z $version ]]; then
+  version=$(step next) || die "name the version to finish a release cut already: task release -- vX.Y.Z"
+fi
+echo "Version: $version"
+
+# The check workflow answers for the last commit holding code.
+# A commit touching CHANGELOG.md alone, the cut among them, gets its answer from the one before it.
+checked=HEAD
+while git diff --quiet "$checked^" "$checked" -- . ':!CHANGELOG.md'; do
+  checked="$checked^"
+done
+sha=$(git rev-parse "$checked")
+git merge-base --is-ancestor "$sha" origin/main || die "push $sha first, so the check workflow can answer for it"
+
+run=$(gh run list --workflow check.yml --commit "$sha" --limit 1 --json databaseId --jq '.[0].databaseId // empty')
+[[ -n $run ]] || die "the check workflow holds no run for $sha"
+gh run watch "$run" --exit-status || die "the check workflow failed on $sha: gh run view $run"
+
+read -r -p "Release $version from $(git rev-parse --short HEAD)? [y/N] " confirm
+[[ $confirm == y ]] || die "stopped before the cut"
+
+step cut "$version" "$(date -u +%F)"
+git diff --quiet -- CHANGELOG.md || git commit --quiet -m "Release $version" -- CHANGELOG.md
+
+if tagged=$(git rev-parse --verify --quiet "refs/tags/$version^{commit}"); then
+  [[ $tagged == $(git rev-parse HEAD) ]] || die "$version tags $tagged, but HEAD is $(git rev-parse HEAD)"
+else
+  git tag -a "$version" -m "$version"
+fi
+git push --quiet origin main "refs/tags/$version"
+
+notes=$(mktemp)
+trap 'rm -f "$notes"' EXIT
+step notes "$version" > "$notes"
+if gh release view "$version" >/dev/null 2>&1; then
+  gh release edit "$version" --notes-file "$notes"
+else
+  gh release create "$version" --verify-tag --title "$version" --notes-file "$notes"
+fi
+
+# The release workflow starts on the published release, a few seconds after it.
+for _ in $(seq 30); do
+  run=$(gh run list --workflow release.yml --event release --limit 10 --json databaseId,headBranch \
+    --jq "map(select(.headBranch == \"$version\"))[0].databaseId // empty")
+  [[ -n $run ]] && break
+  sleep 2
+done
+[[ -n $run ]] || die "no release workflow run started for $version: gh run list --workflow release.yml"
+gh run watch "$run" --exit-status || die "the release workflow failed: gh run view $run --log-failed"
+
+echo "Published $version: $(gh release view "$version" --json url --jq .url)"
+echo "Record a test run on each machine with task qa:record -- -version $version"

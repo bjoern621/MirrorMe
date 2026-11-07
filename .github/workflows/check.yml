@@ -102,6 +102,10 @@ jobs:
           xvfb-run -a go test -C backend ./...
           dotnet test avalonia/ScreenShare.App.sln
 
+      # qa/README.md renders the records under qa/runs, and a hand edit to either drifts from the other.
+      - name: Tested-hardware page matches its records
+        run: go -C backend run ./cmd/qa matrix -check
+
   windows:
     runs-on: windows-latest
     defaults:

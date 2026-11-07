@@ -411,6 +411,7 @@
               mediamtx # the relay, run natively by deploy/relay.sh
               openssl # draws that relay's certificate, the TLS listeners taking one either way
               go-task # runs Taskfile.yml
+              gh # creates a release and follows its workflows (tools/release.sh)
               # The contract's own toolchain, which `task api` runs:
               # buf lints and drives the generation,
               # and shells out to these two for the committed Go output (api/buf.gen.yaml).

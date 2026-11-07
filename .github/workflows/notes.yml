@@ -1,0 +1,48 @@
+# Every release's GitHub text, rewritten from CHANGELOG.md and the records under qa/runs.
+#
+# A record lands after its release is out, so the "Tested on" table grows on the push that carries it.
+# A release whose text matches what the files render is left as it is.
+# A release that CHANGELOG.md holds no section for stays untouched.
+
+name: notes
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - CHANGELOG.md
+      - qa/runs/**
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  notes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The tags, for the compare link to the release before each one.
+          fetch-depth: 0
+
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: backend/go.mod
+          cache: true
+          cache-dependency-path: backend/go.sum
+
+      - name: Rewrite release text
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          go -C backend build -o "$RUNNER_TEMP/release" ./cmd/release
+          for version in $("$RUNNER_TEMP/release" versions); do
+            gh release view "$version" >/dev/null 2>&1 || continue
+            "$RUNNER_TEMP/release" notes "$version" > "$RUNNER_TEMP/notes.md"
+            gh release view "$version" --json body --jq .body > "$RUNNER_TEMP/current.md"
+            if ! diff -q --strip-trailing-cr "$RUNNER_TEMP/notes.md" "$RUNNER_TEMP/current.md" >/dev/null; then
+              gh release edit "$version" --notes-file "$RUNNER_TEMP/notes.md"
+              echo "rewrote $version"
+            fi
+          done

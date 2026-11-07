@@ -67,7 +67,8 @@ Every rule, every greyed option and every offered value derives from them.
 | `avalonia/` | the shell |
 | `deploy/` | what the relay host runs |
 | `packaging/` | every installer and package |
-| `tools/` | probes for a running relay or backend, and the renderer for the comparison crops |
+| `tools/` | probes for a running relay or backend, the renderer for the comparison crops and the release script |
+| `qa/` | test records per release and machine, and the page drawn from them |
 
 How code takes shape: [development-principles.md](development-principles.md).
 How screens take shape: [design-principles.md](design-principles.md).
