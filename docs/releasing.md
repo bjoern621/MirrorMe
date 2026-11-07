@@ -37,6 +37,11 @@ A run stopped by a red build or a lost connection runs again with the version na
 
 ## Recording a test run
 
+A NixOS machine whose system flake takes this repository as an input runs `task nixos:update` first.
+It moves that input to the newest commit and switches the system to it.
+The checklist then meets the released code, as long as main holds no commit past the tag.
+`NIXOS_FLAKE` names the flake's directory where it sits outside `/etc/nixos`, as in `NIXOS_FLAKE=~/git/nixos-config/hosts/fractal task nixos:update`.
+
 After a release is out, each machine runs `task qa:record`:
 
 1. Exports the newest tag to a temporary directory, so the run tests the release whatever the checkout holds.

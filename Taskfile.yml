@@ -246,6 +246,15 @@ tasks:
     cmds:
       - tools/release.sh {{.CLI_ARGS}}
 
+  nixos:update:
+    desc: Update the NixOS system flake's screen-sharing input and switch to it (NIXOS_FLAKE=<dir>, else /etc/nixos)
+    platforms: [linux]
+    interactive: true
+    env:
+      NIXOS_FLAKE: '{{.NIXOS_FLAKE}}'
+    cmds:
+      - tools/nixos-update.sh
+
   qa:record:
     desc: Test the newest release on this machine and commit the record (-- -version, -machine, -checklist=false)
     # The suite cgo-links GStreamer, so Windows names MSYS2's compiler, pkg-config and lld
