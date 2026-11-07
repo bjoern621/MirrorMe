@@ -558,7 +558,7 @@ func optionCongestions(_ Deps, _ settings.Settings) []*screensharev1.FieldOption
 //
 // The target and twice it are where the two ends of constrained variable bitrate sit:
 // at the target the rate is held, and a ceiling above twice it is headroom the VAAPI note already
-// warns about (availability.go, vaapiCeilingNote).
+// warns about (ratecontrol.go, vaapiCeilingNote).
 func optionMaxratePresets(d Deps, s settings.Settings) []*screensharev1.FieldOption {
 	ceiling := int(fieldMaxrateBounds(d, s).GetMax())
 
@@ -609,7 +609,7 @@ func optionGroupSources(_ Deps, _ settings.Settings) []*screensharev1.FieldOptio
 
 // optionShareKinds offers every kind share.Kinds declares.
 // Which ones the capture backend reads and which ones this session can pick from are greyings,
-// so the list is the same everywhere and each entry carries its own reason (availability.go).
+// so the list is the same everywhere and each entry carries its own reason (share.go).
 //
 // The whole screen is marked: it is what a stream shares unless somebody says otherwise,
 // and the one kind that needs nothing picked.

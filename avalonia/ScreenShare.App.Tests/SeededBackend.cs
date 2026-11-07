@@ -1346,14 +1346,14 @@ internal sealed class SeededBackend : IBackend
                     : (true, true, null, null);
 
             // Disabled from the update channel's own statement, which the toggle and the band both carry
-            // (backend/internal/form/availability.go, KeyCheckUpdatesOnStart).
+            // (backend/internal/form/availabilityrules.go, KeyCheckUpdatesOnStart).
             case "app.check_updates_on_start":
                 return Update.Unchecked is null
                     ? (true, true, null, null)
                     : (true, false, Update.Unchecked, null);
 
             // Disabled from a source owning the value: the group follows the voice channel,
-            // so a key set here is read by nobody (backend/internal/form/availability.go).
+            // so a key set here is read by nobody (backend/internal/form/availabilityrules.go).
             case "relay.group_key":
                 return settings.Relay.GroupSource == "discord"
                     ? (true, false, Say(TextCode.GroupFollowsDiscord), null)

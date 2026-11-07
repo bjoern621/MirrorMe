@@ -68,7 +68,7 @@ const (
 	KeyMonitor           = "publish.monitor"
 	// What of this machine is captured, and the field the picked kind names.
 	// One control decides the kind and each of the three targets has a control of its own,
-	// so the two the kind does not name are drawn nowhere (availability.go).
+	// so the two the kind does not name are drawn nowhere (share.go).
 	KeyShareKind     = "publish.share_kind"
 	KeyShareWindow   = "publish.share_window"
 	KeyShareRegion   = "publish.share_region"

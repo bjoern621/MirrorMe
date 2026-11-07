@@ -115,7 +115,7 @@ var fieldTable = []field{
 		options: optionCaptures,
 	},
 	// What is shared: the kind, and one control per target the kinds name.
-	// The kind leads, the two targets it does not name being drawn nowhere (availability.go).
+	// The kind leads, the two targets it does not name being drawn nowhere (share.go).
 	{
 		key:     KeyShareKind,
 		group:   GroupShare,
@@ -192,7 +192,7 @@ var fieldTable = []field{
 	{
 		// What refuses a scaled value is the frame path rather than this field:
 		// an encoder reading captured surfaces with no filter between has nothing on it that resizes,
-		// and availability greys the scaled entries there (availability.go).
+		// and availability greys the scaled entries there (devicepath.go).
 		key:     KeyOutputResolution,
 		group:   GroupQuality,
 		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
