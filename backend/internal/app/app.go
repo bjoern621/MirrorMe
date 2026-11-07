@@ -44,6 +44,9 @@ type App struct {
 	// Build stamp the control handshake answers with.
 	// Handed in: the linker writes it into package main.
 	version string
+	// Whether a recipe stamped version, which leaves the synthetic set out (teststreams.go).
+	// The zero value runs it, as a build nobody stamped does.
+	released bool
 	// What this install knows about the release published beside it (update.go).
 	// One per process, so a check one shell asked for is the answer every shell reads.
 	updates *update.Manager
@@ -209,6 +212,7 @@ func New(version, channel string) *App {
 	a := &App{
 		events:           events.New(),
 		version:          version,
+		released:         version != unstamped,
 		settings:         s,
 		storeNotice:      notice,
 		groups:           groupclient.New(),

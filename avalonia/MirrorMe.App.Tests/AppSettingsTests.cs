@@ -356,6 +356,21 @@ public sealed class AppSettingsTests
     }
 
     /// <summary>
+    /// A released backend hides the toggle, and the Development entry goes with it,
+    /// since the section would open on nothing.
+    /// </summary>
+    [Fact]
+    public async Task AReleasedBackendLeavesNoDevelopmentSection()
+    {
+        var development = await PanelAsync();
+        Assert.True(development.Settings.ShowsDevelopment);
+
+        var released = await PanelAsync(new SeededBackend("linux") { Released = true });
+        Assert.Null(released.Settings.TestStreams);
+        Assert.False(released.Settings.ShowsDevelopment);
+    }
+
+    /// <summary>
     /// The toggle and the check button are inert for one fact, so the heading over them states it once
     /// and the toggle's own row prints nothing.
     /// </summary>

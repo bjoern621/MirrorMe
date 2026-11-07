@@ -25,6 +25,7 @@ const (
 	testStreamCountNegative    = mirrormev1.TextCode_TEXT_CODE_TEST_STREAM_COUNT_NEGATIVE
 	runKeepsNoLog              = mirrormev1.TextCode_TEXT_CODE_RUN_KEEPS_NO_LOG
 	testStreamsAboveLimit      = mirrormev1.TextCode_TEXT_CODE_TEST_STREAMS_ABOVE_LIMIT
+	testStreamsReleaseBuild    = mirrormev1.TextCode_TEXT_CODE_TEST_STREAMS_RELEASE_BUILD
 	logGone                    = mirrormev1.TextCode_TEXT_CODE_LOG_GONE
 	receiveAudioOfNoDecode     = mirrormev1.TextCode_TEXT_CODE_RECEIVE_AUDIO_OF_NO_DECODE
 	framesUndrawable           = mirrormev1.TextCode_TEXT_CODE_FRAMES_UNDRAWABLE

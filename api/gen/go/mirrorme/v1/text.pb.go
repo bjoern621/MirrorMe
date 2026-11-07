@@ -972,6 +972,8 @@ const (
 	// Bounds and absences.
 	// TEXT_ARG_NAME_COUNT and TEXT_ARG_NAME_COUNT_LIMIT.
 	TextCode_TEXT_CODE_TEST_STREAMS_ABOVE_LIMIT TextCode = 223
+	// A released build runs no test streams. A build that no recipe stamped runs them. No arguments.
+	TextCode_TEXT_CODE_TEST_STREAMS_RELEASE_BUILD TextCode = 340
 	// Run log rotated away. TEXT_ARG_NAME_PATH.
 	TextCode_TEXT_CODE_LOG_GONE TextCode = 224
 	// TEXT_ARG_NAME_STREAM and TEXT_ARG_NAME_TRANSPORT name a decode nothing runs.
@@ -1359,6 +1361,7 @@ var (
 		221: "TEXT_CODE_TEST_STREAM_COUNT_NEGATIVE",
 		222: "TEXT_CODE_RUN_KEEPS_NO_LOG",
 		223: "TEXT_CODE_TEST_STREAMS_ABOVE_LIMIT",
+		340: "TEXT_CODE_TEST_STREAMS_RELEASE_BUILD",
 		224: "TEXT_CODE_LOG_GONE",
 		225: "TEXT_CODE_RECEIVE_AUDIO_OF_NO_DECODE",
 		226: "TEXT_CODE_FRAMES_UNDRAWABLE",
@@ -1640,6 +1643,7 @@ var (
 		"TEXT_CODE_TEST_STREAM_COUNT_NEGATIVE":                221,
 		"TEXT_CODE_RUN_KEEPS_NO_LOG":                          222,
 		"TEXT_CODE_TEST_STREAMS_ABOVE_LIMIT":                  223,
+		"TEXT_CODE_TEST_STREAMS_RELEASE_BUILD":                340,
 		"TEXT_CODE_LOG_GONE":                                  224,
 		"TEXT_CODE_RECEIVE_AUDIO_OF_NO_DECODE":                225,
 		"TEXT_CODE_FRAMES_UNDRAWABLE":                         226,
@@ -2182,7 +2186,7 @@ const file_mirrorme_v1_text_proto_rawDesc = "" +
 	"\x16TEXT_ARG_NAME_PROPERTY\x10T\x12\x1c\n" +
 	"\x18TEXT_ARG_NAME_TIMEOUT_MS\x10U\x12\x1a\n" +
 	"\x16TEXT_ARG_NAME_TRANSFER\x10V\x12\x19\n" +
-	"\x15TEXT_ARG_NAME_DEVICES\x10W\"\x04\b3\x103*\x18TEXT_ARG_NAME_ENC_PRESET*\x16TEXT_ARG_NAME_RAW_MBPS*\xe3U\n" +
+	"\x15TEXT_ARG_NAME_DEVICES\x10W\"\x04\b3\x103*\x18TEXT_ARG_NAME_ENC_PRESET*\x16TEXT_ARG_NAME_RAW_MBPS*\x8eV\n" +
 	"\bTextCode\x12\x19\n" +
 	"\x15TEXT_CODE_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aTEXT_CODE_CAPTURE_WRONG_OS\x10\x01\x12#\n" +
@@ -2359,7 +2363,8 @@ const file_mirrorme_v1_text_proto_rawDesc = "" +
 	"\x14TEXT_CODE_LINK_EMPTY\x10\xdc\x01\x12)\n" +
 	"$TEXT_CODE_TEST_STREAM_COUNT_NEGATIVE\x10\xdd\x01\x12\x1f\n" +
 	"\x1aTEXT_CODE_RUN_KEEPS_NO_LOG\x10\xde\x01\x12'\n" +
-	"\"TEXT_CODE_TEST_STREAMS_ABOVE_LIMIT\x10\xdf\x01\x12\x17\n" +
+	"\"TEXT_CODE_TEST_STREAMS_ABOVE_LIMIT\x10\xdf\x01\x12)\n" +
+	"$TEXT_CODE_TEST_STREAMS_RELEASE_BUILD\x10\xd4\x02\x12\x17\n" +
 	"\x12TEXT_CODE_LOG_GONE\x10\xe0\x01\x12)\n" +
 	"$TEXT_CODE_RECEIVE_AUDIO_OF_NO_DECODE\x10\xe1\x01\x12 \n" +
 	"\x1bTEXT_CODE_FRAMES_UNDRAWABLE\x10\xe2\x01\x12\x1c\n" +

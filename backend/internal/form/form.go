@@ -77,6 +77,10 @@ type Deps struct {
 	// (MIRRORME_TRAY=0, avalonia/README.md, "The tray").
 	// The zero value is a run that draws the icon the setting asks for.
 	TrayOff bool
+	// TestStreamsOff is whether this build runs no synthetic set whatever the setting holds,
+	// as a released build does (internal/app, testStreamsBound).
+	// The zero value is a build that runs the set the toggle asks for.
+	TestStreamsOff bool
 }
 
 // state is what availability decided about one field, in the treatments

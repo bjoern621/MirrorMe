@@ -21,6 +21,21 @@ import (
 // so a large count saturates the CPU without testing anything further.
 const maxTestStreams = 9
 
+// unstamped is the version of a build that no recipe stamped, `task backend` among them
+// (cmd/backend, main.version).
+const unstamped = "dev"
+
+// testStreamsBound is how many slots this build runs at most.
+// A released build runs none, since the set serves development alone.
+// A development run shares the settings file with an install,
+// and the toggle it left on would otherwise keep encoders running on the install.
+func (a *App) testStreamsBound() int {
+	if a.released {
+		return 0
+	}
+	return maxTestStreams
+}
+
 // testStreamsDefault is the size of the set the app group's toggle asks for,
 // so the viewer roster carries streams on a machine publishing nothing.
 const testStreamsDefault = 3
@@ -89,7 +104,7 @@ func testStreamName(i int) string {
 // a publisher that dies on its own is relaunched into the slot it held (teststreams_retry.go),
 // which makes the set survive a relay that comes up after this process does.
 func (a *App) StartTestStreams(count int) error {
-	assert.Assert(count > 0 && count <= maxTestStreams, "a test stream set holds 1 to maxTestStreams streams", count)
+	assert.Assert(count > 0 && count <= a.testStreamsBound(), "a test stream set holds 1 to testStreamsBound streams", count)
 	if !a.settingsInGroup() {
 		return errNoGroup
 	}
@@ -173,7 +188,7 @@ func (a *App) StopTestStreams() {
 }
 
 // convergeTestStreams holds the synthetic set at what the settings ask for:
-// the count below the app group's toggle, and none while it is off.
+// the count below the app group's toggle, and none while it is off or in a released build.
 //
 // Idempotent, so every write of the settings runs it, whichever fact the write moved:
 // the toggle itself, and the group membership a launch is refused without.
@@ -182,7 +197,7 @@ func (a *App) StopTestStreams() {
 // resolving the launcher touches the disk and each child opens its run log,
 // and the caller comes up at its own speed rather than at theirs.
 func (a *App) convergeTestStreams() {
-	count := testStreamsWanted(a.GetSettings().App)
+	count := min(testStreamsWanted(a.GetSettings().App), a.testStreamsBound())
 	if count == 0 {
 		a.StopTestStreams()
 		return

@@ -175,6 +175,14 @@ public sealed class AppSettingsViewModel : Observable
     /// <summary>Entries under the divider.</summary>
     public IReadOnlyList<SettingsTab> ApartTabs { get; } = [.. SettingsSections.All.Where(tab => tab.SetApart)];
 
+    private bool _showsDevelopment;
+
+    /// <summary>
+    /// Whether the divider and the entries under it show.
+    /// A released backend hides the test-stream toggle, which leaves the Development section empty.
+    /// </summary>
+    public bool ShowsDevelopment { get => _showsDevelopment; private set => Set(ref _showsDevelopment, value); }
+
     /// <summary>
     /// List entry of <see cref="Section"/>, read through.
     /// None while a compact dialog stands on the list, so a press on any entry picks it, the current one included.
@@ -401,6 +409,7 @@ public sealed class AppSettingsViewModel : Observable
         CheckUpdatesOnStart = Group.Visible(CheckUpdatesOnStartKey);
         TrayIcon = Group.Visible(TrayIconKey);
         TestStreams = Group.Visible(TestStreamsKey);
+        ShowsDevelopment = TestStreams is not null;
         RichPresence = Group.Visible(RichPresenceKey);
 
         UpdatesRefusal = CheckUpdatesOnStart?.Reason ?? "";
@@ -435,9 +444,6 @@ public sealed class AppSettingsViewModel : Observable
         Assert.That(
             !Group.IsResolved || TrayIcon is not null,
             "a resolved app group always carries the tray-icon toggle");
-        Assert.That(
-            !Group.IsResolved || TestStreams is not null,
-            "a resolved app group always carries the test-stream toggle");
         Assert.That(
             UpdatesRefused == (CheckUpdatesOnStart?.HasReason ?? false),
             "the section states the toggle's reason exactly where the toggle has one", UpdatesRefusal);

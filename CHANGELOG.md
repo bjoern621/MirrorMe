@@ -6,6 +6,10 @@ Releases before v0.11.0 carry no notes, and their commits sit in the [history](h
 
 ## Unreleased
 
+### Changed
+
+- The settings dialog leaves out the Development section and its test streams, which run in a development build alone.
+
 ## v0.13.1 (2026-11-07)
 
 ### Fixed

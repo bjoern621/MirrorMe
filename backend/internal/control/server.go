@@ -102,6 +102,7 @@ type Backend interface {
 	// and membership answers off them while the mode is on (docs/discord-mode.md).
 	Brokered(s settings.Settings) settings.Settings
 	// MaxTestStreams bounds how many synthetic publishers run at once.
+	// Zero in a released build, which runs none and hides the toggle (form.Deps.TestStreamsOff).
 	//
 	// Readable rather than only enforced, so an over-large request is refused where every other
 	// request-earned refusal here is made: above the call, with RESOURCE_EXHAUSTED,

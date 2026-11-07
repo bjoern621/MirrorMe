@@ -133,14 +133,16 @@
                          ItemsSource="{Binding MainTabs}"
                          ItemTemplate="{DynamicResource SettingsTabEntry}"
                          SelectedItem="{Binding SelectedTab, Mode=TwoWay}" />
-                <Border Classes="dividerh" Margin="0,8" />
-                <!-- A second list for the entries under the divider, both writing the one section. -->
-                <ListBox Classes="apart"
-                         Theme="{StaticResource SectionListTheme}"
-                         ItemContainerTheme="{StaticResource SectionItemTheme}"
-                         ItemsSource="{Binding ApartTabs}"
-                         ItemTemplate="{DynamicResource SettingsTabEntry}"
-                         SelectedItem="{Binding SelectedTab, Mode=TwoWay}" />
+                <StackPanel IsVisible="{Binding ShowsDevelopment}">
+                  <Border Classes="dividerh" Margin="0,8" />
+                  <!-- A second list for the entries under the divider, both writing the one section. -->
+                  <ListBox Classes="apart"
+                           Theme="{StaticResource SectionListTheme}"
+                           ItemContainerTheme="{StaticResource SectionItemTheme}"
+                           ItemsSource="{Binding ApartTabs}"
+                           ItemTemplate="{DynamicResource SettingsTabEntry}"
+                           SelectedItem="{Binding SelectedTab, Mode=TwoWay}" />
+                </StackPanel>
               </StackPanel>
             </Border>
 

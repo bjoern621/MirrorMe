@@ -57,6 +57,8 @@ type fakeBackend struct {
 	reportID string
 	// starts and applies count the publishes started and the running ones restarted.
 	starts, applies int
+	// released bounds the synthetic set at zero, as a stamped build does.
+	released bool
 }
 
 func (f *fakeBackend) Settings() settings.Settings                    { return f.settings }
@@ -90,7 +92,12 @@ func (f *fakeBackend) ResolveLink(url string) (string, error) {
 	}
 	return f.link, nil
 }
-func (f *fakeBackend) MaxTestStreams() int                            { return 9 }
+func (f *fakeBackend) MaxTestStreams() int {
+	if f.released {
+		return 0
+	}
+	return 9
+}
 func (f *fakeBackend) MeasureUplink(context.Context) (float64, error) { return 0, f.err }
 func (f *fakeBackend) MeasureEncodeRate(context.Context, settings.Settings) (encoderate.Rate, error) {
 	return encoderate.Rate{}, f.err

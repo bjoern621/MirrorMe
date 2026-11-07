@@ -272,6 +272,9 @@ internal sealed class SeededBackend : IBackend
 
     public bool AsksWhatToShare { get; init; }
 
+    /// <summary>Hides the test-stream toggle, as a backend stamped by a release recipe does.</summary>
+    public bool Released { get; init; }
+
     public Text? NoMonitorPreview { get; init; }
 
     /// <summary>
@@ -1311,6 +1314,9 @@ internal sealed class SeededBackend : IBackend
             // so its help text says nothing to a reader on another capture backend.
             case "publish.drm_map":
                 return (settings.Publish.Capture == "kmsgrab", true, null, null);
+
+            case "app.test_streams":
+                return (!Released, true, null, null);
 
             // Disabled with a reason: a general encoding concept blocked by this combination.
             // The ladder is the codec's own, so the reason names the codec, the fact nearest to hand.

@@ -120,7 +120,7 @@ func (b controlBackend) ResolveLink(url string) (string, error) {
 // read rather than discovered by asking for too much.
 // A bound only an error could reveal would leave a saturated machine and a missing binary
 // indistinguishable.
-func (b controlBackend) MaxTestStreams() int { return maxTestStreams }
+func (b controlBackend) MaxTestStreams() int { return b.app.testStreamsBound() }
 
 // --- Measurements ---
 

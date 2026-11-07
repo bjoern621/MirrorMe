@@ -1010,6 +1010,24 @@ func TestTheTrayToggleGreysWhereTheRunHoldsTheIconOut(t *testing.T) {
 	}
 }
 
+// A released build runs no synthetic set whatever the toggle holds,
+// so the toggle leaves the form there and stays live everywhere else.
+func TestTheTestStreamToggleHidesInAReleasedBuild(t *testing.T) {
+	for _, tc := range availabilityCases() {
+		built := tc.deps
+		built.TestStreamsOff = false
+		if st := fieldState(built, tc.s, KeyTestStreams, noEntry); !st.visible || !st.enabled {
+			t.Errorf("%s: a development build draws the toggle visible=%v enabled=%v", tc.name, st.visible, st.enabled)
+		}
+
+		released := tc.deps
+		released.TestStreamsOff = true
+		if st := fieldState(released, tc.s, KeyTestStreams, noEntry); st.visible {
+			t.Errorf("%s: a released build draws the toggle", tc.name)
+		}
+	}
+}
+
 // availabilityRowState is what the encoder control says about one row of the capability table.
 //
 // The draft is pointed at that row's format first, the pair being what a greying is about:

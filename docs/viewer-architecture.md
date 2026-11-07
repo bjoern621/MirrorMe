@@ -518,6 +518,8 @@ A stream lives in a group, so the set waits for one: a machine outside a group l
 
 A development aid, off on a fresh installation: an encoder per slot runs for as long as the backend does.
 The toggle is in the app settings dialog, and the backend converges the set on the write, so the streams come and go with it.
+A released build runs no set and hides the toggle, whatever the settings file holds.
+A build that no recipe stamped runs it, `task all` among them.
 The screens that watch are built against the set, a relay carrying nothing putting the roster in its empty state rather than the one under construction.
 
 The slot is the stream's identity rather than the process's, so a publisher that dies is relaunched into the slot it held and returns as the row the roster already shows.

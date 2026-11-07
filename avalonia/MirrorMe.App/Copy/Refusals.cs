@@ -46,6 +46,8 @@ public static class Refusals
 
             TextCode.TestStreamsAboveLimit =>
                 $"This computer runs up to {Plain(a.CountLimit)} test streams at once. Ask for {Plain(a.CountLimit)} or fewer.",
+            TextCode.TestStreamsReleaseBuild =>
+                "Released copies of MirrorMe run no test streams. Start a development build (task all) to use them.",
             TextCode.LogGone => $"The log file is gone ({a.Path}). Older run logs are rotated away.",
             TextCode.ReceiveAudioOfNoDecode =>
                 Because($"{Leg(a)} is not playing, so its sound cannot be set."),

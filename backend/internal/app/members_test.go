@@ -440,6 +440,25 @@ func TestTheBootSetStatesPresenceBeforeItTradesForAToken(t *testing.T) {
 	}
 }
 
+// A released build holds the set empty with the toggle on,
+// so it neither states presence for the set nor trades for a token.
+func TestAReleasedBuildLaunchesNoTestStreams(t *testing.T) {
+	t.Setenv(EnvTestStreams, "1")
+	groups := &fakeGroups{token: func() (string, error) { return "a token", nil }}
+	a := inGroupApp(t, groups)
+	a.released = true
+	a.settings.App.TestStreams = true
+
+	a.convergeTestStreams()
+
+	if asked := groups.asked(); len(asked) != 0 {
+		t.Errorf("the service was asked %v, want nothing", asked)
+	}
+	if running, _ := a.TestStreamState(); running != 0 {
+		t.Errorf("%d test streams run in a released build, want none", running)
+	}
+}
+
 // A name is what a member is listed under, so a machine without one has nothing to state.
 // Nothing is drawn either: an identity the group never took is a file naming a group nobody joined.
 func TestAPassWithNoNameStatesNothing(t *testing.T) {

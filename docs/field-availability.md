@@ -147,6 +147,9 @@ The second question sorts the two treatments.
   Its tooltip describes a mechanism that a user on any other backend has no reason to read.
   DRM download is a knob of the kmsgrab scanout path and nothing else.
 
+- A **development aid** is **hidden** in a released build, which ignores its value.
+  The test-stream toggle shows in a build that no recipe stamped (`task all`) and in no release.
+
 - A **general encoding or quality concept** that the current combination happens to block stays **disabled with a reason**.
   The concept is part of the model every user is expected to understand, so the greyed field plus its reason teaches why the concept does not apply here.
   Effort step, quantizer target, bitrate bound, B-frames, color range and chroma are all general concepts,

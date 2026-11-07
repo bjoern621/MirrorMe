@@ -395,6 +395,7 @@ func (s *Server) probeEncoders(ctx context.Context) {
 // A negative count is INVALID_ARGUMENT, naming a set of publishers that cannot exist.
 // A count above MaxTestStreams is RESOURCE_EXHAUSTED: each test stream runs its own software
 // encoder, so a large set saturates the machine and tests nothing further.
+// A released build bounds the set at zero and refuses any count with FAILED_PRECONDITION.
 //
 // Both refusals are made above the call, where every request-earned refusal in this file is made.
 // Inferring the bound from the backend's error would put a viewer binary that could not be found
@@ -409,7 +410,9 @@ func (s *Server) setTestStreams(count int) error {
 	}
 
 	max := s.backend.MaxTestStreams()
-	assert.Assert(max > 0, "a backend that runs test streams runs at least one", max)
+	if max == 0 {
+		return failedPrecondition(text.Fail(testStreamsReleaseBuild))
+	}
 	if count > max {
 		return resourceExhausted(text.Fail(testStreamsAboveLimit,
 			argCount(count), text.Num(mirrormev1.TextArgName_TEXT_ARG_NAME_COUNT_LIMIT, int64(max))))

@@ -124,6 +124,7 @@ func (s *Server) formDeps() form.Deps {
 		DiscordRefused:  s.backend.DiscordState().Refused,
 		UpdateUnchecked: s.backend.UpdateState().Unchecked,
 		TrayOff:         trayForcedOff(),
+		TestStreamsOff:  s.backend.MaxTestStreams() == 0,
 	}
 }
 

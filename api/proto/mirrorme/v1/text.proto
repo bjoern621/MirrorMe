@@ -930,6 +930,8 @@ enum TextCode {
   // Bounds and absences.
   // TEXT_ARG_NAME_COUNT and TEXT_ARG_NAME_COUNT_LIMIT.
   TEXT_CODE_TEST_STREAMS_ABOVE_LIMIT = 223;
+  // A released build runs no test streams. A build that no recipe stamped runs them. No arguments.
+  TEXT_CODE_TEST_STREAMS_RELEASE_BUILD = 340;
   // Run log rotated away. TEXT_ARG_NAME_PATH.
   TEXT_CODE_LOG_GONE = 224;
   // TEXT_ARG_NAME_STREAM and TEXT_ARG_NAME_TRANSPORT name a decode nothing runs.
