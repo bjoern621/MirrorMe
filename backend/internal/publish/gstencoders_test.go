@@ -72,8 +72,8 @@ func TestGstEncodersAgainstGstLaunch(t *testing.T) {
 
 		// The last format this engine reaches is the narrowest, 10-bit where the element takes it and
 		// 4:2:0 where it does not, so it is the one most likely to fail negotiation.
-		// A format gapped here is left out: pinning it would assert only that the element rejects what
-		// capabilities.Validate already refuses.
+		// A format gapped here, or gapped under the mode, is left out: pinning it would assert only that
+		// the element rejects what capabilities.Validate already refuses.
 		engineChromas := cap.EngineChromas("gstreamer")
 
 		for _, mode := range []string{"cbr", "vbr", "abr", "crf", "lossless"} {
@@ -83,7 +83,7 @@ func TestGstEncodersAgainstGstLaunch(t *testing.T) {
 			t.Run(name+"/"+mode, func(t *testing.T) {
 				s := baseStream()
 				s.Publish.UseCodec(name)
-				s.Publish.Mode, s.Publish.Chroma = mode, engineChromas[len(engineChromas)-1]
+				s.Publish.Mode, s.Publish.Chroma = mode, narrowestChroma(cap, engineChromas, mode)
 				// The quantizer rides each encoder's own scale, and the defaults carry one off another
 				// codec's.
 				s.Publish.Cq = cap.CqMaxOn(EngineGst) / 2
@@ -125,6 +125,17 @@ func TestGstEncodersAgainstGstLaunch(t *testing.T) {
 			})
 		}
 	}
+}
+
+// narrowestChroma returns the last of chromas that mode leaves standing on this engine,
+// the first of them where the mode gaps every one.
+func narrowestChroma(c capabilities.Codec, chromas []string, mode string) string {
+	for i := len(chromas) - 1; i >= 0; i-- {
+		if _, gap := c.ModeOptionGap(EngineGst, mode, capabilities.OptionChroma, chromas[i]); !gap {
+			return chromas[i]
+		}
+	}
+	return chromas[0]
 }
 
 // A codec the capability table declares implemented has to build on the engine that will be asked

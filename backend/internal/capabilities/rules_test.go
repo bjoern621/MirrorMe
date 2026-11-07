@@ -175,6 +175,26 @@ func TestACeilingBindsOnlyInTheModesThatReadIt(t *testing.T) {
 	}
 }
 
+func TestAModeGapRefusesItsValueUnderItsModeAlone(t *testing.T) {
+	cases := []struct {
+		engine, mode string
+		refused      bool
+	}{
+		{EngineGst, ModeLossless, true},
+		{EngineGst, ModeCrf, false},
+		{EngineFfmpeg, ModeLossless, false},
+	}
+	for _, tc := range cases {
+		v := rules.EvaluateRules(codecFacts("h264_nvenc", tc.engine, tc.mode), codecRules())
+		if refused := !v.ValueEnabled(rules.AxisChroma, "yuv420p"); refused != tc.refused {
+			t.Errorf("h264_nvenc on %s at %s: 4:2:0 refused=%v, want %v", tc.engine, tc.mode, refused, tc.refused)
+		}
+		if !v.ValueEnabled(rules.AxisChroma, "yuv444p") {
+			t.Errorf("h264_nvenc on %s at %s refuses 4:4:4", tc.engine, tc.mode)
+		}
+	}
+}
+
 // The statement that narrows the control carries the limit itself:
 // no axis holds it, and a reader looking at a slider that stops early is owed the number.
 func TestACeilingStatesTheLimitItNarrowsTo(t *testing.T) {

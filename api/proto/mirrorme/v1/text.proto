@@ -679,6 +679,7 @@ enum TextCode {
   TEXT_CODE_GAP_GST_QSV_NO_SCENARIO = 153;
   TEXT_CODE_GAP_VIDEOTOOLBOX_NO_LOSSLESS = 159;
   TEXT_CODE_GAP_VIDEOTOOLBOX_AVERAGE_BITRATE_ONLY = 160;
+  TEXT_CODE_GAP_GST_NVH264ENC_LOSSLESS_NEEDS_444 = 339;
 
   // The entry names no capture source,
   // so what is inside a kind, how loud it is and whether it is silenced ask about nothing.

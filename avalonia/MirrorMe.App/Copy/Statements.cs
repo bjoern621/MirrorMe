@@ -528,6 +528,10 @@ public static class Statements
             TextCode.GapVideotoolboxAverageBitrateOnly =>
                 "The Mac hardware encoder targets an average bitrate only, with no ceiling and no quality target.",
 
+            TextCode.GapGstNvh264EncLosslessNeeds444 =>
+                "On a GStreamer capture method, the NVIDIA H.264 encoder is lossless at 4:4:4 only. "
+                + "4:2:0 lossless needs a capture method that uses ffmpeg.",
+
             // Diagnostics.
 
             TextCode.PublishRefused =>

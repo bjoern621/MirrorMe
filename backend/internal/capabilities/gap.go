@@ -31,6 +31,32 @@ type Gap struct {
 	Reason mirrormev1.TextCode `json:"reason"`
 }
 
+// ModeGap is a Gap that holds under one rate-control mode alone.
+// The value reaches the encoder in every other mode.
+//
+// Kept apart from Gaps, which the engine-scoped lookups read as holding in every mode,
+// so EngineChromas and OptionGap keep offering the value where the mode leaves it standing.
+// It reaches a form and a publish through the evaluator, which knows the mode.
+type ModeGap struct {
+	// Mode is the rate-control mode the gap holds under, one of Modes.
+	Mode string `json:"mode"`
+	Gap
+}
+
+// ModeOptionGap is the mode gap keeping this codec from encoding with value for the named option
+// under mode on the named engine, and false where the mode leaves that value standing.
+func (c Codec) ModeOptionGap(engine, mode, option, value string) (Gap, bool) {
+	assert.Assert(knownEngine(engine), "a gap lookup names a publish engine", engine)
+	assert.Assert(knownOption(option), "a gap lookup names a gappable option", option)
+
+	for _, g := range c.ModeGaps {
+		if g.Mode == mode && g.Option == option && g.Value == value && g.covers(engine) {
+			return g.Gap, true
+		}
+	}
+	return Gap{}, false
+}
+
 func (g Gap) covers(engine string) bool {
 	return g.Engine == "" || g.Engine == engine
 }

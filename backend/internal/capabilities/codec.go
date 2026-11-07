@@ -66,6 +66,8 @@ type Codec struct {
 	// Gaps is what this codec cannot do, per axis and per publish engine.
 	// Empty means every chroma above and every rate-control mode reaches the encoder on both engines.
 	Gaps []Gap `json:"gaps"`
+	// ModeGaps is what this codec cannot do under one rate-control mode.
+	ModeGaps []ModeGap `json:"modeGaps"`
 	// DriverDefects is what this codec's encoder does reach and one installed driver miscodes.
 	DriverDefects []DriverDefect `json:"driverDefects"`
 }

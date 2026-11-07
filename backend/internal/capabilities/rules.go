@@ -127,6 +127,7 @@ func codecRules() []rules.Rule {
 	var out []rules.Rule
 	for _, c := range Codecs {
 		out = append(out, c.gapRules()...)
+		out = append(out, c.modeGapRules()...)
 		out = append(out, c.driverDefectRules()...)
 		out = append(out, c.ceilingRules()...)
 	}
@@ -194,6 +195,30 @@ func (c Codec) gapRules() []rules.Rule {
 		assert.Assert(ok, "a gap names a gappable option", g.Option, c.Name)
 		out = append(out, rules.Rule{
 			When:    c.when(g.Engine, map[string]rules.Match{rules.AxisCodec: rules.OneOf(c.Name)}),
+			Verdict: rules.Refuse,
+			Field:   axis,
+			Values:  rules.OneOf(g.Value),
+			Reason:  g.Reason,
+		})
+	}
+	return out
+}
+
+// modeGapRules is one codec's mode gaps,
+// each refusing its value while this codec runs under the gap's mode.
+func (c Codec) modeGapRules() []rules.Rule {
+	out := make([]rules.Rule, 0, len(c.ModeGaps))
+	for _, g := range c.ModeGaps {
+		assert.Assert(contains(Modes, g.Mode), "a mode gap names a rate-control mode", g.Mode, c.Name)
+		axis, ok := optionAxes[g.Option]
+		assert.Assert(ok, "a mode gap names a gappable option", g.Option, c.Name)
+		assert.Assert(g.Value != "", "a mode gap names the value it refuses", c.Name, g.Option)
+
+		out = append(out, rules.Rule{
+			When: c.when(g.Engine, map[string]rules.Match{
+				rules.AxisCodec: rules.OneOf(c.Name),
+				rules.AxisMode:  rules.OneOf(g.Mode),
+			}),
 			Verdict: rules.Refuse,
 			Field:   axis,
 			Values:  rules.OneOf(g.Value),
