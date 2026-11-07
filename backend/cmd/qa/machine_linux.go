@@ -86,18 +86,25 @@ func pciName(slot string) string {
 	return name
 }
 
+// release matches a dotted driver release such as "615.78.08".
+var release = regexp.MustCompile(`\b\d+\.\d+(\.\d+)*\b`)
+
 // driverVersion answers what a kernel driver reports of its release.
 // NVIDIA's names it in /proc. An in-tree driver ships with the kernel and reports none.
 func driverVersion(driver string) string {
 	if driver == "nvidia" {
-		fields := strings.Fields(readFile("/proc/driver/nvidia/version"))
-		for i, f := range fields {
-			if f == "Module" && i+1 < len(fields) {
-				return fields[i+1]
-			}
+		if v := nvidiaRelease(readFile("/proc/driver/nvidia/version")); v != "" {
+			return v
 		}
 	}
 	return strings.TrimSpace(readFile(filepath.Join("/sys/module", driver, "version")))
+}
+
+// nvidiaRelease answers the release on the NVRM line of /proc/driver/nvidia/version.
+// The closed module names it after "Kernel Module", the open one after "Open Kernel Module for <arch>".
+func nvidiaRelease(version string) string {
+	nvrm, _, _ := strings.Cut(version, "\n")
+	return release.FindString(nvrm)
 }
 
 func ueventValue(uevent, key string) string {
