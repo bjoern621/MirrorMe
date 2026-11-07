@@ -120,7 +120,7 @@ jobs:
       # d3d11 puts gst-plugins-bad on the list, the .pc file living there.
       # The runtime plugins and gst-launch-1.0 belong to the packaged build, so release.yml
       # installs more than this.
-      # lld is the linker the backend links through, which build:windows in Taskfile.yml explains.
+      # lld is the linker the backend links through, which backend:build:windows in Taskfile.yml explains.
       #
       # update: false, as the packaged build takes it (.github/actions/msys2):
       # both install the versions the action's installer snapshot names,
@@ -177,7 +177,7 @@ jobs:
       # Go hashes the CC string into every cgo package's cache key,
       # so a build naming the compiler another way reuses nothing this one compiled.
       #
-      # The link goes through lld, for the reason build:windows states in Taskfile.yml,
+      # The link goes through lld, for the reason backend:build:windows states in Taskfile.yml,
       # and the run after it starts what that link produced.
       # Nothing else here does, and a linker is the one part of a build
       # whose mistakes surface at load rather than at compile.

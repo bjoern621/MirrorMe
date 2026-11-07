@@ -10,7 +10,7 @@ One relay reading in the whole app, on `Backend/Session.cs`.
 ## Running it
 
 ```sh
-task dev               # the backend it talks to
+task backend           # the backend it talks to
 task avalonia          # run it
 task avalonia:build    # build into build/bin/avalonia
 task avalonia:test     # the view-model suite, no relay and no backend needed
@@ -24,8 +24,8 @@ An install starts one itself when nothing is listening on the control endpoint, 
 No backend binary to start: the app says so and offers to look again.
 
 A checkout runs the two halves apart instead, `task avalonia` setting `MIRRORME_BACKEND_SPAWN=0` and `MIRRORME_INSTANCE=dev` (`docs/ipc-api.md`, "The endpoint").
-Those give it the endpoint `task dev` serves and leave starting a backend there, so the window shows the build under development and an installed app keeps running beside it.
-Without `task dev`, the window reports the endpoint as unserved and names it.
+Those give it the endpoint `task backend` serves and leave starting a backend there, so the window shows the build under development and an installed app keeps running beside it.
+Without `task backend`, the window reports the endpoint as unserved and names it.
 
 ### Which windowing backend runs
 

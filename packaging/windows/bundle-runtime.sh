@@ -13,7 +13,7 @@
 # DLLs and the launcher beside the binary, and GStreamer plugins in gstreamer-1.0/.
 set -euo pipefail
 
-bin=${1:?usage: bundle-windows.sh <bin-directory>}
+bin=${1:?usage: bundle-runtime.sh <bin-directory>}
 prefix=${MINGW_PREFIX:-/mingw64}
 
 # Both inputs reach this script in whichever form the caller happened to hold:
@@ -66,7 +66,7 @@ gio_module_dir=gio-modules
 gio_modules=(libgiognutls.dll)
 
 if [ ! -f "$backend" ]; then
-    echo "$backend does not exist: build it with 'task build:windows' first" >&2
+    echo "$backend does not exist: build it with 'task backend:build:windows' first" >&2
     exit 1
 fi
 if [ ! -d "$prefix/lib/gstreamer-1.0" ]; then

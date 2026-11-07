@@ -8,7 +8,7 @@ namespace ScreenShare.App.Backend;
 /// Nothing else starts it on a packaged install: no service and no launcher, and the tray lives inside
 /// this shell rather than being a starter of its own.
 ///
-/// Connect comes first, so a backend already up (a <c>task dev</c> run, a second window) is used rather than
+/// Connect comes first, so a backend already up (a <c>task backend</c> run, a second window) is used rather than
 /// duplicated.
 /// A spawn that fails changes nothing on screen: the connect failure stands, naming the endpoint
 /// (<c>README.md</c>, "Running it").
@@ -25,9 +25,9 @@ internal static class BackendProcess
     /// <summary>
     /// <c>0</c> leaves starting a backend to whoever started this shell.
     ///
-    /// For a checkout, where <c>task dev</c> runs the backend being worked on and PATH holds an installed one.
+    /// For a checkout, where <c>task backend</c> runs the backend being worked on and PATH holds an installed one.
     /// Spawning there picks the installed binary, whose version the window then shows and whose endpoint
-    /// <c>task dev</c> finds taken.
+    /// <c>task backend</c> finds taken.
     /// </summary>
     internal const string EnvSpawn = "MIRRORME_BACKEND_SPAWN";
 

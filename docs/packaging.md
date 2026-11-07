@@ -186,7 +186,7 @@ So the installer and the zip carry one set of files rather than two assemblies f
 The install is per user, under `%LocalAppData%\Programs\MirrorMe`, which is what keeps a UAC prompt off an unsigned binary.
 Inno Setup's compiler is the one build dependency neither the runner image nor a Windows checkout carries; `choco install innosetup` is how the release workflow gets it.
 
-`packaging/windows/package.ps1` assembles this channel over what `task build:windows` and `task bundle:windows` produce.
+`packaging/windows/package.ps1` assembles this channel over what `task backend:build:windows` and `task bundle:windows` produce.
 Windows has no dependency manager the installer can rely on, so the app ships ffmpeg.
 The build task copies `ffmpeg.exe` and `ffplay.exe` next to the backend binary, where `FindExe` finds them first.
 Both are fetched into `build/windows/redist` once per machine, by `packaging/windows/get-ffmpeg.ps1`.
@@ -326,14 +326,14 @@ pacman -S mingw-w64-x86_64-{toolchain,pkgconf,lld,gstreamer,glib-networking} \
 Go is not in that list: it comes from a Windows install of Go, MSYS2 shipping a trimmed one that would need `GOROOT` named for it.
 `.github/actions/msys2` installs the same set.
 
-A development run takes the launcher from MSYS2, whose prefix nothing puts on a normal `PATH`, so `task dev` appends `mingw64/bin` for the run.
+A development run takes the launcher from MSYS2, whose prefix nothing puts on a normal `PATH`, so `task backend` appends `mingw64/bin` for the run.
 Appended rather than prepended, MSYS2 shipping an ffmpeg of its own that a prefix in front would move every capture and encode onto.
 
 Building needs no particular shell.
 The build and bundle tasks reach the toolchain, `MINGW_PREFIX` and MSYS2's own `sh` by path, from `MSYS2_ROOT` in `Taskfile.yml`, so they behave the same from Git Bash, PowerShell or cmd.
 Set `MSYS2_ROOT` for an install other than `C:/msys64`.
 What that variable absorbs is the prefix on `PATH`, where the GStreamer the built binary loads sits, and the `CC` and `PKG_CONFIG` cgo compiles through.
-Both are named by path rather than looked up: the prefix is appended, as in `task dev`, so a machine carrying another `gcc` and `pkg-config` ahead of it would decide the toolchain instead.
+Both are named by path rather than looked up: the prefix is appended, as in `task backend`, so a machine carrying another `gcc` and `pkg-config` ahead of it would decide the toolchain instead.
 Strawberry Perl ships that pair, and its `pkg-config` resolves against a prefix holding no GStreamer, which is what a `Can't find gobject-2.0.pc` reports.
 
 Reaching MSYS2 by path rather than through the shell is what makes Git for Windows' Git Bash safe to build from.

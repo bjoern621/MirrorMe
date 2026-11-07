@@ -1,6 +1,6 @@
 <#
   get-ffmpeg.ps1 - download ffmpeg and ffplay into build/windows/redist,
-  where `task build:windows` copies them from on its way to build/bin.
+  where `task backend:build:windows` copies them from on its way to build/bin.
 
   Not straight into build/bin: that directory is a build output and is rebuilt,
   while the redistributables are fetched once per machine and kept (docs/packaging.md).

@@ -27,10 +27,10 @@ tasks:
     # and the shell reaches a backend that started after the window did.
     # One terminal carries all three logs interleaved.
     # `task all --output prefixed` tags every line with the task it came from.
-    deps: [relay, dev, avalonia]
+    deps: [relay, backend, avalonia]
 
   relay:
-    desc: Run the relay and the group service beside it, on deploy/mediamtx-groups.yml
+    desc: Run the relay with the group service and the viewer service beside it, on deploy/mediamtx-groups.yml
     # A script and not a command: several things come up together.
     # A self-signed certificate for the TLS listeners where none is drawn.
     # The group service that verifies every token.
@@ -71,18 +71,18 @@ tasks:
       - buf lint
 
   avalonia:
-    desc: Run the Avalonia app (relay connection check)
+    desc: Run the Avalonia app
     dir: avalonia
     env:
-      # The endpoint `task dev` serves, kept off the one an installed build binds,
+      # The endpoint `task backend` serves, kept off the one an installed build binds,
       # so both run at once and each shell reaches its own backend
       # (backend/internal/control/instance.go).
       MIRRORME_INSTANCE: dev
-      # Starting a backend is `task dev`'s here.
+      # Starting a backend is `task backend`'s here.
       # The shell looks beside itself and then on PATH, and a checkout puts a backend on neither,
       # so a spawn picks up whichever binary an install left on PATH:
-      # the window then shows that build's version and `task dev` finds its endpoint taken.
-      # Off, a run without `task dev` reports the endpoint as unserved and names it.
+      # the window then shows that build's version and `task backend` finds its endpoint taken.
+      # Off, a run without `task backend` reports the endpoint as unserved and names it.
       MIRRORME_BACKEND_SPAWN: "0"
       # No icon in the tray: a checkout run ends on its close button,
       # and a second icon beside the installed app's says nothing about which window it opens.
@@ -112,7 +112,7 @@ tasks:
     cmds:
       - dotnet test
 
-  dev:
+  backend:
     desc: Run the backend in the foreground
     dir: backend
     env:
@@ -153,22 +153,22 @@ tasks:
       # Dropped rather than reordered, which keeps the ffmpeg decision above intact.
       # A packaged build has neither problem:
       # the loader takes the binary's own directory before any PATH entry,
-      # and bundle-windows.sh puts every DLL there.
+      # and bundle-runtime.sh puts every DLL there.
       #
       # The Windows run frees the control pipe before it starts.
       # Nothing stale to clear there but a process:
       # `go run`'s child keeps the pipe open when a dev run ends without Ctrl+C reaching it,
       # and the next backend starts with no control socket at all,
       # so the shell connects to the older one and every edit looks like it did nothing.
-      # tools/dev-stop.ps1 carries the rest of that reasoning.
+      # tools/backend-stop.ps1 carries the rest of that reasoning.
       # It does nothing when the pipe is free,
       # and fails this task rather than starting a second backend
       # when something outside this build tree holds it.
       - platforms: [windows]
-        cmd: powershell -NoProfile -File '{{.ROOT_DIR}}/tools/dev-stop.ps1'
+        cmd: powershell -NoProfile -File '{{.ROOT_DIR}}/tools/backend-stop.ps1'
       - platforms: [linux, darwin]
         cmd: go run ./cmd/backend
-      # gcc and pkg-config by path, and lld as the linker, for the reasons build:windows states.
+      # gcc and pkg-config by path, and lld as the linker, for the reasons backend:build:windows states.
       # A dev run links the same binary a packaged one does, so it meets the same linker.
       - platforms: [windows]
         cmd: >-
@@ -176,26 +176,26 @@ tasks:
           CC='{{.MSYS2_MINGW}}/bin/gcc.exe' PKG_CONFIG='{{.MSYS2_MINGW}}/bin/pkg-config.exe'
           go run -ldflags "-extldflags=-fuse-ld=lld" ./cmd/backend
 
-  dev:stop:
-    desc: Stop a backend a previous `task dev` left holding the control pipe
-    # `task dev` already does this on its way up,
+  backend:stop:
+    desc: Stop a backend a previous `task backend` left holding the control pipe
+    # `task backend` already does this on its way up,
     # so this task covers a leftover backend in the way of something else:
     # a packaged build, a debugger run, a shell that keeps finding a backend nobody is looking at.
     platforms: [windows]
     cmds:
-      - powershell -NoProfile -File tools/dev-stop.ps1
+      - powershell -NoProfile -File tools/backend-stop.ps1
 
-  build:
+  backend:build:
     desc: Build the backend binary into build/bin
     # The toolchain and the GStreamer development files come from the flake's dev shell.
-    # On Windows they come from MSYS2, which build:windows names.
+    # On Windows they come from MSYS2, which backend:build:windows names.
     dir: backend
     env:
       CGO_ENABLED: "1"
     cmds:
       - go build -o '{{.ROOT_DIR}}/build/bin/mirrorme-backend' ./cmd/backend
 
-  build:windows:
+  backend:build:windows:
     desc: Build the Windows backend binary and copy ffmpeg/ffplay in beside it
     # Built on Windows and never cross-compiled (docs/packaging.md):
     # the receive pipelines link GStreamer through cgo,
@@ -249,7 +249,7 @@ tasks:
   qa:record:
     desc: Test the newest release on this machine and commit the record (-- -version, -machine, -checklist=false)
     # The suite cgo-links GStreamer, so Windows names MSYS2's compiler, pkg-config and lld
-    # for the reasons build:windows states.
+    # for the reasons backend:build:windows states.
     dir: backend
     interactive: true
     cmds:
@@ -320,7 +320,7 @@ tasks:
     desc: Build the Windows release zip into build/dist
     platforms: [windows]
     # The binaries and the runtime beside them:
-    # build:windows produces the backend and copies ffmpeg and ffplay in,
+    # backend:build:windows produces the backend and copies ffmpeg and ffplay in,
     # bundle:windows adds the GStreamer closure,
     # and the script publishes the shell into the same directory and zips it.
     deps:
@@ -348,7 +348,7 @@ tasks:
     platforms: [windows]
     deps:
       # STAMP travels to the build, this task standing between package:windows and it.
-      - task: build:windows
+      - task: backend:build:windows
         vars:
           STAMP: '{{.STAMP}}'
           CHANNEL: '{{.CHANNEL}}'

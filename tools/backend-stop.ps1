@@ -1,5 +1,5 @@
 <#
-  dev-stop.ps1 - stop the backends a previous `task dev` left running,
+  backend-stop.ps1 - stop the backends a previous `task backend` left running,
   and refuse to hand the control pipe to a new one while something still holds it.
 
   A named pipe lives only as long as the process holding it,
@@ -17,11 +17,11 @@
   That is the right call for a packaged app and the wrong state to develop in:
   the shell connects to the *older* backend, so every edit appears to have done nothing.
   Hence the non-zero exit at the end:
-  `task dev` stops rather than starting a backend no shell will ever reach.
+  `task backend` stops rather than starting a backend no shell will ever reach.
 
   What it stops:
     Every backend running out of a directory this repo starts one from,
-    the one `go run` links its binary into under TEMP, or build/bin from `task build:windows`,
+    the one `go run` links its binary into under TEMP, or build/bin from `task backend:build:windows`,
     and not only the one holding the pipe.
     A leftover that lost the race for the pipe is as much in the way:
     it is still capturing, still publishing to the relay,
@@ -39,7 +39,7 @@
     the alternative, stopping only the pipe's holder, leaving the rest running.
 
   Idempotent: with nothing running and the pipe free it does nothing and succeeds,
-  which is what lets `task dev` run it unconditionally.
+  which is what lets `task backend` run it unconditionally.
 #>
 [CmdletBinding()]
 param()
@@ -78,7 +78,7 @@ function pipeTaken {
 # it links it into a fresh %TEMP%\go-buildNNNNNNNN\b001\exe\backend.exe and runs that,
 # and the cache under LOCALAPPDATA holds the compiled packages behind it alone.
 # A sweep of the cache matches nothing a dev run started,
-# leaving `task dev` reporting the pipe as held by something it cannot name,
+# leaving `task backend` reporting the pipe as held by something it cannot name,
 # which is the state this script prevents.
 # The cache is therefore not listed:
 # a prefix nothing can run from is a claim of coverage

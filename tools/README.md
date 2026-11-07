@@ -3,7 +3,7 @@
 Things to point at a running relay or a running backend, and the renderer for the pictures the app ships.
 
 Nothing here is built or shipped,
-and no task in `Taskfile.yml` calls any of it but `task dev:stop` and `task release`.
+and no task in `Taskfile.yml` calls any of it but `task backend:stop` and `task release`.
 
 ## What is here
 
@@ -14,7 +14,7 @@ and no task in `Taskfile.yml` calls any of it but `task dev:stop` and `task rele
 | `watch.ps1` | open a stream in `ffplay`, low-latency flags set |
 | `whoislive.ps1` | who is publishing on a relay, their tracks and their readers, over the MediaMTX API |
 | `diagnose.ps1` | run while a publish and a watch are up and the picture is broken |
-| `dev-stop.ps1` | release the control pipe a previous `task dev` left held on Windows |
+| `backend-stop.ps1` | release the control pipe a previous `task backend` left held on Windows |
 | `crops.sh` | render the comparison crops the settings tooltips show, from their manifest, through the real encoder |
 | `release.sh` | cut, tag and publish a release, and follow its workflow ([releasing](../docs/releasing.md)) |
 

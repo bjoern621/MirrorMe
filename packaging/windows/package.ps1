@@ -10,7 +10,7 @@
 # the shell finds the backend beside itself,
 # and the backend finds ffmpeg and gst-launch-1.0 the same way (backend/internal/ffmpeg/exe.go).
 #
-# Before this, `task build:windows` builds the backend and copies ffmpeg and ffplay in beside it,
+# Before this, `task backend:build:windows` builds the backend and copies ffmpeg and ffplay in beside it,
 # and `task bundle:windows` copies the GStreamer runtime,
 # the Task task naming both as dependencies.
 # This script publishes the shell into the same directory and zips the result.
