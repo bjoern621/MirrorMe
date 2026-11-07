@@ -6,6 +6,11 @@ Releases before v0.11.0 carry no notes, and their commits sit in the [history](h
 
 ## Unreleased
 
+### Changed
+
+- Screenshots and screen recordings on Windows show MirrorMe's windows, where they used to leave them out.
+  A stream of the screen MirrorMe is on now shows its own tile inside the picture.
+
 ## v0.14.1 (2026-11-07)
 
 ### Fixed

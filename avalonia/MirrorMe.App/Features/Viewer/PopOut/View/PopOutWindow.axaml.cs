@@ -46,17 +46,13 @@ public partial class PopOutWindow : Window
     }
 
     /// <summary>
-    /// Keeps this window out of the captures this machine takes, on the main window's terms
-    /// (<c>Features/Shell/Model/ICaptureExclusion.cs</c>).
-    /// A window drawing a decode of the screen it sits on otherwise nests one more copy of itself in the picture
-    /// on every round trip.
+    /// Names the window to a Wayland shell, on the main window's terms.
     /// </summary>
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
 
         WaylandAppId.Name(this);
-        CaptureExclusions.ForThisSystem().Exclude(this);
     }
 
     /// <summary>

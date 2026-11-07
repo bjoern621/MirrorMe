@@ -47,25 +47,11 @@ Two things the X11 backend does that the Wayland one does not.
 
 ### What a capture of this machine sees
 
-Every window this shell opens asks to be kept out of the captures this machine takes, and states it for itself when it opens (`Features/Shell/Model/ICaptureExclusion.cs`).
-The two are the main window and each popped-out stream.
-
-The reason is a feedback loop closing in the captured pixels, beyond anything this code can reach.
-A tile draws a decode of the screen it is drawn on, so the next capture carries the tile, which carries the capture before it.
-Every round trip nests one more copy of the screen inside the picture, and the depth grows with how long the stream has run.
-Nothing downstream can undo it, the nesting already being in the frames the capture handed over.
-
-Windows stores a display affinity against the window in kernel mode.
-`WDA_EXCLUDEFROMCAPTURE` leaves the window on the monitor and takes it out of what the desktop window manager composes for anything else.
-That covers every Windows capture backend here: the desktop duplication and graphics capture behind `ddagrab` and `d3d11screencapturesrc`, and the screen bit blit behind `gdigrab`.
-Windows before 10 version 2004 applies `WDA_MONITOR` instead, leaving an empty rectangle.
-Both break the loop.
-
-Linux is left as it is, so a tile there goes on nesting for as long as the stream runs.
-X11 serves the root window to any client that asks, so a capture is a read of the whole screen and there is no per-window fact to set.
-No Wayland protocol carries the request.
-The compositors that can black a window out of a screencopy, Hyprland and niri among them, do it from a window rule in their own configuration, which is the user's to write.
-Such a rule is keyed on the application id, `mirrorme` in both sessions.
+A capture sees this shell's windows like any other window, so a screenshot shows them on every system.
+A stream of the screen MirrorMe is drawn on also carries its own tile.
+Each round trip nests one more copy of the screen inside the picture.
+Capturing another screen, or a region outside the window, avoids it.
+Hyprland and niri can black a window out of a screencopy with a window rule keyed on the application id `mirrorme`.
 
 ## Layout
 

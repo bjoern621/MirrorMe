@@ -87,8 +87,6 @@ internal static class RegionOverlay
     /// One screen's cover: a borderless window at that screen's own bounds, carrying the drag.
     ///
     /// Sized in device-independent units and placed in physical pixels, which is what each property counts in.
-    /// It is kept out of this machine's captures like every other window this shell opens, so a monitor preview
-    /// running beside the picker does not draw the picker (<see cref="ICaptureExclusion"/>).
     /// </summary>
     private static Window Cover(Screen screen, TaskCompletionSource<string> answer)
     {
@@ -117,11 +115,7 @@ internal static class RegionOverlay
             Content = new Canvas { Children = { marker } },
         };
 
-        window.Opened += (_, _) =>
-        {
-            WaylandAppId.Name(window);
-            CaptureExclusions.ForThisSystem().Exclude(window);
-        };
+        window.Opened += (_, _) => WaylandAppId.Name(window);
         window.KeyDown += (_, key) =>
         {
             if (key.Key == Key.Escape)
