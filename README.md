@@ -16,7 +16,7 @@ MirrorMe spends what your upload carries, up to forty, and leaves the text reada
 ## What it does
 
 - Everyone in a group shares and watches at the same time.
-  One stream plays large, with the others lined up beside it.
+  One stream plays large, with the others lined up beneath it.
   A press on another stream brings it to the front.
   The Grid switch shows them all side by side.
 - Text stays sharp at its own size.
@@ -64,7 +64,7 @@ One window, and no second program to install beside it.
 3. Pick the screen, window or region to share.
 4. Watch the others on the Viewer tab.
 
-![Picking a screen to share, with the cost of the picture on the right](docs/images/setup-capture.png)
+![The Encode step: four presets, each with its share of the upload, then a choice of frame rate](docs/images/setup-encode.png)
 
 The Setup tab walks four steps (Capture, Encode, Audio and Relay) for anyone who wants to set the picture by hand.
 Insights shows how your own stream holds up and who watches it.
