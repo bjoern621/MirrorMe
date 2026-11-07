@@ -1,6 +1,6 @@
 // The generated half of the control contract, its own module so both the backend
 // and any future Go client depend on the schema rather than on each other.
-module bjoernblessin.de/screenshare/api
+module bjoernblessin.de/mirrorme/api
 
 go 1.25.3
 

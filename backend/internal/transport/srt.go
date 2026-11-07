@@ -2,14 +2,14 @@ package transport
 
 import (
 	"bjoernblessin.de/go-utils/util/assert"
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
 	"fmt"
 	"net/url"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // SRT streams through the relay's SRT listener, MPEG-TS inside a retransmit window.
@@ -141,11 +141,11 @@ func (SRT) GstSource(s settings.Settings, path string) []string {
 func (SRT) ValidatePublishSettings(s settings.Settings) error {
 	id := srtStreamID(s, "publish", s.PublishPath())
 	if !srtStreamIDFits(id) {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_STREAM_ID_TOO_LONG,
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_STREAM_ID_TOO_LONG,
 			text.Count(len(id)), text.CountLimit(srtStreamIDBytes))
 	}
 	if s.Relay.Tls() && s.Relay.SrtPassphrase() == "" {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_GROUP_REQUIRED)
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_GROUP_REQUIRED)
 	}
 	return nil
 }

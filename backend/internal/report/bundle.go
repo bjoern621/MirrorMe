@@ -13,7 +13,7 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // maxLogs is how many run logs ride in one bundle.

@@ -7,8 +7,8 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // x264Encoder maps the rate-control mode onto x264enc's pass property, the counterpart

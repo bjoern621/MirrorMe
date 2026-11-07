@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/groupsvc"
-	"bjoernblessin.de/screenshare/internal/membership"
+	"bjoernblessin.de/mirrorme/internal/groupsvc"
+	"bjoernblessin.de/mirrorme/internal/membership"
 )
 
 // held is the membership a scrape reads, stated rather than served.

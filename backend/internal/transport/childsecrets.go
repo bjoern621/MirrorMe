@@ -7,7 +7,7 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // How a publish child is handed the secrets its pipeline needs.

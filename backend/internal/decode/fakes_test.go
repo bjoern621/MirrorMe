@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/pointer"
-	"bjoernblessin.de/screenshare/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/pointer"
+	"bjoernblessin.de/mirrorme/internal/receive"
 )
 
 // What stands in for a pipeline, so the contract runs with no GPU.

@@ -35,7 +35,7 @@ public sealed record RelayLegRow
 /// Every word comes from <c>Copy/</c>: the leg names from the vocabulary the dropdowns use,
 /// and the reason nothing here uses a leg from the statement code beside it.
 /// What a listener said stays as it arrived, being another machine's words rather than this app's
-/// (api/proto/screenshare/v1/text.proto).
+/// (api/proto/mirrorme/v1/text.proto).
 /// </summary>
 public static class RelayLegRows
 {

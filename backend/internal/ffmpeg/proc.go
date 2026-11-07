@@ -12,8 +12,8 @@ import (
 	"sync"
 	"sync/atomic"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 )
@@ -243,7 +243,7 @@ func Start(
 	err = cmd.Start()
 	if err != nil {
 		logFile.Close()
-		return nil, text.Because(err, screensharev1.TextCode_TEXT_CODE_PROGRAM_UNSTARTED, text.Program(filepath.Base(exe)))
+		return nil, text.Because(err, mirrormev1.TextCode_TEXT_CODE_PROGRAM_UNSTARTED, text.Program(filepath.Base(exe)))
 	}
 	// Here and not beside the reaping goroutine below: the pid has to still be this child's,
 	// which the process handle guarantees only until cmd.Wait releases it.
@@ -289,7 +289,7 @@ func Start(
 
 		var reportErr error
 		if !proc.stopped.Load() && waitErr != nil {
-			reportErr = text.Because(waitErr, screensharev1.TextCode_TEXT_CODE_PROGRAM_EXITED, text.Program(filepath.Base(exe)))
+			reportErr = text.Because(waitErr, mirrormev1.TextCode_TEXT_CODE_PROGRAM_EXITED, text.Program(filepath.Base(exe)))
 		}
 		if onExit != nil {
 			onExit(reportErr, strings.TrimSpace(tail.String()), logPath)

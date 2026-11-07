@@ -5,10 +5,10 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/reach"
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/reach"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // relayLegVerdicts is one row per verdict a check states.
@@ -17,36 +17,36 @@ import (
 // the lookup below.
 // A default arm would cross as the zero the contract keeps for "not set", drawing as a row a shell
 // cannot mark.
-var relayLegVerdicts = map[reach.Verdict]screensharev1.RelayLegVerdict{
-	reach.Reachable:   screensharev1.RelayLegVerdict_RELAY_LEG_VERDICT_REACHABLE,
-	reach.Unreachable: screensharev1.RelayLegVerdict_RELAY_LEG_VERDICT_UNREACHABLE,
-	reach.Unaddressed: screensharev1.RelayLegVerdict_RELAY_LEG_VERDICT_UNADDRESSED,
-	reach.Unused:      screensharev1.RelayLegVerdict_RELAY_LEG_VERDICT_UNUSED,
+var relayLegVerdicts = map[reach.Verdict]mirrormev1.RelayLegVerdict{
+	reach.Reachable:   mirrormev1.RelayLegVerdict_RELAY_LEG_VERDICT_REACHABLE,
+	reach.Unreachable: mirrormev1.RelayLegVerdict_RELAY_LEG_VERDICT_UNREACHABLE,
+	reach.Unaddressed: mirrormev1.RelayLegVerdict_RELAY_LEG_VERDICT_UNADDRESSED,
+	reach.Unused:      mirrormev1.RelayLegVerdict_RELAY_LEG_VERDICT_UNUSED,
 }
 
 // relayLegReasons is why nothing here uses a leg, as the statement a shell writes the sentence for.
 // ReasonNone is absent: a leg in use, whose row carries what came back instead.
-var relayLegReasons = map[reach.Reason]screensharev1.TextCode{
-	reach.ReasonNoRelay:    screensharev1.TextCode_TEXT_CODE_RELAY_LEG_NO_RELAY,
-	reach.ReasonDiscordOff: screensharev1.TextCode_TEXT_CODE_RELAY_LEG_DISCORD_OFF,
+var relayLegReasons = map[reach.Reason]mirrormev1.TextCode{
+	reach.ReasonNoRelay:    mirrormev1.TextCode_TEXT_CODE_RELAY_LEG_NO_RELAY,
+	reach.ReasonDiscordOff: mirrormev1.TextCode_TEXT_CODE_RELAY_LEG_DISCORD_OFF,
 }
 
 // RelayLegs carries a check across, one message per leg, in the order the check answered.
-func RelayLegs(results []reach.Result) []*screensharev1.RelayLeg {
-	out := make([]*screensharev1.RelayLeg, 0, len(results))
+func RelayLegs(results []reach.Result) []*mirrormev1.RelayLeg {
+	out := make([]*mirrormev1.RelayLeg, 0, len(results))
 	for _, r := range results {
 		assert.Assert(r.Leg != "", "a checked leg names itself")
 
 		verdict, ok := relayLegVerdicts[r.Verdict]
 		assert.Assert(ok, "every verdict a check states crosses as one of the contract's", r.Leg, r.Verdict)
 
-		leg := &screensharev1.RelayLeg{
+		leg := &mirrormev1.RelayLeg{
 			Leg:     r.Leg,
 			Address: r.Address,
 			Verdict: verdict,
 			// The listener's own words, or the dial's, raw:
 			// another machine's string is data rather than this app's vocabulary
-			// (api/proto/screenshare/v1/text.proto).
+			// (api/proto/mirrorme/v1/text.proto).
 			Detail: r.Detail,
 			Unused: relayLegUnused(r.Unused),
 		}
@@ -61,10 +61,10 @@ func RelayLegs(results []reach.Result) []*screensharev1.RelayLeg {
 			leg.Version = proto.String(r.Version)
 		}
 
-		undialled := leg.GetVerdict() == screensharev1.RelayLegVerdict_RELAY_LEG_VERDICT_UNADDRESSED
-		unused := undialled || leg.GetVerdict() == screensharev1.RelayLegVerdict_RELAY_LEG_VERDICT_UNUSED
-		answered := leg.GetVerdict() == screensharev1.RelayLegVerdict_RELAY_LEG_VERDICT_REACHABLE ||
-			leg.GetVerdict() == screensharev1.RelayLegVerdict_RELAY_LEG_VERDICT_UNUSED
+		undialled := leg.GetVerdict() == mirrormev1.RelayLegVerdict_RELAY_LEG_VERDICT_UNADDRESSED
+		unused := undialled || leg.GetVerdict() == mirrormev1.RelayLegVerdict_RELAY_LEG_VERDICT_UNUSED
+		answered := leg.GetVerdict() == mirrormev1.RelayLegVerdict_RELAY_LEG_VERDICT_REACHABLE ||
+			leg.GetVerdict() == mirrormev1.RelayLegVerdict_RELAY_LEG_VERDICT_UNUSED
 
 		assert.Assert(unused == (leg.GetUnused() != nil),
 			"a leg says why nothing uses it exactly where nothing does", leg.GetLeg(), leg.GetVerdict())
@@ -79,7 +79,7 @@ func RelayLegs(results []reach.Result) []*screensharev1.RelayLeg {
 }
 
 // relayLegUnused is the statement behind a leg nothing here uses, and nil for one in use.
-func relayLegUnused(reason reach.Reason) *screensharev1.Text {
+func relayLegUnused(reason reach.Reason) *mirrormev1.Text {
 	if reason == reach.ReasonNone {
 		return nil
 	}

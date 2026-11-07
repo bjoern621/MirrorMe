@@ -9,12 +9,12 @@ import (
 	"testing"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/gpupath"
-	"bjoernblessin.de/screenshare/internal/group"
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/share"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/gpupath"
+	"bjoernblessin.de/mirrorme/internal/group"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/share"
 )
 
 // encodeTimeout bounds one test encode.

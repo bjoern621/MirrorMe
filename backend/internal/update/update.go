@@ -32,10 +32,10 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/release"
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/release"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // Stage is how far this install has got towards the published release.
@@ -61,10 +61,10 @@ type State struct {
 	Page    string
 	Percent int
 	// Why nothing is asked, and why nothing is installed. Both the channel's answer.
-	Unchecked     *screensharev1.Text
-	Uninstallable *screensharev1.Text
+	Unchecked     *mirrormev1.Text
+	Uninstallable *mirrormev1.Text
 	// What went wrong, with the failing side's own words beside it.
-	Failure *screensharev1.Text
+	Failure *mirrormev1.Text
 	Detail  string
 }
 
@@ -91,7 +91,7 @@ type Manager struct {
 	latest  string
 	page    string
 	percent int
-	failure *screensharev1.Text
+	failure *mirrormev1.Text
 	detail  string
 	// pending is the staged release, empty while nothing is staged.
 	pending Pending
@@ -235,7 +235,7 @@ func (m *Manager) run() {
 	latest, err := release.Fetch(ctx)
 	if err != nil {
 		logger.Warnf("the published release could not be read: %v", err)
-		m.fail(screensharev1.TextCode_TEXT_CODE_UPDATE_SERVICE_UNREADABLE, err)
+		m.fail(mirrormev1.TextCode_TEXT_CODE_UPDATE_SERVICE_UNREADABLE, err)
 		return
 	}
 
@@ -264,15 +264,15 @@ func (m *Manager) fetch(ctx context.Context, latest release.Latest) {
 	asset, attached := latest.Named(name)
 	if !attached {
 		logger.Warnf("release %s attaches no %s", latest.Tag, name)
-		m.failText(text.Of(screensharev1.TextCode_TEXT_CODE_UPDATE_NO_DOWNLOAD,
-			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_CHANNEL, string(m.offer.Channel)),
-			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_VERSION, latest.Tag)), name)
+		m.failText(text.Of(mirrormev1.TextCode_TEXT_CODE_UPDATE_NO_DOWNLOAD,
+			text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_CHANNEL, string(m.offer.Channel)),
+			text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_VERSION, latest.Tag)), name)
 		return
 	}
 	if !Verifiable(asset) {
 		logger.Warnf("release %s records no hash for %s", latest.Tag, name)
-		m.failText(text.Of(screensharev1.TextCode_TEXT_CODE_UPDATE_DOWNLOAD_UNVERIFIABLE,
-			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_VERSION, latest.Tag)), name)
+		m.failText(text.Of(mirrormev1.TextCode_TEXT_CODE_UPDATE_DOWNLOAD_UNVERIFIABLE,
+			text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_VERSION, latest.Tag)), name)
 		return
 	}
 
@@ -287,11 +287,11 @@ func (m *Manager) fetch(ctx context.Context, latest release.Latest) {
 
 	dir, err := StageDir()
 	if err != nil {
-		m.fail(screensharev1.TextCode_TEXT_CODE_UPDATE_DOWNLOAD_FAILED, err)
+		m.fail(mirrormev1.TextCode_TEXT_CODE_UPDATE_DOWNLOAD_FAILED, err)
 		return
 	}
 	if err := ClearStage(dir); err != nil {
-		m.fail(screensharev1.TextCode_TEXT_CODE_UPDATE_DOWNLOAD_FAILED, err)
+		m.fail(mirrormev1.TextCode_TEXT_CODE_UPDATE_DOWNLOAD_FAILED, err)
 		return
 	}
 
@@ -299,9 +299,9 @@ func (m *Manager) fetch(ctx context.Context, latest release.Latest) {
 	path, err := Fetch(ctx, asset, dir, func(percent int) { m.step(StageFetching, percent) })
 	if err != nil {
 		logger.Warnf("downloading %s: %v", name, err)
-		code := screensharev1.TextCode_TEXT_CODE_UPDATE_DOWNLOAD_FAILED
+		code := mirrormev1.TextCode_TEXT_CODE_UPDATE_DOWNLOAD_FAILED
 		if errors.Is(err, ErrCorrupt) {
-			code = screensharev1.TextCode_TEXT_CODE_UPDATE_DOWNLOAD_CORRUPT
+			code = mirrormev1.TextCode_TEXT_CODE_UPDATE_DOWNLOAD_CORRUPT
 		}
 		m.fail(code, err)
 		return
@@ -315,7 +315,7 @@ func (m *Manager) fetch(ctx context.Context, latest release.Latest) {
 		Launch: m.launch,
 	}
 	if err := WritePending(dir, pending); err != nil {
-		m.fail(screensharev1.TextCode_TEXT_CODE_UPDATE_DOWNLOAD_FAILED, err)
+		m.fail(mirrormev1.TextCode_TEXT_CODE_UPDATE_DOWNLOAD_FAILED, err)
 		return
 	}
 
@@ -345,12 +345,12 @@ func (m *Manager) Install() error {
 	m.mu.Unlock()
 
 	if !ready || pending.File == "" {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_UPDATE_NOT_STAGED)
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_UPDATE_NOT_STAGED)
 	}
 
 	applier, err := applierCopy(filepath.Dir(pending.File))
 	if err != nil {
-		m.fail(screensharev1.TextCode_TEXT_CODE_UPDATE_INSTALL_FAILED, err)
+		m.fail(mirrormev1.TextCode_TEXT_CODE_UPDATE_INSTALL_FAILED, err)
 		return err
 	}
 
@@ -367,8 +367,8 @@ func (m *Manager) Install() error {
 		if reason := strings.TrimSpace(said.String()); reason != "" {
 			err = errors.New(reason)
 		}
-		err = text.Because(err, screensharev1.TextCode_TEXT_CODE_PROGRAM_EXITED, text.Program(filepath.Base(applier)))
-		m.fail(screensharev1.TextCode_TEXT_CODE_UPDATE_INSTALL_FAILED, err)
+		err = text.Because(err, mirrormev1.TextCode_TEXT_CODE_PROGRAM_EXITED, text.Program(filepath.Base(applier)))
+		m.fail(mirrormev1.TextCode_TEXT_CODE_UPDATE_INSTALL_FAILED, err)
 		return err
 	}
 
@@ -425,11 +425,11 @@ func (m *Manager) step(stage Stage, percent int) {
 	m.announce(state)
 }
 
-func (m *Manager) fail(code screensharev1.TextCode, err error) {
+func (m *Manager) fail(code mirrormev1.TextCode, err error) {
 	m.failText(text.Statement(text.Because(err, code)))
 }
 
-func (m *Manager) failText(statement *screensharev1.Text, detail string) {
+func (m *Manager) failText(statement *mirrormev1.Text, detail string) {
 	assert.IsNotNil(statement, "a failure says which failure it is")
 
 	m.mu.Lock()

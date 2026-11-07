@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/receive"
 )
 
 func ms(v float64) *float64 { return &v }

@@ -5,7 +5,7 @@ import (
 	"slices"
 	"strings"
 
-	"bjoernblessin.de/screenshare/internal/release"
+	"bjoernblessin.de/mirrorme/internal/release"
 )
 
 // Matrix renders every record as qa/README.md, one section per release, newest first.

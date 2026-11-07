@@ -4,8 +4,8 @@ import (
 	"slices"
 	"strconv"
 
-	"bjoernblessin.de/screenshare/internal/gstrun"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/gstrun"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // The GStreamer half of the live table: the element a write addresses, and the property each codec

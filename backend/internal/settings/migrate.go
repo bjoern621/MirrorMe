@@ -5,8 +5,8 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/group"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/group"
 )
 
 // flat is the settings shape from before the three groups:
@@ -269,7 +269,7 @@ func migratePublish(p, d Publish) Publish {
 	fillNum(&p.BitrateM, d.BitrateM)
 	// A zero ceiling is a value and not an absence: the encode bounded by nothing,
 	// which the form offers as an entry of its own beside the ceiling's own band
-	// (api/proto/screenshare/v1/form.proto, CONTROL_KIND_NUMBER_SELECT).
+	// (api/proto/mirrorme/v1/form.proto, CONTROL_KIND_NUMBER_SELECT).
 	// A file naming no ceiling at all keeps the default already, the decode starting from Defaults,
 	// so filling here would reach the reader who answered rather than the file that never asked.
 	// A VbvMs of zero is left standing for the same reason, being the encoder's own buffer default.

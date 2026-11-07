@@ -6,7 +6,7 @@ import (
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 )
 
 // The field keys: the settings group's own field name on Settings, a dot,
@@ -174,7 +174,7 @@ func keyTemplate(key string) string {
 //
 // The two names are looked up rather than switched on, which keeps this from being a third list
 // of fields to hold in step with settings.proto and the table above.
-func settingsField(m *screensharev1.Settings, key string) (protoreflect.Message, protoreflect.FieldDescriptor, bool) {
+func settingsField(m *mirrormev1.Settings, key string) (protoreflect.Message, protoreflect.FieldDescriptor, bool) {
 	group, field, ok := strings.Cut(key, keySeparator)
 	if !ok {
 		return nil, nil, false

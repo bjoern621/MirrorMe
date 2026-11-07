@@ -6,8 +6,8 @@ import (
 	"strings"
 	"sync/atomic"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"github.com/godbus/dbus/v5"
 
@@ -102,13 +102,13 @@ func (c *client) await(method string, invoke func(reqToken string) *dbus.Call) (
 		case responseSuccess:
 			return results, nil
 		case responseCancelled:
-			return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_PORTAL_DISMISSED)
+			return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_PORTAL_DISMISSED)
 		default:
 			return nil, text.Because(fmt.Errorf("response %d", code),
-				screensharev1.TextCode_TEXT_CODE_PORTAL_CALL_FAILED, text.Value(method))
+				mirrormev1.TextCode_TEXT_CODE_PORTAL_CALL_FAILED, text.Value(method))
 		}
 	}
-	return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_PORTAL_CALL_FAILED, text.Value(method))
+	return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_PORTAL_CALL_FAILED, text.Value(method))
 }
 
 // openPipeWireRemote answers the session's PipeWire remote fd as an *os.File the caller owns.
@@ -128,7 +128,7 @@ func (c *client) openPipeWireRemote(session dbus.ObjectPath) (*os.File, error) {
 	f := os.NewFile(uintptr(fd), "pipewire-remote")
 	if f == nil {
 		return nil, text.Because(fmt.Errorf("fd %d", int(fd)),
-			screensharev1.TextCode_TEXT_CODE_PORTAL_CALL_FAILED, text.Value("OpenPipeWireRemote"))
+			mirrormev1.TextCode_TEXT_CODE_PORTAL_CALL_FAILED, text.Value("OpenPipeWireRemote"))
 	}
 	return f, nil
 }
@@ -143,17 +143,17 @@ func (c *client) closeSession(session dbus.ObjectPath) {
 func firstNode(results options) (uint32, error) {
 	raw, ok := results["streams"]
 	if !ok {
-		return 0, text.Fail(screensharev1.TextCode_TEXT_CODE_PORTAL_CALL_FAILED, text.Value("Start"))
+		return 0, text.Fail(mirrormev1.TextCode_TEXT_CODE_PORTAL_CALL_FAILED, text.Value("Start"))
 	}
 	var streams []struct {
 		Node  uint32
 		Props map[string]dbus.Variant
 	}
 	if err := dbus.Store([]interface{}{raw.Value()}, &streams); err != nil {
-		return 0, text.Because(err, screensharev1.TextCode_TEXT_CODE_PORTAL_CALL_FAILED, text.Value("Start"))
+		return 0, text.Because(err, mirrormev1.TextCode_TEXT_CODE_PORTAL_CALL_FAILED, text.Value("Start"))
 	}
 	if len(streams) == 0 {
-		return 0, text.Fail(screensharev1.TextCode_TEXT_CODE_PORTAL_CALL_FAILED, text.Value("Start"))
+		return 0, text.Fail(mirrormev1.TextCode_TEXT_CODE_PORTAL_CALL_FAILED, text.Value("Start"))
 	}
 	return streams[0].Node, nil
 }

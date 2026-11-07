@@ -3,10 +3,10 @@ package app
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // Announcing a change is one act, and this file is where it happens.
@@ -16,7 +16,7 @@ import (
 // The shell that acted and the shell that did not are told the same thing,
 // and a duplicate costs a reader nothing.
 
-func (a *App) emit(event *screensharev1.Event) {
+func (a *App) emit(event *mirrormev1.Event) {
 	assert.IsNotNil(event, "an announced change is a contract event")
 	assert.IsNotNil(a.events, "an app announces its changes on a broker")
 
@@ -52,8 +52,8 @@ type PublishState struct {
 	// On the state and not on the exit event alone,
 	// so a shell mounting mid-backoff reads why as well as one listening when the pipeline died.
 	// Both are empty while nothing retries.
-	Cause   *screensharev1.Text `json:"cause"`
-	Message string              `json:"message"`
+	Cause   *mirrormev1.Text `json:"cause"`
+	Message string           `json:"message"`
 	// What the local preview of this stream turned out to be,
 	// null while nothing publishes and while a publish runs without one.
 	// Here rather than beside the running decodes:

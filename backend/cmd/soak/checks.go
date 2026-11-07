@@ -9,7 +9,7 @@ import (
 	"strings"
 	"sync"
 
-	v1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	v1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 )
 
 // What a control owes the widget bound to it, and what a form owes the screen as a whole.

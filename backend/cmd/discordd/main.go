@@ -19,13 +19,13 @@ import (
 
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/channelgroup"
-	"bjoernblessin.de/screenshare/internal/discordapi"
-	"bjoernblessin.de/screenshare/internal/discordgateway"
-	"bjoernblessin.de/screenshare/internal/discordoauth"
-	"bjoernblessin.de/screenshare/internal/groupclient"
-	"bjoernblessin.de/screenshare/internal/linkstore"
-	"bjoernblessin.de/screenshare/internal/voiceroster"
+	"bjoernblessin.de/mirrorme/internal/channelgroup"
+	"bjoernblessin.de/mirrorme/internal/discordapi"
+	"bjoernblessin.de/mirrorme/internal/discordgateway"
+	"bjoernblessin.de/mirrorme/internal/discordoauth"
+	"bjoernblessin.de/mirrorme/internal/groupclient"
+	"bjoernblessin.de/mirrorme/internal/linkstore"
+	"bjoernblessin.de/mirrorme/internal/voiceroster"
 )
 
 // sweepEvery is how often empty channels are checked against the retire window.

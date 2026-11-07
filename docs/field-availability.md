@@ -6,7 +6,7 @@ A third form covers the neighbouring case, a field that stays applicable but mea
 
 **Every "reason" on this page is a fact that crosses as a code.**
 Which fact greys a control is decided in Go, and the code names the identifiers it is about.
-The wording is the shell's, written where the column width and the tone are visible (`ipc-api.md`, `api/proto/screenshare/v1/text.proto`).
+The wording is the shell's, written where the column width and the tone are visible (`ipc-api.md`, `api/proto/mirrorme/v1/text.proto`).
 The quoted sentences below are one shell's rendering of the rule beside them.
 The rule is what this page is about: a reason names the limit and names which side has it.
 

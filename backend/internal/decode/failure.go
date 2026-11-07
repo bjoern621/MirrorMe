@@ -5,9 +5,9 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // failure is an error as it crosses from the host to the backend: its statement, marshalled,
@@ -33,7 +33,7 @@ func (f *failure) err() error {
 	if len(f.Statement) == 0 {
 		return text.Restated(nil, f.Words)
 	}
-	statement := &screensharev1.Text{}
+	statement := &mirrormev1.Text{}
 	// Both ends are one build, so a statement that does not unmarshal is a broken host.
 	assert.IsNil(proto.Unmarshal(f.Statement, statement), "a statement from the host unmarshals")
 	return text.Restated(statement, f.Words)
@@ -43,11 +43,11 @@ func (f *failure) err() error {
 func nothingDecoding(id ID) error {
 	switch id.Kind {
 	case KindStream:
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_NOTHING_DECODING, text.Stream(id.Name), text.Transport(id.Transport))
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_NOTHING_DECODING, text.Stream(id.Name), text.Transport(id.Transport))
 	case KindMonitor:
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_MONITOR_NOT_PREVIEWING, text.Monitor(id.Monitor))
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_MONITOR_NOT_PREVIEWING, text.Monitor(id.Monitor))
 	case KindPreview:
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_PREVIEW_NOT_RUNNING)
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_PREVIEW_NOT_RUNNING)
 	default:
 		assert.Never("a decode is one of the three kinds", id.Kind)
 		return nil

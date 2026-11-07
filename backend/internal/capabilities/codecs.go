@@ -3,7 +3,7 @@ package capabilities
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 )
 
 // Codecs is the capability table.
@@ -88,7 +88,7 @@ var Codecs = []Codec{
 		Gaps: []Gap{{
 			Option: OptionMode,
 			Value:  ModeLossless,
-			Reason: screensharev1.TextCode_TEXT_CODE_GAP_NVENC_AV1_NO_LOSSLESS_TUNE,
+			Reason: mirrormev1.TextCode_TEXT_CODE_GAP_NVENC_AV1_NO_LOSSLESS_TUNE,
 		}},
 	},
 	{
@@ -135,7 +135,7 @@ var Codecs = []Codec{
 			Engine: EngineGst,
 			Option: OptionMode,
 			Value:  ModeLossless,
-			Reason: screensharev1.TextCode_TEXT_CODE_GAP_GST_VP9ENC_NO_LOSSLESS,
+			Reason: mirrormev1.TextCode_TEXT_CODE_GAP_GST_VP9ENC_NO_LOSSLESS,
 		}},
 	},
 	{
@@ -152,7 +152,7 @@ var Codecs = []Codec{
 		Gaps: []Gap{vp8NoFullRange, gstNoRateCeiling, {
 			Option: OptionMode,
 			Value:  ModeLossless,
-			Reason: screensharev1.TextCode_TEXT_CODE_GAP_VP8_HAS_NO_LOSSLESS,
+			Reason: mirrormev1.TextCode_TEXT_CODE_GAP_VP8_HAS_NO_LOSSLESS,
 		}},
 	},
 	{
@@ -172,18 +172,18 @@ var Codecs = []Codec{
 			Engine: EngineGst,
 			Option: OptionChroma,
 			Value:  "p010le",
-			Reason: screensharev1.TextCode_TEXT_CODE_GAP_GST_AV1ENC_EIGHT_BIT_ONLY,
+			Reason: mirrormev1.TextCode_TEXT_CODE_GAP_GST_AV1ENC_EIGHT_BIT_ONLY,
 		}, {
 			Option: OptionMode,
 			Value:  ModeLossless,
-			Reason: screensharev1.TextCode_TEXT_CODE_GAP_LIBAOM_NO_LOSSLESS_SWITCH,
+			Reason: mirrormev1.TextCode_TEXT_CODE_GAP_LIBAOM_NO_LOSSLESS_SWITCH,
 		}, {
 			// Measured: the element's streams are byte-identical for a full-range encode and a limited one,
 			// and a decoder produces no colorimetry at all from either.
 			Engine: EngineGst,
 			Option: OptionColorRange,
 			Value:  "pc",
-			Reason: screensharev1.TextCode_TEXT_CODE_GAP_GST_AV1ENC_NO_COLOUR_DESCRIPTION,
+			Reason: mirrormev1.TextCode_TEXT_CODE_GAP_GST_AV1ENC_NO_COLOUR_DESCRIPTION,
 		}}, gstNoAomTune...),
 	},
 	{
@@ -205,14 +205,14 @@ var Codecs = []Codec{
 			{
 				Option: OptionMode,
 				Value:  ModeLossless,
-				Reason: screensharev1.TextCode_TEXT_CODE_GAP_SVTAV1_NO_LOSSLESS,
+				Reason: mirrormev1.TextCode_TEXT_CODE_GAP_SVTAV1_NO_LOSSLESS,
 			},
 			{
 				// Both engines, unlike the software rows around it:
 				// the refusal is the library's own, so neither wrapper has a property to put a ceiling in.
 				Option: OptionMode,
 				Value:  ModeVbr,
-				Reason: screensharev1.TextCode_TEXT_CODE_GAP_SVTAV1_NO_CONSTRAINED_VBR,
+				Reason: mirrormev1.TextCode_TEXT_CODE_GAP_SVTAV1_NO_CONSTRAINED_VBR,
 			},
 			{
 				// SVT-AV1 takes CBR in its low-delay prediction structure alone,
@@ -223,7 +223,7 @@ var Codecs = []Codec{
 				Engine: EngineGst,
 				Option: OptionMode,
 				Value:  ModeCbr,
-				Reason: screensharev1.TextCode_TEXT_CODE_GAP_GST_SVTAV1ENC_NO_CBR,
+				Reason: mirrormev1.TextCode_TEXT_CODE_GAP_GST_SVTAV1ENC_NO_CBR,
 			},
 		},
 	},
@@ -244,13 +244,13 @@ var Codecs = []Codec{
 		Gaps: []Gap{{
 			Option: OptionMode,
 			Value:  ModeLossless,
-			Reason: screensharev1.TextCode_TEXT_CODE_GAP_RAV1E_NO_LOSSLESS,
+			Reason: mirrormev1.TextCode_TEXT_CODE_GAP_RAV1E_NO_LOSSLESS,
 		}, {
 			// Both engines, as on libsvtav1:
 			// rav1e's rate control is one target and nothing above it, whichever wrapper sets it.
 			Option: OptionMode,
 			Value:  ModeVbr,
-			Reason: screensharev1.TextCode_TEXT_CODE_GAP_RAV1E_NO_CONSTRAINED_VBR,
+			Reason: mirrormev1.TextCode_TEXT_CODE_GAP_RAV1E_NO_CONSTRAINED_VBR,
 		}},
 	},
 
@@ -441,7 +441,7 @@ var Codecs = []Codec{
 			Engine: EngineFfmpeg,
 			Option: OptionColorRange,
 			Value:  "pc",
-			Reason: screensharev1.TextCode_TEXT_CODE_GAP_AMF_AV1_LIMITED_RANGE_ONLY,
+			Reason: mirrormev1.TextCode_TEXT_CODE_GAP_AMF_AV1_LIMITED_RANGE_ONLY,
 		}}, amfGaps...),
 	},
 
@@ -489,7 +489,7 @@ var Codecs = []Codec{
 			Engine: EngineFfmpeg,
 			Option: OptionColorRange,
 			Value:  "pc",
-			Reason: screensharev1.TextCode_TEXT_CODE_GAP_VULKAN_AV1_LIMITED_RANGE_ONLY,
+			Reason: mirrormev1.TextCode_TEXT_CODE_GAP_VULKAN_AV1_LIMITED_RANGE_ONLY,
 		}}, vulkanGaps...),
 	},
 

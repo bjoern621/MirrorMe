@@ -28,11 +28,11 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/share"
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/share"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // The elements this package builds heads for, spelled as GStreamer spells them.
@@ -81,7 +81,7 @@ func init() {
 // Exactly one of the two comes back:
 // a machine either has a way to show one screen or a statement about why it does not,
 // and an element with a reason beside it would leave a caller deciding which half to believe.
-func Session(p platform.Info) (string, *screensharev1.Text) {
+func Session(p platform.Info) (string, *mirrormev1.Text) {
 	for _, s := range sessions {
 		if s.os != p.OS {
 			continue
@@ -92,9 +92,9 @@ func Session(p platform.Info) (string, *screensharev1.Text) {
 		return s.element, nil
 	}
 
-	return "", text.Of(screensharev1.TextCode_TEXT_CODE_NO_MONITOR_PREVIEW,
-		text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_OS, p.OS),
-		text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_DISPLAY, p.Display))
+	return "", text.Of(mirrormev1.TextCode_TEXT_CODE_NO_MONITOR_PREVIEW,
+		text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_OS, p.OS),
+		text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_DISPLAY, p.Display))
 }
 
 // What a preview is paced and sized at, the whole of what separates it from a publish head.

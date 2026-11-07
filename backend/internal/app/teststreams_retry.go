@@ -6,9 +6,9 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // testStreamBackoff is the wait before each relaunch of a synthetic publisher that died on its own.
@@ -61,7 +61,7 @@ func (a *App) testStreamEnded(i int, slot *testStream, err error, stderrTail str
 	}
 
 	message := ""
-	var cause *screensharev1.Text
+	var cause *mirrormev1.Text
 	if err != nil {
 		// Read before the lock, the membership snapshot being written by the poll,
 		// rather than by anything holding procMu.
@@ -111,7 +111,7 @@ func (a *App) testStreamEnded(i int, slot *testStream, err error, stderrTail str
 // so a fire beating this call's return blocks on the lock,
 // and finds the slot it belongs to rather than a window with none.
 // A waiting slot is still a slot the set holds, which keeps a second launch out of it.
-func (a *App) armTestStreamLocked(i int, spent int, cause *screensharev1.Text, message, logPath string) {
+func (a *App) armTestStreamLocked(i int, spent int, cause *mirrormev1.Text, message, logPath string) {
 	assert.Assert(spent >= 0, "a relaunch counts the attempts before it", spent)
 	assert.Assert(a.testStreams[i] == nil, "a slot arms its relaunch with nothing in it", i)
 

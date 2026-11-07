@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.12
 // 	protoc        (unknown)
-// source: screenshare/v1/events.proto
+// source: mirrorme/v1/events.proto
 
-package screensharev1
+package mirrormev1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -129,11 +129,11 @@ func (x EventKind) String() string {
 }
 
 func (EventKind) Descriptor() protoreflect.EnumDescriptor {
-	return file_screenshare_v1_events_proto_enumTypes[0].Descriptor()
+	return file_mirrorme_v1_events_proto_enumTypes[0].Descriptor()
 }
 
 func (EventKind) Type() protoreflect.EnumType {
-	return &file_screenshare_v1_events_proto_enumTypes[0]
+	return &file_mirrorme_v1_events_proto_enumTypes[0]
 }
 
 func (x EventKind) Number() protoreflect.EnumNumber {
@@ -142,7 +142,7 @@ func (x EventKind) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use EventKind.Descriptor instead.
 func (EventKind) EnumDescriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{0}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{0}
 }
 
 type StreamVerdict_Level int32
@@ -184,11 +184,11 @@ func (x StreamVerdict_Level) String() string {
 }
 
 func (StreamVerdict_Level) Descriptor() protoreflect.EnumDescriptor {
-	return file_screenshare_v1_events_proto_enumTypes[1].Descriptor()
+	return file_mirrorme_v1_events_proto_enumTypes[1].Descriptor()
 }
 
 func (StreamVerdict_Level) Type() protoreflect.EnumType {
-	return &file_screenshare_v1_events_proto_enumTypes[1]
+	return &file_mirrorme_v1_events_proto_enumTypes[1]
 }
 
 func (x StreamVerdict_Level) Number() protoreflect.EnumNumber {
@@ -197,7 +197,7 @@ func (x StreamVerdict_Level) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use StreamVerdict_Level.Descriptor instead.
 func (StreamVerdict_Level) EnumDescriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{24, 0}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{24, 0}
 }
 
 // How a child process ended.
@@ -220,7 +220,7 @@ type ExitInfo struct {
 
 func (x *ExitInfo) Reset() {
 	*x = ExitInfo{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[0]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -232,7 +232,7 @@ func (x *ExitInfo) String() string {
 func (*ExitInfo) ProtoMessage() {}
 
 func (x *ExitInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[0]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -245,7 +245,7 @@ func (x *ExitInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExitInfo.ProtoReflect.Descriptor instead.
 func (*ExitInfo) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{0}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *ExitInfo) GetMessage() string {
@@ -279,7 +279,7 @@ type ViewerExit struct {
 
 func (x *ViewerExit) Reset() {
 	*x = ViewerExit{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[1]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -291,7 +291,7 @@ func (x *ViewerExit) String() string {
 func (*ViewerExit) ProtoMessage() {}
 
 func (x *ViewerExit) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[1]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -304,7 +304,7 @@ func (x *ViewerExit) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ViewerExit.ProtoReflect.Descriptor instead.
 func (*ViewerExit) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{1}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ViewerExit) GetViewer() *StreamRef {
@@ -330,7 +330,7 @@ type ViewerState struct {
 
 func (x *ViewerState) Reset() {
 	*x = ViewerState{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[2]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -342,7 +342,7 @@ func (x *ViewerState) String() string {
 func (*ViewerState) ProtoMessage() {}
 
 func (x *ViewerState) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[2]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -355,7 +355,7 @@ func (x *ViewerState) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ViewerState.ProtoReflect.Descriptor instead.
 func (*ViewerState) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{2}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ViewerState) GetViewers() []*StreamRef {
@@ -379,7 +379,7 @@ type TestStreamState struct {
 
 func (x *TestStreamState) Reset() {
 	*x = TestStreamState{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[3]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -391,7 +391,7 @@ func (x *TestStreamState) String() string {
 func (*TestStreamState) ProtoMessage() {}
 
 func (x *TestStreamState) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[3]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -404,7 +404,7 @@ func (x *TestStreamState) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestStreamState.ProtoReflect.Descriptor instead.
 func (*TestStreamState) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{3}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *TestStreamState) GetRunningCount() int32 {
@@ -449,7 +449,7 @@ type TestStreamSlot struct {
 
 func (x *TestStreamSlot) Reset() {
 	*x = TestStreamSlot{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[4]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -461,7 +461,7 @@ func (x *TestStreamSlot) String() string {
 func (*TestStreamSlot) ProtoMessage() {}
 
 func (x *TestStreamSlot) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[4]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -474,7 +474,7 @@ func (x *TestStreamSlot) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestStreamSlot.ProtoReflect.Descriptor instead.
 func (*TestStreamSlot) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{4}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *TestStreamSlot) GetSlot() int32 {
@@ -537,7 +537,7 @@ type SettingsChanged struct {
 
 func (x *SettingsChanged) Reset() {
 	*x = SettingsChanged{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[5]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -549,7 +549,7 @@ func (x *SettingsChanged) String() string {
 func (*SettingsChanged) ProtoMessage() {}
 
 func (x *SettingsChanged) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[5]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -562,7 +562,7 @@ func (x *SettingsChanged) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SettingsChanged.ProtoReflect.Descriptor instead.
 func (*SettingsChanged) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{5}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{5}
 }
 
 // The settings the backend holds: the starting draft for a form, and the values a fresh shell opens on.
@@ -579,7 +579,7 @@ type StoredSettings struct {
 
 func (x *StoredSettings) Reset() {
 	*x = StoredSettings{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[6]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -591,7 +591,7 @@ func (x *StoredSettings) String() string {
 func (*StoredSettings) ProtoMessage() {}
 
 func (x *StoredSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[6]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -604,7 +604,7 @@ func (x *StoredSettings) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StoredSettings.ProtoReflect.Descriptor instead.
 func (*StoredSettings) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{6}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *StoredSettings) GetSettings() *Settings {
@@ -632,7 +632,7 @@ type PresetList struct {
 
 func (x *PresetList) Reset() {
 	*x = PresetList{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[7]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -644,7 +644,7 @@ func (x *PresetList) String() string {
 func (*PresetList) ProtoMessage() {}
 
 func (x *PresetList) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[7]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -657,7 +657,7 @@ func (x *PresetList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PresetList.ProtoReflect.Descriptor instead.
 func (*PresetList) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{7}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *PresetList) GetPresets() []*Preset {
@@ -685,7 +685,7 @@ type ShareWindowList struct {
 
 func (x *ShareWindowList) Reset() {
 	*x = ShareWindowList{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[8]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -697,7 +697,7 @@ func (x *ShareWindowList) String() string {
 func (*ShareWindowList) ProtoMessage() {}
 
 func (x *ShareWindowList) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[8]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -710,7 +710,7 @@ func (x *ShareWindowList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShareWindowList.ProtoReflect.Descriptor instead.
 func (*ShareWindowList) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{8}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ShareWindowList) GetWindows() []*ShareWindow {
@@ -737,7 +737,7 @@ type ReceiveExit struct {
 
 func (x *ReceiveExit) Reset() {
 	*x = ReceiveExit{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[9]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -749,7 +749,7 @@ func (x *ReceiveExit) String() string {
 func (*ReceiveExit) ProtoMessage() {}
 
 func (x *ReceiveExit) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[9]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -762,7 +762,7 @@ func (x *ReceiveExit) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReceiveExit.ProtoReflect.Descriptor instead.
 func (*ReceiveExit) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{9}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ReceiveExit) GetStream() *StreamRef {
@@ -869,7 +869,7 @@ type ReceiveStream struct {
 
 func (x *ReceiveStream) Reset() {
 	*x = ReceiveStream{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[10]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -881,7 +881,7 @@ func (x *ReceiveStream) String() string {
 func (*ReceiveStream) ProtoMessage() {}
 
 func (x *ReceiveStream) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[10]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -894,7 +894,7 @@ func (x *ReceiveStream) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReceiveStream.ProtoReflect.Descriptor instead.
 func (*ReceiveStream) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{10}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ReceiveStream) GetStream() *StreamRef {
@@ -1018,7 +1018,7 @@ type ReceiveState struct {
 
 func (x *ReceiveState) Reset() {
 	*x = ReceiveState{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[11]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1030,7 +1030,7 @@ func (x *ReceiveState) String() string {
 func (*ReceiveState) ProtoMessage() {}
 
 func (x *ReceiveState) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[11]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1043,7 +1043,7 @@ func (x *ReceiveState) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReceiveState.ProtoReflect.Descriptor instead.
 func (*ReceiveState) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{11}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ReceiveState) GetStreams() []*ReceiveStream {
@@ -1074,7 +1074,7 @@ type ReceiveStatValue struct {
 
 func (x *ReceiveStatValue) Reset() {
 	*x = ReceiveStatValue{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[12]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1086,7 +1086,7 @@ func (x *ReceiveStatValue) String() string {
 func (*ReceiveStatValue) ProtoMessage() {}
 
 func (x *ReceiveStatValue) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[12]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1099,7 +1099,7 @@ func (x *ReceiveStatValue) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReceiveStatValue.ProtoReflect.Descriptor instead.
 func (*ReceiveStatValue) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{12}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *ReceiveStatValue) GetKey() string {
@@ -1133,7 +1133,7 @@ type ReceiveStatGroup struct {
 
 func (x *ReceiveStatGroup) Reset() {
 	*x = ReceiveStatGroup{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[13]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1145,7 +1145,7 @@ func (x *ReceiveStatGroup) String() string {
 func (*ReceiveStatGroup) ProtoMessage() {}
 
 func (x *ReceiveStatGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[13]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1158,7 +1158,7 @@ func (x *ReceiveStatGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReceiveStatGroup.ProtoReflect.Descriptor instead.
 func (*ReceiveStatGroup) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{13}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ReceiveStatGroup) GetFactory() string {
@@ -1319,7 +1319,7 @@ type ReceiveStreamStats struct {
 
 func (x *ReceiveStreamStats) Reset() {
 	*x = ReceiveStreamStats{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[14]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1331,7 +1331,7 @@ func (x *ReceiveStreamStats) String() string {
 func (*ReceiveStreamStats) ProtoMessage() {}
 
 func (x *ReceiveStreamStats) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[14]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1344,7 +1344,7 @@ func (x *ReceiveStreamStats) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReceiveStreamStats.ProtoReflect.Descriptor instead.
 func (*ReceiveStreamStats) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{14}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ReceiveStreamStats) GetStream() *StreamRef {
@@ -1784,7 +1784,7 @@ type DelayBudget struct {
 
 func (x *DelayBudget) Reset() {
 	*x = DelayBudget{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[15]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1796,7 +1796,7 @@ func (x *DelayBudget) String() string {
 func (*DelayBudget) ProtoMessage() {}
 
 func (x *DelayBudget) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[15]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1809,7 +1809,7 @@ func (x *DelayBudget) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DelayBudget.ProtoReflect.Descriptor instead.
 func (*DelayBudget) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{15}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *DelayBudget) GetPublishMs() float64 {
@@ -1875,7 +1875,7 @@ type ReceiveStats struct {
 
 func (x *ReceiveStats) Reset() {
 	*x = ReceiveStats{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[16]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1887,7 +1887,7 @@ func (x *ReceiveStats) String() string {
 func (*ReceiveStats) ProtoMessage() {}
 
 func (x *ReceiveStats) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[16]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1900,7 +1900,7 @@ func (x *ReceiveStats) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReceiveStats.ProtoReflect.Descriptor instead.
 func (*ReceiveStats) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{16}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ReceiveStats) GetStreams() []*ReceiveStreamStats {
@@ -1929,7 +1929,7 @@ type PreviewedMonitor struct {
 
 func (x *PreviewedMonitor) Reset() {
 	*x = PreviewedMonitor{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[17]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1941,7 +1941,7 @@ func (x *PreviewedMonitor) String() string {
 func (*PreviewedMonitor) ProtoMessage() {}
 
 func (x *PreviewedMonitor) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[17]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1954,7 +1954,7 @@ func (x *PreviewedMonitor) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PreviewedMonitor.ProtoReflect.Descriptor instead.
 func (*PreviewedMonitor) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{17}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *PreviewedMonitor) GetMonitor() int32 {
@@ -1987,7 +1987,7 @@ type MonitorPreviewState struct {
 
 func (x *MonitorPreviewState) Reset() {
 	*x = MonitorPreviewState{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[18]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1999,7 +1999,7 @@ func (x *MonitorPreviewState) String() string {
 func (*MonitorPreviewState) ProtoMessage() {}
 
 func (x *MonitorPreviewState) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[18]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2012,7 +2012,7 @@ func (x *MonitorPreviewState) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MonitorPreviewState.ProtoReflect.Descriptor instead.
 func (*MonitorPreviewState) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{18}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *MonitorPreviewState) GetMonitors() []*PreviewedMonitor {
@@ -2049,7 +2049,7 @@ type MembersState struct {
 
 func (x *MembersState) Reset() {
 	*x = MembersState{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[19]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2061,7 +2061,7 @@ func (x *MembersState) String() string {
 func (*MembersState) ProtoMessage() {}
 
 func (x *MembersState) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[19]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2074,7 +2074,7 @@ func (x *MembersState) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MembersState.ProtoReflect.Descriptor instead.
 func (*MembersState) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{19}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *MembersState) GetMembers() []*Member {
@@ -2139,7 +2139,7 @@ type DiscordState struct {
 
 func (x *DiscordState) Reset() {
 	*x = DiscordState{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[20]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2151,7 +2151,7 @@ func (x *DiscordState) String() string {
 func (*DiscordState) ProtoMessage() {}
 
 func (x *DiscordState) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[20]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2164,7 +2164,7 @@ func (x *DiscordState) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiscordState.ProtoReflect.Descriptor instead.
 func (*DiscordState) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{20}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *DiscordState) GetLinked() bool {
@@ -2246,7 +2246,7 @@ type Member struct {
 
 func (x *Member) Reset() {
 	*x = Member{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[21]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2258,7 +2258,7 @@ func (x *Member) String() string {
 func (*Member) ProtoMessage() {}
 
 func (x *Member) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[21]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2271,7 +2271,7 @@ func (x *Member) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Member.ProtoReflect.Descriptor instead.
 func (*Member) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{21}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *Member) GetMemberId() string {
@@ -2350,7 +2350,7 @@ type Event struct {
 
 func (x *Event) Reset() {
 	*x = Event{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[22]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2362,7 +2362,7 @@ func (x *Event) String() string {
 func (*Event) ProtoMessage() {}
 
 func (x *Event) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[22]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2375,7 +2375,7 @@ func (x *Event) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Event.ProtoReflect.Descriptor instead.
 func (*Event) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{22}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *Event) GetSequence() uint64 {
@@ -2802,7 +2802,7 @@ type StreamTimeline struct {
 
 func (x *StreamTimeline) Reset() {
 	*x = StreamTimeline{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[23]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2814,7 +2814,7 @@ func (x *StreamTimeline) String() string {
 func (*StreamTimeline) ProtoMessage() {}
 
 func (x *StreamTimeline) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[23]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2827,7 +2827,7 @@ func (x *StreamTimeline) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamTimeline.ProtoReflect.Descriptor instead.
 func (*StreamTimeline) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{23}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *StreamTimeline) GetVerdict() *StreamVerdict {
@@ -2846,7 +2846,7 @@ func (x *StreamTimeline) GetStartedAtUnixMillis() int64 {
 
 type StreamVerdict struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	Level StreamVerdict_Level    `protobuf:"varint,1,opt,name=level,proto3,enum=screenshare.v1.StreamVerdict_Level" json:"level,omitempty"`
+	Level StreamVerdict_Level    `protobuf:"varint,1,opt,name=level,proto3,enum=mirrorme.v1.StreamVerdict_Level" json:"level,omitempty"`
 	// Why, absent while clean.
 	// TEXT_CODE_VERDICT_DIP on a dip; the exit's own cause on a restart or a stop.
 	Cause *Text `protobuf:"bytes,2,opt,name=cause,proto3" json:"cause,omitempty"`
@@ -2860,7 +2860,7 @@ type StreamVerdict struct {
 
 func (x *StreamVerdict) Reset() {
 	*x = StreamVerdict{}
-	mi := &file_screenshare_v1_events_proto_msgTypes[24]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2872,7 +2872,7 @@ func (x *StreamVerdict) String() string {
 func (*StreamVerdict) ProtoMessage() {}
 
 func (x *StreamVerdict) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_events_proto_msgTypes[24]
+	mi := &file_mirrorme_v1_events_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2885,7 +2885,7 @@ func (x *StreamVerdict) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamVerdict.ProtoReflect.Descriptor instead.
 func (*StreamVerdict) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_events_proto_rawDescGZIP(), []int{24}
+	return file_mirrorme_v1_events_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *StreamVerdict) GetLevel() StreamVerdict_Level {
@@ -2916,48 +2916,48 @@ func (x *StreamVerdict) GetLogPath() string {
 	return ""
 }
 
-var File_screenshare_v1_events_proto protoreflect.FileDescriptor
+var File_mirrorme_v1_events_proto protoreflect.FileDescriptor
 
-const file_screenshare_v1_events_proto_rawDesc = "" +
+const file_mirrorme_v1_events_proto_rawDesc = "" +
 	"\n" +
-	"\x1bscreenshare/v1/events.proto\x12\x0escreenshare.v1\x1a\x1cscreenshare/v1/catalog.proto\x1a\x1cscreenshare/v1/session.proto\x1a\x1dscreenshare/v1/settings.proto\x1a\x19screenshare/v1/text.proto\"k\n" +
+	"\x18mirrorme/v1/events.proto\x12\vmirrorme.v1\x1a\x19mirrorme/v1/catalog.proto\x1a\x19mirrorme/v1/session.proto\x1a\x1amirrorme/v1/settings.proto\x1a\x16mirrorme/v1/text.proto\"h\n" +
 	"\bExitInfo\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage\x12\x19\n" +
-	"\blog_path\x18\x02 \x01(\tR\alogPath\x12*\n" +
-	"\x05cause\x18\x03 \x01(\v2\x14.screenshare.v1.TextR\x05cause\"\x8a\x01\n" +
+	"\blog_path\x18\x02 \x01(\tR\alogPath\x12'\n" +
+	"\x05cause\x18\x03 \x01(\v2\x11.mirrorme.v1.TextR\x05cause\"\x84\x01\n" +
 	"\n" +
-	"ViewerExit\x121\n" +
-	"\x06viewer\x18\x04 \x01(\v2\x19.screenshare.v1.StreamRefR\x06viewer\x12,\n" +
-	"\x04exit\x18\x03 \x01(\v2\x18.screenshare.v1.ExitInfoR\x04exitJ\x04\b\x01\x10\x02J\x04\b\x02\x10\x03R\x04nameR\ttransport\"B\n" +
-	"\vViewerState\x123\n" +
-	"\aviewers\x18\x01 \x03(\v2\x19.screenshare.v1.StreamRefR\aviewers\"l\n" +
+	"ViewerExit\x12.\n" +
+	"\x06viewer\x18\x04 \x01(\v2\x16.mirrorme.v1.StreamRefR\x06viewer\x12)\n" +
+	"\x04exit\x18\x03 \x01(\v2\x15.mirrorme.v1.ExitInfoR\x04exitJ\x04\b\x01\x10\x02J\x04\b\x02\x10\x03R\x04nameR\ttransport\"?\n" +
+	"\vViewerState\x120\n" +
+	"\aviewers\x18\x01 \x03(\v2\x16.mirrorme.v1.StreamRefR\aviewers\"i\n" +
 	"\x0fTestStreamState\x12#\n" +
-	"\rrunning_count\x18\x01 \x01(\x05R\frunningCount\x124\n" +
-	"\x05slots\x18\x02 \x03(\v2\x1e.screenshare.v1.TestStreamSlotR\x05slots\"\xcd\x01\n" +
+	"\rrunning_count\x18\x01 \x01(\x05R\frunningCount\x121\n" +
+	"\x05slots\x18\x02 \x03(\v2\x1b.mirrorme.v1.TestStreamSlotR\x05slots\"\xca\x01\n" +
 	"\x0eTestStreamSlot\x12\x12\n" +
 	"\x04slot\x18\x01 \x01(\x05R\x04slot\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x18\n" +
 	"\arunning\x18\x03 \x01(\bR\arunning\x12\x18\n" +
-	"\aattempt\x18\x04 \x01(\x05R\aattempt\x12*\n" +
-	"\x05cause\x18\x05 \x01(\v2\x14.screenshare.v1.TextR\x05cause\x12\x18\n" +
+	"\aattempt\x18\x04 \x01(\x05R\aattempt\x12'\n" +
+	"\x05cause\x18\x05 \x01(\v2\x11.mirrorme.v1.TextR\x05cause\x12\x18\n" +
 	"\amessage\x18\x06 \x01(\tR\amessage\x12\x19\n" +
 	"\blog_path\x18\a \x01(\tR\alogPath\"\x11\n" +
-	"\x0fSettingsChanged\"\x7f\n" +
-	"\x0eStoredSettings\x124\n" +
-	"\bsettings\x18\x01 \x01(\v2\x18.screenshare.v1.SettingsR\bsettings\x127\n" +
-	"\fstore_notice\x18\x02 \x01(\v2\x14.screenshare.v1.TextR\vstoreNotice\"l\n" +
+	"\x0fSettingsChanged\"y\n" +
+	"\x0eStoredSettings\x121\n" +
+	"\bsettings\x18\x01 \x01(\v2\x15.mirrorme.v1.SettingsR\bsettings\x124\n" +
+	"\fstore_notice\x18\x02 \x01(\v2\x11.mirrorme.v1.TextR\vstoreNotice\"f\n" +
 	"\n" +
-	"PresetList\x120\n" +
-	"\apresets\x18\x01 \x03(\v2\x16.screenshare.v1.PresetR\apresets\x12,\n" +
-	"\x06notice\x18\x02 \x01(\v2\x14.screenshare.v1.TextR\x06notice\"H\n" +
-	"\x0fShareWindowList\x125\n" +
-	"\awindows\x18\x01 \x03(\v2\x1b.screenshare.v1.ShareWindowR\awindows\"\x86\x01\n" +
-	"\vReceiveExit\x121\n" +
-	"\x06stream\x18\x01 \x01(\v2\x19.screenshare.v1.StreamRefR\x06stream\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12*\n" +
-	"\x05cause\x18\x03 \x01(\v2\x14.screenshare.v1.TextR\x05cause\"\xfc\x03\n" +
-	"\rReceiveStream\x121\n" +
-	"\x06stream\x18\x01 \x01(\v2\x19.screenshare.v1.StreamRefR\x06stream\x12\x12\n" +
+	"PresetList\x12-\n" +
+	"\apresets\x18\x01 \x03(\v2\x13.mirrorme.v1.PresetR\apresets\x12)\n" +
+	"\x06notice\x18\x02 \x01(\v2\x11.mirrorme.v1.TextR\x06notice\"E\n" +
+	"\x0fShareWindowList\x122\n" +
+	"\awindows\x18\x01 \x03(\v2\x18.mirrorme.v1.ShareWindowR\awindows\"\x80\x01\n" +
+	"\vReceiveExit\x12.\n" +
+	"\x06stream\x18\x01 \x01(\v2\x16.mirrorme.v1.StreamRefR\x06stream\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12'\n" +
+	"\x05cause\x18\x03 \x01(\v2\x11.mirrorme.v1.TextR\x05cause\"\xf6\x03\n" +
+	"\rReceiveStream\x12.\n" +
+	"\x06stream\x18\x01 \x01(\v2\x16.mirrorme.v1.StreamRefR\x06stream\x12\x12\n" +
 	"\x04live\x18\x02 \x01(\bR\x04live\x12\x14\n" +
 	"\x05chain\x18\x03 \x01(\tR\x05chain\x12#\n" +
 	"\rdecode_memory\x18\x04 \x01(\tR\fdecodeMemory\x12#\n" +
@@ -2973,19 +2973,19 @@ const file_screenshare_v1_events_proto_rawDesc = "" +
 	"\btone_map\x18\r \x01(\bR\atoneMap\x12 \n" +
 	"\fcan_tone_map\x18\x0e \x01(\bR\n" +
 	"canToneMap\x12(\n" +
-	"\x10tone_map_missing\x18\x0f \x01(\tR\x0etoneMapMissing\x12.\n" +
-	"\afailure\x18\x10 \x01(\v2\x14.screenshare.v1.TextR\afailure\"G\n" +
-	"\fReceiveState\x127\n" +
-	"\astreams\x18\x01 \x03(\v2\x1d.screenshare.v1.ReceiveStreamR\astreams\":\n" +
+	"\x10tone_map_missing\x18\x0f \x01(\tR\x0etoneMapMissing\x12+\n" +
+	"\afailure\x18\x10 \x01(\v2\x11.mirrorme.v1.TextR\afailure\"D\n" +
+	"\fReceiveState\x124\n" +
+	"\astreams\x18\x01 \x03(\v2\x1a.mirrorme.v1.ReceiveStreamR\astreams\":\n" +
 	"\x10ReceiveStatValue\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\x01R\x05value\"\x80\x01\n" +
+	"\x05value\x18\x02 \x01(\x01R\x05value\"}\n" +
 	"\x10ReceiveStatGroup\x12\x18\n" +
 	"\afactory\x18\x01 \x01(\tR\afactory\x12\x18\n" +
-	"\aelement\x18\x02 \x01(\tR\aelement\x128\n" +
-	"\x06values\x18\x03 \x03(\v2 .screenshare.v1.ReceiveStatValueR\x06values\"\x87\x0f\n" +
-	"\x12ReceiveStreamStats\x121\n" +
-	"\x06stream\x18\x01 \x01(\v2\x19.screenshare.v1.StreamRefR\x06stream\x12+\n" +
+	"\aelement\x18\x02 \x01(\tR\aelement\x125\n" +
+	"\x06values\x18\x03 \x03(\v2\x1d.mirrorme.v1.ReceiveStatValueR\x06values\"\xfe\x0e\n" +
+	"\x12ReceiveStreamStats\x12.\n" +
+	"\x06stream\x18\x01 \x01(\v2\x16.mirrorme.v1.StreamRefR\x06stream\x12+\n" +
 	"\x11codec_description\x18\x02 \x01(\tR\x10codecDescription\x12\x18\n" +
 	"\aprofile\x18\x03 \x01(\tR\aprofile\x12\x14\n" +
 	"\x05level\x18\x04 \x01(\tR\x05level\x12\x1f\n" +
@@ -3042,9 +3042,9 @@ const file_screenshare_v1_events_proto_rawDesc = "" +
 	"\vaudio_bytes\x18/ \x01(\x04R\n" +
 	"audioBytes\x12\"\n" +
 	"\n" +
-	"audio_kbps\x180 \x01(\x01H\bR\taudioKbps\x88\x01\x01\x128\n" +
-	"\x06groups\x181 \x03(\v2 .screenshare.v1.ReceiveStatGroupR\x06groups\x121\n" +
-	"\x05delay\x182 \x01(\v2\x1b.screenshare.v1.DelayBudgetR\x05delayB\x15\n" +
+	"audio_kbps\x180 \x01(\x01H\bR\taudioKbps\x88\x01\x01\x125\n" +
+	"\x06groups\x181 \x03(\v2\x1d.mirrorme.v1.ReceiveStatGroupR\x06groups\x12.\n" +
+	"\x05delay\x182 \x01(\v2\x18.mirrorme.v1.DelayBudgetR\x05delayB\x15\n" +
 	"\x13_since_keyframe_secB\r\n" +
 	"\v_video_mbpsB\f\n" +
 	"\n" +
@@ -3078,17 +3078,17 @@ const file_screenshare_v1_events_proto_rawDesc = "" +
 	"\v_present_msB\v\n" +
 	"\t_total_msJ\x04\b\x02\x10\x03J\x04\b\x03\x10\x04J\x04\b\x04\x10\x05J\x04\b\a\x10\bJ\x04\b\t\x10\n" +
 	"R\x0fpublish_link_msR\rwatch_link_msR\brelay_msR\n" +
-	"receive_msR\x0freceive_peak_ms\"L\n" +
-	"\fReceiveStats\x12<\n" +
-	"\astreams\x18\x01 \x03(\v2\".screenshare.v1.ReceiveStreamStatsR\astreams\"@\n" +
+	"receive_msR\x0freceive_peak_ms\"I\n" +
+	"\fReceiveStats\x129\n" +
+	"\astreams\x18\x01 \x03(\v2\x1f.mirrorme.v1.ReceiveStreamStatsR\astreams\"@\n" +
 	"\x10PreviewedMonitor\x12\x18\n" +
 	"\amonitor\x18\x01 \x01(\x05R\amonitor\x12\x12\n" +
-	"\x04live\x18\x02 \x01(\bR\x04live\"S\n" +
-	"\x13MonitorPreviewState\x12<\n" +
-	"\bmonitors\x18\x01 \x03(\v2 .screenshare.v1.PreviewedMonitorR\bmonitors\"\xb5\x01\n" +
-	"\fMembersState\x120\n" +
-	"\amembers\x18\x01 \x03(\v2\x16.screenshare.v1.MemberR\amembers\x12.\n" +
-	"\arefusal\x18\x02 \x01(\v2\x14.screenshare.v1.TextR\arefusal\x12\x16\n" +
+	"\x04live\x18\x02 \x01(\bR\x04live\"P\n" +
+	"\x13MonitorPreviewState\x129\n" +
+	"\bmonitors\x18\x01 \x03(\v2\x1d.mirrorme.v1.PreviewedMonitorR\bmonitors\"\xaf\x01\n" +
+	"\fMembersState\x12-\n" +
+	"\amembers\x18\x01 \x03(\v2\x13.mirrorme.v1.MemberR\amembers\x12+\n" +
+	"\arefusal\x18\x02 \x01(\v2\x11.mirrorme.v1.TextR\arefusal\x12\x16\n" +
 	"\x06joined\x18\x03 \x01(\bR\x06joined\x12+\n" +
 	"\x11publishing_unread\x18\x04 \x01(\bR\x10publishingUnread\"\xfb\x01\n" +
 	"\fDiscordState\x12\x16\n" +
@@ -3109,42 +3109,42 @@ const file_screenshare_v1_events_proto_rawDesc = "" +
 	"publishing\x18\x03 \x01(\bR\n" +
 	"publishing\x12\x12\n" +
 	"\x04self\x18\x04 \x01(\bR\x04self\x12\x16\n" +
-	"\x06avatar\x18\x05 \x01(\fR\x06avatar\"\x85\r\n" +
+	"\x06avatar\x18\x05 \x01(\fR\x06avatar\"\xc0\f\n" +
 	"\x05Event\x12\x1a\n" +
-	"\bsequence\x18\x01 \x01(\x04R\bsequence\x12C\n" +
-	"\rpublish_state\x18\x02 \x01(\v2\x1c.screenshare.v1.PublishStateH\x00R\fpublishState\x12C\n" +
-	"\rpublish_stats\x18\x03 \x01(\v2\x1c.screenshare.v1.PublishStatsH\x00R\fpublishStats\x12=\n" +
-	"\fpublish_exit\x18\x04 \x01(\v2\x18.screenshare.v1.ExitInfoH\x00R\vpublishExit\x12@\n" +
-	"\frelay_status\x18\x05 \x01(\v2\x1b.screenshare.v1.RelayStatusH\x00R\vrelayStatus\x12@\n" +
-	"\fviewer_state\x18\f \x01(\v2\x1b.screenshare.v1.ViewerStateH\x00R\vviewerState\x12=\n" +
-	"\vviewer_exit\x18\x06 \x01(\v2\x1a.screenshare.v1.ViewerExitH\x00R\n" +
-	"viewerExit\x12C\n" +
-	"\rreceive_state\x18\x0f \x01(\v2\x1c.screenshare.v1.ReceiveStateH\x00R\freceiveState\x12@\n" +
-	"\freceive_exit\x18\x10 \x01(\v2\x1b.screenshare.v1.ReceiveExitH\x00R\vreceiveExit\x12C\n" +
-	"\rreceive_stats\x18\x12 \x01(\v2\x1c.screenshare.v1.ReceiveStatsH\x00R\freceiveStats\x12Y\n" +
-	"\x15monitor_preview_state\x18\x11 \x01(\v2#.screenshare.v1.MonitorPreviewStateH\x00R\x13monitorPreviewState\x12M\n" +
-	"\x11test_stream_state\x18\r \x01(\v2\x1f.screenshare.v1.TestStreamStateH\x00R\x0ftestStreamState\x12D\n" +
-	"\x10test_stream_exit\x18\t \x01(\v2\x18.screenshare.v1.ExitInfoH\x00R\x0etestStreamExit\x12C\n" +
-	"\rmembers_state\x18\x13 \x01(\v2\x1c.screenshare.v1.MembersStateH\x00R\fmembersState\x12C\n" +
-	"\rdiscord_state\x18\x14 \x01(\v2\x1c.screenshare.v1.DiscordStateH\x00R\fdiscordState\x123\n" +
-	"\acatalog\x18\x0e \x01(\v2\x17.screenshare.v1.CatalogH\x00R\acatalog\x12@\n" +
-	"\fupdate_state\x18\x15 \x01(\v2\x1b.screenshare.v1.UpdateStateH\x00R\vupdateState\x12I\n" +
-	"\x0fstream_timeline\x18\x16 \x01(\v2\x1e.screenshare.v1.StreamTimelineH\x00R\x0estreamTimeline\x12L\n" +
+	"\bsequence\x18\x01 \x01(\x04R\bsequence\x12@\n" +
+	"\rpublish_state\x18\x02 \x01(\v2\x19.mirrorme.v1.PublishStateH\x00R\fpublishState\x12@\n" +
+	"\rpublish_stats\x18\x03 \x01(\v2\x19.mirrorme.v1.PublishStatsH\x00R\fpublishStats\x12:\n" +
+	"\fpublish_exit\x18\x04 \x01(\v2\x15.mirrorme.v1.ExitInfoH\x00R\vpublishExit\x12=\n" +
+	"\frelay_status\x18\x05 \x01(\v2\x18.mirrorme.v1.RelayStatusH\x00R\vrelayStatus\x12=\n" +
+	"\fviewer_state\x18\f \x01(\v2\x18.mirrorme.v1.ViewerStateH\x00R\vviewerState\x12:\n" +
+	"\vviewer_exit\x18\x06 \x01(\v2\x17.mirrorme.v1.ViewerExitH\x00R\n" +
+	"viewerExit\x12@\n" +
+	"\rreceive_state\x18\x0f \x01(\v2\x19.mirrorme.v1.ReceiveStateH\x00R\freceiveState\x12=\n" +
+	"\freceive_exit\x18\x10 \x01(\v2\x18.mirrorme.v1.ReceiveExitH\x00R\vreceiveExit\x12@\n" +
+	"\rreceive_stats\x18\x12 \x01(\v2\x19.mirrorme.v1.ReceiveStatsH\x00R\freceiveStats\x12V\n" +
+	"\x15monitor_preview_state\x18\x11 \x01(\v2 .mirrorme.v1.MonitorPreviewStateH\x00R\x13monitorPreviewState\x12J\n" +
+	"\x11test_stream_state\x18\r \x01(\v2\x1c.mirrorme.v1.TestStreamStateH\x00R\x0ftestStreamState\x12A\n" +
+	"\x10test_stream_exit\x18\t \x01(\v2\x15.mirrorme.v1.ExitInfoH\x00R\x0etestStreamExit\x12@\n" +
+	"\rmembers_state\x18\x13 \x01(\v2\x19.mirrorme.v1.MembersStateH\x00R\fmembersState\x12@\n" +
+	"\rdiscord_state\x18\x14 \x01(\v2\x19.mirrorme.v1.DiscordStateH\x00R\fdiscordState\x120\n" +
+	"\acatalog\x18\x0e \x01(\v2\x14.mirrorme.v1.CatalogH\x00R\acatalog\x12=\n" +
+	"\fupdate_state\x18\x15 \x01(\v2\x18.mirrorme.v1.UpdateStateH\x00R\vupdateState\x12F\n" +
+	"\x0fstream_timeline\x18\x16 \x01(\v2\x1b.mirrorme.v1.StreamTimelineH\x00R\x0estreamTimeline\x12I\n" +
 	"\x10settings_changed\x18\n" +
-	" \x01(\v2\x1f.screenshare.v1.SettingsChangedH\x00R\x0fsettingsChanged\x12<\n" +
-	"\bsettings\x18\x17 \x01(\v2\x1e.screenshare.v1.StoredSettingsH\x00R\bsettings\x126\n" +
-	"\apresets\x18\x18 \x01(\v2\x1a.screenshare.v1.PresetListH\x00R\apresets\x12F\n" +
-	"\rshare_windows\x18\x19 \x01(\v2\x1f.screenshare.v1.ShareWindowListH\x00R\fshareWindows\x12@\n" +
-	"\faudio_levels\x18\x1a \x01(\v2\x1b.screenshare.v1.AudioLevelsH\x00R\vaudioLevels\x12;\n" +
-	"\apointer\x18\x1b \x01(\v2\x1f.screenshare.v1.PointerPositionH\x00R\apointerB\t\n" +
+	" \x01(\v2\x1c.mirrorme.v1.SettingsChangedH\x00R\x0fsettingsChanged\x129\n" +
+	"\bsettings\x18\x17 \x01(\v2\x1b.mirrorme.v1.StoredSettingsH\x00R\bsettings\x123\n" +
+	"\apresets\x18\x18 \x01(\v2\x17.mirrorme.v1.PresetListH\x00R\apresets\x12C\n" +
+	"\rshare_windows\x18\x19 \x01(\v2\x1c.mirrorme.v1.ShareWindowListH\x00R\fshareWindows\x12=\n" +
+	"\faudio_levels\x18\x1a \x01(\v2\x18.mirrorme.v1.AudioLevelsH\x00R\vaudioLevels\x128\n" +
+	"\apointer\x18\x1b \x01(\v2\x1c.mirrorme.v1.PointerPositionH\x00R\apointerB\t\n" +
 	"\apayloadJ\x04\b\a\x10\bJ\x04\b\b\x10\tJ\x04\b\v\x10\fR\n" +
-	"grid_stateR\tgrid_exitR\rshow_settings\"\x8c\x01\n" +
-	"\x0eStreamTimeline\x127\n" +
-	"\averdict\x18\x01 \x01(\v2\x1d.screenshare.v1.StreamVerdictR\averdict\x123\n" +
-	"\x16started_at_unix_millis\x18\x03 \x01(\x03R\x13startedAtUnixMillisJ\x04\b\x02\x10\x03R\x06events\"\x86\x02\n" +
-	"\rStreamVerdict\x129\n" +
-	"\x05level\x18\x01 \x01(\x0e2#.screenshare.v1.StreamVerdict.LevelR\x05level\x12*\n" +
-	"\x05cause\x18\x02 \x01(\v2\x14.screenshare.v1.TextR\x05cause\x12\x18\n" +
+	"grid_stateR\tgrid_exitR\rshow_settings\"\x89\x01\n" +
+	"\x0eStreamTimeline\x124\n" +
+	"\averdict\x18\x01 \x01(\v2\x1a.mirrorme.v1.StreamVerdictR\averdict\x123\n" +
+	"\x16started_at_unix_millis\x18\x03 \x01(\x03R\x13startedAtUnixMillisJ\x04\b\x02\x10\x03R\x06events\"\x80\x02\n" +
+	"\rStreamVerdict\x126\n" +
+	"\x05level\x18\x01 \x01(\x0e2 .mirrorme.v1.StreamVerdict.LevelR\x05level\x12'\n" +
+	"\x05cause\x18\x02 \x01(\v2\x11.mirrorme.v1.TextR\x05cause\x12\x18\n" +
 	"\amessage\x18\x03 \x01(\tR\amessage\x12\x19\n" +
 	"\blog_path\x18\x04 \x01(\tR\alogPath\"Y\n" +
 	"\x05Level\x12\x15\n" +
@@ -3177,114 +3177,114 @@ const file_screenshare_v1_events_proto_rawDesc = "" +
 	"\x12EVENT_KIND_PRESETS\x10\x15\x12\x1c\n" +
 	"\x18EVENT_KIND_SHARE_WINDOWS\x10\x16\x12\x1b\n" +
 	"\x17EVENT_KIND_AUDIO_LEVELS\x10\x17\x12\x16\n" +
-	"\x12EVENT_KIND_POINTER\x10\x18\"\x04\b\v\x10\v*\x18EVENT_KIND_SHOW_SETTINGSB[ZDbjoernblessin.de/screenshare/api/gen/go/screenshare/v1;screensharev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
+	"\x12EVENT_KIND_POINTER\x10\x18\"\x04\b\v\x10\v*\x18EVENT_KIND_SHOW_SETTINGSBRZ;bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
 
 var (
-	file_screenshare_v1_events_proto_rawDescOnce sync.Once
-	file_screenshare_v1_events_proto_rawDescData []byte
+	file_mirrorme_v1_events_proto_rawDescOnce sync.Once
+	file_mirrorme_v1_events_proto_rawDescData []byte
 )
 
-func file_screenshare_v1_events_proto_rawDescGZIP() []byte {
-	file_screenshare_v1_events_proto_rawDescOnce.Do(func() {
-		file_screenshare_v1_events_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_screenshare_v1_events_proto_rawDesc), len(file_screenshare_v1_events_proto_rawDesc)))
+func file_mirrorme_v1_events_proto_rawDescGZIP() []byte {
+	file_mirrorme_v1_events_proto_rawDescOnce.Do(func() {
+		file_mirrorme_v1_events_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_mirrorme_v1_events_proto_rawDesc), len(file_mirrorme_v1_events_proto_rawDesc)))
 	})
-	return file_screenshare_v1_events_proto_rawDescData
+	return file_mirrorme_v1_events_proto_rawDescData
 }
 
-var file_screenshare_v1_events_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_screenshare_v1_events_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
-var file_screenshare_v1_events_proto_goTypes = []any{
-	(EventKind)(0),              // 0: screenshare.v1.EventKind
-	(StreamVerdict_Level)(0),    // 1: screenshare.v1.StreamVerdict.Level
-	(*ExitInfo)(nil),            // 2: screenshare.v1.ExitInfo
-	(*ViewerExit)(nil),          // 3: screenshare.v1.ViewerExit
-	(*ViewerState)(nil),         // 4: screenshare.v1.ViewerState
-	(*TestStreamState)(nil),     // 5: screenshare.v1.TestStreamState
-	(*TestStreamSlot)(nil),      // 6: screenshare.v1.TestStreamSlot
-	(*SettingsChanged)(nil),     // 7: screenshare.v1.SettingsChanged
-	(*StoredSettings)(nil),      // 8: screenshare.v1.StoredSettings
-	(*PresetList)(nil),          // 9: screenshare.v1.PresetList
-	(*ShareWindowList)(nil),     // 10: screenshare.v1.ShareWindowList
-	(*ReceiveExit)(nil),         // 11: screenshare.v1.ReceiveExit
-	(*ReceiveStream)(nil),       // 12: screenshare.v1.ReceiveStream
-	(*ReceiveState)(nil),        // 13: screenshare.v1.ReceiveState
-	(*ReceiveStatValue)(nil),    // 14: screenshare.v1.ReceiveStatValue
-	(*ReceiveStatGroup)(nil),    // 15: screenshare.v1.ReceiveStatGroup
-	(*ReceiveStreamStats)(nil),  // 16: screenshare.v1.ReceiveStreamStats
-	(*DelayBudget)(nil),         // 17: screenshare.v1.DelayBudget
-	(*ReceiveStats)(nil),        // 18: screenshare.v1.ReceiveStats
-	(*PreviewedMonitor)(nil),    // 19: screenshare.v1.PreviewedMonitor
-	(*MonitorPreviewState)(nil), // 20: screenshare.v1.MonitorPreviewState
-	(*MembersState)(nil),        // 21: screenshare.v1.MembersState
-	(*DiscordState)(nil),        // 22: screenshare.v1.DiscordState
-	(*Member)(nil),              // 23: screenshare.v1.Member
-	(*Event)(nil),               // 24: screenshare.v1.Event
-	(*StreamTimeline)(nil),      // 25: screenshare.v1.StreamTimeline
-	(*StreamVerdict)(nil),       // 26: screenshare.v1.StreamVerdict
-	(*Text)(nil),                // 27: screenshare.v1.Text
-	(*StreamRef)(nil),           // 28: screenshare.v1.StreamRef
-	(*Settings)(nil),            // 29: screenshare.v1.Settings
-	(*Preset)(nil),              // 30: screenshare.v1.Preset
-	(*ShareWindow)(nil),         // 31: screenshare.v1.ShareWindow
-	(*PublishState)(nil),        // 32: screenshare.v1.PublishState
-	(*PublishStats)(nil),        // 33: screenshare.v1.PublishStats
-	(*RelayStatus)(nil),         // 34: screenshare.v1.RelayStatus
-	(*Catalog)(nil),             // 35: screenshare.v1.Catalog
-	(*UpdateState)(nil),         // 36: screenshare.v1.UpdateState
-	(*AudioLevels)(nil),         // 37: screenshare.v1.AudioLevels
-	(*PointerPosition)(nil),     // 38: screenshare.v1.PointerPosition
+var file_mirrorme_v1_events_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_mirrorme_v1_events_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
+var file_mirrorme_v1_events_proto_goTypes = []any{
+	(EventKind)(0),              // 0: mirrorme.v1.EventKind
+	(StreamVerdict_Level)(0),    // 1: mirrorme.v1.StreamVerdict.Level
+	(*ExitInfo)(nil),            // 2: mirrorme.v1.ExitInfo
+	(*ViewerExit)(nil),          // 3: mirrorme.v1.ViewerExit
+	(*ViewerState)(nil),         // 4: mirrorme.v1.ViewerState
+	(*TestStreamState)(nil),     // 5: mirrorme.v1.TestStreamState
+	(*TestStreamSlot)(nil),      // 6: mirrorme.v1.TestStreamSlot
+	(*SettingsChanged)(nil),     // 7: mirrorme.v1.SettingsChanged
+	(*StoredSettings)(nil),      // 8: mirrorme.v1.StoredSettings
+	(*PresetList)(nil),          // 9: mirrorme.v1.PresetList
+	(*ShareWindowList)(nil),     // 10: mirrorme.v1.ShareWindowList
+	(*ReceiveExit)(nil),         // 11: mirrorme.v1.ReceiveExit
+	(*ReceiveStream)(nil),       // 12: mirrorme.v1.ReceiveStream
+	(*ReceiveState)(nil),        // 13: mirrorme.v1.ReceiveState
+	(*ReceiveStatValue)(nil),    // 14: mirrorme.v1.ReceiveStatValue
+	(*ReceiveStatGroup)(nil),    // 15: mirrorme.v1.ReceiveStatGroup
+	(*ReceiveStreamStats)(nil),  // 16: mirrorme.v1.ReceiveStreamStats
+	(*DelayBudget)(nil),         // 17: mirrorme.v1.DelayBudget
+	(*ReceiveStats)(nil),        // 18: mirrorme.v1.ReceiveStats
+	(*PreviewedMonitor)(nil),    // 19: mirrorme.v1.PreviewedMonitor
+	(*MonitorPreviewState)(nil), // 20: mirrorme.v1.MonitorPreviewState
+	(*MembersState)(nil),        // 21: mirrorme.v1.MembersState
+	(*DiscordState)(nil),        // 22: mirrorme.v1.DiscordState
+	(*Member)(nil),              // 23: mirrorme.v1.Member
+	(*Event)(nil),               // 24: mirrorme.v1.Event
+	(*StreamTimeline)(nil),      // 25: mirrorme.v1.StreamTimeline
+	(*StreamVerdict)(nil),       // 26: mirrorme.v1.StreamVerdict
+	(*Text)(nil),                // 27: mirrorme.v1.Text
+	(*StreamRef)(nil),           // 28: mirrorme.v1.StreamRef
+	(*Settings)(nil),            // 29: mirrorme.v1.Settings
+	(*Preset)(nil),              // 30: mirrorme.v1.Preset
+	(*ShareWindow)(nil),         // 31: mirrorme.v1.ShareWindow
+	(*PublishState)(nil),        // 32: mirrorme.v1.PublishState
+	(*PublishStats)(nil),        // 33: mirrorme.v1.PublishStats
+	(*RelayStatus)(nil),         // 34: mirrorme.v1.RelayStatus
+	(*Catalog)(nil),             // 35: mirrorme.v1.Catalog
+	(*UpdateState)(nil),         // 36: mirrorme.v1.UpdateState
+	(*AudioLevels)(nil),         // 37: mirrorme.v1.AudioLevels
+	(*PointerPosition)(nil),     // 38: mirrorme.v1.PointerPosition
 }
-var file_screenshare_v1_events_proto_depIdxs = []int32{
-	27, // 0: screenshare.v1.ExitInfo.cause:type_name -> screenshare.v1.Text
-	28, // 1: screenshare.v1.ViewerExit.viewer:type_name -> screenshare.v1.StreamRef
-	2,  // 2: screenshare.v1.ViewerExit.exit:type_name -> screenshare.v1.ExitInfo
-	28, // 3: screenshare.v1.ViewerState.viewers:type_name -> screenshare.v1.StreamRef
-	6,  // 4: screenshare.v1.TestStreamState.slots:type_name -> screenshare.v1.TestStreamSlot
-	27, // 5: screenshare.v1.TestStreamSlot.cause:type_name -> screenshare.v1.Text
-	29, // 6: screenshare.v1.StoredSettings.settings:type_name -> screenshare.v1.Settings
-	27, // 7: screenshare.v1.StoredSettings.store_notice:type_name -> screenshare.v1.Text
-	30, // 8: screenshare.v1.PresetList.presets:type_name -> screenshare.v1.Preset
-	27, // 9: screenshare.v1.PresetList.notice:type_name -> screenshare.v1.Text
-	31, // 10: screenshare.v1.ShareWindowList.windows:type_name -> screenshare.v1.ShareWindow
-	28, // 11: screenshare.v1.ReceiveExit.stream:type_name -> screenshare.v1.StreamRef
-	27, // 12: screenshare.v1.ReceiveExit.cause:type_name -> screenshare.v1.Text
-	28, // 13: screenshare.v1.ReceiveStream.stream:type_name -> screenshare.v1.StreamRef
-	27, // 14: screenshare.v1.ReceiveStream.failure:type_name -> screenshare.v1.Text
-	12, // 15: screenshare.v1.ReceiveState.streams:type_name -> screenshare.v1.ReceiveStream
-	14, // 16: screenshare.v1.ReceiveStatGroup.values:type_name -> screenshare.v1.ReceiveStatValue
-	28, // 17: screenshare.v1.ReceiveStreamStats.stream:type_name -> screenshare.v1.StreamRef
-	15, // 18: screenshare.v1.ReceiveStreamStats.groups:type_name -> screenshare.v1.ReceiveStatGroup
-	17, // 19: screenshare.v1.ReceiveStreamStats.delay:type_name -> screenshare.v1.DelayBudget
-	16, // 20: screenshare.v1.ReceiveStats.streams:type_name -> screenshare.v1.ReceiveStreamStats
-	19, // 21: screenshare.v1.MonitorPreviewState.monitors:type_name -> screenshare.v1.PreviewedMonitor
-	23, // 22: screenshare.v1.MembersState.members:type_name -> screenshare.v1.Member
-	27, // 23: screenshare.v1.MembersState.refusal:type_name -> screenshare.v1.Text
-	32, // 24: screenshare.v1.Event.publish_state:type_name -> screenshare.v1.PublishState
-	33, // 25: screenshare.v1.Event.publish_stats:type_name -> screenshare.v1.PublishStats
-	2,  // 26: screenshare.v1.Event.publish_exit:type_name -> screenshare.v1.ExitInfo
-	34, // 27: screenshare.v1.Event.relay_status:type_name -> screenshare.v1.RelayStatus
-	4,  // 28: screenshare.v1.Event.viewer_state:type_name -> screenshare.v1.ViewerState
-	3,  // 29: screenshare.v1.Event.viewer_exit:type_name -> screenshare.v1.ViewerExit
-	13, // 30: screenshare.v1.Event.receive_state:type_name -> screenshare.v1.ReceiveState
-	11, // 31: screenshare.v1.Event.receive_exit:type_name -> screenshare.v1.ReceiveExit
-	18, // 32: screenshare.v1.Event.receive_stats:type_name -> screenshare.v1.ReceiveStats
-	20, // 33: screenshare.v1.Event.monitor_preview_state:type_name -> screenshare.v1.MonitorPreviewState
-	5,  // 34: screenshare.v1.Event.test_stream_state:type_name -> screenshare.v1.TestStreamState
-	2,  // 35: screenshare.v1.Event.test_stream_exit:type_name -> screenshare.v1.ExitInfo
-	21, // 36: screenshare.v1.Event.members_state:type_name -> screenshare.v1.MembersState
-	22, // 37: screenshare.v1.Event.discord_state:type_name -> screenshare.v1.DiscordState
-	35, // 38: screenshare.v1.Event.catalog:type_name -> screenshare.v1.Catalog
-	36, // 39: screenshare.v1.Event.update_state:type_name -> screenshare.v1.UpdateState
-	25, // 40: screenshare.v1.Event.stream_timeline:type_name -> screenshare.v1.StreamTimeline
-	7,  // 41: screenshare.v1.Event.settings_changed:type_name -> screenshare.v1.SettingsChanged
-	8,  // 42: screenshare.v1.Event.settings:type_name -> screenshare.v1.StoredSettings
-	9,  // 43: screenshare.v1.Event.presets:type_name -> screenshare.v1.PresetList
-	10, // 44: screenshare.v1.Event.share_windows:type_name -> screenshare.v1.ShareWindowList
-	37, // 45: screenshare.v1.Event.audio_levels:type_name -> screenshare.v1.AudioLevels
-	38, // 46: screenshare.v1.Event.pointer:type_name -> screenshare.v1.PointerPosition
-	26, // 47: screenshare.v1.StreamTimeline.verdict:type_name -> screenshare.v1.StreamVerdict
-	1,  // 48: screenshare.v1.StreamVerdict.level:type_name -> screenshare.v1.StreamVerdict.Level
-	27, // 49: screenshare.v1.StreamVerdict.cause:type_name -> screenshare.v1.Text
+var file_mirrorme_v1_events_proto_depIdxs = []int32{
+	27, // 0: mirrorme.v1.ExitInfo.cause:type_name -> mirrorme.v1.Text
+	28, // 1: mirrorme.v1.ViewerExit.viewer:type_name -> mirrorme.v1.StreamRef
+	2,  // 2: mirrorme.v1.ViewerExit.exit:type_name -> mirrorme.v1.ExitInfo
+	28, // 3: mirrorme.v1.ViewerState.viewers:type_name -> mirrorme.v1.StreamRef
+	6,  // 4: mirrorme.v1.TestStreamState.slots:type_name -> mirrorme.v1.TestStreamSlot
+	27, // 5: mirrorme.v1.TestStreamSlot.cause:type_name -> mirrorme.v1.Text
+	29, // 6: mirrorme.v1.StoredSettings.settings:type_name -> mirrorme.v1.Settings
+	27, // 7: mirrorme.v1.StoredSettings.store_notice:type_name -> mirrorme.v1.Text
+	30, // 8: mirrorme.v1.PresetList.presets:type_name -> mirrorme.v1.Preset
+	27, // 9: mirrorme.v1.PresetList.notice:type_name -> mirrorme.v1.Text
+	31, // 10: mirrorme.v1.ShareWindowList.windows:type_name -> mirrorme.v1.ShareWindow
+	28, // 11: mirrorme.v1.ReceiveExit.stream:type_name -> mirrorme.v1.StreamRef
+	27, // 12: mirrorme.v1.ReceiveExit.cause:type_name -> mirrorme.v1.Text
+	28, // 13: mirrorme.v1.ReceiveStream.stream:type_name -> mirrorme.v1.StreamRef
+	27, // 14: mirrorme.v1.ReceiveStream.failure:type_name -> mirrorme.v1.Text
+	12, // 15: mirrorme.v1.ReceiveState.streams:type_name -> mirrorme.v1.ReceiveStream
+	14, // 16: mirrorme.v1.ReceiveStatGroup.values:type_name -> mirrorme.v1.ReceiveStatValue
+	28, // 17: mirrorme.v1.ReceiveStreamStats.stream:type_name -> mirrorme.v1.StreamRef
+	15, // 18: mirrorme.v1.ReceiveStreamStats.groups:type_name -> mirrorme.v1.ReceiveStatGroup
+	17, // 19: mirrorme.v1.ReceiveStreamStats.delay:type_name -> mirrorme.v1.DelayBudget
+	16, // 20: mirrorme.v1.ReceiveStats.streams:type_name -> mirrorme.v1.ReceiveStreamStats
+	19, // 21: mirrorme.v1.MonitorPreviewState.monitors:type_name -> mirrorme.v1.PreviewedMonitor
+	23, // 22: mirrorme.v1.MembersState.members:type_name -> mirrorme.v1.Member
+	27, // 23: mirrorme.v1.MembersState.refusal:type_name -> mirrorme.v1.Text
+	32, // 24: mirrorme.v1.Event.publish_state:type_name -> mirrorme.v1.PublishState
+	33, // 25: mirrorme.v1.Event.publish_stats:type_name -> mirrorme.v1.PublishStats
+	2,  // 26: mirrorme.v1.Event.publish_exit:type_name -> mirrorme.v1.ExitInfo
+	34, // 27: mirrorme.v1.Event.relay_status:type_name -> mirrorme.v1.RelayStatus
+	4,  // 28: mirrorme.v1.Event.viewer_state:type_name -> mirrorme.v1.ViewerState
+	3,  // 29: mirrorme.v1.Event.viewer_exit:type_name -> mirrorme.v1.ViewerExit
+	13, // 30: mirrorme.v1.Event.receive_state:type_name -> mirrorme.v1.ReceiveState
+	11, // 31: mirrorme.v1.Event.receive_exit:type_name -> mirrorme.v1.ReceiveExit
+	18, // 32: mirrorme.v1.Event.receive_stats:type_name -> mirrorme.v1.ReceiveStats
+	20, // 33: mirrorme.v1.Event.monitor_preview_state:type_name -> mirrorme.v1.MonitorPreviewState
+	5,  // 34: mirrorme.v1.Event.test_stream_state:type_name -> mirrorme.v1.TestStreamState
+	2,  // 35: mirrorme.v1.Event.test_stream_exit:type_name -> mirrorme.v1.ExitInfo
+	21, // 36: mirrorme.v1.Event.members_state:type_name -> mirrorme.v1.MembersState
+	22, // 37: mirrorme.v1.Event.discord_state:type_name -> mirrorme.v1.DiscordState
+	35, // 38: mirrorme.v1.Event.catalog:type_name -> mirrorme.v1.Catalog
+	36, // 39: mirrorme.v1.Event.update_state:type_name -> mirrorme.v1.UpdateState
+	25, // 40: mirrorme.v1.Event.stream_timeline:type_name -> mirrorme.v1.StreamTimeline
+	7,  // 41: mirrorme.v1.Event.settings_changed:type_name -> mirrorme.v1.SettingsChanged
+	8,  // 42: mirrorme.v1.Event.settings:type_name -> mirrorme.v1.StoredSettings
+	9,  // 43: mirrorme.v1.Event.presets:type_name -> mirrorme.v1.PresetList
+	10, // 44: mirrorme.v1.Event.share_windows:type_name -> mirrorme.v1.ShareWindowList
+	37, // 45: mirrorme.v1.Event.audio_levels:type_name -> mirrorme.v1.AudioLevels
+	38, // 46: mirrorme.v1.Event.pointer:type_name -> mirrorme.v1.PointerPosition
+	26, // 47: mirrorme.v1.StreamTimeline.verdict:type_name -> mirrorme.v1.StreamVerdict
+	1,  // 48: mirrorme.v1.StreamVerdict.level:type_name -> mirrorme.v1.StreamVerdict.Level
+	27, // 49: mirrorme.v1.StreamVerdict.cause:type_name -> mirrorme.v1.Text
 	50, // [50:50] is the sub-list for method output_type
 	50, // [50:50] is the sub-list for method input_type
 	50, // [50:50] is the sub-list for extension type_name
@@ -3292,18 +3292,18 @@ var file_screenshare_v1_events_proto_depIdxs = []int32{
 	0,  // [0:50] is the sub-list for field type_name
 }
 
-func init() { file_screenshare_v1_events_proto_init() }
-func file_screenshare_v1_events_proto_init() {
-	if File_screenshare_v1_events_proto != nil {
+func init() { file_mirrorme_v1_events_proto_init() }
+func file_mirrorme_v1_events_proto_init() {
+	if File_mirrorme_v1_events_proto != nil {
 		return
 	}
-	file_screenshare_v1_catalog_proto_init()
-	file_screenshare_v1_session_proto_init()
-	file_screenshare_v1_settings_proto_init()
-	file_screenshare_v1_text_proto_init()
-	file_screenshare_v1_events_proto_msgTypes[14].OneofWrappers = []any{}
-	file_screenshare_v1_events_proto_msgTypes[15].OneofWrappers = []any{}
-	file_screenshare_v1_events_proto_msgTypes[22].OneofWrappers = []any{
+	file_mirrorme_v1_catalog_proto_init()
+	file_mirrorme_v1_session_proto_init()
+	file_mirrorme_v1_settings_proto_init()
+	file_mirrorme_v1_text_proto_init()
+	file_mirrorme_v1_events_proto_msgTypes[14].OneofWrappers = []any{}
+	file_mirrorme_v1_events_proto_msgTypes[15].OneofWrappers = []any{}
+	file_mirrorme_v1_events_proto_msgTypes[22].OneofWrappers = []any{
 		(*Event_PublishState)(nil),
 		(*Event_PublishStats)(nil),
 		(*Event_PublishExit)(nil),
@@ -3332,18 +3332,18 @@ func file_screenshare_v1_events_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_screenshare_v1_events_proto_rawDesc), len(file_screenshare_v1_events_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mirrorme_v1_events_proto_rawDesc), len(file_mirrorme_v1_events_proto_rawDesc)),
 			NumEnums:      2,
 			NumMessages:   25,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_screenshare_v1_events_proto_goTypes,
-		DependencyIndexes: file_screenshare_v1_events_proto_depIdxs,
-		EnumInfos:         file_screenshare_v1_events_proto_enumTypes,
-		MessageInfos:      file_screenshare_v1_events_proto_msgTypes,
+		GoTypes:           file_mirrorme_v1_events_proto_goTypes,
+		DependencyIndexes: file_mirrorme_v1_events_proto_depIdxs,
+		EnumInfos:         file_mirrorme_v1_events_proto_enumTypes,
+		MessageInfos:      file_mirrorme_v1_events_proto_msgTypes,
 	}.Build()
-	File_screenshare_v1_events_proto = out.File
-	file_screenshare_v1_events_proto_goTypes = nil
-	file_screenshare_v1_events_proto_depIdxs = nil
+	File_mirrorme_v1_events_proto = out.File
+	file_mirrorme_v1_events_proto_goTypes = nil
+	file_mirrorme_v1_events_proto_depIdxs = nil
 }

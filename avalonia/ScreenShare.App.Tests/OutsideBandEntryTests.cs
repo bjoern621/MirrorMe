@@ -10,7 +10,7 @@ namespace ScreenShare.App.Tests;
 /// The burst ceiling is legal at zero, meaning bounded by nothing, and legal again from the target it bursts above.
 /// A range runs from one end to the other and cannot hold that pair,
 /// so the backend sends the band as the range and the zero as an entry
-/// (api/proto/screenshare/v1/form.proto, CONTROL_KIND_NUMBER_SELECT).
+/// (api/proto/mirrorme/v1/form.proto, CONTROL_KIND_NUMBER_SELECT).
 /// A spinner would coerce such a value into its own floor and write the floor back,
 /// the one answer the entry exists to reach.
 /// The entry is drawn as itself while it is held, and the spinner returns with the next value inside the band.

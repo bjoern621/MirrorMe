@@ -3,10 +3,10 @@ package app
 import (
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/group"
-	"bjoernblessin.de/screenshare/internal/groupclient"
-	"bjoernblessin.de/screenshare/internal/relay"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/group"
+	"bjoernblessin.de/mirrorme/internal/groupclient"
+	"bjoernblessin.de/mirrorme/internal/relay"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // The prefix every path of one group carries is drawn nowhere: one prefix over the whole list,

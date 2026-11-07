@@ -9,12 +9,12 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/receive"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // Repair walks a draft onto legal values and names the fields it moved.
@@ -148,7 +148,7 @@ func Repair(d Deps, draft settings.Settings) (settings.Settings, []string) {
 // A shell sends the message, and the Discord link and the brokered group ride on neither direction
 // of it: a linked install inside a voice channel reads back as a draft holding no link and in no
 // group, which the audience diagnostic then refuses by that name (diagnostics.go).
-func walked(m *screensharev1.Settings, draft settings.Settings) settings.Settings {
+func walked(m *mirrormev1.Settings, draft settings.Settings) settings.Settings {
 	return wire.ToSettings(m).WithUnsent(draft)
 }
 
@@ -184,7 +184,7 @@ var repairKeysWithoutFields []string
 // A codec that declares no ladder leaves the field standing.
 // There is no ladder to be off, the control is greyed with that reason,
 // and clearing it would throw away the step the draft carries for whichever codec it came from.
-func repairLadders(m *screensharev1.Settings) []string {
+func repairLadders(m *mirrormev1.Settings) []string {
 	s := wire.ToSettings(m)
 	c, known := capabilities.Get(s.Publish.Codec())
 	if !known {
@@ -228,7 +228,7 @@ func repairLadders(m *screensharev1.Settings) []string {
 //
 // Ceilings, and the two floors a publish refuses under: a target rate and a frame rate.
 // A figure between the limits is the user's to choose.
-func repairCeilings(d Deps, m *screensharev1.Settings) []string {
+func repairCeilings(d Deps, m *mirrormev1.Settings) []string {
 	// Off the message alone, where the walk above carries the draft's unsent half (walked):
 	// the codec, the bitrate and the ceiling all ride the message,
 	// and the ceilings read no field that stays behind on it.
@@ -393,7 +393,7 @@ var repairOrders = map[string][]string{
 // First rather than nearest: an option list is written in the order a reader should reach for it,
 // recommended entry leading, so first is nearest by the only measure this package has.
 func legalOption(av availability, d Deps, s settings.Settings, f *field, held string, entry int) (string, bool) {
-	var options []*screensharev1.FieldOption
+	var options []*mirrormev1.FieldOption
 	if f.repeat {
 		options = f.itemOptions(d, s, audioEntry(s, entry))
 	} else {
@@ -440,7 +440,7 @@ func legalOption(av availability, d Deps, s settings.Settings, f *field, held st
 // An offered entry the order does not name is appended rather than dropped,
 // since a value the machine offers stays reachable even
 // where this file has no opinion about where it sits.
-func repairWalk(key string, options []*screensharev1.FieldOption) []string {
+func repairWalk(key string, options []*mirrormev1.FieldOption) []string {
 	offered := make([]string, 0, len(options))
 	for _, o := range options {
 		offered = append(offered, o.GetValue())
@@ -476,15 +476,15 @@ func repairWalk(key string, options []*screensharev1.FieldOption) []string {
 // so this is where the two meet on the way in and repairValue where they meet on the way back.
 // A select holding a number is ordinary, the monitor index being one:
 // what makes a control a select is the machine having a list, not the value being a name.
-func optionValue(v *screensharev1.FieldValue) string {
+func optionValue(v *mirrormev1.FieldValue) string {
 	switch k := v.GetKind().(type) {
-	case *screensharev1.FieldValue_Text:
+	case *mirrormev1.FieldValue_Text:
 		return k.Text
-	case *screensharev1.FieldValue_Number:
+	case *mirrormev1.FieldValue_Number:
 		return strconv.FormatInt(k.Number, 10)
-	case *screensharev1.FieldValue_Decimal:
+	case *mirrormev1.FieldValue_Decimal:
 		return strconv.FormatFloat(k.Decimal, 'g', -1, 64)
-	case *screensharev1.FieldValue_Flag:
+	case *mirrormev1.FieldValue_Flag:
 		return strconv.FormatBool(k.Flag)
 	default:
 		return ""
@@ -553,7 +553,7 @@ func repairEntries(f *field, s settings.Settings) []int {
 // The key named is the entry's own, the key a shell binds and can say moved.
 // Entries after a dropped one shift up; a shell adopts the repaired draft whole
 // and redraws from it, so no index survives the shift.
-func repairAudioSources(m *screensharev1.Settings) []string {
+func repairAudioSources(m *mirrormev1.Settings) []string {
 	s := wire.ToSettings(m)
 	kept := s.Publish.Recorded()
 	if len(kept) == len(s.Publish.AudioSources) {

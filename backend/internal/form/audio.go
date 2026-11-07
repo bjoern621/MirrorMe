@@ -1,10 +1,10 @@
 package form
 
 import (
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // What is inside one audio kind.
@@ -64,9 +64,9 @@ func audioDeviceKnown(d Deps, kind, device string) bool {
 // an application not running is one that may be running when the stream starts,
 // and dropping the entry would take a choice back without saying so.
 // It carries the note naming it stranded, separating a device that is here from one that was.
-func optionAudioDevices(d Deps, _ settings.Settings, a settings.AudioSource) []*screensharev1.FieldOption {
+func optionAudioDevices(d Deps, _ settings.Settings, a settings.AudioSource) []*mirrormev1.FieldOption {
 	devices := audioDevicesOf(d, a.Source)
-	out := make([]*screensharev1.FieldOption, 0, len(devices)+1)
+	out := make([]*mirrormev1.FieldOption, 0, len(devices)+1)
 	for _, device := range devices {
 		out = append(out, optionEntry(device.ID, nil, false))
 	}
@@ -80,6 +80,6 @@ func optionAudioDevices(d Deps, _ settings.Settings, a settings.AudioSource) []*
 // optionAudioKinds offers where one entry records from.
 // The entry decides nothing about the list: which kinds exist is the platform's answer
 // and the same for every entry, so this ignores the entry and takes the declared table whole.
-func optionAudioKinds(d Deps, s settings.Settings, _ settings.AudioSource) []*screensharev1.FieldOption {
+func optionAudioKinds(d Deps, s settings.Settings, _ settings.AudioSource) []*mirrormev1.FieldOption {
 	return optionAudioSources(d, s)
 }

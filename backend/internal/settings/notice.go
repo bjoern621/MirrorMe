@@ -5,9 +5,9 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // StoreNotice turns a store failure into the statement a surface shows, nil for no failure.
@@ -18,8 +18,8 @@ import (
 //
 // A failure that could not move the old values aside carries no path,
 // and the statement then says the shorter thing rather than pointing at a file that is not there.
-func StoreNotice(code screensharev1.TextCode, err error) *screensharev1.Text {
-	assert.Assert(code != screensharev1.TextCode_TEXT_CODE_UNSPECIFIED,
+func StoreNotice(code mirrormev1.TextCode, err error) *mirrormev1.Text {
+	assert.Assert(code != mirrormev1.TextCode_TEXT_CODE_UNSPECIFIED,
 		"a store notice names which statement it is")
 
 	if err == nil {
@@ -30,5 +30,5 @@ func StoreNotice(code screensharev1.TextCode, err error) *screensharev1.Text {
 	if errors.As(err, &unreadable) {
 		kept = unreadable.Kept
 	}
-	return text.Of(code, text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_PATH, kept))
+	return text.Of(code, text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_PATH, kept))
 }

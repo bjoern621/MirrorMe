@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 
-	v1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	v1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 )
 
 // GPU engine time below this over a whole measurement is a run that did not reach the silicon.

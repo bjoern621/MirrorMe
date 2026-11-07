@@ -2,7 +2,7 @@
 //
 // Every function here is pure.
 // In goes a domain value (a settings.Settings, a relay.Status, the capability tables),
-// out comes the screenshare.v1 message carrying it, or the reverse.
+// out comes the mirrorme.v1 message carrying it, or the reverse.
 // Nothing reads state, starts work or decides anything beyond the shape.
 //
 // Its own package because two callers need it and neither should own it: the control service turns

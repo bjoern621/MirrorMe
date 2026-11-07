@@ -5,8 +5,8 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // qsvAbrPeak is the factor abr places its ceiling at above the target, the derivation the ffmpeg

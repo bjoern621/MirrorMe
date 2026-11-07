@@ -5,12 +5,12 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/display"
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/display"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // The quality model, resting on one measured figure: the bits a pixel of H.264 4:2:0 costs
@@ -105,7 +105,7 @@ var estimateChromas = map[string]estimateChromaCost{
 // settings file, or the platform has no enumerator.
 // The rest of the form still resolves, the summary carries no estimate,
 // and a diagnostic says the picture has no size.
-func estimate(d Deps, s settings.Settings) *screensharev1.Estimate {
+func estimate(d Deps, s settings.Settings) *mirrormev1.Estimate {
 	price, raw, priced := estimatePrice(d, s)
 	if !priced {
 		return nil
@@ -121,7 +121,7 @@ func estimate(d Deps, s settings.Settings) *screensharev1.Estimate {
 	}
 
 	coded := estimateHeldToCeiling(s, price)
-	est := &screensharev1.Estimate{
+	est := &mirrormev1.Estimate{
 		BitrateMbps:  coded,
 		RawMbps:      raw,
 		HeadroomMbps: float64(s.Publish.UplinkMbps) - coded,
@@ -244,7 +244,7 @@ func estimateQualityCeiling(s settings.Settings) (float64, bool) {
 // and the prediction cannot disagree about what the settings produce.
 // The high end is what a diagnostic is priced from, the drop on a line sized for the average
 // being the transport's rather than the encoder's.
-func estimateSpread(d Deps, s settings.Settings, est *screensharev1.Estimate) (low, high float64, spreads bool) {
+func estimateSpread(d Deps, s settings.Settings, est *mirrormev1.Estimate) (low, high float64, spreads bool) {
 	if est == nil {
 		return 0, 0, false
 	}

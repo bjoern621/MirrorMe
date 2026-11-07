@@ -7,12 +7,12 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/events"
-	"bjoernblessin.de/screenshare/internal/reach"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/events"
+	"bjoernblessin.de/mirrorme/internal/reach"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // The draft says which relay is being asked about, so a request carrying none is refused:
@@ -21,7 +21,7 @@ import (
 func TestCheckRelayRefusesARequestWithNoDraft(t *testing.T) {
 	server := New(&fakeBackend{}, events.New(), "test")
 
-	_, err := server.Do(context.Background(), &screensharev1.DoRequest{Action: &screensharev1.DoRequest_CheckRelay{}})
+	_, err := server.Do(context.Background(), &mirrormev1.DoRequest{Action: &mirrormev1.DoRequest_CheckRelay{}})
 	if err == nil {
 		t.Fatal("a check with no settings was answered, want it refused")
 	}
@@ -39,8 +39,8 @@ func TestARelayAnsweringNothingIsStillAnAnswer(t *testing.T) {
 	}}
 	server := New(backend, events.New(), "test")
 
-	outcome, err := server.Do(context.Background(), &screensharev1.DoRequest{
-		Action: &screensharev1.DoRequest_CheckRelay{CheckRelay: wire.Settings(settings.Defaults())},
+	outcome, err := server.Do(context.Background(), &mirrormev1.DoRequest{
+		Action: &mirrormev1.DoRequest_CheckRelay{CheckRelay: wire.Settings(settings.Defaults())},
 	})
 	answer := outcome.GetRelayCheck()
 	if err != nil {

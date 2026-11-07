@@ -40,10 +40,10 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/group"
-	"bjoernblessin.de/screenshare/internal/membership"
-	"bjoernblessin.de/screenshare/internal/serving"
-	"bjoernblessin.de/screenshare/internal/token"
+	"bjoernblessin.de/mirrorme/internal/group"
+	"bjoernblessin.de/mirrorme/internal/membership"
+	"bjoernblessin.de/mirrorme/internal/serving"
+	"bjoernblessin.de/mirrorme/internal/token"
 )
 
 // TokenWindow is how long a relay access token stays valid.

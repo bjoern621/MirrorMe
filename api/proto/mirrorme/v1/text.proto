@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package screenshare.v1;
+package mirrorme.v1;
 
-option go_package = "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1;screensharev1";
+option go_package = "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1";
 option csharp_namespace = "ScreenShare.Api.V1";
 
 // Every statement the backend makes crosses as a Text:

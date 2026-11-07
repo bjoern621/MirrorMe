@@ -8,12 +8,12 @@ import (
 	"strings"
 	"time"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // Resolving what a receive pipeline opens for HLS, the one watch leg whose address settings do not
@@ -64,7 +64,7 @@ func hlsMediaSource(s settings.Settings, masterURL string) (string, error) {
 	}
 	variant, ok := hlsVariantURI(master)
 	if !ok {
-		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_PLAYLIST_NO_VIDEO, text.Address(Redact(s, masterURL)))
+		return "", text.Fail(mirrormev1.TextCode_TEXT_CODE_PLAYLIST_NO_VIDEO, text.Address(Redact(s, masterURL)))
 	}
 	mediaURL, err := hlsResolveRef(masterURL, variant)
 	if err != nil {
@@ -82,8 +82,8 @@ func hlsMediaSource(s settings.Settings, masterURL string) (string, error) {
 			return hlsWithCredential(s, mediaURL)
 		}
 		if time.Now().After(deadline) {
-			return "", text.Fail(screensharev1.TextCode_TEXT_CODE_PLAYLIST_NO_SEGMENT, text.Address(Redact(s, mediaURL)),
-				text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_TIMEOUT_MS, hlsResolveTimeout.Milliseconds()))
+			return "", text.Fail(mirrormev1.TextCode_TEXT_CODE_PLAYLIST_NO_SEGMENT, text.Address(Redact(s, mediaURL)),
+				text.Num(mirrormev1.TextArgName_TEXT_ARG_NAME_TIMEOUT_MS, hlsResolveTimeout.Milliseconds()))
 		}
 		time.Sleep(hlsResolvePoll)
 	}
@@ -96,25 +96,25 @@ func hlsFetch(client *http.Client, s settings.Settings, addr string) (string, er
 
 	req, err := http.NewRequest(http.MethodGet, addr, nil)
 	if err != nil {
-		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(Redact(s, addr)))
+		return "", text.Because(err, mirrormev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(Redact(s, addr)))
 	}
 	if name, value, ok := CredentialHeader(s); ok {
 		req.Header.Set(name, value)
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", text.Because(errors.New(Redact(s, err.Error())), screensharev1.TextCode_TEXT_CODE_ADDRESS_UNANSWERED,
+		return "", text.Because(errors.New(Redact(s, err.Error())), mirrormev1.TextCode_TEXT_CODE_ADDRESS_UNANSWERED,
 			text.Address(Redact(s, addr)))
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", text.Because(errors.New(resp.Status), screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWERED,
+		return "", text.Because(errors.New(resp.Status), mirrormev1.TextCode_TEXT_CODE_ADDRESS_ANSWERED,
 			text.Address(Redact(s, addr)))
 	}
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(Redact(s, addr)))
+		return "", text.Because(err, mirrormev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(Redact(s, addr)))
 	}
 	return string(body), nil
 }
@@ -163,11 +163,11 @@ func hlsHasSegment(playlist string) bool {
 func hlsResolveRef(base, ref string) (string, error) {
 	b, err := url.Parse(base)
 	if err != nil {
-		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(base))
+		return "", text.Because(err, mirrormev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(base))
 	}
 	r, err := url.Parse(ref)
 	if err != nil {
-		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(ref))
+		return "", text.Because(err, mirrormev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(ref))
 	}
 	return b.ResolveReference(r).String(), nil
 }
@@ -184,7 +184,7 @@ func hlsWithCredential(s settings.Settings, addr string) (string, error) {
 	}
 	u, err := url.Parse(addr)
 	if err != nil {
-		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(Redact(s, addr)))
+		return "", text.Because(err, mirrormev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(Redact(s, addr)))
 	}
 	u.User = url.UserPassword(browserAuthUser, token)
 	return u.String(), nil

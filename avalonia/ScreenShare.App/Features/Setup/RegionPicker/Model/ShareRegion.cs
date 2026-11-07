@@ -5,7 +5,7 @@ namespace ScreenShare.App.Features.Setup.RegionPicker.Model;
 /// <summary>
 /// The spelling a rectangle is stored in: "100,200,1280x720",
 /// the top-left corner in virtual-desktop pixels, then the size
-/// (<c>api/proto/screenshare/v1/settings.proto</c>, <c>share_region</c>).
+/// (<c>api/proto/mirrorme/v1/settings.proto</c>, <c>share_region</c>).
 ///
 /// The shell's one site for it.
 /// The overlay writes what somebody dragged and the step reads it back for display,

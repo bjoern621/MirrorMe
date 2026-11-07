@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/changelog"
-	"bjoernblessin.de/screenshare/internal/qa"
+	"bjoernblessin.de/mirrorme/internal/changelog"
+	"bjoernblessin.de/mirrorme/internal/qa"
 )
 
 // record tests version on this machine and commits the record beside the redrawn page.

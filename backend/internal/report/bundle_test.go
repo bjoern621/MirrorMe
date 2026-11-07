@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // entries reads one bundle back, entry name to content.

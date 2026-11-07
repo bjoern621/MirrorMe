@@ -3,7 +3,7 @@ package discordavatar_test
 import (
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/discordavatar"
+	"bjoernblessin.de/mirrorme/internal/discordavatar"
 )
 
 func TestAnAccountsOwnPictureIsAddressedByItsHash(t *testing.T) {

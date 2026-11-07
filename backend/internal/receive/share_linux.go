@@ -15,8 +15,8 @@ import (
 	"runtime"
 	"unsafe"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"github.com/go-gst/go-gst/pkg/gst"
 
@@ -96,7 +96,7 @@ func onSample(sample *gst.Sample, run func(sample unsafe.Pointer, fault *C.char,
 	runtime.KeepAlive(sample)
 
 	if ok == 0 {
-		return text.Because(errors.New(reason(fault)), screensharev1.TextCode_TEXT_CODE_FRAMES_UNSHARED)
+		return text.Because(errors.New(reason(fault)), mirrormev1.TextCode_TEXT_CODE_FRAMES_UNSHARED)
 	}
 	return nil
 }
@@ -131,7 +131,7 @@ func (s *dmabufSharer) open(sample *gst.Sample, slots int) (Pool, error) {
 		fd := int(s.pool.fds[i])
 		if fd < 0 {
 			s.close()
-			return Pool{}, text.Fail(screensharev1.TextCode_TEXT_CODE_FRAMES_NO_DMABUF)
+			return Pool{}, text.Fail(mirrormev1.TextCode_TEXT_CODE_FRAMES_NO_DMABUF)
 		}
 		descriptors = append(descriptors, fd)
 	}
@@ -172,7 +172,7 @@ func (s *dmabufSharer) open(sample *gst.Sample, slots int) (Pool, error) {
 
 func (s *dmabufSharer) write(slot int, sample *gst.Sample) error {
 	if !s.opened {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_FRAMES_UNSHARED)
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_FRAMES_UNSHARED)
 	}
 
 	return onSample(sample, func(frame unsafe.Pointer, fault *C.char, size C.int) C.int {
@@ -207,7 +207,7 @@ func shareFormat(fourcc uint32) (ShareFormat, error) {
 	case drmFormatARGB8888:
 		return ShareFormatBGRA, nil
 	default:
-		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_FRAMES_FORMAT_UNIMPORTABLE, text.Format(fourccName(fourcc)))
+		return "", text.Fail(mirrormev1.TextCode_TEXT_CODE_FRAMES_FORMAT_UNIMPORTABLE, text.Format(fourccName(fourcc)))
 	}
 }
 

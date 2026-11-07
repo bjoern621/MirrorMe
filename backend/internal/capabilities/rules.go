@@ -3,10 +3,10 @@ package capabilities
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/rules"
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/rules"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // The codec table as rules: every gap and every numeric ceiling it declares,
@@ -226,9 +226,9 @@ func (c Codec) ceilingRules() []rules.Rule {
 				Verdict: rules.Refuse,
 				Field:   rules.AxisCq,
 				Values:  rules.AtLeast(scale + 1),
-				Reason:  screensharev1.TextCode_TEXT_CODE_CQ_ABOVE_CODEC_SCALE,
-				Args: []*screensharev1.TextArg{
-					text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_CQ_MAX, int64(scale)),
+				Reason:  mirrormev1.TextCode_TEXT_CODE_CQ_ABOVE_CODEC_SCALE,
+				Args: []*mirrormev1.TextArg{
+					text.Num(mirrormev1.TextArgName_TEXT_ARG_NAME_CQ_MAX, int64(scale)),
 				},
 			})
 		}
@@ -241,9 +241,9 @@ func (c Codec) ceilingRules() []rules.Rule {
 				Verdict: rules.Refuse,
 				Field:   rules.AxisBitrateM,
 				Values:  rules.AtLeast(limit + 1),
-				Reason:  screensharev1.TextCode_TEXT_CODE_BITRATE_ABOVE_CODEC_LIMIT,
-				Args: []*screensharev1.TextArg{
-					text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_BITRATE_LIMIT_MBPS, int64(limit)),
+				Reason:  mirrormev1.TextCode_TEXT_CODE_BITRATE_ABOVE_CODEC_LIMIT,
+				Args: []*mirrormev1.TextArg{
+					text.Num(mirrormev1.TextArgName_TEXT_ARG_NAME_BITRATE_LIMIT_MBPS, int64(limit)),
 				},
 			})
 		}
@@ -258,9 +258,9 @@ func (c Codec) ceilingRules() []rules.Rule {
 				Verdict: rules.Refuse,
 				Field:   rules.AxisGop,
 				Values:  rules.AtLeast(limit + 1),
-				Reason:  screensharev1.TextCode_TEXT_CODE_GOP_ABOVE_CODEC_LIMIT,
-				Args: []*screensharev1.TextArg{
-					text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_GOP_LIMIT_FRAMES, int64(limit)),
+				Reason:  mirrormev1.TextCode_TEXT_CODE_GOP_ABOVE_CODEC_LIMIT,
+				Args: []*mirrormev1.TextArg{
+					text.Num(mirrormev1.TextArgName_TEXT_ARG_NAME_GOP_LIMIT_FRAMES, int64(limit)),
 				},
 			})
 		}

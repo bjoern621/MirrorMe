@@ -9,7 +9,7 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/ffmpeg"
+	"bjoernblessin.de/mirrorme/internal/ffmpeg"
 )
 
 // ffmpegMeterHost is the loopback the meter listens on, so the copy never leaves the machine.

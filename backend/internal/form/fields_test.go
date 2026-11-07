@@ -8,17 +8,17 @@ import (
 	"strconv"
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/display"
-	"bjoernblessin.de/screenshare/internal/ffmpeg"
-	"bjoernblessin.de/screenshare/internal/gpupath"
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/transport"
-	"bjoernblessin.de/screenshare/internal/window"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/display"
+	"bjoernblessin.de/mirrorme/internal/ffmpeg"
+	"bjoernblessin.de/mirrorme/internal/gpupath"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/transport"
+	"bjoernblessin.de/mirrorme/internal/window"
 )
 
 // fieldDeclaredKeys is every constant in keys.go, written out because Go has no reflection
@@ -74,7 +74,7 @@ func fieldRowFor(t *testing.T, key string) *field {
 }
 
 // fieldDrawnFor is one control as a resolve rendered it.
-func fieldDrawnFor(t *testing.T, form *screensharev1.Form, key string) *screensharev1.Field {
+func fieldDrawnFor(t *testing.T, form *mirrormev1.Form, key string) *mirrormev1.Field {
 	t.Helper()
 	for _, g := range form.GetGroups() {
 		for _, f := range g.GetFields() {
@@ -93,7 +93,7 @@ func fieldOptionValues(t *testing.T, key string) []string {
 	f := fieldRowFor(t, key)
 	d, s := fieldTestDeps(), settings.Defaults()
 
-	built := []*screensharev1.FieldOption(nil)
+	built := []*mirrormev1.FieldOption(nil)
 	switch {
 	case f.options != nil:
 		built = f.options(d, s)
@@ -304,7 +304,7 @@ func TestTheDisplayNameIsAFreeTextRelaySetting(t *testing.T) {
 	if f.group != GroupRelay {
 		t.Errorf("the display name sits in group %q, want %q", f.group, GroupRelay)
 	}
-	if f.control != screensharev1.ControlKind_CONTROL_KIND_TEXT {
+	if f.control != mirrormev1.ControlKind_CONTROL_KIND_TEXT {
 		t.Errorf("the display name is drawn as %v, want a text control", f.control)
 	}
 	if f.options != nil || f.bounds != nil {
@@ -356,23 +356,23 @@ func TestAnEmptyDisplayNameIsDrawnAsItStands(t *testing.T) {
 func TestASelectOffersOptionsAndANumberStatesARange(t *testing.T) {
 	for _, f := range fieldTable {
 		switch f.control {
-		case screensharev1.ControlKind_CONTROL_KIND_SELECT,
-			screensharev1.ControlKind_CONTROL_KIND_RADIO:
+		case mirrormev1.ControlKind_CONTROL_KIND_SELECT,
+			mirrormev1.ControlKind_CONTROL_KIND_RADIO:
 			if f.options == nil && f.itemOptions == nil {
 				t.Errorf("%s is a select or radio with no options", f.key)
 			}
 			if f.bounds != nil {
 				t.Errorf("%s is a select or radio carrying a range", f.key)
 			}
-		case screensharev1.ControlKind_CONTROL_KIND_NUMBER,
-			screensharev1.ControlKind_CONTROL_KIND_SLIDER:
+		case mirrormev1.ControlKind_CONTROL_KIND_NUMBER,
+			mirrormev1.ControlKind_CONTROL_KIND_SLIDER:
 			if f.bounds == nil {
 				t.Errorf("%s is a number or slider with no range", f.key)
 			}
 			if f.options != nil {
 				t.Errorf("%s is a number or slider carrying options", f.key)
 			}
-		case screensharev1.ControlKind_CONTROL_KIND_NUMBER_SELECT:
+		case mirrormev1.ControlKind_CONTROL_KIND_NUMBER_SELECT:
 			if f.options == nil && f.itemOptions == nil {
 				t.Errorf("%s is a number-select with no ladder", f.key)
 			}
@@ -413,7 +413,7 @@ func TestTheFrameRateLadderCarriesASavedRateOffIt(t *testing.T) {
 	s := settings.Defaults()
 	s.Publish.Fps = 37
 
-	if !slices.ContainsFunc(optionFpsPresets(fieldTestDeps(), s), func(o *screensharev1.FieldOption) bool {
+	if !slices.ContainsFunc(optionFpsPresets(fieldTestDeps(), s), func(o *mirrormev1.FieldOption) bool {
 		return o.GetValue() == "37"
 	}) {
 		t.Error("the frame rate ladder drops a saved rate that is not one of its steps")
@@ -424,18 +424,18 @@ func TestTheFrameRateLadderCarriesASavedRateOffIt(t *testing.T) {
 // how "Mbit/s" sits beside its figure is typography, and one string could not tell a surface
 // which half of it was which.
 func TestEveryQuantityStatesItsUnit(t *testing.T) {
-	units := map[string]screensharev1.Unit{
-		KeyFps:                 screensharev1.Unit_UNIT_FRAMES_PER_SECOND,
-		KeyBitrateM:            screensharev1.Unit_UNIT_MEGABITS_PER_SECOND,
-		KeyMaxrateM:            screensharev1.Unit_UNIT_MEGABITS_PER_SECOND,
-		KeyUplinkMbps:          screensharev1.Unit_UNIT_MEGABITS_PER_SECOND,
-		KeyVbvMs:               screensharev1.Unit_UNIT_MILLISECONDS,
-		KeySrtPublishLatencyMs: screensharev1.Unit_UNIT_MILLISECONDS,
-		KeySrtWatchLatencyMs:   screensharev1.Unit_UNIT_MILLISECONDS,
-		KeyRtspWatchLatencyMs:  screensharev1.Unit_UNIT_MILLISECONDS,
-		KeyGop:                 screensharev1.Unit_UNIT_FRAMES,
-		KeyBframes:             screensharev1.Unit_UNIT_FRAMES,
-		KeyAudioSourceGain:     screensharev1.Unit_UNIT_PERCENT,
+	units := map[string]mirrormev1.Unit{
+		KeyFps:                 mirrormev1.Unit_UNIT_FRAMES_PER_SECOND,
+		KeyBitrateM:            mirrormev1.Unit_UNIT_MEGABITS_PER_SECOND,
+		KeyMaxrateM:            mirrormev1.Unit_UNIT_MEGABITS_PER_SECOND,
+		KeyUplinkMbps:          mirrormev1.Unit_UNIT_MEGABITS_PER_SECOND,
+		KeyVbvMs:               mirrormev1.Unit_UNIT_MILLISECONDS,
+		KeySrtPublishLatencyMs: mirrormev1.Unit_UNIT_MILLISECONDS,
+		KeySrtWatchLatencyMs:   mirrormev1.Unit_UNIT_MILLISECONDS,
+		KeyRtspWatchLatencyMs:  mirrormev1.Unit_UNIT_MILLISECONDS,
+		KeyGop:                 mirrormev1.Unit_UNIT_FRAMES,
+		KeyBframes:             mirrormev1.Unit_UNIT_FRAMES,
+		KeyAudioSourceGain:     mirrormev1.Unit_UNIT_PERCENT,
 	}
 	for key, want := range units {
 		if got := fieldRowFor(t, key).unit; got != want {
@@ -448,7 +448,7 @@ func TestEveryQuantityStatesItsUnit(t *testing.T) {
 		if _, quantity := units[f.key]; quantity {
 			continue
 		}
-		if f.unit != screensharev1.Unit_UNIT_UNSPECIFIED {
+		if f.unit != mirrormev1.Unit_UNIT_UNSPECIFIED {
 			t.Errorf("%s is not a quantity and carries unit %v", f.key, f.unit)
 		}
 	}
@@ -550,7 +550,7 @@ func TestAnAudioSourcesNoteIsWhatServesItHere(t *testing.T) {
 	for _, info := range []platform.Info{
 		{OS: "linux", Display: "wayland"}, {OS: "windows"}, {OS: "darwin"},
 	} {
-		notes := map[string]*screensharev1.Text{}
+		notes := map[string]*mirrormev1.Text{}
 		for _, o := range optionAudioSources(Deps{Platform: info}, settings.Defaults()) {
 			notes[o.GetValue()] = o.GetNote()
 		}
@@ -806,12 +806,12 @@ func TestEveryEffortLadderNamesItsEnds(t *testing.T) {
 		s.Publish.Effort = steps[0]
 
 		for i, o := range optionEfforts(d, s) {
-			want := screensharev1.TextCode_TEXT_CODE_UNSPECIFIED
+			want := mirrormev1.TextCode_TEXT_CODE_UNSPECIFIED
 			switch i {
 			case 0:
-				want = screensharev1.TextCode_TEXT_CODE_EFFORT_MOST
+				want = mirrormev1.TextCode_TEXT_CODE_EFFORT_MOST
 			case len(steps) - 1:
-				want = screensharev1.TextCode_TEXT_CODE_EFFORT_LEAST
+				want = mirrormev1.TextCode_TEXT_CODE_EFFORT_LEAST
 			}
 			if got := o.GetNote().GetCode(); got != want {
 				t.Errorf("%s step %q carries note %v, want %v", c.Name, o.GetValue(), got, want)
@@ -873,7 +873,7 @@ func TestEveryRangeAdmitsTheDefaultSettings(t *testing.T) {
 			entry = 0
 		}
 		v := fieldValue(f, s, entry)
-		n, ok := v.GetKind().(*screensharev1.FieldValue_Number)
+		n, ok := v.GetKind().(*mirrormev1.FieldValue_Number)
 		if !ok {
 			t.Errorf("%s carries a range and reads a value that is not a number", f.key)
 			continue
@@ -894,7 +894,7 @@ func fieldsOffTheirStep(d Deps, s settings.Settings) []string {
 	var off []string
 	for i := range fieldTable {
 		f := &fieldTable[i]
-		if f.control != screensharev1.ControlKind_CONTROL_KIND_SLIDER || f.bounds == nil {
+		if f.control != mirrormev1.ControlKind_CONTROL_KIND_SLIDER || f.bounds == nil {
 			continue
 		}
 		r := f.bounds(d, s)
@@ -906,7 +906,7 @@ func fieldsOffTheirStep(d Deps, s settings.Settings) []string {
 		if f.repeat {
 			entry = 0
 		}
-		n, ok := fieldValue(f, s, entry).GetKind().(*screensharev1.FieldValue_Number)
+		n, ok := fieldValue(f, s, entry).GetKind().(*mirrormev1.FieldValue_Number)
 		if !ok {
 			continue
 		}
@@ -1043,7 +1043,7 @@ func TestACaptureBackendBehindAPrivilegeSaysSoOnItsEntry(t *testing.T) {
 func TestTheRadioIsReservedForTheClosedSetsWithAParagraphEach(t *testing.T) {
 	radios := []string{KeyMode, KeyShareKind, KeyGroupSource}
 	for _, f := range fieldTable {
-		radio := f.control == screensharev1.ControlKind_CONTROL_KIND_RADIO
+		radio := f.control == mirrormev1.ControlKind_CONTROL_KIND_RADIO
 		if radio != slices.Contains(radios, f.key) {
 			t.Errorf("%s is drawn as %v", f.key, f.control)
 		}
@@ -1138,7 +1138,7 @@ func TestOrderingTheEntriesDropsNoneAndReordersNeither(t *testing.T) {
 	}
 }
 
-func fieldOptions(f *field, d Deps, s settings.Settings, entry int) []*screensharev1.FieldOption {
+func fieldOptions(f *field, d Deps, s settings.Settings, entry int) []*mirrormev1.FieldOption {
 	if f.repeat {
 		return f.itemOptions(d, s, audioEntry(s, entry))
 	}
@@ -1313,7 +1313,7 @@ func TestTheRateBufferStaysInsideTheEncodersOwnField(t *testing.T) {
 // The burst ceiling is one control over two answers:
 // a rate at or above the target, and no ceiling at all.
 // A range runs from one end to the other and cannot hold that pair, so the range carries the band
-// and the ladder carries the answer outside it (api/proto/screenshare/v1/form.proto,
+// and the ladder carries the answer outside it (api/proto/mirrorme/v1/form.proto,
 // CONTROL_KIND_NUMBER_SELECT).
 func TestTheBurstCeilingOffersNoCeilingBesideItsBand(t *testing.T) {
 	d, s := fieldTestDeps(), settings.Defaults()
@@ -1373,7 +1373,7 @@ func TestTheBurstCeilingLadderCarriesTheHeldValue(t *testing.T) {
 	}
 }
 
-func hasEntry(entries []*screensharev1.FieldOption, value string) bool {
+func hasEntry(entries []*mirrormev1.FieldOption, value string) bool {
 	for _, entry := range entries {
 		if entry.GetValue() == value {
 			return true
@@ -1382,7 +1382,7 @@ func hasEntry(entries []*screensharev1.FieldOption, value string) bool {
 	return false
 }
 
-func entryValues(entries []*screensharev1.FieldOption) []string {
+func entryValues(entries []*mirrormev1.FieldOption) []string {
 	out := make([]string, 0, len(entries))
 	for _, entry := range entries {
 		out = append(out, entry.GetValue())

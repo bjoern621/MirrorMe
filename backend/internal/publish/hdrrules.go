@@ -1,10 +1,10 @@
 package publish
 
 import (
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/rules"
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/rules"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // What each engine can say about the colour of the surface it captures.
@@ -41,12 +41,12 @@ func engineColourRules() []rules.Rule {
 		Verdict: rules.Note,
 		Field:   rules.AxisChroma,
 		Values:  rules.OneOf(tenBitChroma),
-		Reason:  screensharev1.TextCode_TEXT_CODE_ENGINE_TAGS_STANDARD_RANGE,
+		Reason:  mirrormev1.TextCode_TEXT_CODE_ENGINE_TAGS_STANDARD_RANGE,
 		// The engine that does carry it, so the note names the way out rather than only the limit.
 		// An argument rather than an axis reading, the axis carrying the selected engine where a reader
 		// needs the other one.
-		Args: []*screensharev1.TextArg{
-			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_OTHER_ENGINE, EngineGst),
+		Args: []*mirrormev1.TextArg{
+			text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_OTHER_ENGINE, EngineGst),
 		},
 	}}
 }

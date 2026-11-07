@@ -12,7 +12,7 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/gstrun"
+	"bjoernblessin.de/mirrorme/internal/gstrun"
 )
 
 // gstStatsName names the progressreport element counting encoded frames, gstCaptureName the one

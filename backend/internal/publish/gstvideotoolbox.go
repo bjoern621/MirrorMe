@@ -3,8 +3,8 @@ package publish
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // vtEncoder maps the one rate-control mode Apple's framework reaches onto one applemedia element,

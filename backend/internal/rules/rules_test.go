@@ -4,15 +4,15 @@ import (
 	"strings"
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 )
 
 // Codes with no meaning beyond being valid.
 // A statement is checked by the identifiers riding with it,
 // never by wording, which the surface owns.
 const (
-	someReason  = screensharev1.TextCode_TEXT_CODE_CODEC_CANNOT_ENCODE_CHROMA
-	otherReason = screensharev1.TextCode_TEXT_CODE_CODEC_CODES_NO_RGB
+	someReason  = mirrormev1.TextCode_TEXT_CODE_CODEC_CANNOT_ENCODE_CHROMA
+	otherReason = mirrormev1.TextCode_TEXT_CODE_CODEC_CODES_NO_RGB
 )
 
 // facts is a whole configuration, so a test states what it changes rather than what it carries.
@@ -257,10 +257,10 @@ func TestReasonCarriesTheIdentifiersItIsAbout(t *testing.T) {
 		t.Errorf("the statement carried %v, want %v", got, want)
 	}
 	for _, a := range reasons[0].GetArgs() {
-		if a.GetName() == screensharev1.TextArgName_TEXT_ARG_NAME_CODEC && a.GetId() != "libvpx" {
+		if a.GetName() == mirrormev1.TextArgName_TEXT_ARG_NAME_CODEC && a.GetId() != "libvpx" {
 			t.Errorf("the codec argument carried %q", a.GetId())
 		}
-		if a.GetName() == screensharev1.TextArgName_TEXT_ARG_NAME_BITRATE_MBPS && a.GetNumber() != 150 {
+		if a.GetName() == mirrormev1.TextArgName_TEXT_ARG_NAME_BITRATE_MBPS && a.GetNumber() != 150 {
 			t.Errorf("the bitrate argument carried %d, want the fact's own reading", a.GetNumber())
 		}
 	}
@@ -281,7 +281,7 @@ func TestSeveralValuesCarryNoSingleValueArgument(t *testing.T) {
 			t.Errorf("%s stayed selectable", value)
 		}
 		for _, a := range v.ValueReasons(AxisChroma, value)[0].GetArgs() {
-			if a.GetName() == screensharev1.TextArgName_TEXT_ARG_NAME_VALUE {
+			if a.GetName() == mirrormev1.TextArgName_TEXT_ARG_NAME_VALUE {
 				t.Errorf("a refusal of two entries named %q as the value", a.GetId())
 			}
 		}

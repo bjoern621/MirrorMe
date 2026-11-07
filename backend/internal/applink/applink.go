@@ -11,8 +11,8 @@ import (
 	"net/url"
 	"strings"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 )
@@ -68,18 +68,18 @@ func FormatWatch(group, stream string) string {
 // or handed over by another program.
 func Parse(raw string) (Watch, error) {
 	if raw == "" {
-		return Watch{}, text.Fail(screensharev1.TextCode_TEXT_CODE_LINK_EMPTY)
+		return Watch{}, text.Fail(mirrormev1.TextCode_TEXT_CODE_LINK_EMPTY)
 	}
 
 	parsed, err := url.Parse(raw)
 	if err != nil {
-		return Watch{}, text.Because(err, screensharev1.TextCode_TEXT_CODE_LINK_UNREADABLE)
+		return Watch{}, text.Because(err, mirrormev1.TextCode_TEXT_CODE_LINK_UNREADABLE)
 	}
 	if parsed.Scheme != Scheme {
-		return Watch{}, text.Fail(screensharev1.TextCode_TEXT_CODE_LINK_NOT_OURS, text.Value(parsed.Scheme))
+		return Watch{}, text.Fail(mirrormev1.TextCode_TEXT_CODE_LINK_NOT_OURS, text.Value(parsed.Scheme))
 	}
 	if parsed.Host != watchHost {
-		return Watch{}, text.Fail(screensharev1.TextCode_TEXT_CODE_LINK_NOT_OURS, text.Value(parsed.Host))
+		return Watch{}, text.Fail(mirrormev1.TextCode_TEXT_CODE_LINK_NOT_OURS, text.Value(parsed.Host))
 	}
 
 	// Split before unescaping, so a segment carrying an escaped separator stays one segment.
@@ -87,7 +87,7 @@ func Parse(raw string) (Watch, error) {
 	trimmed := strings.Trim(parsed.EscapedPath(), "/")
 	group, stream, found := strings.Cut(trimmed, "/")
 	if !found || group == "" || stream == "" {
-		return Watch{}, text.Fail(screensharev1.TextCode_TEXT_CODE_LINK_INCOMPLETE)
+		return Watch{}, text.Fail(mirrormev1.TextCode_TEXT_CODE_LINK_INCOMPLETE)
 	}
 
 	return unescapeWatch(group, stream)
@@ -97,13 +97,13 @@ func Parse(raw string) (Watch, error) {
 func unescapeWatch(group, stream string) (Watch, error) {
 	read, err := url.PathUnescape(group)
 	if err != nil {
-		return Watch{}, text.Because(err, screensharev1.TextCode_TEXT_CODE_LINK_UNREADABLE)
+		return Watch{}, text.Because(err, mirrormev1.TextCode_TEXT_CODE_LINK_UNREADABLE)
 	}
 
 	parts := strings.Split(stream, "/")
 	for i, part := range parts {
 		if parts[i], err = url.PathUnescape(part); err != nil {
-			return Watch{}, text.Because(err, screensharev1.TextCode_TEXT_CODE_LINK_UNREADABLE)
+			return Watch{}, text.Because(err, mirrormev1.TextCode_TEXT_CODE_LINK_UNREADABLE)
 		}
 	}
 

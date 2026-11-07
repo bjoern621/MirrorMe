@@ -3,9 +3,9 @@ package control
 import (
 	"context"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // checkRelay dials every leg of the relay the draft names and answers what each listener said.
@@ -24,11 +24,11 @@ import (
 // so a request carrying none is refused by the gate every Set and Do arm uses:
 // an empty one would check the relay nobody named and report every leg unaddressed,
 // reading as an answer about the relay on screen.
-func (s *Server) checkRelay(ctx context.Context, m *screensharev1.Settings) (*screensharev1.RelayCheck, error) {
+func (s *Server) checkRelay(ctx context.Context, m *mirrormev1.Settings) (*mirrormev1.RelayCheck, error) {
 	draft, err := draftOf(m)
 	if err != nil {
 		return nil, err
 	}
 
-	return &screensharev1.RelayCheck{Legs: wire.RelayLegs(s.backend.CheckRelay(ctx, draft))}, nil
+	return &mirrormev1.RelayCheck{Legs: wire.RelayLegs(s.backend.CheckRelay(ctx, draft))}, nil
 }

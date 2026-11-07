@@ -5,9 +5,9 @@ import (
 
 	"google.golang.org/protobuf/proto"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // Settings carries a settings.Settings out onto the contract, group by group.
@@ -25,8 +25,8 @@ import (
 // Each is a port, a frame rate, a megabit figure or a millisecond window, all bounded by the form,
 // so a value big enough to lose bits arrived through a hand-edited settings file:
 // an Umgebungsfehler the app survives rather than a broken internal contract worth panicking on.
-func Settings(s settings.Settings) *screensharev1.Settings {
-	return &screensharev1.Settings{
+func Settings(s settings.Settings) *mirrormev1.Settings {
+	return &mirrormev1.Settings{
 		Relay:      RelaySettings(s.Relay),
 		Publish:    PublishSettings(s.Publish),
 		Viewer:     ViewerSettings(s.Viewer),
@@ -36,8 +36,8 @@ func Settings(s settings.Settings) *screensharev1.Settings {
 }
 
 // AppSettings carries what the app does for itself out, which is about no stream.
-func AppSettings(a settings.App) *screensharev1.AppSettings {
-	return &screensharev1.AppSettings{
+func AppSettings(a settings.App) *mirrormev1.AppSettings {
+	return &mirrormev1.AppSettings{
 		SendCrashReports:    a.SendCrashReports,
 		CrashReportsAsked:   a.CrashReportsAsked,
 		CheckUpdatesOnStart: a.CheckUpdatesOnStart,
@@ -53,8 +53,8 @@ func AppSettings(a settings.App) *screensharev1.AppSettings {
 // The link secret is a credential rather than a setting: the link flow is its one writer
 // and the backend puts it back on every copy coming in (internal/app, withStoredLink),
 // so a shell has nothing to edit about it and carrying it would hand every shell a secret it has no use for.
-func RelaySettings(r settings.Relay) *screensharev1.RelaySettings {
-	return &screensharev1.RelaySettings{
+func RelaySettings(r settings.Relay) *mirrormev1.RelaySettings {
+	return &mirrormev1.RelaySettings{
 		Host:        r.Host,
 		SrtPort:     int32(r.SrtPort),
 		RtspPort:    int32(r.RtspPort),
@@ -70,8 +70,8 @@ func RelaySettings(r settings.Relay) *screensharev1.RelaySettings {
 }
 
 // PublishSettings carries one way of publishing out, the whole of what a preset holds.
-func PublishSettings(p settings.Publish) *screensharev1.PublishSettings {
-	return &screensharev1.PublishSettings{
+func PublishSettings(p settings.Publish) *mirrormev1.PublishSettings {
+	return &mirrormev1.PublishSettings{
 		PublishTransport: p.Transport,
 		Format:           p.Format,
 		Encoder:          p.Encoder,
@@ -112,8 +112,8 @@ func PublishSettings(p settings.Publish) *screensharev1.PublishSettings {
 	}
 }
 
-func ViewerSettings(v settings.Viewer) *screensharev1.ViewerSettings {
-	return &screensharev1.ViewerSettings{
+func ViewerSettings(v settings.Viewer) *mirrormev1.ViewerSettings {
+	return &mirrormev1.ViewerSettings{
 		TileWatchTransport: v.TileWatchTransport,
 
 		RtspWatchProtocol:  v.RtspWatchProtocol,
@@ -140,7 +140,7 @@ func ViewerSettings(v settings.Viewer) *screensharev1.ViewerSettings {
 // so a draft read off it is whole and nothing is merged onto what the backend already held.
 // The two credentials are the exception, each written by the backend alone and put back there
 // (ToRelay, and internal/app settingsForCommand for the relay token).
-func ToSettings(m *screensharev1.Settings) settings.Settings {
+func ToSettings(m *mirrormev1.Settings) settings.Settings {
 	return settings.Settings{
 		Relay:   ToRelay(m.GetRelay()),
 		Publish: ToPublish(m.GetPublish()),
@@ -150,7 +150,7 @@ func ToSettings(m *screensharev1.Settings) settings.Settings {
 }
 
 // ToApp reads what the app does for itself back off the contract.
-func ToApp(m *screensharev1.AppSettings) settings.App {
+func ToApp(m *mirrormev1.AppSettings) settings.App {
 	return settings.App{
 		SendCrashReports:    m.GetSendCrashReports(),
 		CrashReportsAsked:   m.GetCrashReportsAsked(),
@@ -172,7 +172,7 @@ func ToApp(m *screensharev1.AppSettings) settings.App {
 // RelaySettings.discord_link is not read either, and crosses in neither direction (RelaySettings).
 // A draft read before a link landed carries none, so taking it would unlink this install
 // on the next save.
-func ToRelay(m *screensharev1.RelaySettings) settings.Relay {
+func ToRelay(m *mirrormev1.RelaySettings) settings.Relay {
 	return settings.Relay{
 		Host:        m.GetHost(),
 		SrtPort:     int(m.GetSrtPort()),
@@ -188,7 +188,7 @@ func ToRelay(m *screensharev1.RelaySettings) settings.Relay {
 }
 
 // ToPublish reads the publish group back off the contract, and a preset arrives the same way.
-func ToPublish(m *screensharev1.PublishSettings) settings.Publish {
+func ToPublish(m *mirrormev1.PublishSettings) settings.Publish {
 	return settings.Publish{
 		Transport:  m.GetPublishTransport(),
 		Format:     m.GetFormat(),
@@ -230,7 +230,7 @@ func ToPublish(m *screensharev1.PublishSettings) settings.Publish {
 	}
 }
 
-func ToViewer(m *screensharev1.ViewerSettings) settings.Viewer {
+func ToViewer(m *mirrormev1.ViewerSettings) settings.Viewer {
 	return settings.Viewer{
 		TileWatchTransport: m.GetTileWatchTransport(),
 
@@ -253,10 +253,10 @@ func ToViewer(m *screensharev1.ViewerSettings) settings.Viewer {
 // so nothing another process wrote arrives at this parameter.
 // A nameless row is a store that lost the identity a shell selects and deletes by,
 // found out here rather than in a shell drawing a blank entry it can never act on again.
-func Preset(p settings.Preset) *screensharev1.Preset {
+func Preset(p settings.Preset) *mirrormev1.Preset {
 	assert.Assert(p.Name != "", "a stored preset carries the name it is selected by")
 
-	return &screensharev1.Preset{
+	return &mirrormev1.Preset{
 		Name:     p.Name,
 		Settings: PublishSettings(p.Settings),
 	}
@@ -268,8 +268,8 @@ func Preset(p settings.Preset) *screensharev1.Preset {
 // Nothing saved is an empty slice and not nil.
 // Both encode to the same absent repeated field, so this buys nothing on the wire:
 // it is for the Go side, where a reader most easily takes nil for "not loaded yet".
-func Presets(ps []settings.Preset) []*screensharev1.Preset {
-	out := make([]*screensharev1.Preset, 0, len(ps))
+func Presets(ps []settings.Preset) []*mirrormev1.Preset {
+	out := make([]*mirrormev1.Preset, 0, len(ps))
 	for _, p := range ps {
 		out = append(out, Preset(p))
 	}
@@ -284,13 +284,13 @@ func Presets(ps []settings.Preset) []*screensharev1.Preset {
 // ("publish.audio_sources[2].gain") address them by.
 //
 // An empty list and an absent field are one statement here: a stream with no second track.
-func audioSources(sources []settings.AudioSource) []*screensharev1.AudioSource {
+func audioSources(sources []settings.AudioSource) []*mirrormev1.AudioSource {
 	if len(sources) == 0 {
 		return nil
 	}
-	out := make([]*screensharev1.AudioSource, 0, len(sources))
+	out := make([]*mirrormev1.AudioSource, 0, len(sources))
 	for _, a := range sources {
-		out = append(out, &screensharev1.AudioSource{
+		out = append(out, &mirrormev1.AudioSource{
 			Source: a.Source,
 			Device: a.Device,
 			Gain:   proto.Int32(int32(a.Gain)),
@@ -302,7 +302,7 @@ func audioSources(sources []settings.AudioSource) []*screensharev1.AudioSource {
 	return out
 }
 
-func toAudioSources(sources []*screensharev1.AudioSource) []settings.AudioSource {
+func toAudioSources(sources []*mirrormev1.AudioSource) []settings.AudioSource {
 	if len(sources) == 0 {
 		// No list rather than an empty one:
 		// that is what a settings object with no second track holds and what a repair leaves untouched.
@@ -330,7 +330,7 @@ func toAudioSources(sources []*screensharev1.AudioSource) []settings.AudioSource
 // so the field carries presence and this reads it.
 // An entry a reader creates by picking a kind on the growing row arrives with no gain at all,
 // and arriving silent is the one answer it must not have.
-func audioGain(a *screensharev1.AudioSource) int {
+func audioGain(a *mirrormev1.AudioSource) int {
 	if a.Gain == nil {
 		return settings.GainUnity
 	}

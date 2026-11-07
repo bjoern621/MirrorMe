@@ -4,10 +4,10 @@ import (
 	"strings"
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/share"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/share"
 )
 
 // An index no machine running this test has an output for,
@@ -72,7 +72,7 @@ func TestWhichSessionsReadOneScreen(t *testing.T) {
 			if gap == nil {
 				return
 			}
-			if gap.GetCode() != screensharev1.TextCode_TEXT_CODE_NO_MONITOR_PREVIEW {
+			if gap.GetCode() != mirrormev1.TextCode_TEXT_CODE_NO_MONITOR_PREVIEW {
 				t.Errorf("the gap states %v rather than that there is no monitor preview", gap.GetCode())
 			}
 			// The sentence is the shell's, written per platform,

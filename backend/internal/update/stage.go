@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 )
@@ -54,12 +54,12 @@ type Pending struct {
 func StageDir() (string, error) {
 	base, err := os.UserConfigDir()
 	if err != nil {
-		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_CONFIG_DIR_UNKNOWN)
+		return "", text.Because(err, mirrormev1.TextCode_TEXT_CODE_CONFIG_DIR_UNKNOWN)
 	}
 
 	dir := filepath.Join(base, configDirName, stageDirName)
 	if err := os.MkdirAll(dir, dirMode); err != nil {
-		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNWRITABLE, text.Path(dir))
+		return "", text.Because(err, mirrormev1.TextCode_TEXT_CODE_FILE_UNWRITABLE, text.Path(dir))
 	}
 	return dir, nil
 }

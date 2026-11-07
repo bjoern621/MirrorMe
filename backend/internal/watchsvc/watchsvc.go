@@ -26,8 +26,8 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/serving"
-	"bjoernblessin.de/screenshare/internal/token"
+	"bjoernblessin.de/mirrorme/internal/serving"
+	"bjoernblessin.de/mirrorme/internal/token"
 )
 
 // bodyLimitBytes bounds a statement, at a few times MaxViewings rows of figures.

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/qa"
+	"bjoernblessin.de/mirrorme/internal/qa"
 )
 
 // probeTimeout bounds each program asked about the machine, a driver init included.

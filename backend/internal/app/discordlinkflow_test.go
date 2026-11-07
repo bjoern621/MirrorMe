@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/channelgroup"
-	"bjoernblessin.de/screenshare/internal/discordapi"
-	"bjoernblessin.de/screenshare/internal/discordoauth"
+	"bjoernblessin.de/mirrorme/internal/channelgroup"
+	"bjoernblessin.de/mirrorme/internal/discordapi"
+	"bjoernblessin.de/mirrorme/internal/discordoauth"
 )
 
 // The two halves of the link flow are written in two packages,

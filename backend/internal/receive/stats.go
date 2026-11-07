@@ -5,7 +5,7 @@ import "time"
 // StatGroup is one element's counters under the element's own keys.
 //
 // Nothing here is labelled or formatted.
-// A key is the element's, and its wording is the reader's (api/proto/screenshare/v1/text.proto).
+// A key is the element's, and its wording is the reader's (api/proto/mirrorme/v1/text.proto).
 type StatGroup struct {
 	// Factory is the element factory, e.g. "rtpjitterbuffer".
 	Factory string

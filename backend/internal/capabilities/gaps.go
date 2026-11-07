@@ -5,7 +5,7 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 )
 
 // vaapiGaps are the gaps every VAAPI row carries.
@@ -27,13 +27,13 @@ var vaapiGaps = []Gap{
 	{
 		Option: OptionMode,
 		Value:  ModeLossless,
-		Reason: screensharev1.TextCode_TEXT_CODE_GAP_VAAPI_NO_LOSSLESS,
+		Reason: mirrormev1.TextCode_TEXT_CODE_GAP_VAAPI_NO_LOSSLESS,
 	},
 	{
 		Engine: EngineGst,
 		Option: OptionColorRange,
 		Value:  "pc",
-		Reason: screensharev1.TextCode_TEXT_CODE_GAP_GST_VA_NO_COLOUR_DESCRIPTION,
+		Reason: mirrormev1.TextCode_TEXT_CODE_GAP_GST_VA_NO_COLOUR_DESCRIPTION,
 	},
 }
 
@@ -45,7 +45,7 @@ var vaapiGaps = []Gap{
 var qsvGaps = []Gap{{
 	Option: OptionMode,
 	Value:  ModeLossless,
-	Reason: screensharev1.TextCode_TEXT_CODE_GAP_QSV_NO_LOSSLESS,
+	Reason: mirrormev1.TextCode_TEXT_CODE_GAP_QSV_NO_LOSSLESS,
 }}
 
 // videoToolboxGaps are the gaps both VideoToolbox rows carry,
@@ -67,22 +67,22 @@ var videoToolboxGaps = []Gap{
 	{
 		Option: OptionMode,
 		Value:  ModeLossless,
-		Reason: screensharev1.TextCode_TEXT_CODE_GAP_VIDEOTOOLBOX_NO_LOSSLESS,
+		Reason: mirrormev1.TextCode_TEXT_CODE_GAP_VIDEOTOOLBOX_NO_LOSSLESS,
 	},
 	{
 		Option: OptionMode,
 		Value:  ModeCbr,
-		Reason: screensharev1.TextCode_TEXT_CODE_GAP_VIDEOTOOLBOX_AVERAGE_BITRATE_ONLY,
+		Reason: mirrormev1.TextCode_TEXT_CODE_GAP_VIDEOTOOLBOX_AVERAGE_BITRATE_ONLY,
 	},
 	{
 		Option: OptionMode,
 		Value:  ModeVbr,
-		Reason: screensharev1.TextCode_TEXT_CODE_GAP_VIDEOTOOLBOX_AVERAGE_BITRATE_ONLY,
+		Reason: mirrormev1.TextCode_TEXT_CODE_GAP_VIDEOTOOLBOX_AVERAGE_BITRATE_ONLY,
 	},
 	{
 		Option: OptionMode,
 		Value:  ModeCrf,
-		Reason: screensharev1.TextCode_TEXT_CODE_GAP_VIDEOTOOLBOX_AVERAGE_BITRATE_ONLY,
+		Reason: mirrormev1.TextCode_TEXT_CODE_GAP_VIDEOTOOLBOX_AVERAGE_BITRATE_ONLY,
 	},
 }
 
@@ -108,12 +108,12 @@ var qsvScenarioRowGaps = slices.Concat(qsvGaps, gstNoQsvScenario)
 var amfGaps = []Gap{
 	{
 		Engine: EngineGst,
-		Reason: screensharev1.TextCode_TEXT_CODE_GAP_GST_AMFCODEC_WINDOWS_ONLY,
+		Reason: mirrormev1.TextCode_TEXT_CODE_GAP_GST_AMFCODEC_WINDOWS_ONLY,
 	},
 	{
 		Option: OptionMode,
 		Value:  ModeLossless,
-		Reason: screensharev1.TextCode_TEXT_CODE_GAP_AMF_NO_LOSSLESS,
+		Reason: mirrormev1.TextCode_TEXT_CODE_GAP_AMF_NO_LOSSLESS,
 	},
 }
 
@@ -133,12 +133,12 @@ var amfGaps = []Gap{
 var vulkanGaps = []Gap{
 	{
 		Engine: EngineGst,
-		Reason: screensharev1.TextCode_TEXT_CODE_GAP_GST_VULKAN_NO_CAPTURE_MEMORY,
+		Reason: mirrormev1.TextCode_TEXT_CODE_GAP_GST_VULKAN_NO_CAPTURE_MEMORY,
 	},
 	{
 		Option: OptionMode,
 		Value:  ModeLossless,
-		Reason: screensharev1.TextCode_TEXT_CODE_GAP_VULKAN_NO_LOSSLESS,
+		Reason: mirrormev1.TextCode_TEXT_CODE_GAP_VULKAN_NO_LOSSLESS,
 	},
 }
 
@@ -153,7 +153,7 @@ var vulkanGaps = []Gap{
 var vp8NoFullRange = Gap{
 	Option: OptionColorRange,
 	Value:  "pc",
-	Reason: screensharev1.TextCode_TEXT_CODE_GAP_VP8_HAS_NO_COLOUR_RANGE_FIELD,
+	Reason: mirrormev1.TextCode_TEXT_CODE_GAP_VP8_HAS_NO_COLOUR_RANGE_FIELD,
 }
 
 // gstNoRateCeiling is the constrained-VBR gap the software rows without a ceiling carry,
@@ -172,7 +172,7 @@ var gstNoRateCeiling = Gap{
 	Engine: EngineGst,
 	Option: OptionMode,
 	Value:  ModeVbr,
-	Reason: screensharev1.TextCode_TEXT_CODE_GAP_GST_SOFTWARE_NO_RATE_CEILING,
+	Reason: mirrormev1.TextCode_TEXT_CODE_GAP_GST_SOFTWARE_NO_RATE_CEILING,
 }
 
 // gstNoPlanarRGB is the planar-RGB gap the software RGB-coding rows carry on the GStreamer publish
@@ -191,19 +191,19 @@ var gstNoPlanarRGB = Gap{
 	Engine: EngineGst,
 	Option: OptionChroma,
 	Value:  "gbrp",
-	Reason: screensharev1.TextCode_TEXT_CODE_GAP_GST_ELEMENTS_NO_PLANAR_RGB,
+	Reason: mirrormev1.TextCode_TEXT_CODE_GAP_GST_ELEMENTS_NO_PLANAR_RGB,
 }
 
 // gstNoAomTune takes libaom's tune steps off the GStreamer engine.
 // av1enc carries none of libaom's tuning at all,
 // where the vpx elements carry the same two steps ffmpeg does,
 // so this is one element's limit rather than the plugin's.
-var gstNoAomTune = tuneGaps(EngineGst, aomTunes, screensharev1.TextCode_TEXT_CODE_GAP_GST_AV1ENC_NO_TUNE)
+var gstNoAomTune = tuneGaps(EngineGst, aomTunes, mirrormev1.TextCode_TEXT_CODE_GAP_GST_AV1ENC_NO_TUNE)
 
 // gstNoQsvScenario takes oneVPL's scenario hint off the GStreamer engine.
 // The qsv elements expose target-usage and low-latency and nothing that carries a scenario,
 // so the hint reaches Intel's runtime through ffmpeg's encoders alone.
-var gstNoQsvScenario = tuneGaps(EngineGst, qsvScenarios, screensharev1.TextCode_TEXT_CODE_GAP_GST_QSV_NO_SCENARIO)
+var gstNoQsvScenario = tuneGaps(EngineGst, qsvScenarios, mirrormev1.TextCode_TEXT_CODE_GAP_GST_QSV_NO_SCENARIO)
 
 // tuneGaps withholds every step of a ladder from one engine, under one reason.
 //
@@ -212,7 +212,7 @@ var gstNoQsvScenario = tuneGaps(EngineGst, qsvScenarios, screensharev1.TextCode_
 // the untuned step:
 // TuneNone is what an encoder without the property spends,
 // and gapping it would leave the control with nothing to hold.
-func tuneGaps(engine string, steps []string, reason screensharev1.TextCode) []Gap {
+func tuneGaps(engine string, steps []string, reason mirrormev1.TextCode) []Gap {
 	assert.Assert(len(steps) > 1, "a gapped tune ladder carries a step besides the untuned one", len(steps))
 
 	out := make([]Gap, 0, len(steps)-1)

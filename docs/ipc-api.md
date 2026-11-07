@@ -3,7 +3,7 @@
 One Go process owns the product.
 Every user interface is a display in front of it.
 
-Contract: `api/proto/screenshare/v1`.
+Contract: `api/proto/mirrorme/v1`.
 This page states the rule it encodes and what each side owes.
 
 ## The rule
@@ -315,7 +315,7 @@ A draft equal to the copy the backend last said it held becomes what the setting
 
 ## Versioning
 
-Package `screenshare.v1`.
+Package `mirrorme.v1`.
 The shell and the backend ship in one package and update together, so no shell outlives the backend it was built against.
 
 A field, an arm or a kind grows additively: a new number, no number reused, no field changing type or meaning, and `buf breaking` checks against the previous commit.

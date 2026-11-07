@@ -3,10 +3,10 @@ package form
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/rules"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/rules"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // The facts one resolve is evaluated against: every axis the rule vocabulary declares,

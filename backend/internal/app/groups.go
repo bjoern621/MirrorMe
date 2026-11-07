@@ -4,13 +4,13 @@ import (
 	"io"
 	"strings"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
-	"bjoernblessin.de/screenshare/internal/group"
-	"bjoernblessin.de/screenshare/internal/groupclient"
-	"bjoernblessin.de/screenshare/internal/relay"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/group"
+	"bjoernblessin.de/mirrorme/internal/groupclient"
+	"bjoernblessin.de/mirrorme/internal/relay"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // The group service (internal/groupclient) holds the credential a relay wants beside an address.
@@ -68,7 +68,7 @@ func (a *App) settingsForCommand(s settings.Settings) (settings.Settings, error)
 
 	token, err := a.groups.Token(base, s.Relay.GroupKey, a.memberSecret(s.Relay))
 	if err != nil {
-		return s, text.Because(err, screensharev1.TextCode_TEXT_CODE_RELAY_TOKEN_UNDRAWN)
+		return s, text.Because(err, mirrormev1.TextCode_TEXT_CODE_RELAY_TOKEN_UNDRAWN)
 	}
 	s.Relay.Token = token
 	return s, nil
@@ -78,7 +78,7 @@ func (a *App) settingsForCommand(s settings.Settings) (settings.Settings, error)
 //
 // One statement for the publish and for the synthetic set, both being streams on the relay,
 // and both refused on settings.Relay.InGroup.
-var errNoGroup = text.Fail(screensharev1.TextCode_TEXT_CODE_GROUP_REQUIRED)
+var errNoGroup = text.Fail(mirrormev1.TextCode_TEXT_CODE_GROUP_REQUIRED)
 
 // forgetRelayToken drops the held credential, so the next command trades the group key again.
 // Called where the relay refused a connection this app built, the one sign a held token is spent:
@@ -181,7 +181,7 @@ func insidePrefix(status relay.Status, prefix string) relay.Status {
 func (a *App) CreateGroup(relay settings.Relay) (groupKey, groupID string, err error) {
 	base, ok := relay.GroupService()
 	if !ok {
-		return "", "", text.Fail(screensharev1.TextCode_TEXT_CODE_GROUP_SERVICE_UNNAMED)
+		return "", "", text.Fail(mirrormev1.TextCode_TEXT_CODE_GROUP_SERVICE_UNNAMED)
 	}
 	return a.groups.CreateGroup(base)
 }

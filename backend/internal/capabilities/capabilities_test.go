@@ -1,9 +1,9 @@
 package capabilities
 
 import (
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/rules"
-	"bjoernblessin.de/screenshare/internal/text/texttest"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/rules"
+	"bjoernblessin.de/mirrorme/internal/text/texttest"
 
 	"slices"
 	"testing"
@@ -111,7 +111,7 @@ func TestAValidateRefusalIsTheRuleThatGreysTheValue(t *testing.T) {
 		t.Fatal("VAAPI codes no lossless mode, so a lossless h264_vaapi publish is refused")
 	}
 	v := rules.EvaluateRules(validationFacts(mustGet(t, "h264_vaapi"), EngineFfmpeg, opts, 0, 10, 0, Device{}), codecRules())
-	var greyed []screensharev1.TextCode
+	var greyed []mirrormev1.TextCode
 	for _, option := range Options {
 		for _, reason := range v.ValueReasons(optionAxes[option], opts[option]) {
 			greyed = append(greyed, reason.GetCode())
@@ -248,7 +248,7 @@ func TestGapsDoNotCrossOptions(t *testing.T) {
 	// so the shape is held against a value rather than against the table.
 	oneEngine := Codec{
 		Name: "hypothetical",
-		Gaps: []Gap{{Engine: "gstreamer", Reason: screensharev1.TextCode_TEXT_CODE_GAP_GST_ELEMENTS_NO_PLANAR_RGB}},
+		Gaps: []Gap{{Engine: "gstreamer", Reason: mirrormev1.TextCode_TEXT_CODE_GAP_GST_ELEMENTS_NO_PLANAR_RGB}},
 	}
 	if _, gap := oneEngine.EngineGap("gstreamer"); !gap {
 		t.Error("a gap naming no option must take the codec off its engine")

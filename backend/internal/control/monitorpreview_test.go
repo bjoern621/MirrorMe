@@ -8,10 +8,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/events"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/events"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // A start the backend refuses with a plain error is FAILED_PRECONDITION:
@@ -23,15 +23,15 @@ func TestARefusedMonitorPreviewIsAPrecondition(t *testing.T) {
 	server := New(&fakeBackend{err: errors.New("this session cannot read one monitor apart from another")},
 		events.New(), "test")
 
-	_, err := server.Set(context.Background(), &screensharev1.SetRequest{State: &screensharev1.SetRequest_MonitorPreview{
-		MonitorPreview: &screensharev1.MonitorPreviewWanted{Monitor: 2, Open: true},
+	_, err := server.Set(context.Background(), &mirrormev1.SetRequest{State: &mirrormev1.SetRequest_MonitorPreview{
+		MonitorPreview: &mirrormev1.MonitorPreviewWanted{Monitor: 2, Open: true},
 	}})
 
 	refusal := refusalOf(t, err, codes.FailedPrecondition)
 	if refusal.GetMessage() != "this session cannot read one monitor apart from another" {
 		t.Errorf("refusal words %q drop the backend's own reason", refusal.GetMessage())
 	}
-	if got := argOf(refusal, screensharev1.TextArgName_TEXT_ARG_NAME_MONITOR).GetNumber(); got != 2 {
+	if got := argOf(refusal, mirrormev1.TextArgName_TEXT_ARG_NAME_MONITOR).GetNumber(); got != 2 {
 		t.Errorf("refusal names monitor %d, want the screen it is about", got)
 	}
 }
@@ -44,8 +44,8 @@ func TestAPreviewOfAScreenThatDoesNotExistIsARequestFault(t *testing.T) {
 	server := New(&fakeBackend{err: Refuse(errors.New("monitor 9 is not one of this machine's outputs"))},
 		events.New(), "test")
 
-	_, err := server.Set(context.Background(), &screensharev1.SetRequest{State: &screensharev1.SetRequest_MonitorPreview{
-		MonitorPreview: &screensharev1.MonitorPreviewWanted{Monitor: 9, Open: true},
+	_, err := server.Set(context.Background(), &mirrormev1.SetRequest{State: &mirrormev1.SetRequest_MonitorPreview{
+		MonitorPreview: &mirrormev1.MonitorPreviewWanted{Monitor: 9, Open: true},
 	}})
 	refusalOf(t, err, codes.InvalidArgument)
 }
@@ -54,19 +54,19 @@ func TestAPreviewOfAScreenThatDoesNotExistIsARequestFault(t *testing.T) {
 // a leg this build has no viewer for is the request naming something that does not exist,
 // while a leg that cannot carry the stream's format is the world not being ready.
 func TestAWatchOverALegThisBuildHasNoViewerForIsARequestFault(t *testing.T) {
-	viewer := &screensharev1.StreamRef{StreamName: "desk", Transport: "moq"}
+	viewer := &mirrormev1.StreamRef{StreamName: "desk", Transport: "moq"}
 
 	refused := New(&fakeBackend{err: Refuse(errors.New(`no viewer implements transport "moq"`))}, events.New(), "test")
-	_, err := refused.Set(context.Background(), &screensharev1.SetRequest{State: &screensharev1.SetRequest_Viewer{
-		Viewer: &screensharev1.ViewerWanted{Viewer: viewer, Open: true},
+	_, err := refused.Set(context.Background(), &mirrormev1.SetRequest{State: &mirrormev1.SetRequest_Viewer{
+		Viewer: &mirrormev1.ViewerWanted{Viewer: viewer, Open: true},
 	}})
 	if got := status.Code(err); got != codes.InvalidArgument {
 		t.Errorf("a leg with no viewer answered %s, want %s", got, codes.InvalidArgument)
 	}
 
 	unready := New(&fakeBackend{err: errors.New("desk is av1, which srt cannot carry")}, events.New(), "test")
-	_, err = unready.Set(context.Background(), &screensharev1.SetRequest{State: &screensharev1.SetRequest_Viewer{
-		Viewer: &screensharev1.ViewerWanted{Viewer: viewer, Open: true},
+	_, err = unready.Set(context.Background(), &mirrormev1.SetRequest{State: &mirrormev1.SetRequest_Viewer{
+		Viewer: &mirrormev1.ViewerWanted{Viewer: viewer, Open: true},
 	}})
 	if got := status.Code(err); got != codes.FailedPrecondition {
 		t.Errorf("a leg that cannot carry the format answered %s, want %s", got, codes.FailedPrecondition)
@@ -79,8 +79,8 @@ func TestAWatchOverALegThisBuildHasNoViewerForIsARequestFault(t *testing.T) {
 func TestStoppingAScreenNobodyIsReadingSucceeds(t *testing.T) {
 	server := New(&fakeBackend{err: errors.New("would refuse anything that asked")}, events.New(), "test")
 
-	if _, err := server.Set(context.Background(), &screensharev1.SetRequest{State: &screensharev1.SetRequest_MonitorPreview{
-		MonitorPreview: &screensharev1.MonitorPreviewWanted{Monitor: 7},
+	if _, err := server.Set(context.Background(), &mirrormev1.SetRequest{State: &mirrormev1.SetRequest_MonitorPreview{
+		MonitorPreview: &mirrormev1.MonitorPreviewWanted{Monitor: 7},
 	}}); err != nil {
 		t.Errorf("stopping a screen nothing is reading was refused: %v", err)
 	}
@@ -93,39 +93,39 @@ func TestStoppingAScreenNobodyIsReadingSucceeds(t *testing.T) {
 // through to.
 func TestAFrameSubscriptionNamesOneOfTheThreePictures(t *testing.T) {
 	for name, tc := range map[string]struct {
-		subscribe *screensharev1.FrameSubscribe
+		subscribe *mirrormev1.FrameSubscribe
 		want      wire.FrameSourceKind
 		named     bool
 	}{
 		"a relay decode carries the pair that identifies it": {
-			subscribe: &screensharev1.FrameSubscribe{
-				Source: &screensharev1.FrameSubscribe_Stream{
-					Stream: &screensharev1.StreamRef{StreamName: "desk", Transport: "srt"},
+			subscribe: &mirrormev1.FrameSubscribe{
+				Source: &mirrormev1.FrameSubscribe_Stream{
+					Stream: &mirrormev1.StreamRef{StreamName: "desk", Transport: "srt"},
 				},
 			},
 			want:  wire.FrameSourceRelay,
 			named: true,
 		},
 		"the publish preview carries nothing and needs nothing": {
-			subscribe: &screensharev1.FrameSubscribe{
-				Source: &screensharev1.FrameSubscribe_PublishPreview{
-					PublishPreview: &screensharev1.PublishPreview{},
+			subscribe: &mirrormev1.FrameSubscribe{
+				Source: &mirrormev1.FrameSubscribe_PublishPreview{
+					PublishPreview: &mirrormev1.PublishPreview{},
 				},
 			},
 			want:  wire.FrameSourcePublishPreview,
 			named: true,
 		},
 		"a screen carries the index its output is enumerated under": {
-			subscribe: &screensharev1.FrameSubscribe{
-				Source: &screensharev1.FrameSubscribe_MonitorPreview{
-					MonitorPreview: &screensharev1.MonitorPreview{Monitor: 3},
+			subscribe: &mirrormev1.FrameSubscribe{
+				Source: &mirrormev1.FrameSubscribe_MonitorPreview{
+					MonitorPreview: &mirrormev1.MonitorPreview{Monitor: 3},
 				},
 			},
 			want:  wire.FrameSourceMonitorPreview,
 			named: true,
 		},
 		"a subscription that filled no arm names none of them": {
-			subscribe: &screensharev1.FrameSubscribe{},
+			subscribe: &mirrormev1.FrameSubscribe{},
 		},
 	} {
 		t.Run(name, func(t *testing.T) {

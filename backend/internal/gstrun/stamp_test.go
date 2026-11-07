@@ -7,8 +7,8 @@ import (
 
 	"github.com/go-gst/go-gst/pkg/gst"
 
-	"bjoernblessin.de/screenshare/internal/framestamp"
-	"bjoernblessin.de/screenshare/internal/padprobe"
+	"bjoernblessin.de/mirrorme/internal/framestamp"
+	"bjoernblessin.de/mirrorme/internal/padprobe"
 )
 
 // stamped is one codec's whole round trip: what encodes it, what frames it, what it is carried

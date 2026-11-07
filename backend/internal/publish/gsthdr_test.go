@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/text/texttest"
+	"bjoernblessin.de/mirrorme/internal/text/texttest"
 
-	"bjoernblessin.de/screenshare/internal/gstrun"
+	"bjoernblessin.de/mirrorme/internal/gstrun"
 )
 
 // The caps are the whole of the verdict, so the readings are held to real caps strings: the named

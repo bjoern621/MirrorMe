@@ -5,12 +5,12 @@ import (
 	"strings"
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/text"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/text"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // TestTheLadderIsWalkedOnceAndThenHeld: the synthetic set is held on while the setting asks for it,
@@ -92,7 +92,7 @@ func TestASlotWaitingOutARelaunchSaysSo(t *testing.T) {
 	a := &App{testStreams: map[int]*testStream{
 		0: {
 			attempts: 2,
-			cause:    text.Of(screensharev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED),
+			cause:    text.Of(mirrormev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED),
 			message:  "the relay refused the publisher",
 			logPath:  "/logs/teststream-test-1.log",
 		},
@@ -116,7 +116,7 @@ func TestASlotWaitingOutARelaunchSaysSo(t *testing.T) {
 	if slot.Attempt != 3 {
 		t.Errorf("a slot behind two relaunches is on attempt %d, want the third", slot.Attempt)
 	}
-	if got := slot.Cause.GetCode(); got != screensharev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED {
+	if got := slot.Cause.GetCode(); got != mirrormev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED {
 		t.Errorf("a waiting slot states %v, want what emptied it", got)
 	}
 	if slot.Message != "the relay refused the publisher" || slot.LogPath != "/logs/teststream-test-1.log" {

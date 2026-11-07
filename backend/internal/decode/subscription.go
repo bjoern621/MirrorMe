@@ -3,10 +3,10 @@ package decode
 import (
 	"sync"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
-	"bjoernblessin.de/screenshare/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/receive"
 )
 
 // One consumer's subscription, as the backend sees it.
@@ -92,7 +92,7 @@ func (s *remoteSub) read() {
 	for {
 		var ev frameEvent
 		if err := s.conn.recv(&ev); err != nil {
-			s.finish(text.Because(err, screensharev1.TextCode_TEXT_CODE_DECODE_HOST_DOWN))
+			s.finish(text.Because(err, mirrormev1.TextCode_TEXT_CODE_DECODE_HOST_DOWN))
 			return
 		}
 		if ev.Fail != nil {

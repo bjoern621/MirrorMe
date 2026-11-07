@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-gst/go-gst/pkg/gst"
 
-	"bjoernblessin.de/screenshare/internal/padprobe"
+	"bjoernblessin.de/mirrorme/internal/padprobe"
 )
 
 // A decoder needs every frame back to the last keyframe, so a drop runs to the next keyframe

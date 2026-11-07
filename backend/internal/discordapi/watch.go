@@ -6,8 +6,8 @@ import (
 
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/applink"
-	"bjoernblessin.de/screenshare/internal/group"
+	"bjoernblessin.de/mirrorme/internal/applink"
+	"bjoernblessin.de/mirrorme/internal/group"
 )
 
 // The page a button on a stated activity lands a browser on (docs/discord-mode.md).

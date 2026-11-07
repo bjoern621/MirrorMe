@@ -9,16 +9,16 @@ import (
 	"testing"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/text/texttest"
+	"bjoernblessin.de/mirrorme/internal/text/texttest"
 
-	"bjoernblessin.de/screenshare/internal/events"
-	"bjoernblessin.de/screenshare/internal/groupclient"
-	"bjoernblessin.de/screenshare/internal/relay"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/events"
+	"bjoernblessin.de/mirrorme/internal/groupclient"
+	"bjoernblessin.de/mirrorme/internal/relay"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // The relay snapshot is this process's to keep, whether or not anything is asking for it
-// (api/proto/screenshare/v1/control.proto).
+// (api/proto/mirrorme/v1/control.proto).
 // A snapshot kept by whoever asked stays at its opening value once nothing asks,
 // and a shell then draws "the relay could not be reached" beside a relay that is up.
 

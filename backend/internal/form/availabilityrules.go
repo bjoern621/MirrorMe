@@ -3,11 +3,11 @@ package form
 import (
 	"slices"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/share"
-	"bjoernblessin.de/screenshare/internal/window"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/share"
+	"bjoernblessin.de/mirrorme/internal/window"
 )
 
 // availabilityRules is one row per field the form declares, each deciding that control's state
@@ -334,7 +334,7 @@ var availabilityRules = map[string]func(availability) state{
 // A row returns the statement shown in place of the value it withholds,
 // nil for a value it leaves selectable.
 // A field with no row here greys no entry.
-var availabilityOptionRules = map[string]func(availability, string) *screensharev1.Text{
+var availabilityOptionRules = map[string]func(availability, string) *mirrormev1.Text{
 	KeyShareKind:         shareKindReason,
 	KeyCapture:           availability.captureReason,
 	KeyTransport:         availability.transportReason,

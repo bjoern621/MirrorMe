@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/receive"
 )
 
 // A host and a client talking over a socket, with no child process between them.

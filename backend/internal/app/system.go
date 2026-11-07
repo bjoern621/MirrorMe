@@ -7,26 +7,26 @@ import (
 	goruntime "runtime"
 	"time"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/audiodev"
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/display"
-	"bjoernblessin.de/screenshare/internal/encoderate"
-	"bjoernblessin.de/screenshare/internal/encoders"
-	"bjoernblessin.de/screenshare/internal/ffmpeg"
-	"bjoernblessin.de/screenshare/internal/gpu"
-	"bjoernblessin.de/screenshare/internal/netspeed"
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/portal"
-	"bjoernblessin.de/screenshare/internal/reach"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/window"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/audiodev"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/display"
+	"bjoernblessin.de/mirrorme/internal/encoderate"
+	"bjoernblessin.de/mirrorme/internal/encoders"
+	"bjoernblessin.de/mirrorme/internal/ffmpeg"
+	"bjoernblessin.de/mirrorme/internal/gpu"
+	"bjoernblessin.de/mirrorme/internal/netspeed"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/portal"
+	"bjoernblessin.de/mirrorme/internal/reach"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/window"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // The long-running calls here take the caller's own context, a shell's request context,
@@ -239,7 +239,7 @@ func (a *App) cachedEncoders() encoders.Availability {
 // (docs/development-principles.md, "Effects across a process boundary").
 func (a *App) OpenLog(path string) error {
 	if path == "" {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_RUN_KEEPS_NO_LOG)
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_RUN_KEEPS_NO_LOG)
 	}
 	return openInShell(path)
 }

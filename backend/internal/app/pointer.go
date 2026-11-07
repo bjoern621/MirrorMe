@@ -3,9 +3,9 @@ package app
 import (
 	"sync"
 
-	"bjoernblessin.de/screenshare/internal/decode"
-	"bjoernblessin.de/screenshare/internal/pointer"
-	"bjoernblessin.de/screenshare/internal/pointermode"
+	"bjoernblessin.de/mirrorme/internal/decode"
+	"bjoernblessin.de/mirrorme/internal/pointer"
+	"bjoernblessin.de/mirrorme/internal/pointermode"
 )
 
 // The pointer position, held between the child that reads it and the shells that draw it.

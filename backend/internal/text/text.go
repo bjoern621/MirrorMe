@@ -1,7 +1,7 @@
 // Package text builds the statements the backend makes about a configuration.
 //
 // A statement is a code and the identifiers it is about, never a sentence
-// (api/proto/screenshare/v1/text.proto).
+// (api/proto/mirrorme/v1/text.proto).
 // Wording, clause order and the short form against the long one are the shell's,
 // so a rule that greys a control states what is true and nothing about how it reads.
 //
@@ -19,16 +19,16 @@ package text
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 )
 
 // Of is one statement: which one, and what it is about.
 // The code is asserted rather than defaulted, the zero value meaning "not set" on every enum here.
-func Of(code screensharev1.TextCode, args ...*screensharev1.TextArg) *screensharev1.Text {
-	assert.Assert(code != screensharev1.TextCode_TEXT_CODE_UNSPECIFIED,
+func Of(code mirrormev1.TextCode, args ...*mirrormev1.TextArg) *mirrormev1.Text {
+	assert.Assert(code != mirrormev1.TextCode_TEXT_CODE_UNSPECIFIED,
 		"a statement names which statement it is")
 
-	out := &screensharev1.Text{Code: code}
+	out := &mirrormev1.Text{Code: code}
 	for _, a := range args {
 		// nil argument: an optional clause the caller had nothing for.
 		// Dropped here, so a builder passes the same argument list either way.
@@ -38,7 +38,7 @@ func Of(code screensharev1.TextCode, args ...*screensharev1.TextArg) *screenshar
 		out.Args = append(out.Args, a)
 	}
 
-	assert.Assert(out.Code != screensharev1.TextCode_TEXT_CODE_UNSPECIFIED,
+	assert.Assert(out.Code != mirrormev1.TextCode_TEXT_CODE_UNSPECIFIED,
 		"an assembled statement still names which statement it is", len(out.Args))
 	return out
 }
@@ -46,21 +46,21 @@ func Of(code screensharev1.TextCode, args ...*screensharev1.TextArg) *screenshar
 // ID carries one identifier of the axis its name declares.
 // An empty identifier is dropped, so a caller with none states the shorter form of the same
 // statement.
-func ID(name screensharev1.TextArgName, id string) *screensharev1.TextArg {
-	assert.Assert(name != screensharev1.TextArgName_TEXT_ARG_NAME_UNSPECIFIED,
+func ID(name mirrormev1.TextArgName, id string) *mirrormev1.TextArg {
+	assert.Assert(name != mirrormev1.TextArgName_TEXT_ARG_NAME_UNSPECIFIED,
 		"an argument names which substitution it fills")
 
 	if id == "" {
 		return nil
 	}
-	return &screensharev1.TextArg{Name: name, Value: &screensharev1.TextArg_Id{Id: id}}
+	return &mirrormev1.TextArg{Name: name, Value: &mirrormev1.TextArg_Id{Id: id}}
 }
 
 // IDs carries several identifiers of one axis, in the order the domain table declares them.
 // How they read together, the comma and the "or", is the shell's.
 // An empty list is dropped, the same shorter form an empty identifier takes in ID.
-func IDs(name screensharev1.TextArgName, ids []string) *screensharev1.TextArg {
-	assert.Assert(name != screensharev1.TextArgName_TEXT_ARG_NAME_UNSPECIFIED,
+func IDs(name mirrormev1.TextArgName, ids []string) *mirrormev1.TextArg {
+	assert.Assert(name != mirrormev1.TextArgName_TEXT_ARG_NAME_UNSPECIFIED,
 		"an argument names which substitution it fills")
 
 	if len(ids) == 0 {
@@ -69,38 +69,38 @@ func IDs(name screensharev1.TextArgName, ids []string) *screensharev1.TextArg {
 	for _, id := range ids {
 		assert.Assert(id != "", "a listed identifier is one the domain declares", name.String())
 	}
-	return &screensharev1.TextArg{
+	return &mirrormev1.TextArg{
 		Name:  name,
-		Value: &screensharev1.TextArg_Ids{Ids: &screensharev1.IdList{Ids: ids}},
+		Value: &mirrormev1.TextArg_Ids{Ids: &mirrormev1.IdList{Ids: ids}},
 	}
 }
 
 // Num carries a whole figure in the unit its name declares.
 // Zero is carried rather than dropped, being a measurement:
 // a statement quoting no uplink reads as a line with no capacity, not as one nobody measured.
-func Num(name screensharev1.TextArgName, n int64) *screensharev1.TextArg {
-	assert.Assert(name != screensharev1.TextArgName_TEXT_ARG_NAME_UNSPECIFIED,
+func Num(name mirrormev1.TextArgName, n int64) *mirrormev1.TextArg {
+	assert.Assert(name != mirrormev1.TextArgName_TEXT_ARG_NAME_UNSPECIFIED,
 		"an argument names which substitution it fills")
-	return &screensharev1.TextArg{Name: name, Value: &screensharev1.TextArg_Number{Number: n}}
+	return &mirrormev1.TextArg{Name: name, Value: &mirrormev1.TextArg_Number{Number: n}}
 }
 
 // Dec carries a fractional figure in the unit its name declares.
 // Decimal places are the shell's, one figure serving a rounded chip and a spelled-out tooltip.
-func Dec(name screensharev1.TextArgName, v float64) *screensharev1.TextArg {
-	assert.Assert(name != screensharev1.TextArgName_TEXT_ARG_NAME_UNSPECIFIED,
+func Dec(name mirrormev1.TextArgName, v float64) *mirrormev1.TextArg {
+	assert.Assert(name != mirrormev1.TextArgName_TEXT_ARG_NAME_UNSPECIFIED,
 		"an argument names which substitution it fills")
-	return &screensharev1.TextArg{Name: name, Value: &screensharev1.TextArg_Decimal{Decimal: v}}
+	return &mirrormev1.TextArg{Name: name, Value: &mirrormev1.TextArg_Decimal{Decimal: v}}
 }
 
 // Nested carries a statement inside a statement,
 // so a reason quotes the fact behind it with neither half knowing the other's wording.
 // A nil statement is dropped, so a caller with nothing to quote gets the shorter form.
-func Nested(name screensharev1.TextArgName, t *screensharev1.Text) *screensharev1.TextArg {
-	assert.Assert(name != screensharev1.TextArgName_TEXT_ARG_NAME_UNSPECIFIED,
+func Nested(name mirrormev1.TextArgName, t *mirrormev1.Text) *mirrormev1.TextArg {
+	assert.Assert(name != mirrormev1.TextArgName_TEXT_ARG_NAME_UNSPECIFIED,
 		"an argument names which substitution it fills")
 
 	if t == nil {
 		return nil
 	}
-	return &screensharev1.TextArg{Name: name, Value: &screensharev1.TextArg_Text{Text: t}}
+	return &mirrormev1.TextArg{Name: name, Value: &mirrormev1.TextArg_Text{Text: t}}
 }

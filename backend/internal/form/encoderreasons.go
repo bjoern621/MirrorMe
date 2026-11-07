@@ -1,11 +1,11 @@
 package form
 
 import (
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/rules"
-	"bjoernblessin.de/screenshare/internal/transport"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/rules"
+	"bjoernblessin.de/mirrorme/internal/transport"
 )
 
 // formatReason states why this combination cannot publish a bitstream format.
@@ -23,7 +23,7 @@ import (
 // A leg this engine cannot serialize at all states nothing about any format:
 // that refusal belongs to the transport control,
 // and greying every format under it would name the wrong one.
-func (av availability) formatReason(format string) *screensharev1.Text {
+func (av availability) formatReason(format string) *mirrormev1.Text {
 	if av.engine == "" {
 		return nil
 	}
@@ -64,7 +64,7 @@ func (av availability) formatRuns(format string) bool {
 // A reason naming the protocol alone would send a user hunting for another transport
 // where another capture backend is the fix, so both ways out are named where the tables hold them,
 // and each is an argument the surface may or may not receive.
-func (av availability) carryBlockReason(format string) *screensharev1.Text {
+func (av availability) carryBlockReason(format string) *mirrormev1.Text {
 	other := capabilities.EngineGst
 	if av.engine == capabilities.EngineGst {
 		other = capabilities.EngineFfmpeg
@@ -90,7 +90,7 @@ func (av availability) carryBlockReason(format string) *screensharev1.Text {
 // What the publish leg carries is absent, being a fact about the format alone (formatReason).
 // Greying every encoder under it would send a user
 // through the whole list for a refusal none of them can lift.
-func (av availability) encoderReason(encoder string) *screensharev1.Text {
+func (av availability) encoderReason(encoder string) *mirrormev1.Text {
 	if av.engine == "" {
 		return nil
 	}
@@ -114,7 +114,7 @@ func (av availability) encoderReason(encoder string) *screensharev1.Text {
 // A probe that could not run the encoder outranks every table fact,
 // since "no NVIDIA encoder on this machine" is the message that stops a search elsewhere.
 // Below it sit the engine's own gap and the roadmap.
-func (av availability) rowReason(c capabilities.Codec) *screensharev1.Text {
+func (av availability) rowReason(c capabilities.Codec) *mirrormev1.Text {
 	if reason := av.probeReason(c); reason != nil {
 		return reason
 	}
@@ -143,7 +143,7 @@ func (av availability) rowReason(c capabilities.Codec) *screensharev1.Text {
 //
 // An engine with no verdicts at all is an unprobed machine
 // rather than one with nothing usable, so it greys nothing.
-func (av availability) probeReason(c capabilities.Codec) *screensharev1.Text {
+func (av availability) probeReason(c capabilities.Codec) *mirrormev1.Text {
 	probed, ok := av.deps.Encoders.Usable[av.engine]
 	if !ok {
 		return nil

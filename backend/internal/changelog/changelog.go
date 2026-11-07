@@ -15,7 +15,7 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/release"
+	"bjoernblessin.de/mirrorme/internal/release"
 )
 
 // Kinds lists every heading that a section may group its entries under.

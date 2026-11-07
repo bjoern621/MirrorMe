@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/group"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/group"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // Every transport reaches the relay on a listener of some kind, so one stating none is a leg

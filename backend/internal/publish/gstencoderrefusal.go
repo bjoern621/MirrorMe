@@ -1,13 +1,13 @@
 package publish
 
 import (
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // EncoderRefusal is why this engine's encoder mapping cannot express these settings, and nil where
@@ -32,11 +32,11 @@ func EncoderRefusal(s settings.Settings) error {
 	}
 	c, known := capabilities.Get(s.Publish.Codec())
 	if !known {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(s.Publish.Codec()))
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(s.Publish.Codec()))
 	}
 	gst, mapped := gstCodecs[s.Publish.Codec()]
 	if !mapped {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(EngineGst), text.Codec(s.Publish.Codec()))
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(EngineGst), text.Codec(s.Publish.Codec()))
 	}
 	return gstEncoderRefusal(s, c, gst)
 }
@@ -72,7 +72,7 @@ var gstFamilyLimits = map[string]func(settings.Settings) error{
 // propertyBound refuses a value past where an element property stops, both in the property's unit.
 func propertyBound(family, property string, limit, asked int) error {
 	assert.Assert(asked > limit, "a bound refusal names a value past the bound", property, limit, asked)
-	return text.Fail(screensharev1.TextCode_TEXT_CODE_ENCODER_PROPERTY_BOUND,
-		text.Family(family), text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_PROPERTY, property),
+	return text.Fail(mirrormev1.TextCode_TEXT_CODE_ENCODER_PROPERTY_BOUND,
+		text.Family(family), text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_PROPERTY, property),
 		text.CountLimit(limit), text.Count(asked))
 }

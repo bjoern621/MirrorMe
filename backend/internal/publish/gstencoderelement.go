@@ -3,9 +3,9 @@ package publish
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/gpupath"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/gpupath"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // GstEncoderElement returns the element that encodes codec from frames in system memory,

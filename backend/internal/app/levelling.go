@@ -7,7 +7,7 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/decode"
+	"bjoernblessin.de/mirrorme/internal/decode"
 )
 
 // levelReceivers writes the constant-volume setting onto every open decode.

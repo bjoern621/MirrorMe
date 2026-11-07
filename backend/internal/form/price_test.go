@@ -3,11 +3,11 @@ package form
 import (
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 )
 
 // priceTestField finds one control of a resolved form by key, failing the test where the form draws none.
-func priceTestField(t *testing.T, form *screensharev1.Form, key string) *screensharev1.Field {
+func priceTestField(t *testing.T, form *mirrormev1.Form, key string) *mirrormev1.Field {
 	t.Helper()
 	for _, g := range form.GetGroups() {
 		for _, f := range g.GetFields() {
@@ -20,7 +20,7 @@ func priceTestField(t *testing.T, form *screensharev1.Form, key string) *screens
 	return nil
 }
 
-func priceTestOption(t *testing.T, f *screensharev1.Field, value string) *screensharev1.FieldOption {
+func priceTestOption(t *testing.T, f *mirrormev1.Field, value string) *mirrormev1.FieldOption {
 	t.Helper()
 	for _, o := range f.GetOptions() {
 		if o.GetValue() == value {

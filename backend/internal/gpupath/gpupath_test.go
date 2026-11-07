@@ -3,14 +3,14 @@ package gpupath
 import (
 	"slices"
 
-	"bjoernblessin.de/screenshare/internal/text/texttest"
+	"bjoernblessin.de/mirrorme/internal/text/texttest"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
 )
 
 // Both publish engines and the form read this table.
@@ -29,7 +29,7 @@ func TestEveryPathNamesAKnownEngineAndFamily(t *testing.T) {
 		// The import is what the form shows in place of the greyed control,
 		// and what a reader checks this machine against,
 		// so a row without one says a path exists and nothing about what carries the frames.
-		if p.Import == screensharev1.TextCode_TEXT_CODE_UNSPECIFIED {
+		if p.Import == mirrormev1.TextCode_TEXT_CODE_UNSPECIFIED {
 			t.Errorf("%s/%s/%s: a row states no import", p.Engine, p.Capture, p.Family)
 		}
 	}
@@ -87,7 +87,7 @@ func TestGpuIsRefusedForAPairWithoutAPath(t *testing.T) {
 	}
 	// A settings file that skipped the form reaches this with no control to read,
 	// so the statement names the pair and the shell words the way out.
-	if got := texttest.Code(err); got != screensharev1.TextCode_TEXT_CODE_FRAME_MEMORY_NO_DEVICE_PATH {
+	if got := texttest.Code(err); got != mirrormev1.TextCode_TEXT_CODE_FRAME_MEMORY_NO_DEVICE_PATH {
 		t.Errorf("a pair with no GPU path refuses with %v", got)
 	}
 }
@@ -126,7 +126,7 @@ func TestEveryPathStatesWhatItsColourCosts(t *testing.T) {
 	for _, p := range Paths {
 		switch p.Colour {
 		case ColourEncoder:
-			if p.Cost == screensharev1.TextCode_TEXT_CODE_UNSPECIFIED {
+			if p.Cost == mirrormev1.TextCode_TEXT_CODE_UNSPECIFIED {
 				t.Errorf("%s/%s/%s: an encoder-colour row states no cost", p.Engine, p.Capture, p.Family)
 			}
 			if p.Signalled.Matrix == "" || p.Signalled.Range == "" || p.Signalled.Chroma == "" {
@@ -134,7 +134,7 @@ func TestEveryPathStatesWhatItsColourCosts(t *testing.T) {
 					p.Engine, p.Capture, p.Family, p.Signalled)
 			}
 		case ColourExact:
-			if p.Cost != screensharev1.TextCode_TEXT_CODE_UNSPECIFIED {
+			if p.Cost != mirrormev1.TextCode_TEXT_CODE_UNSPECIFIED {
 				t.Errorf("%s/%s/%s: an exact-colour row costs nothing, yet names %q",
 					p.Engine, p.Capture, p.Family, p.Cost)
 			}
@@ -172,9 +172,9 @@ func TestAutoNeverResolvesToTheEncoderColourMemory(t *testing.T) {
 func TestAnEncoderColourRowResolvesByWhatEachDemandWillPay(t *testing.T) {
 	row := Path{
 		Engine: capabilities.EngineGst, Capture: "testsrc", Family: capabilities.FamilySoftware,
-		Import:    screensharev1.TextCode_TEXT_CODE_IMPORT_FFMPEG_DDAGRAB_NVENC,
+		Import:    mirrormev1.TextCode_TEXT_CODE_IMPORT_FFMPEG_DDAGRAB_NVENC,
 		Colour:    ColourEncoder,
-		Cost:      screensharev1.TextCode_TEXT_CODE_COST_ENCODER_SIGNALS_ITS_OWN_COLOUR,
+		Cost:      mirrormev1.TextCode_TEXT_CODE_COST_ENCODER_SIGNALS_ITS_OWN_COLOUR,
 		Signalled: Signalled{Matrix: "bt470bg", Range: "tv", Chroma: "yuv420p"},
 	}
 	shipped := Paths
@@ -199,7 +199,7 @@ func TestAnEncoderColourRowResolvesByWhatEachDemandWillPay(t *testing.T) {
 	if err == nil {
 		t.Fatalf("a row that trades the colour must refuse the gpu setting")
 	}
-	if got := texttest.Code(err); got != screensharev1.TextCode_TEXT_CODE_FRAME_MEMORY_TRADES_COLOUR {
+	if got := texttest.Code(err); got != mirrormev1.TextCode_TEXT_CODE_FRAME_MEMORY_TRADES_COLOUR {
 		t.Errorf("a row that trades the colour refuses with %v", got)
 	}
 }
@@ -229,12 +229,12 @@ func TestAnUnknownMemoryIsRefused(t *testing.T) {
 func TestUndeterminedNamesTheDevicesItRead(t *testing.T) {
 	err := Undetermined([]string{"/dev/dri/renderD128", "/dev/dri/renderD129"})
 	statement, _ := text.Statement(err)
-	if statement.GetCode() != screensharev1.TextCode_TEXT_CODE_GPU_UNDETERMINED {
+	if statement.GetCode() != mirrormev1.TextCode_TEXT_CODE_GPU_UNDETERMINED {
 		t.Fatalf("a machine with several GPUs refuses with %v", statement.GetCode())
 	}
 	var devices []string
 	for _, arg := range statement.GetArgs() {
-		if arg.GetName() == screensharev1.TextArgName_TEXT_ARG_NAME_DEVICES {
+		if arg.GetName() == mirrormev1.TextArgName_TEXT_ARG_NAME_DEVICES {
 			devices = arg.GetIds().GetIds()
 		}
 	}

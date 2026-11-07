@@ -6,7 +6,7 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // Where a relay token rides is per protocol, and every difference is MediaMTX's answer, measured:

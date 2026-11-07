@@ -4,13 +4,13 @@ import (
 	"strconv"
 	"strings"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // The GPU path's half of the publish command: a grabber already holding its frames on the device
@@ -96,7 +96,7 @@ func GpuFilters(codec, chroma, colorRange string, size settings.Size, scaled boo
 
 	c, ok := capabilities.Get(codec)
 	if !ok {
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(codec))
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(codec))
 	}
 	convert, ok := gpuConverts[c.Family]
 	// Only a pair gpupath.Paths carries reaches here,
@@ -110,9 +110,9 @@ func GpuFilters(codec, chroma, colorRange string, size settings.Size, scaled boo
 
 	if convert.scale == "" {
 		if scaled {
-			return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_DEVICE_PATH_HAS_NO_SCALER, text.Codec(codec),
-				text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_WIDTH, int64(size.Width)),
-				text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_HEIGHT, int64(size.Height)))
+			return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_DEVICE_PATH_HAS_NO_SCALER, text.Codec(codec),
+				text.Num(mirrormev1.TextArgName_TEXT_ARG_NAME_WIDTH, int64(size.Width)),
+				text.Num(mirrormev1.TextArgName_TEXT_ARG_NAME_HEIGHT, int64(size.Height)))
 		}
 		if colour := colourFilter(chroma); colour != "" {
 			return []string{colour}, nil
@@ -122,7 +122,7 @@ func GpuFilters(codec, chroma, colorRange string, size settings.Size, scaled boo
 
 	format, ok := hwSurfaceFormats[chroma]
 	if !ok {
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM,
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM,
 			text.Engine(capabilities.EngineFfmpeg), text.Chroma(chroma))
 	}
 	options := []string{convert.scale + "=format=" + format}

@@ -4,7 +4,7 @@ package settings
 //
 // Read on a schedule of this side's own rather than through an effect it is handed settings with,
 // so a write holds as it is made and reaches the next start
-// (api/proto/screenshare/v1/form.proto, FieldGroup.applied).
+// (api/proto/mirrorme/v1/form.proto, FieldGroup.applied).
 type App struct {
 	// SendCrashReports lets a crash in an earlier run reach the relay operator on the next start,
 	// as the bundle a manual report sends (internal/report).

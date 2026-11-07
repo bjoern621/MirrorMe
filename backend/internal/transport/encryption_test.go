@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // Every relay this repository runs terminates TLS on the two legs no proxy can carry, RTSP and

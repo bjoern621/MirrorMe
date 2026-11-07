@@ -7,13 +7,13 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/text"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/text"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // The built-in presets: a promise about the picture, and the search that finds a configuration
@@ -132,7 +132,7 @@ var presetRangeAxes = []struct {
 // and the ladder of pictures it would accept.
 type preset struct {
 	// key is the identifier the whole app names this preset by, the shell's own label included
-	// (api/proto/screenshare/v1/form.proto, BuiltinPreset).
+	// (api/proto/mirrorme/v1/form.proto, BuiltinPreset).
 	key   string
 	claim presetClaim
 	// base writes the fields every candidate carries: the rate-control recipe, the frame rate
@@ -333,14 +333,14 @@ func presetHolds(p settings.Publish, c presetClaim) bool {
 // A draft still holding a stranded value would have every candidate moved by the repair,
 // and every preset would then be unreachable for a fault none of them has (Resolve repairs first,
 // and everything after it describes what that reached).
-func resolvePresets(d Deps, s settings.Settings) []*screensharev1.BuiltinPreset {
-	out := make([]*screensharev1.BuiltinPreset, 0, len(presetTable))
+func resolvePresets(d Deps, s settings.Settings) []*mirrormev1.BuiltinPreset {
+	out := make([]*mirrormev1.BuiltinPreset, 0, len(presetTable))
 	selected := 0
 
 	for _, p := range presetTable {
 		// Selected is the settings' own statement rather than a reading off the values:
 		// two claims may overlap, and the key says which promise the user asked for.
-		entry := &screensharev1.BuiltinPreset{Key: p.key, Selected: s.Publish.Preset == p.key}
+		entry := &mirrormev1.BuiltinPreset{Key: p.key, Selected: s.Publish.Preset == p.key}
 		if entry.GetSelected() {
 			selected++
 		}
@@ -353,9 +353,9 @@ func resolvePresets(d Deps, s settings.Settings) []*screensharev1.BuiltinPreset 
 			// being how viewers are reached rather than a property of the picture,
 			// so a leg whose formats rule out every candidate
 			// is what the reason names for the user to act on.
-			entry.Reason = text.Of(screensharev1.TextCode_TEXT_CODE_PRESET_UNREACHABLE,
-				text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_PRESET, p.key),
-				text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_TRANSPORT, s.Publish.Transport))
+			entry.Reason = text.Of(mirrormev1.TextCode_TEXT_CODE_PRESET_UNREACHABLE,
+				text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_PRESET, p.key),
+				text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_TRANSPORT, s.Publish.Transport))
 		}
 
 		assert.Assert((entry.GetSettings() != nil) != (entry.GetReason() != nil),

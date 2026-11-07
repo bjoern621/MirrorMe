@@ -3,9 +3,9 @@ package wire
 import (
 	"strconv"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/window"
+	"bjoernblessin.de/mirrorme/internal/window"
 )
 
 // ShareWindows carries the window enumeration out.
@@ -14,10 +14,10 @@ import (
 // and what the form offers as an option value:
 // the platform handle is 64 bits wide, and one spelling on both sides is what lets a shell
 // match a picked value against the row describing it.
-func ShareWindows(windows []window.Window) []*screensharev1.ShareWindow {
-	out := make([]*screensharev1.ShareWindow, 0, len(windows))
+func ShareWindows(windows []window.Window) []*mirrormev1.ShareWindow {
+	out := make([]*mirrormev1.ShareWindow, 0, len(windows))
 	for _, w := range windows {
-		out = append(out, &screensharev1.ShareWindow{
+		out = append(out, &mirrormev1.ShareWindow{
 			Handle: strconv.FormatUint(w.Handle, 10),
 			Title:  w.Title,
 			App:    w.App,

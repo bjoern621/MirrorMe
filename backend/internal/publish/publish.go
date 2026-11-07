@@ -13,15 +13,15 @@ import (
 	"reflect"
 	"slices"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/ffmpeg"
-	"bjoernblessin.de/screenshare/internal/pointer"
-	"bjoernblessin.de/screenshare/internal/portal"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/transport"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/ffmpeg"
+	"bjoernblessin.de/mirrorme/internal/pointer"
+	"bjoernblessin.de/mirrorme/internal/portal"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/transport"
 )
 
 // Stats is one encoder progress sample surfaced to the UI.
@@ -153,7 +153,7 @@ func ReleaseSourcesExcept(capture string) {
 func For(capture string) (Publisher, error) {
 	p, ok := captureBackends[capture]
 	if !ok {
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Capture(capture))
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Capture(capture))
 	}
 	return p, nil
 }

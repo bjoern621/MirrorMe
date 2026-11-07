@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/framestamp"
+	"bjoernblessin.de/mirrorme/internal/framestamp"
 )
 
 // A stamped position reads back as the fraction of the picture it was written as.

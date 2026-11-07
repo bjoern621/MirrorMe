@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/group"
+	"bjoernblessin.de/mirrorme/internal/group"
 )
 
 // What a scrape counts of this service is the one thing it hands out.

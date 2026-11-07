@@ -12,10 +12,10 @@ import (
 	"strings"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/gpu"
-	"bjoernblessin.de/screenshare/internal/gpupath"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/gpu"
+	"bjoernblessin.de/mirrorme/internal/gpupath"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // roundTripFrames is how many frames one round trip encodes.

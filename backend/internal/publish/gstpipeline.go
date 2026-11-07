@@ -6,16 +6,16 @@ import (
 	"strconv"
 	"strings"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/gpu"
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/transport"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/gpu"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/transport"
 )
 
 // gstEncodeQueue sheds ahead of the encoder: the newest frame waits, the rest are dropped.
@@ -73,16 +73,16 @@ func buildPipeline(s settings.Settings, capture []string, meterPort string, prev
 		return nil, err
 	}
 	if !slices.Contains(settings.Congestions, s.Publish.Congestion) {
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Value(s.Publish.Congestion))
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Value(s.Publish.Congestion))
 	}
 
 	sink, ok := transport.GstSink(s)
 	if !ok {
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(EngineGst), text.Transport(s.Publish.Transport))
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(EngineGst), text.Transport(s.Publish.Transport))
 	}
 
 	if s.Publish.Fps <= 0 {
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_FPS_NOT_POSITIVE, text.Fps(s.Publish.Fps))
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_FPS_NOT_POSITIVE, text.Fps(s.Publish.Fps))
 	}
 	// Resolved again here rather than carried over from the source, the memory deciding the encoder
 	// element too: a family whose plugin ships one element per memory kind is encoded by a different
@@ -203,7 +203,7 @@ func gstInputCaps(s settings.Settings, mem gstFrameMemory) (string, error) {
 		return "", err
 	}
 	if s.Publish.Fps <= 0 {
-		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_FPS_NOT_POSITIVE, text.Fps(s.Publish.Fps))
+		return "", text.Fail(mirrormev1.TextCode_TEXT_CODE_FPS_NOT_POSITIVE, text.Fps(s.Publish.Fps))
 	}
 	return gstEncoderCaps(s, mem)
 }
@@ -270,11 +270,11 @@ func gstAudioBranch(s settings.Settings) ([]string, error) {
 	}
 	a, ok := capabilities.GetAudio(s.Publish.AudioTrack())
 	if !ok {
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.AudioCodec(s.Publish.AudioTrack()))
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.AudioCodec(s.Publish.AudioTrack()))
 	}
 	enc, ok := a.EncoderOn(EngineGst)
 	if !ok {
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_AUDIO_ENCODER, text.Engine(EngineGst), text.AudioCodec(a.Name))
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_AUDIO_ENCODER, text.Engine(EngineGst), text.AudioCodec(a.Name))
 	}
 	assert.Assert(enc.Parser != "", "a GStreamer audio encoder states its parser", a.Name)
 
@@ -375,14 +375,14 @@ var gstAudioElements = map[string]map[string]gstAudioOpen{
 // the muxer's audio pad never starves.
 func gstAudioSource(s settings.Settings, a settings.AudioSource, i int) ([]string, error) {
 	if available, _ := AudioAvailable(s.Publish.Capture, a.Source); !available {
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_CAPTURE_RECORDS_NO_AUDIO, text.Capture(s.Publish.Capture), text.Audio(a.Source))
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_CAPTURE_RECORDS_NO_AUDIO, text.Capture(s.Publish.Capture), text.Audio(a.Source))
 	}
 	need, gated := needsOf(s.Publish.Capture)
 	assert.Assert(gated, "a capture backend building an audio branch is a registered one", s.Publish.Capture)
 
 	open, mapped := gstAudioElements[need.os][a.Source]
 	if !mapped {
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_NO_ELEMENT_RECORDS_AUDIO, text.Audio(a.Source), text.Os(need.os))
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_NO_ELEMENT_RECORDS_AUDIO, text.Audio(a.Source), text.Os(need.os))
 	}
 	source := append([]string{open.element}, open.properties...)
 	switch {
@@ -391,7 +391,7 @@ func gstAudioSource(s settings.Settings, a settings.AudioSource, i int) ([]strin
 	case open.self != "":
 		source = append(source, open.handle+"="+open.self)
 	case open.named:
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_AUDIO_DEVICE_UNNAMED, text.Audio(a.Source))
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_AUDIO_DEVICE_UNNAMED, text.Audio(a.Source))
 	}
 	return append(source, []string{
 		"!", "queue",
@@ -479,15 +479,15 @@ var gstFamilyChromaFormats = map[string]map[string]string{
 func gstChromaFormat(codec, chroma, memory string) (string, error) {
 	c, ok := capabilities.Get(codec)
 	if !ok {
-		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(codec))
+		return "", text.Fail(mirrormev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(codec))
 	}
 	formats, ok := gstRawFormats(c.Family, memory)
 	if !ok {
-		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(EngineGst), text.Family(c.Family))
+		return "", text.Fail(mirrormev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(EngineGst), text.Family(c.Family))
 	}
 	format, ok := formats[chroma]
 	if !ok {
-		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(EngineGst), text.Chroma(chroma))
+		return "", text.Fail(mirrormev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(EngineGst), text.Chroma(chroma))
 	}
 	return format, nil
 }
@@ -571,7 +571,7 @@ var gstColorRanges = map[string]string{
 func gstColorRange(s settings.Settings) (string, error) {
 	r, ok := gstColorRanges[s.Publish.ColorRange]
 	if !ok {
-		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(EngineGst), text.ColorRange(s.Publish.ColorRange))
+		return "", text.Fail(mirrormev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(EngineGst), text.ColorRange(s.Publish.ColorRange))
 	}
 	return r, nil
 }

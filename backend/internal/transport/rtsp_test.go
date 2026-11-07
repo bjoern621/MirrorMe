@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // rtspStream sets every knob away from its default, so a serialization ignoring one renders

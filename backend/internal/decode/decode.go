@@ -20,8 +20,8 @@ package decode
 import (
 	"fmt"
 
-	"bjoernblessin.de/screenshare/internal/pointer"
-	"bjoernblessin.de/screenshare/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/pointer"
+	"bjoernblessin.de/mirrorme/internal/receive"
 )
 
 // Kind is which of the three things a decode is.

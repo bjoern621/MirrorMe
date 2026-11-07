@@ -6,10 +6,10 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/release"
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/release"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // EnvCheck switches the release check off for a whole install.
@@ -68,7 +68,7 @@ type row struct {
 	asset  string
 	method Method
 	// held is the statement behind a channel that installs nothing.
-	held screensharev1.TextCode
+	held mirrormev1.TextCode
 }
 
 // channels is every channel a build can be stamped with.
@@ -76,15 +76,15 @@ type row struct {
 // Exhaustive, so a recipe stamping a name nothing here declares fails at the first check
 // rather than quietly reading as a copy somebody else maintains.
 var channels = map[Channel]row{
-	Unstamped:    {held: screensharev1.TextCode_TEXT_CODE_UPDATE_BUILD_UNSTAMPED},
+	Unstamped:    {held: mirrormev1.TextCode_TEXT_CODE_UPDATE_BUILD_UNSTAMPED},
 	WindowsSetup: {asset: "mirrorme-%s-windows-x86_64-setup.exe", method: MethodRun},
 	WindowsZip:   {asset: "mirrorme-%s-windows-x86_64.zip", method: MethodSwap},
 	Portable:     {asset: "mirrorme-%s-linux-x86_64-portable.tar.gz", method: MethodSwap},
 
-	Pacman:  {held: screensharev1.TextCode_TEXT_CODE_UPDATE_CHANNEL_MANAGED},
-	Dnf:     {held: screensharev1.TextCode_TEXT_CODE_UPDATE_CHANNEL_MANAGED},
-	Flatpak: {held: screensharev1.TextCode_TEXT_CODE_UPDATE_CHANNEL_MANAGED},
-	Nix:     {held: screensharev1.TextCode_TEXT_CODE_UPDATE_CHANNEL_MANAGED},
+	Pacman:  {held: mirrormev1.TextCode_TEXT_CODE_UPDATE_CHANNEL_MANAGED},
+	Dnf:     {held: mirrormev1.TextCode_TEXT_CODE_UPDATE_CHANNEL_MANAGED},
+	Flatpak: {held: mirrormev1.TextCode_TEXT_CODE_UPDATE_CHANNEL_MANAGED},
+	Nix:     {held: mirrormev1.TextCode_TEXT_CODE_UPDATE_CHANNEL_MANAGED},
 }
 
 // UninstallerName is the file Inno Setup writes beside an installed copy,
@@ -126,8 +126,8 @@ func Resolve(stamped Channel, dir, flatpakID string) Channel {
 // Uninstallable leaves the answer worth stating and the files alone,
 // so a reader is told a newer build exists and where to get it.
 type Offer struct {
-	Unchecked     *screensharev1.Text
-	Uninstallable *screensharev1.Text
+	Unchecked     *mirrormev1.Text
+	Uninstallable *mirrormev1.Text
 	// Asset is the release file to fetch, with %s still taking the version.
 	// Empty exactly where Uninstallable stands.
 	Asset  string
@@ -145,22 +145,22 @@ func Decide(channel Channel, version, check string) Offer {
 	assert.Assert(declared, "a build is stamped with a channel the table declares", string(channel))
 	assert.Assert((r.asset == "") == (r.method == MethodNone),
 		"a channel names an asset exactly where it installs one", string(channel))
-	assert.Assert((r.held == screensharev1.TextCode_TEXT_CODE_UNSPECIFIED) == (r.method != MethodNone),
+	assert.Assert((r.held == mirrormev1.TextCode_TEXT_CODE_UNSPECIFIED) == (r.method != MethodNone),
 		"a channel that installs nothing says why", string(channel))
 
 	var offer Offer
 	offer.Channel = channel
 	switch {
 	case check == "0":
-		offer.Unchecked = text.Of(screensharev1.TextCode_TEXT_CODE_UPDATE_CHECK_OFF)
+		offer.Unchecked = text.Of(mirrormev1.TextCode_TEXT_CODE_UPDATE_CHECK_OFF)
 	case !release.Comparable(version):
 		// Nothing to compare a tag against, so the answer would be unknown whatever came back.
-		offer.Unchecked = text.Of(screensharev1.TextCode_TEXT_CODE_UPDATE_BUILD_UNSTAMPED)
+		offer.Unchecked = text.Of(mirrormev1.TextCode_TEXT_CODE_UPDATE_BUILD_UNSTAMPED)
 	}
 
 	if r.method == MethodNone {
 		offer.Uninstallable = text.Of(r.held,
-			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_CHANNEL, string(channel)))
+			text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_CHANNEL, string(channel)))
 		return offer
 	}
 

@@ -12,7 +12,7 @@ import (
 	"os/exec"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/publish"
 )
 
 // The whole measurement against a real encoder.

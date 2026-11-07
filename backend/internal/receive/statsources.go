@@ -10,7 +10,7 @@ import (
 // Which counters a receiving pipeline can answer for is this side's knowledge, this side building
 // the pipeline.
 // What a counter is called on screen is a reader's, that side having a width, a tone and a tooltip
-// (api/proto/screenshare/v1/text.proto).
+// (api/proto/mirrorme/v1/text.proto).
 type statSource struct {
 	factory string
 	fields  []string

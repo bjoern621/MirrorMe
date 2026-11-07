@@ -3,7 +3,7 @@
 
   <!--
     CONTROL_KIND_NUMBER_SELECT: a typed box, and a caret beside it opening the values worth
-    reaching in one move (api/proto/screenshare/v1/form.proto).
+    reaching in one move (api/proto/mirrorme/v1/form.proto).
     Two widgets because the two answer differently: the box takes any value the field's range
     admits, the ladder one of a few.
     Glued so the pair reads as one setting rather than as a spinner beside an unrelated dropdown.
@@ -17,7 +17,7 @@
     The held entry standing where the box would be, for a value the field's range does not
     reach: the burst ceiling is legal at zero and legal again from the target it bursts above,
     and a spinner handed the zero would coerce it to the target
-    (api/proto/screenshare/v1/form.proto, CONTROL_KIND_NUMBER_SELECT).
+    (api/proto/mirrorme/v1/form.proto, CONTROL_KIND_NUMBER_SELECT).
     Shaped as the box so the pair still reads as one setting, and selectable because everything
     a reader may want to carry elsewhere is.
   -->

@@ -2,12 +2,12 @@ package form
 
 import (
 	"bjoernblessin.de/go-utils/util/assert"
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/text"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // summarize is what a shell shows without deriving it: the command these settings would run,
@@ -20,11 +20,11 @@ import (
 // No headline and no per-group shorthand.
 // Both pick a separator, an abbreviation and a length, which belong where the strip they sit
 // in is laid out, and the values are on Form.settings for a surface to compose
-// its own at its own width (api/proto/screenshare/v1/form.proto).
-func summarize(_ Deps, s settings.Settings, est *screensharev1.Estimate) *screensharev1.Summary {
+// its own at its own width (api/proto/mirrorme/v1/form.proto).
+func summarize(_ Deps, s settings.Settings, est *mirrormev1.Estimate) *mirrormev1.Summary {
 	command, refusal := formCommand(s)
 
-	sum := &screensharev1.Summary{
+	sum := &mirrormev1.Summary{
 		Command:        command,
 		CommandRefusal: refusal,
 		Estimate:       est,
@@ -46,11 +46,11 @@ func summarize(_ Deps, s settings.Settings, est *screensharev1.Estimate) *screen
 // since those reads are what refuse a command the button beside it would refuse.
 //
 // The refusal is the one a start of these settings meets (docs/ipc-api.md, "Errors").
-func formCommand(s settings.Settings) (command string, refusal *screensharev1.Refusal) {
+func formCommand(s settings.Settings) (command string, refusal *mirrormev1.Refusal) {
 	cmd, err := publish.Command(s)
 	if err != nil {
 		statement, words := text.Statement(err)
-		return "", &screensharev1.Refusal{Text: statement, Message: words}
+		return "", &mirrormev1.Refusal{Text: statement, Message: words}
 	}
 	return cmd, nil
 }

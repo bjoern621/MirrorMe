@@ -74,7 +74,7 @@ type chain struct {
 	// label and tip are the wording of record:
 	// the chain's name, what it does, and what it says about its colour.
 	// Neither crosses the control API, the words on screen being the shell's
-	// (api/proto/screenshare/v1/text.proto).
+	// (api/proto/mirrorme/v1/text.proto).
 	// They sit here because the reasoning behind each row does,
 	// and the shell's copy is written off them.
 	label string

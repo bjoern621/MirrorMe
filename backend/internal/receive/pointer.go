@@ -3,8 +3,8 @@ package receive
 import (
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/framestamp"
-	"bjoernblessin.de/screenshare/internal/pointer"
+	"bjoernblessin.de/mirrorme/internal/framestamp"
+	"bjoernblessin.de/mirrorme/internal/pointer"
 )
 
 // Where the publishing machine's pointer is, as its frames carry it.

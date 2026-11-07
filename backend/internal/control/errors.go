@@ -5,9 +5,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // The two error kinds cross this boundary differently,
@@ -34,7 +34,7 @@ func refuse(c codes.Code, failure error) error {
 	assert.IsNotNil(statement, "a served refusal states what it refused", failure)
 
 	st, err := status.New(c, statement.GetCode().String()).
-		WithDetails(&screensharev1.Refusal{Text: statement, Message: words})
+		WithDetails(&mirrormev1.Refusal{Text: statement, Message: words})
 	assert.Assert(err == nil, "a Refusal packs into a status detail", err)
 	return st.Err()
 }

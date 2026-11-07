@@ -5,9 +5,9 @@ import (
 
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/relay"
-	"bjoernblessin.de/screenshare/internal/watchsvc"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/relay"
+	"bjoernblessin.de/mirrorme/internal/watchsvc"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // withViewers puts watchd's answer on the path this machine publishes, and hands status back unchanged

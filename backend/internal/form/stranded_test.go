@@ -4,12 +4,12 @@ import (
 	"slices"
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/encoders"
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/encoders"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // strandedDeps is a Linux machine whose GStreamer tooling is missing,
@@ -37,10 +37,10 @@ func strandedDraft() settings.Settings {
 	return s
 }
 
-func strandedFieldKeys(f *screensharev1.Form, severity screensharev1.Severity) []string {
+func strandedFieldKeys(f *mirrormev1.Form, severity mirrormev1.Severity) []string {
 	var out []string
 	for _, d := range f.GetDiagnostics() {
-		if d.GetText().GetCode() == screensharev1.TextCode_TEXT_CODE_NOTHING_LEFT_TO_PICK &&
+		if d.GetText().GetCode() == mirrormev1.TextCode_TEXT_CODE_NOTHING_LEFT_TO_PICK &&
 			d.GetSeverity() == severity {
 			out = append(out, d.GetFieldKey())
 		}
@@ -54,7 +54,7 @@ func TestAControlWithEveryEntryRefusedRefusesTheStart(t *testing.T) {
 	f := Resolve(strandedDeps(), strandedDraft())
 
 	for _, key := range []string{KeyFormat, KeyEncoder, KeyTransport} {
-		var field *screensharev1.Field
+		var field *mirrormev1.Field
 		for _, g := range f.GetGroups() {
 			for _, row := range g.GetFields() {
 				if row.GetKey() == key {
@@ -72,7 +72,7 @@ func TestAControlWithEveryEntryRefusedRefusesTheStart(t *testing.T) {
 		}
 	}
 
-	keys := strandedFieldKeys(f, screensharev1.Severity_SEVERITY_ERROR)
+	keys := strandedFieldKeys(f, mirrormev1.Severity_SEVERITY_ERROR)
 	for _, want := range []string{KeyFormat, KeyEncoder, KeyTransport} {
 		found := false
 		for _, key := range keys {
@@ -96,7 +96,7 @@ func TestAControlWithAnEntryLeftStatesNothing(t *testing.T) {
 	d.Encoders = encoders.Availability{}
 	f := Resolve(d, strandedDraft())
 
-	if keys := strandedFieldKeys(f, screensharev1.Severity_SEVERITY_ERROR); len(keys) > 0 {
+	if keys := strandedFieldKeys(f, mirrormev1.Severity_SEVERITY_ERROR); len(keys) > 0 {
 		t.Errorf("a machine with entries left is told it has none: %v", keys)
 	}
 }
@@ -118,10 +118,10 @@ func TestEveryControlWithEntriesIsAnAnchor(t *testing.T) {
 
 // A gap costs the stream where a start reads the group, and one tile where the viewer does.
 func TestAViewerGapWarnsWhereAPublishGapRefuses(t *testing.T) {
-	if got := strandedSeverity(GroupTransport); got != screensharev1.Severity_SEVERITY_ERROR {
+	if got := strandedSeverity(GroupTransport); got != mirrormev1.Severity_SEVERITY_ERROR {
 		t.Errorf("a leg with nothing left to pick ranks %v, and a start is handed the leg", got)
 	}
-	if got := strandedSeverity(GroupWatch); got != screensharev1.Severity_SEVERITY_WARNING {
+	if got := strandedSeverity(GroupWatch); got != mirrormev1.Severity_SEVERITY_WARNING {
 		t.Errorf("a watch leg with nothing left to pick ranks %v, and no stream waits on it", got)
 	}
 }

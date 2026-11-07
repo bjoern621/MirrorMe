@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/qa"
+	"bjoernblessin.de/mirrorme/internal/qa"
 )
 
 func TestAskTakesANoteOnAFailure(t *testing.T) {

@@ -9,7 +9,7 @@ namespace ScreenShare.App.Copy;
 /// The backend sends no prose.
 /// It sends a code naming the fact and the identifiers the fact is about,
 /// capture <c>portal</c>, codec <c>libx264</c>, engine <c>gstreamer</c>,
-/// and this is where that becomes something to read (api/proto/screenshare/v1/text.proto).
+/// and this is where that becomes something to read (api/proto/mirrorme/v1/text.proto).
 ///
 /// Every sentence names the limit, which side has it, and the way out,
 /// so a grayed control leaves the reader something to do.

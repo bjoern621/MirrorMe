@@ -3,17 +3,17 @@ package app
 import (
 	"sync"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/decode"
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/receive"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/decode"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // The local preview: this machine decoding the stream it sends, the relay no party to it
@@ -257,7 +257,7 @@ func (a *App) SubscribePreviewFrames() (decode.Subscription, error) {
 	a.procMu.Unlock()
 
 	if run == nil {
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_PREVIEW_NOT_RUNNING)
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_PREVIEW_NOT_RUNNING)
 	}
 	<-run.settled
 
@@ -267,7 +267,7 @@ func (a *App) SubscribePreviewFrames() (decode.Subscription, error) {
 	a.procMu.Unlock()
 
 	if !current || receiver == nil {
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_PREVIEW_NOT_RUNNING)
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_PREVIEW_NOT_RUNNING)
 	}
 	return receiver.Subscribe()
 }

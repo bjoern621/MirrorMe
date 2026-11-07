@@ -8,7 +8,7 @@ import (
 
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/ffmpeg"
+	"bjoernblessin.de/mirrorme/internal/ffmpeg"
 )
 
 // ownLogTag names this process's run log, beside the ones its children write:

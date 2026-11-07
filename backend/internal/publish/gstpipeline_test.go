@@ -6,13 +6,13 @@ import (
 	"strings"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/text/texttest"
+	"bjoernblessin.de/mirrorme/internal/text/texttest"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/gpupath"
-	"bjoernblessin.de/screenshare/internal/gstrun"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/transport"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/gpupath"
+	"bjoernblessin.de/mirrorme/internal/gstrun"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/transport"
 )
 
 // A pixel format the capability table leaves reachable and the format map has no row for it

@@ -4,13 +4,13 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/form"
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/text"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/form"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/text"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // The states Read hands over and the two questions Ask answers:
@@ -38,7 +38,7 @@ import (
 // One function, because the read and the event the probe announces carry the same catalog.
 // Two builders would draw one table for the shell that asked for the probe,
 // another for the shell that was told about it.
-func (s *Server) catalog() *screensharev1.Catalog {
+func (s *Server) catalog() *mirrormev1.Catalog {
 	catalog := wire.Catalog(wire.CatalogInput{
 		Platform:     s.backend.Platform(),
 		Monitors:     s.backend.Monitors(),
@@ -56,8 +56,8 @@ func (s *Server) catalog() *screensharev1.Catalog {
 // The store notice rides here rather than on the catalog.
 // Why the persisted settings could not be restored is a fact about the settings,
 // so it belongs beside the defaults it explains.
-func (s *Server) storedSettings() *screensharev1.StoredSettings {
-	return &screensharev1.StoredSettings{
+func (s *Server) storedSettings() *mirrormev1.StoredSettings {
+	return &mirrormev1.StoredSettings{
 		Settings:    wire.Settings(s.backend.Settings()),
 		StoreNotice: s.backend.StoreNotice(),
 	}
@@ -82,7 +82,7 @@ func (s *Server) storedSettings() *screensharev1.StoredSettings {
 // Repair is what a resolve is for:
 // it walks a draft the tables forbid to the first legal value and names what it moved,
 // and an empty draft is the far end of that same walk.
-func (s *Server) resolveForm(m *screensharev1.Settings) *screensharev1.Form {
+func (s *Server) resolveForm(m *mirrormev1.Settings) *mirrormev1.Form {
 	// Brokered ahead of the resolve, so the audience diagnostic reads Discord mode's membership.
 	draft := s.backend.Brokered(wire.ToSettings(m))
 	resolved := form.Resolve(s.formDeps(), draft)
@@ -139,21 +139,21 @@ func (s *Server) formDeps() form.Deps {
 // The store is reached directly rather than through Backend.
 // Presets are a file, held by nothing in the running app and announced by no event,
 // so a Backend method would forward and nothing else.
-func (s *Server) presets() *screensharev1.PresetList {
+func (s *Server) presets() *mirrormev1.PresetList {
 	presets, err := settings.LoadPresets()
 
-	var notice *screensharev1.Text
+	var notice *mirrormev1.Text
 	if err != nil {
 		logger.Warnf("control: presets not restored: %v", err)
 		notice = settings.StoreNotice(
-			screensharev1.TextCode_TEXT_CODE_PRESET_STORE_UNREADABLE, err)
+			mirrormev1.TextCode_TEXT_CODE_PRESET_STORE_UNREADABLE, err)
 	}
 
-	return &screensharev1.PresetList{Presets: wire.Presets(presets), Notice: notice}
+	return &mirrormev1.PresetList{Presets: wire.Presets(presets), Notice: notice}
 }
 
 // publishState says whether a stream is in force, and whether the held settings have moved off it.
-func (s *Server) publishState() *screensharev1.PublishState {
+func (s *Server) publishState() *mirrormev1.PublishState {
 	return wire.PublishState(s.backend.PublishState())
 }
 
@@ -168,19 +168,19 @@ func (s *Server) publishState() *screensharev1.PublishState {
 // so several shells reading do not multiply the requests to the relay,
 // and the byte-delta bitrates stay computed against one steady interval
 // rather than whatever cadence each shell chose.
-func (s *Server) relayStatus() *screensharev1.RelayStatus {
+func (s *Server) relayStatus() *mirrormev1.RelayStatus {
 	return wire.RelayStatus(s.backend.RelayStatus())
 }
 
 // viewerState answers with the open external viewers,
 // one entry per stream and transport it is received over.
-func (s *Server) viewerState() *screensharev1.ViewerState {
+func (s *Server) viewerState() *mirrormev1.ViewerState {
 	return wire.ViewerState(s.backend.Watching())
 }
 
 // receiveState answers with the streams being decoded,
 // one entry per stream and leg it is received over.
-func (s *Server) receiveState() *screensharev1.ReceiveState {
+func (s *Server) receiveState() *mirrormev1.ReceiveState {
 	return wire.ReceiveState(s.backend.ReceiveState())
 }
 
@@ -188,7 +188,7 @@ func (s *Server) receiveState() *screensharev1.ReceiveState {
 // what a shell that has just connected converges against.
 // A preview outlives the window that asked for it,
 // so a shell that crashed leaves screens captured for nobody.
-func (s *Server) monitorPreviewState() *screensharev1.MonitorPreviewState {
+func (s *Server) monitorPreviewState() *mirrormev1.MonitorPreviewState {
 	return wire.MonitorPreviewState(s.backend.MonitorPreviewState())
 }
 
@@ -198,14 +198,14 @@ func (s *Server) monitorPreviewState() *screensharev1.MonitorPreviewState {
 // so it is asked for when a surface is about to draw it.
 // A session that enumerates none answers empty,
 // and Catalog.no_window_enumeration says so beforehand.
-func (s *Server) shareWindows() *screensharev1.ShareWindowList {
-	return &screensharev1.ShareWindowList{Windows: wire.ShareWindows(s.backend.Windows())}
+func (s *Server) shareWindows() *mirrormev1.ShareWindowList {
+	return &mirrormev1.ShareWindowList{Windows: wire.ShareWindows(s.backend.Windows())}
 }
 
 // testStreamState counts the synthetic publishers alive:
 // one that died on its own drops out.
 // The slots travel beside the count, so a set with one dead publisher names the slot.
-func (s *Server) testStreamState() *screensharev1.TestStreamState {
+func (s *Server) testStreamState() *mirrormev1.TestStreamState {
 	running, slots := s.backend.TestStreamState()
 	return wire.TestStreamState(running, slots...)
 }
@@ -216,12 +216,12 @@ func (s *Server) testStreamState() *screensharev1.TestStreamState {
 // A read of a reading, stating no presence of its own:
 // the loop polling the relay is the heartbeat,
 // and a shell asking would be a second thing deciding when this machine is in its group.
-func (s *Server) membersState() *screensharev1.MembersState {
+func (s *Server) membersState() *mirrormev1.MembersState {
 	return wire.MembersState(s.backend.MembersState())
 }
 
 // discordState answers Discord mode as the last manager pass landed it.
-func (s *Server) discordState() *screensharev1.DiscordState {
+func (s *Server) discordState() *mirrormev1.DiscordState {
 	return wire.DiscordState(s.backend.DiscordState())
 }
 
@@ -248,11 +248,11 @@ func (s *Server) resolveLink(url string) (string, error) {
 //
 // Reaches nothing: Do's check_update is what asks the release service,
 // and every step of it arrives on Watch.
-func (s *Server) updateState() *screensharev1.UpdateState {
+func (s *Server) updateState() *mirrormev1.UpdateState {
 	return wire.UpdateState(s.backend.UpdateState())
 }
 
 // streamTimeline answers the publish run as the backend judged it.
-func (s *Server) streamTimeline() *screensharev1.StreamTimeline {
+func (s *Server) streamTimeline() *mirrormev1.StreamTimeline {
 	return wire.StreamTimeline(s.backend.StreamTimeline())
 }

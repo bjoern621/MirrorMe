@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/platform"
 )
 
 // playExe plays a file into the daemon, which registers it as an output stream of its own.

@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/ffmpeg"
+	"bjoernblessin.de/mirrorme/internal/ffmpeg"
 )
 
 // The ffmpeg engine reports no byte total on a leg whose muxer states none, RTP and the tee among

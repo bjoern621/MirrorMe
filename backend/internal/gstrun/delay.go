@@ -13,8 +13,8 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/padprobe"
-	"bjoernblessin.de/screenshare/internal/pipedelay"
+	"bjoernblessin.de/mirrorme/internal/padprobe"
+	"bjoernblessin.de/mirrorme/internal/pipedelay"
 )
 
 // Reporting what the publish leg costs a frame.

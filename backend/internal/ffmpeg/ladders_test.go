@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
 )
 
 // The flag each encoder spells its effort knob with, and the one it spells its tune with.

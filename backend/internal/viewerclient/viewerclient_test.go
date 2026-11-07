@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/token"
-	"bjoernblessin.de/screenshare/internal/watchsvc"
+	"bjoernblessin.de/mirrorme/internal/token"
+	"bjoernblessin.de/mirrorme/internal/watchsvc"
 )
 
 func serve(t *testing.T) (*httptest.Server, *token.Signer) {
@@ -73,4 +73,3 @@ func TestAnUnreachableServiceIsAnError(t *testing.T) {
 		t.Error("stating to a closed service succeeded")
 	}
 }
-

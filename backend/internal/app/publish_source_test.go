@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/events"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/events"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // A held screen source belongs to the stream rather than to the child that reads it,

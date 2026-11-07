@@ -4,11 +4,11 @@ import (
 	"errors"
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text/texttest"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text/texttest"
 
-	"bjoernblessin.de/screenshare/internal/applink"
-	"bjoernblessin.de/screenshare/internal/discordclient"
+	"bjoernblessin.de/mirrorme/internal/applink"
+	"bjoernblessin.de/mirrorme/internal/discordclient"
 )
 
 // A link is followed against the group this machine stands in now,
@@ -46,7 +46,7 @@ func TestALinkIntoAnotherChannelNamesTheChannelToJoin(t *testing.T) {
 	if err == nil {
 		t.Fatal("a link into a group this machine is not in is refused")
 	}
-	if texttest.Code(err) != screensharev1.TextCode_TEXT_CODE_LINK_OTHER_VOICE_CHANNEL {
+	if texttest.Code(err) != mirrormev1.TextCode_TEXT_CODE_LINK_OTHER_VOICE_CHANNEL {
 		t.Errorf("the refusal names the voice channel to join, said %v", err)
 	}
 }

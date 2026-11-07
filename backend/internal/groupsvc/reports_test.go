@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/membership"
-	"bjoernblessin.de/screenshare/internal/token"
+	"bjoernblessin.de/mirrorme/internal/membership"
+	"bjoernblessin.de/mirrorme/internal/token"
 )
 
 // stored keeps what arrived in memory, standing in for the disk.

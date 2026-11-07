@@ -19,7 +19,7 @@ namespace ScreenShare.App.Features.Viewer.Tile.Model;
 /// Nothing is computed here that the backend measured.
 /// The rates are the sample's, taken against the backend's own interval,
 /// so two windows on one decode read one figure, and a rate is absent rather than zero on the first sample of a run
-/// (<c>api/proto/screenshare/v1/events.proto</c>, ReceiveStreamStats).
+/// (<c>api/proto/mirrorme/v1/events.proto</c>, ReceiveStreamStats).
 /// Added here is the window's own block, the one thing a backend cannot see.
 /// </summary>
 public static class TileStats
@@ -232,7 +232,7 @@ public static class TileStats
     /// Which stages carry a figure is the backend's answer and not this side's:
     /// a viewer measures its own leg and its own pipeline,
     /// and sees the publishing machine's own work only where it is that machine too
-    /// (<c>api/proto/screenshare/v1/events.proto</c>, DelayBudget).
+    /// (<c>api/proto/mirrorme/v1/events.proto</c>, DelayBudget).
     ///
     /// One row is not a stage: the latency window, sitting last under the three rows that fill it.
     ///

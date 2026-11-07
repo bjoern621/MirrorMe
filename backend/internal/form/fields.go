@@ -3,11 +3,11 @@ package form
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // fieldTable is one row per control: what it edits, how it is drawn, what its number means,
@@ -22,7 +22,7 @@ import (
 // so the two are two tables (form.go).
 //
 // No row states its label or its help text either.
-// Both are the surface's, looked up by key (api/proto/screenshare/v1/text.proto),
+// Both are the surface's, looked up by key (api/proto/mirrorme/v1/text.proto),
 // and written for a column width, a tone and a reading level this package cannot see.
 
 // A malformed row is an Entwicklungsfehler and fails at load.
@@ -110,8 +110,8 @@ var fieldTable = []field{
 	{
 		key:     KeyCapture,
 		group:   GroupSource,
-		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.Capture) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_SELECT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Publish.Capture) },
 		options: optionCaptures,
 	},
 	// What is shared: the kind, and one control per target the kinds name.
@@ -119,22 +119,22 @@ var fieldTable = []field{
 	{
 		key:     KeyShareKind,
 		group:   GroupShare,
-		control: screensharev1.ControlKind_CONTROL_KIND_RADIO,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.ShareKind) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_RADIO,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Publish.ShareKind) },
 		options: optionShareKinds,
 	},
 	{
 		key:     KeyMonitor,
 		group:   GroupShare,
-		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return number(s.Publish.Monitor) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_SELECT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return number(s.Publish.Monitor) },
 		options: optionMonitors,
 	},
 	{
 		key:     KeyShareWindow,
 		group:   GroupShare,
-		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.ShareWindow) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_SELECT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Publish.ShareWindow) },
 		options: optionShareWindows,
 	},
 	{
@@ -142,14 +142,14 @@ var fieldTable = []field{
 		// so the control offers no entries and the surface fills it from what somebody dragged.
 		key:     KeyShareRegion,
 		group:   GroupShare,
-		control: screensharev1.ControlKind_CONTROL_KIND_TEXT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.ShareRegion) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_TEXT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Publish.ShareRegion) },
 	},
 	{
 		key:     KeyCaptureMemory,
 		group:   GroupSource,
-		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.CaptureMemory) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_SELECT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Publish.CaptureMemory) },
 		options: optionCaptureMemories,
 	},
 	{
@@ -158,8 +158,8 @@ var fieldTable = []field{
 		// every value is offered everywhere and greyed per backend with what that backend is missing.
 		key:     KeyPointer,
 		group:   GroupSource,
-		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.Pointer) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_SELECT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Publish.Pointer) },
 		options: optionPointerModes,
 	},
 	{
@@ -169,8 +169,8 @@ var fieldTable = []field{
 		// and a control this table never named being one no verdict can reach.
 		key:     KeyDrmMap,
 		group:   GroupSource,
-		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.DrmMap) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_SELECT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Publish.DrmMap) },
 		options: optionDrmMaps,
 	},
 
@@ -183,9 +183,9 @@ var fieldTable = []field{
 		// so the row carries options and bounds together.
 		key:     KeyFps,
 		group:   GroupQuality,
-		control: screensharev1.ControlKind_CONTROL_KIND_NUMBER_SELECT,
-		unit:    screensharev1.Unit_UNIT_FRAMES_PER_SECOND,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return number(s.Publish.Fps) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_NUMBER_SELECT,
+		unit:    mirrormev1.Unit_UNIT_FRAMES_PER_SECOND,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return number(s.Publish.Fps) },
 		options: optionFpsPresets,
 		bounds:  fieldFpsBounds,
 	},
@@ -195,8 +195,8 @@ var fieldTable = []field{
 		// and availability greys the scaled entries there (devicepath.go).
 		key:     KeyOutputResolution,
 		group:   GroupQuality,
-		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.OutputResolution) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_SELECT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Publish.OutputResolution) },
 		options: optionOutputResolutions,
 	},
 	// Of the coding, the format leads, being the half a viewer meets: it is what every watcher has to decode
@@ -207,36 +207,36 @@ var fieldTable = []field{
 	{
 		key:     KeyFormat,
 		group:   GroupQuality,
-		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.Format) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_SELECT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Publish.Format) },
 		options: optionFormats,
 	},
 	{
 		key:     KeyEncoder,
 		group:   GroupQuality,
-		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.Encoder) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_SELECT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Publish.Encoder) },
 		options: optionEncoders,
 	},
 	{
 		key:     KeyChroma,
 		group:   GroupQuality,
-		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.Chroma) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_SELECT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Publish.Chroma) },
 		options: optionChromas,
 	},
 	{
 		key:     KeyColorRange,
 		group:   GroupQuality,
-		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.ColorRange) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_SELECT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Publish.ColorRange) },
 		options: optionColorRanges,
 	},
 	{
 		key:     KeyEffort,
 		group:   GroupQuality,
-		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.Effort) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_SELECT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Publish.Effort) },
 		options: optionEfforts,
 	},
 	{
@@ -246,8 +246,8 @@ var fieldTable = []field{
 		// which is the answer the step gets too.
 		key:     KeyTune,
 		group:   GroupQuality,
-		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.Tune) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_SELECT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Publish.Tune) },
 		options: optionTunes,
 	},
 	{
@@ -255,57 +255,57 @@ var fieldTable = []field{
 		// Every other closed set here is a select.
 		key:     KeyMode,
 		group:   GroupQuality,
-		control: screensharev1.ControlKind_CONTROL_KIND_RADIO,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.Mode) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_RADIO,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Publish.Mode) },
 		options: optionModes,
 	},
 	{
 		key:     KeyCq,
 		group:   GroupQuality,
-		control: screensharev1.ControlKind_CONTROL_KIND_NUMBER_SELECT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return number(s.Publish.Cq) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_NUMBER_SELECT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return number(s.Publish.Cq) },
 		options: optionCqSteps,
 		bounds:  fieldCqBounds,
 	},
 	{
 		key:     KeyBitrateM,
 		group:   GroupQuality,
-		control: screensharev1.ControlKind_CONTROL_KIND_NUMBER,
-		unit:    screensharev1.Unit_UNIT_MEGABITS_PER_SECOND,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return number(s.Publish.BitrateM) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_NUMBER,
+		unit:    mirrormev1.Unit_UNIT_MEGABITS_PER_SECOND,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return number(s.Publish.BitrateM) },
 		bounds:  fieldBitrateBounds,
 	},
 	{
 		key:     KeyMaxrateM,
 		group:   GroupQuality,
-		control: screensharev1.ControlKind_CONTROL_KIND_NUMBER_SELECT,
-		unit:    screensharev1.Unit_UNIT_MEGABITS_PER_SECOND,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return number(s.Publish.MaxrateM) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_NUMBER_SELECT,
+		unit:    mirrormev1.Unit_UNIT_MEGABITS_PER_SECOND,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return number(s.Publish.MaxrateM) },
 		options: optionMaxratePresets,
 		bounds:  fieldMaxrateBounds,
 	},
 	{
 		key:     KeyVbvMs,
 		group:   GroupQuality,
-		control: screensharev1.ControlKind_CONTROL_KIND_NUMBER,
-		unit:    screensharev1.Unit_UNIT_MILLISECONDS,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return number(s.Publish.VbvMs) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_NUMBER,
+		unit:    mirrormev1.Unit_UNIT_MILLISECONDS,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return number(s.Publish.VbvMs) },
 		bounds:  fieldVbvBounds,
 	},
 	{
 		key:     KeyGop,
 		group:   GroupQuality,
-		control: screensharev1.ControlKind_CONTROL_KIND_NUMBER,
-		unit:    screensharev1.Unit_UNIT_FRAMES,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return number(s.Publish.Gop) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_NUMBER,
+		unit:    mirrormev1.Unit_UNIT_FRAMES,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return number(s.Publish.Gop) },
 		bounds:  fieldGopBounds,
 	},
 	{
 		key:     KeyBframes,
 		group:   GroupQuality,
-		control: screensharev1.ControlKind_CONTROL_KIND_NUMBER,
-		unit:    screensharev1.Unit_UNIT_FRAMES,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return number(s.Publish.Bframes) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_NUMBER,
+		unit:    mirrormev1.Unit_UNIT_FRAMES,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return number(s.Publish.Bframes) },
 		bounds:  fieldBframeBounds,
 	},
 
@@ -320,40 +320,40 @@ var fieldTable = []field{
 	{
 		key:         KeyAudioSource,
 		group:       GroupAudio,
-		control:     screensharev1.ControlKind_CONTROL_KIND_SELECT,
+		control:     mirrormev1.ControlKind_CONTROL_KIND_SELECT,
 		repeat:      true,
-		itemValue:   func(a settings.AudioSource) *screensharev1.FieldValue { return stringValue(a.Source) },
+		itemValue:   func(a settings.AudioSource) *mirrormev1.FieldValue { return stringValue(a.Source) },
 		itemOptions: optionAudioKinds,
 	},
 	{
 		key:         KeyAudioSourceDevice,
 		group:       GroupAudio,
-		control:     screensharev1.ControlKind_CONTROL_KIND_SELECT,
+		control:     mirrormev1.ControlKind_CONTROL_KIND_SELECT,
 		repeat:      true,
-		itemValue:   func(a settings.AudioSource) *screensharev1.FieldValue { return stringValue(a.Device) },
+		itemValue:   func(a settings.AudioSource) *mirrormev1.FieldValue { return stringValue(a.Device) },
 		itemOptions: optionAudioDevices,
 	},
 	{
 		key:       KeyAudioSourceGain,
 		group:     GroupAudio,
-		control:   screensharev1.ControlKind_CONTROL_KIND_SLIDER,
-		unit:      screensharev1.Unit_UNIT_PERCENT,
+		control:   mirrormev1.ControlKind_CONTROL_KIND_SLIDER,
+		unit:      mirrormev1.Unit_UNIT_PERCENT,
 		repeat:    true,
-		itemValue: func(a settings.AudioSource) *screensharev1.FieldValue { return number(a.Gain) },
+		itemValue: func(a settings.AudioSource) *mirrormev1.FieldValue { return number(a.Gain) },
 		bounds:    fieldGainBounds,
 	},
 	{
 		key:       KeyAudioSourceMute,
 		group:     GroupAudio,
-		control:   screensharev1.ControlKind_CONTROL_KIND_TOGGLE,
+		control:   mirrormev1.ControlKind_CONTROL_KIND_TOGGLE,
 		repeat:    true,
-		itemValue: func(a settings.AudioSource) *screensharev1.FieldValue { return flag(a.Mute) },
+		itemValue: func(a settings.AudioSource) *mirrormev1.FieldValue { return flag(a.Mute) },
 	},
 	{
 		key:     KeyAudioCodec,
 		group:   GroupAudio,
-		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.AudioCodec) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_SELECT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Publish.AudioCodec) },
 		options: optionAudioCodecs,
 	},
 
@@ -361,38 +361,38 @@ var fieldTable = []field{
 	{
 		key:     KeyTransport,
 		group:   GroupTransport,
-		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.Transport) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_SELECT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Publish.Transport) },
 		options: optionPublishTransports,
 	},
 	{
 		key:     KeySrtPublishLatencyMs,
 		group:   GroupTransport,
-		control: screensharev1.ControlKind_CONTROL_KIND_SLIDER,
-		unit:    screensharev1.Unit_UNIT_MILLISECONDS,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return number(s.Publish.SrtPublishLatencyMs) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_SLIDER,
+		unit:    mirrormev1.Unit_UNIT_MILLISECONDS,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return number(s.Publish.SrtPublishLatencyMs) },
 		bounds:  fieldSrtPublishLatencyBounds,
 	},
 	{
 		key:     KeyRtspPublishProtocol,
 		group:   GroupTransport,
-		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.RtspPublishProtocol) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_SELECT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Publish.RtspPublishProtocol) },
 		options: optionRtspProtocols,
 	},
 	{
 		key:     KeyCongestion,
 		group:   GroupTransport,
-		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.Congestion) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_SELECT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Publish.Congestion) },
 		options: optionCongestions,
 	},
 	{
 		key:     KeyUplinkMbps,
 		group:   GroupTransport,
-		control: screensharev1.ControlKind_CONTROL_KIND_NUMBER,
-		unit:    screensharev1.Unit_UNIT_MEGABITS_PER_SECOND,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return number(s.Publish.UplinkMbps) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_NUMBER,
+		unit:    mirrormev1.Unit_UNIT_MEGABITS_PER_SECOND,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return number(s.Publish.UplinkMbps) },
 		bounds:  fieldUplinkBounds,
 	},
 
@@ -400,16 +400,16 @@ var fieldTable = []field{
 	{
 		key:     KeySrtWatchLatencyMs,
 		group:   GroupWatch,
-		control: screensharev1.ControlKind_CONTROL_KIND_SLIDER,
-		unit:    screensharev1.Unit_UNIT_MILLISECONDS,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return number(s.Viewer.SrtWatchLatencyMs) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_SLIDER,
+		unit:    mirrormev1.Unit_UNIT_MILLISECONDS,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return number(s.Viewer.SrtWatchLatencyMs) },
 		bounds:  fieldLatencyBounds,
 	},
 	{
 		key:     KeyRtspWatchProtocol,
 		group:   GroupWatch,
-		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Viewer.RtspWatchProtocol) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_SELECT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Viewer.RtspWatchProtocol) },
 		options: optionRtspProtocols,
 	},
 	// The tile receiver's own controls.
@@ -418,30 +418,30 @@ var fieldTable = []field{
 	{
 		key:     KeyTileWatchTransport,
 		group:   GroupWatch,
-		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Viewer.TileWatchTransport) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_SELECT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Viewer.TileWatchTransport) },
 		options: optionTileWatchTransports,
 	},
 	{
 		key:     KeyRtspWatchLatencyMs,
 		group:   GroupWatch,
-		control: screensharev1.ControlKind_CONTROL_KIND_SLIDER,
-		unit:    screensharev1.Unit_UNIT_MILLISECONDS,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return number(s.Viewer.RtspWatchLatencyMs) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_SLIDER,
+		unit:    mirrormev1.Unit_UNIT_MILLISECONDS,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return number(s.Viewer.RtspWatchLatencyMs) },
 		bounds:  fieldLatencyBounds,
 	},
 	{
 		key:     KeyRenderChain,
 		group:   GroupWatch,
-		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Viewer.RenderChain) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_SELECT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Viewer.RenderChain) },
 		options: optionRenderChains,
 	},
 	{
 		key:     KeyConstantVolume,
 		group:   GroupWatch,
-		control: screensharev1.ControlKind_CONTROL_KIND_TOGGLE,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return flag(s.Viewer.ConstantVolume) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_TOGGLE,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return flag(s.Viewer.ConstantVolume) },
 	},
 
 	// The relay: which machine carries the stream, then one port per listener it serves on.
@@ -458,8 +458,8 @@ var fieldTable = []field{
 		// one asking for a secret somebody hands over and the other for a linked account.
 		key:     KeyGroupSource,
 		group:   GroupRelay,
-		control: screensharev1.ControlKind_CONTROL_KIND_RADIO,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Relay.GroupSource) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_RADIO,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Relay.GroupSource) },
 		options: optionGroupSources,
 	},
 	{
@@ -471,8 +471,8 @@ var fieldTable = []field{
 		// (docs/auth-flow.md).
 		key:     KeyGroupKey,
 		group:   GroupRelay,
-		control: screensharev1.ControlKind_CONTROL_KIND_TEXT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Relay.GroupKey) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_TEXT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Relay.GroupKey) },
 	},
 	{
 		// What this machine calls itself in the group, beside the key naming which group.
@@ -481,8 +481,8 @@ var fieldTable = []field{
 		// there is nothing to enumerate and no second name to pick from.
 		key:     KeyDisplayName,
 		group:   GroupRelay,
-		control: screensharev1.ControlKind_CONTROL_KIND_TEXT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Relay.DisplayName) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_TEXT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Relay.DisplayName) },
 	},
 	{
 		// Whether the relay's HTTP legs are reached through a TLS proxy,
@@ -495,77 +495,77 @@ var fieldTable = []field{
 		// and one on a trusted network has none.
 		key:     KeyRelayTls,
 		group:   GroupRelay,
-		control: screensharev1.ControlKind_CONTROL_KIND_TOGGLE,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return flag(s.Relay.Tls()) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_TOGGLE,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return flag(s.Relay.Tls()) },
 	},
 	{
 		key:     KeyRelayHost,
 		group:   GroupRelay,
-		control: screensharev1.ControlKind_CONTROL_KIND_TEXT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Relay.Host) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_TEXT,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return stringValue(s.Relay.Host) },
 	},
 	{
 		key:     KeySrtPort,
 		group:   GroupRelay,
-		control: screensharev1.ControlKind_CONTROL_KIND_NUMBER,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return number(s.Relay.SrtPort) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_NUMBER,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return number(s.Relay.SrtPort) },
 		bounds:  fieldPortBounds,
 	},
 	{
 		key:     KeyRtspPort,
 		group:   GroupRelay,
-		control: screensharev1.ControlKind_CONTROL_KIND_NUMBER,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return number(s.Relay.RtspPort) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_NUMBER,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return number(s.Relay.RtspPort) },
 		bounds:  fieldPortBounds,
 	},
 	{
 		key:     KeyWebrtcPort,
 		group:   GroupRelay,
-		control: screensharev1.ControlKind_CONTROL_KIND_NUMBER,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return number(s.Relay.WebrtcPort) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_NUMBER,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return number(s.Relay.WebrtcPort) },
 		bounds:  fieldPortBounds,
 	},
 	{
 		key:     KeyRtmpPort,
 		group:   GroupRelay,
-		control: screensharev1.ControlKind_CONTROL_KIND_NUMBER,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return number(s.Relay.RtmpPort) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_NUMBER,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return number(s.Relay.RtmpPort) },
 		bounds:  fieldPortBounds,
 	},
 	{
 		key:     KeyHlsPort,
 		group:   GroupRelay,
-		control: screensharev1.ControlKind_CONTROL_KIND_NUMBER,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return number(s.Relay.HlsPort) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_NUMBER,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return number(s.Relay.HlsPort) },
 		bounds:  fieldPortBounds,
 	},
 	{
 		key:     KeyMoqPort,
 		group:   GroupRelay,
-		control: screensharev1.ControlKind_CONTROL_KIND_NUMBER,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return number(s.Relay.MoqPort) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_NUMBER,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return number(s.Relay.MoqPort) },
 		bounds:  fieldPortBounds,
 	},
 
 	{
 		key:     KeySendCrashReports,
 		group:   GroupApp,
-		control: screensharev1.ControlKind_CONTROL_KIND_TOGGLE,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return flag(s.App.SendCrashReports) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_TOGGLE,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return flag(s.App.SendCrashReports) },
 	},
 	{
 		key:     KeyCheckUpdatesOnStart,
 		group:   GroupApp,
-		control: screensharev1.ControlKind_CONTROL_KIND_TOGGLE,
-		value: func(s settings.Settings) *screensharev1.FieldValue {
+		control: mirrormev1.ControlKind_CONTROL_KIND_TOGGLE,
+		value: func(s settings.Settings) *mirrormev1.FieldValue {
 			return flag(s.App.CheckUpdatesOnStart)
 		},
 	},
 	{
 		key:     KeyTrayIcon,
 		group:   GroupApp,
-		control: screensharev1.ControlKind_CONTROL_KIND_TOGGLE,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return flag(s.App.TrayIcon) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_TOGGLE,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return flag(s.App.TrayIcon) },
 	},
 	{
 		// A share states itself on the Discord client beside this app (docs/discord-mode.md).
@@ -573,16 +573,16 @@ var fieldTable = []field{
 		// and turning it on turns Discord mode on with it (internal/app, SaveSettings).
 		key:     KeyDiscordRichPresence,
 		group:   GroupApp,
-		control: screensharev1.ControlKind_CONTROL_KIND_TOGGLE,
-		value: func(s settings.Settings) *screensharev1.FieldValue {
+		control: mirrormev1.ControlKind_CONTROL_KIND_TOGGLE,
+		value: func(s settings.Settings) *mirrormev1.FieldValue {
 			return flag(s.App.DiscordRichPresence)
 		},
 	},
 	{
 		key:     KeyTestStreams,
 		group:   GroupApp,
-		control: screensharev1.ControlKind_CONTROL_KIND_TOGGLE,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return flag(s.App.TestStreams) },
+		control: mirrormev1.ControlKind_CONTROL_KIND_TOGGLE,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return flag(s.App.TestStreams) },
 	},
 }
 
@@ -590,11 +590,11 @@ var fieldTable = []field{
 // A row carries one where its control takes a range, which is every number and every slider.
 
 // fieldPortBounds spans every port a listener can bind.
-func fieldPortBounds(Deps, settings.Settings) *screensharev1.NumericRange {
+func fieldPortBounds(Deps, settings.Settings) *mirrormev1.NumericRange {
 	return bounded(fieldPortFloor, fieldPortCeiling, 1)
 }
 
-func fieldFpsBounds(Deps, settings.Settings) *screensharev1.NumericRange {
+func fieldFpsBounds(Deps, settings.Settings) *mirrormev1.NumericRange {
 	return bounded(1, fieldFpsCeiling, 1)
 }
 
@@ -606,7 +606,7 @@ func fieldFpsBounds(Deps, settings.Settings) *screensharev1.NumericRange {
 // A codec the table declares no scale for narrows nothing and keeps the widest,
 // declaring none meaning exactly that: an unwired family counts on whatever its builder sets,
 // and pricing it on another encoder's scale would clamp a target to a fifth of its range.
-func fieldCqBounds(d Deps, s settings.Settings) *screensharev1.NumericRange {
+func fieldCqBounds(d Deps, s settings.Settings) *mirrormev1.NumericRange {
 	low, high := verdictsOf(d, s).Bounds(KeyCq, 0, capabilities.WidestCqScale())
 	return bounded(low, high, 1)
 }
@@ -624,7 +624,7 @@ func fieldCqBounds(d Deps, s settings.Settings) *screensharev1.NumericRange {
 // it at 0.00 Mbit/s with the whole uplink left over.
 // Constant quality and lossless send no target,
 // and the field then carries whatever another mode left on it.
-func fieldBitrateBounds(d Deps, s settings.Settings) *screensharev1.NumericRange {
+func fieldBitrateBounds(d Deps, s settings.Settings) *mirrormev1.NumericRange {
 	floor := 0
 	if capabilities.TargetsBitrate(s.Publish.Mode) {
 		floor = 1
@@ -647,7 +647,7 @@ func fieldBitrateBounds(d Deps, s settings.Settings) *screensharev1.NumericRange
 // so offering that band would be offering values every one of which is replaced.
 // The target itself can sit past the scale, a stored draft holding whatever it holds,
 // and the floor stops at the ceiling rather than running the range backwards.
-func fieldMaxrateBounds(d Deps, s settings.Settings) *screensharev1.NumericRange {
+func fieldMaxrateBounds(d Deps, s settings.Settings) *mirrormev1.NumericRange {
 	high := int(fieldBitrateBounds(d, s).GetMax())
 	low := 0
 	if s.Publish.Mode == capabilities.ModeCrf {
@@ -668,7 +668,7 @@ func fieldMaxrateBounds(d Deps, s settings.Settings) *screensharev1.NumericRange
 // The buffer reaches the encoder as the rate times the window, in kilobits (ffmpeg.bufsizeArg),
 // and every encoder holds that figure in 32 bits: at the top of the rate scale a ten-second window
 // is ten times what the field takes, and the encoder refuses the option rather than shortening it.
-func fieldVbvBounds(_ Deps, s settings.Settings) *screensharev1.NumericRange {
+func fieldVbvBounds(_ Deps, s settings.Settings) *mirrormev1.NumericRange {
 	rate := max(s.Publish.BitrateM, s.Publish.MaxrateM)
 	if rate <= 0 {
 		return bounded(0, fieldVbvCeiling, 1)
@@ -705,14 +705,14 @@ func bufferCeilingKb(s settings.Settings) int {
 //
 // It ends where the codec's own keyframe field does, an encoder whose field is narrower refusing
 // the option rather than coding a shorter interval.
-func fieldGopBounds(d Deps, s settings.Settings) *screensharev1.NumericRange {
+func fieldGopBounds(d Deps, s settings.Settings) *mirrormev1.NumericRange {
 	low, high := verdictsOf(d, s).Bounds(KeyGop, 0, fieldGopCeiling)
 	return bounded(low, high, 1)
 }
 
 // fieldBframeBounds ends where the codecs do: no encoder here takes a longer reorder chain,
 // and a live stream pays for every frame of one in delay.
-func fieldBframeBounds(Deps, settings.Settings) *screensharev1.NumericRange {
+func fieldBframeBounds(Deps, settings.Settings) *mirrormev1.NumericRange {
 	return bounded(0, fieldBframeCeiling, 1)
 }
 
@@ -720,19 +720,19 @@ func fieldBframeBounds(Deps, settings.Settings) *screensharev1.NumericRange {
 // One builder for all of them, because they are one quantity:
 // how long a receiver holds packets before giving up on the ones that have not arrived.
 // A range that differed per leg would be a claim about the legs the transports never made.
-func fieldLatencyBounds(Deps, settings.Settings) *screensharev1.NumericRange {
+func fieldLatencyBounds(Deps, settings.Settings) *mirrormev1.NumericRange {
 	return bounded(fieldLatencyFloor, fieldLatencyCeiling, fieldLatencyStep)
 }
 
 // fieldSrtPublishLatencyBounds starts at the relay's own floor (settings.SrtRelayFloorMs):
 // the handshake takes the larger end,
 // so a slider value below it names a window the hop does not run.
-func fieldSrtPublishLatencyBounds(Deps, settings.Settings) *screensharev1.NumericRange {
+func fieldSrtPublishLatencyBounds(Deps, settings.Settings) *mirrormev1.NumericRange {
 	return bounded(settings.SrtRelayFloorMs, fieldLatencyCeiling, fieldLatencyStep)
 }
 
 // fieldUplinkBounds runs from one megabit up past any line a prediction is weighed against.
-func fieldUplinkBounds(Deps, settings.Settings) *screensharev1.NumericRange {
+func fieldUplinkBounds(Deps, settings.Settings) *mirrormev1.NumericRange {
 	return bounded(1, fieldUplinkCeiling, 1)
 }
 
@@ -741,6 +741,6 @@ func fieldUplinkBounds(Deps, settings.Settings) *screensharev1.NumericRange {
 // The ceiling is above unity because a source that needs turning up is the case a gain exists for,
 // and it is a ceiling because an unbounded multiplier clips every other source out of the mix.
 // The step is coarse enough that a swept control lands on round figures.
-func fieldGainBounds(Deps, settings.Settings) *screensharev1.NumericRange {
+func fieldGainBounds(Deps, settings.Settings) *mirrormev1.NumericRange {
 	return bounded(0, settings.GainMax, fieldGainStep)
 }

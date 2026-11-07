@@ -8,12 +8,12 @@ import (
 	"path/filepath"
 	"sync"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
-	"bjoernblessin.de/screenshare/internal/gstrun"
-	"bjoernblessin.de/screenshare/internal/pointermode"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/gstrun"
+	"bjoernblessin.de/mirrorme/internal/pointermode"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // ControlFlag tells the runner where to listen, as the first argument after the subcommand
@@ -53,7 +53,7 @@ func (h *gstHandle) ApplyLive(s settings.Settings) error {
 	if h.conn == nil {
 		conn, err := net.Dial("unix", h.socket)
 		if err != nil {
-			return text.Because(err, screensharev1.TextCode_TEXT_CODE_PIPELINE_UNREACHABLE)
+			return text.Because(err, mirrormev1.TextCode_TEXT_CODE_PIPELINE_UNREACHABLE)
 		}
 		h.conn = conn
 	}
@@ -66,7 +66,7 @@ func (h *gstHandle) ApplyLive(s settings.Settings) error {
 		// the next apply dials again rather than reporting this one forever.
 		h.conn.Close()
 		h.conn = nil
-		return text.Because(err, screensharev1.TextCode_TEXT_CODE_PIPELINE_UNREACHABLE)
+		return text.Because(err, mirrormev1.TextCode_TEXT_CODE_PIPELINE_UNREACHABLE)
 	}
 	return nil
 }

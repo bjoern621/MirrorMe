@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"bjoernblessin.de/screenshare/internal/qa"
+	"bjoernblessin.de/mirrorme/internal/qa"
 )
 
 // inventory asks CIM for the OS, the first CPU and every display adapter, as one JSON object.

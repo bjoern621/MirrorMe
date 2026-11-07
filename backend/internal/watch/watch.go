@@ -13,14 +13,14 @@ package watch
 import (
 	"os"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/transport"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/transport"
 )
 
 // Engine is one viewer program.
@@ -44,10 +44,10 @@ const EnvViewer = "MIRRORME_VIEWER"
 func Select(transportName string) (Engine, error) {
 	t, ok := transport.Get(transportName)
 	if !ok {
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Transport(transportName))
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Transport(transportName))
 	}
 	if _, ok := t.(transport.Watcher); !ok {
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(capabilities.EngineFfmpeg), text.Transport(transportName))
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(capabilities.EngineFfmpeg), text.Transport(transportName))
 	}
 	if os.Getenv(EnvViewer) == "mpv" {
 		return mpv{}, nil

@@ -7,21 +7,21 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/display"
-	"bjoernblessin.de/screenshare/internal/ffmpeg"
-	"bjoernblessin.de/screenshare/internal/gpupath"
-	"bjoernblessin.de/screenshare/internal/pointermode"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/display"
+	"bjoernblessin.de/mirrorme/internal/ffmpeg"
+	"bjoernblessin.de/mirrorme/internal/gpupath"
+	"bjoernblessin.de/mirrorme/internal/pointermode"
 	// Aliased: group is this package's own type, the heading a shell draws (form.go).
-	groupdomain "bjoernblessin.de/screenshare/internal/group"
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/receive"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/share"
-	"bjoernblessin.de/screenshare/internal/transport"
+	groupdomain "bjoernblessin.de/mirrorme/internal/group"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/share"
+	"bjoernblessin.de/mirrorme/internal/transport"
 )
 
 // The option builders, one per control in fieldTable that offers entries: every select and radio,
@@ -51,14 +51,14 @@ import (
 //
 // No builder fills a label or a description.
 // What an entry is called and what the paragraph under it says are the surface's,
-// keyed by the field and this value (api/proto/screenshare/v1/text.proto).
+// keyed by the field and this value (api/proto/mirrorme/v1/text.proto).
 
 // optionEntry fills the three fields a builder owns and leaves Enabled and Reason to availability,
 // so no builder has to remember which are which.
-func optionEntry(value string, note *screensharev1.Text, recommended bool) *screensharev1.FieldOption {
+func optionEntry(value string, note *mirrormev1.Text, recommended bool) *mirrormev1.FieldOption {
 	assert.Assert(value != "" || note == nil,
 		"an entry with no value of its own carries no note about one")
-	return &screensharev1.FieldOption{Value: value, Note: note, Recommended: recommended}
+	return &mirrormev1.FieldOption{Value: value, Note: note, Recommended: recommended}
 }
 
 // optionPlainList is the whole of a builder over one closed domain list:
@@ -67,10 +67,10 @@ func optionEntry(value string, note *screensharev1.Text, recommended bool) *scre
 // key feeds the assertion alone.
 // A closed list with nothing in it is a domain table that came back empty,
 // which would render as a control offering no choice rather than as the missing table it is.
-func optionPlainList(values []string, key string) []*screensharev1.FieldOption {
+func optionPlainList(values []string, key string) []*mirrormev1.FieldOption {
 	assert.Assert(len(values) > 0, "a closed option list has values to offer", key)
 
-	out := make([]*screensharev1.FieldOption, 0, len(values))
+	out := make([]*mirrormev1.FieldOption, 0, len(values))
 	for _, v := range values {
 		out = append(out, optionEntry(v, nil, false))
 	}
@@ -107,9 +107,9 @@ func optionEngineOf(s settings.Settings) string {
 // The entry stays selectable: the process either holds the privilege or the capture dies at launch,
 // and the note is what makes it honest about which of the two it is asking for.
 // Which publish engine a backend runs is a column of its own catalog row rather than a note here.
-func optionCaptures(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
+func optionCaptures(_ Deps, _ settings.Settings) []*mirrormev1.FieldOption {
 	captures := publish.Captures()
-	out := make([]*screensharev1.FieldOption, 0, len(captures))
+	out := make([]*mirrormev1.FieldOption, 0, len(captures))
 	for _, capture := range captures {
 		_, err := publish.EngineFor(capture)
 		assert.IsNil(err, "a listed capture backend has a publisher", capture)
@@ -121,8 +121,8 @@ func optionCaptures(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
 // optionCaptureMemories offers every value gpupath.Memories declares.
 // Auto is marked as the one value every pair satisfies, which is a fact about the table rather
 // than a preference: each of the others can be refused by some combination.
-func optionCaptureMemories(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
-	out := make([]*screensharev1.FieldOption, 0, len(gpupath.Memories))
+func optionCaptureMemories(_ Deps, _ settings.Settings) []*mirrormev1.FieldOption {
+	out := make([]*mirrormev1.FieldOption, 0, len(gpupath.Memories))
 	for _, memory := range gpupath.Memories {
 		out = append(out, optionEntry(memory, nil, memory == gpupath.MemoryAuto))
 	}
@@ -137,8 +137,8 @@ func optionCaptureMemories(_ Deps, _ settings.Settings) []*screensharev1.FieldOp
 //
 // Embedded is marked: it is what a screen share is expected to look like, and what every backend
 // but the scanout one does.
-func optionPointerModes(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
-	out := make([]*screensharev1.FieldOption, 0, len(pointermode.Modes))
+func optionPointerModes(_ Deps, _ settings.Settings) []*mirrormev1.FieldOption {
+	out := make([]*mirrormev1.FieldOption, 0, len(pointermode.Modes))
 	for _, mode := range pointermode.Modes {
 		out = append(out, optionEntry(mode, nil, mode == pointermode.Embedded))
 	}
@@ -147,8 +147,8 @@ func optionPointerModes(_ Deps, _ settings.Settings) []*screensharev1.FieldOptio
 
 // optionDrmMaps offers the download strategies ffmpeg.DrmMaps declares,
 // that being the table which refuses a name no row carries.
-func optionDrmMaps(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
-	out := make([]*screensharev1.FieldOption, 0, len(ffmpeg.DrmMaps))
+func optionDrmMaps(_ Deps, _ settings.Settings) []*mirrormev1.FieldOption {
+	out := make([]*mirrormev1.FieldOption, 0, len(ffmpeg.DrmMaps))
 	for _, m := range ffmpeg.DrmMaps {
 		out = append(out, optionEntry(m.Name, nil, false))
 	}
@@ -180,12 +180,12 @@ func optionMonitorOf(d Deps, index int) (display.Monitor, bool) {
 // above a capture that still runs on the missing one.
 // That entry carries the note, nothing else on the wire
 // describing an index no enumeration reported.
-func optionMonitors(d Deps, s settings.Settings) []*screensharev1.FieldOption {
-	out := make([]*screensharev1.FieldOption, 0, len(d.Monitors)+1)
+func optionMonitors(d Deps, s settings.Settings) []*mirrormev1.FieldOption {
+	out := make([]*mirrormev1.FieldOption, 0, len(d.Monitors)+1)
 	for _, m := range d.Monitors {
 		out = append(out, optionEntry(strconv.Itoa(m.Index), nil, m.Primary))
 	}
-	if !slices.ContainsFunc(out, func(o *screensharev1.FieldOption) bool {
+	if !slices.ContainsFunc(out, func(o *mirrormev1.FieldOption) bool {
 		return o.GetValue() == strconv.Itoa(s.Publish.Monitor)
 	}) {
 		out = append(out, optionEntry(strconv.Itoa(s.Publish.Monitor),
@@ -213,8 +213,8 @@ var optionScaleHeights = []int{2160, 1440, 1080, 720}
 // The unscaled entry is the empty value, what the settings hold for a capture that reaches
 // the encoder at its own size.
 // It is marked rather than noted, what that size is belonging to the monitor's catalog row.
-func optionOutputResolutions(d Deps, s settings.Settings) []*screensharev1.FieldOption {
-	out := []*screensharev1.FieldOption{optionEntry("", nil, true)}
+func optionOutputResolutions(d Deps, s settings.Settings) []*mirrormev1.FieldOption {
+	out := []*mirrormev1.FieldOption{optionEntry("", nil, true)}
 
 	m, ok := optionMonitorOf(d, s.Publish.Monitor)
 	if !ok || m.Width <= 0 || m.Height <= 0 {
@@ -239,7 +239,7 @@ func optionOutputResolutions(d Deps, s settings.Settings) []*screensharev1.Field
 // A ladder and not a domain, which is the whole of what separates this field from a select.
 // The legal values are the fieldFpsBounds range entire; these are the answers worth reaching
 // in one move, and a rate off the ladder is typed rather than refused
-// (api/proto/screenshare/v1/form.proto, CONTROL_KIND_NUMBER_SELECT).
+// (api/proto/mirrorme/v1/form.proto, CONTROL_KIND_NUMBER_SELECT).
 //
 // Nothing here greys against a monitor.
 // Capturing above a panel's refresh is legal and yields duplicate frames,
@@ -252,18 +252,18 @@ var optionFpsLadder = []int{30, 60, 90, 120, 144, 165, 240}
 //
 // The held rate is present for the reason a stale monitor index is (optionMonitors):
 // a ladder that dropped it would leave the dropdown claiming a rate the stream is not captured at.
-func optionFpsPresets(_ Deps, s settings.Settings) []*screensharev1.FieldOption {
+func optionFpsPresets(_ Deps, s settings.Settings) []*mirrormev1.FieldOption {
 	rates := optionFpsLadder
 	if !slices.Contains(rates, s.Publish.Fps) {
 		rates = append(append([]int{}, rates...), s.Publish.Fps)
 		slices.Sort(rates)
 	}
 
-	out := make([]*screensharev1.FieldOption, 0, len(rates))
+	out := make([]*mirrormev1.FieldOption, 0, len(rates))
 	for _, fps := range rates {
 		out = append(out, optionEntry(strconv.Itoa(fps), nil, false))
 	}
-	assert.Assert(slices.ContainsFunc(out, func(o *screensharev1.FieldOption) bool {
+	assert.Assert(slices.ContainsFunc(out, func(o *mirrormev1.FieldOption) bool {
 		return o.GetValue() == strconv.Itoa(s.Publish.Fps)
 	}), "the ladder offers the rate the settings hold", s.Publish.Fps)
 
@@ -284,11 +284,11 @@ func optionFpsPresets(_ Deps, s settings.Settings) []*screensharev1.FieldOption 
 // The entries are the identifiers and nothing more.
 // What each reads as on screen is the surface's,
 // off the catalog row that declares them (docs/ipc-api.md).
-func optionFormats(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
+func optionFormats(_ Deps, _ settings.Settings) []*mirrormev1.FieldOption {
 	return optionPlainList(optionCodedFormats(), KeyFormat)
 }
 
-func optionEncoders(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
+func optionEncoders(_ Deps, _ settings.Settings) []*mirrormev1.FieldOption {
 	return optionPlainList(capabilities.Encoders(), KeyEncoder)
 }
 
@@ -353,21 +353,21 @@ var optionChromaOrder = []string{"gbrp", "yuv444p", "yuv422p", "yuv420p", "p010l
 // optionChromas offers every pixel format the capability table codes.
 // One the selected codec cannot encode stays and is greyed with the encoder or the element named,
 // another codec reaching it.
-func optionChromas(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
+func optionChromas(_ Deps, _ settings.Settings) []*mirrormev1.FieldOption {
 	return optionPlainList(optionCodedChromas(), KeyChroma)
 }
 
 // optionColorRanges offers the quantization ranges the capability table declares.
 // No range is ever absent: a codec that cannot code one carries a gap,
 // and a gap is a greying with a reason.
-func optionColorRanges(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
+func optionColorRanges(_ Deps, _ settings.Settings) []*mirrormev1.FieldOption {
 	return optionPlainList(capabilities.ColorRanges, KeyColorRange)
 }
 
 // optionModes offers every rate-control mode the capability table's validator accepts,
 // in that table's order: the modes that aim at a bitrate, then the one that aims at a quality,
 // then the one that codes bit-exact.
-func optionModes(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
+func optionModes(_ Deps, _ settings.Settings) []*mirrormev1.FieldOption {
 	return optionPlainList(capabilities.Modes, KeyMode)
 }
 
@@ -383,19 +383,19 @@ func optionModes(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
 // A codec whose row declares no ladder offers what the draft holds,
 // so a greyed control still shows its value rather than an empty list.
 // Both ends carry a note naming which end they are (TEXT_CODE_EFFORT_MOST).
-func optionEfforts(_ Deps, s settings.Settings) []*screensharev1.FieldOption {
+func optionEfforts(_ Deps, s settings.Settings) []*mirrormev1.FieldOption {
 	l := codecLadders(s).Effort
 	return optionLadder(l, s.Publish.Effort, s.Publish.Mode, effortEnds(l.Steps))
 }
 
 // effortEnds notes a ladder's first step as most effort and its last as least,
 // and nothing for a codec whose row declares no ladder.
-func effortEnds(steps []string) map[string]*screensharev1.Text {
+func effortEnds(steps []string) map[string]*mirrormev1.Text {
 	if len(steps) == 0 {
 		return nil
 	}
 	assert.Assert(len(steps) >= 2, "an effort ladder has two ends", steps)
-	return map[string]*screensharev1.Text{
+	return map[string]*mirrormev1.Text{
 		steps[0]:            say(effortMost),
 		steps[len(steps)-1]: say(effortLeast),
 	}
@@ -407,7 +407,7 @@ func effortEnds(steps []string) map[string]*screensharev1.Text {
 // A ladder that leads with the untuned step says so as a value rather than by being short,
 // so the control holds "tune for nothing" as a choice.
 // The encoders with no such step are the ones always tuning for something.
-func optionTunes(_ Deps, s settings.Settings) []*screensharev1.FieldOption {
+func optionTunes(_ Deps, s settings.Settings) []*mirrormev1.FieldOption {
 	return optionLadder(codecLadders(s).Tune, s.Publish.Tune, s.Publish.Mode, nil)
 }
 
@@ -422,10 +422,10 @@ func codecLadders(s settings.Settings) capabilities.Codec {
 //
 // The held value stays for the reason a stale monitor index does (optionMonitors):
 // a list that dropped it would leave the dropdown claiming a step the draft is not on.
-func optionLadder(l capabilities.Ladder, held, mode string, notes map[string]*screensharev1.Text) []*screensharev1.FieldOption {
+func optionLadder(l capabilities.Ladder, held, mode string, notes map[string]*mirrormev1.Text) []*mirrormev1.FieldOption {
 	start, _ := l.StepFor(mode)
 
-	out := make([]*screensharev1.FieldOption, 0, len(l.Steps)+1)
+	out := make([]*mirrormev1.FieldOption, 0, len(l.Steps)+1)
 	for _, step := range l.Steps {
 		out = append(out, optionEntry(step, notes[step], step == start))
 	}
@@ -444,11 +444,11 @@ func optionLadder(l capabilities.Ladder, held, mode string, notes map[string]*sc
 // A source no session here serves is present and greyed with what the machine is missing,
 // the second track being a general concept rather than one platform's implementation knob
 // (docs/field-availability.md, "The rule").
-func optionAudioSources(d Deps, _ settings.Settings) []*screensharev1.FieldOption {
+func optionAudioSources(d Deps, _ settings.Settings) []*mirrormev1.FieldOption {
 	sources := platform.AudioSources(d.Platform)
 	assert.Assert(len(sources) > 0, "a platform offers somewhere for the second track to come from")
 
-	out := make([]*screensharev1.FieldOption, 0, len(sources))
+	out := make([]*mirrormev1.FieldOption, 0, len(sources))
 	for _, s := range sources {
 		out = append(out, optionEntry(s.ID, s.Server, false))
 	}
@@ -461,8 +461,8 @@ func optionAudioSources(d Deps, _ settings.Settings) []*screensharev1.FieldOptio
 // Those figures are the table's and not the user's, stated once
 // so both engines build the same branch,
 // and the note is what stops the form from implying a choice about them.
-func optionAudioCodecs(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
-	out := make([]*screensharev1.FieldOption, 0, len(capabilities.AudioCodecs))
+func optionAudioCodecs(_ Deps, _ settings.Settings) []*mirrormev1.FieldOption {
+	out := make([]*mirrormev1.FieldOption, 0, len(capabilities.AudioCodecs))
 	for _, a := range capabilities.AudioCodecs {
 		out = append(out, optionEntry(a.Name,
 			say(audioTrackCodedAt, argRateHz(a.Rate), argBitrateKbps(a.BitrateK)), false))
@@ -478,7 +478,7 @@ func optionAudioCodecs(_ Deps, _ settings.Settings) []*screensharev1.FieldOption
 // and is greyed with the engine named, which tells the user the capture backend is what to change.
 // A protocol no engine ingests is in neither roster and so is absent entirely: HLS is watch-only,
 // and greying it would state a reason no choice on this screen could lift.
-func optionPublishTransports(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
+func optionPublishTransports(_ Deps, _ settings.Settings) []*mirrormev1.FieldOption {
 	var names []string
 	for _, engine := range capabilities.Engines {
 		for _, name := range transport.PublishNames(engine) {
@@ -501,11 +501,11 @@ func optionPublishTransports(_ Deps, _ settings.Settings) []*screensharev1.Field
 // and the way through the relay measured on it is an order of magnitude shorter
 // than SRT's or HLS's (docs/delay-measurement.md).
 // What a draft holds is Field.value, and the mark says which leg to move to.
-func optionTileWatchTransports(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
+func optionTileWatchTransports(_ Deps, _ settings.Settings) []*mirrormev1.FieldOption {
 	names := transport.WatchNames(capabilities.EngineGst)
 	assert.Assert(len(names) > 0, "a closed option list has values to offer", KeyTileWatchTransport)
 
-	out := make([]*screensharev1.FieldOption, 0, len(names))
+	out := make([]*mirrormev1.FieldOption, 0, len(names))
 	for _, name := range names {
 		out = append(out, optionEntry(name, nil, name == transport.RTSP{}.Name()))
 	}
@@ -525,9 +525,9 @@ func optionTileWatchTransports(_ Deps, _ settings.Settings) []*screensharev1.Fie
 // The default is marked recommended, a hint about this machine rather than a value:
 // what a draft holds is Field.value, and the mark says which chain a stream renders
 // through when nothing chose one.
-func optionRenderChains(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
+func optionRenderChains(_ Deps, _ settings.Settings) []*mirrormev1.FieldOption {
 	chains := receive.Chains()
-	out := make([]*screensharev1.FieldOption, 0, len(chains))
+	out := make([]*mirrormev1.FieldOption, 0, len(chains))
 	for _, c := range chains {
 		out = append(out, optionEntry(c.Name, nil, c.Default))
 	}
@@ -537,12 +537,12 @@ func optionRenderChains(_ Deps, _ settings.Settings) []*screensharev1.FieldOptio
 // optionRtspProtocols offers the RTP lower transports RTSP runs over, for either leg.
 // One list for both, which transports carry RTP being a fact of the protocol rather
 // than of a direction, so the transport package states it once too.
-func optionRtspProtocols(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
+func optionRtspProtocols(_ Deps, _ settings.Settings) []*mirrormev1.FieldOption {
 	return optionPlainList(transport.RtspProtocols, KeyRtspPublishProtocol)
 }
 
 // optionCongestions offers what a relay leg slower than the encoder may cost.
-func optionCongestions(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
+func optionCongestions(_ Deps, _ settings.Settings) []*mirrormev1.FieldOption {
 	return optionPlainList(settings.Congestions, KeyCongestion)
 }
 
@@ -553,13 +553,13 @@ func optionCongestions(_ Deps, _ settings.Settings) []*screensharev1.FieldOption
 // meaning bounded by nothing, and legal again from the target upward,
 // with the band between the two walked up to the target on the next resolve (repairCeilings).
 // A range runs from one end to the other, so the range carries the band
-// and the entry carries the answer outside it (api/proto/screenshare/v1/form.proto,
+// and the entry carries the answer outside it (api/proto/mirrorme/v1/form.proto,
 // CONTROL_KIND_NUMBER_SELECT).
 //
 // The target and twice it are where the two ends of constrained variable bitrate sit:
 // at the target the rate is held, and a ceiling above twice it is headroom the VAAPI note already
 // warns about (ratecontrol.go, vaapiCeilingNote).
-func optionMaxratePresets(d Deps, s settings.Settings) []*screensharev1.FieldOption {
+func optionMaxratePresets(d Deps, s settings.Settings) []*mirrormev1.FieldOption {
 	ceiling := int(fieldMaxrateBounds(d, s).GetMax())
 
 	var rates []int
@@ -579,7 +579,7 @@ func optionMaxratePresets(d Deps, s settings.Settings) []*screensharev1.FieldOpt
 	slices.Sort(rates)
 	rates = slices.Compact(rates)
 
-	out := make([]*screensharev1.FieldOption, 0, len(rates))
+	out := make([]*mirrormev1.FieldOption, 0, len(rates))
 	for _, rate := range rates {
 		if rate < 0 {
 			continue
@@ -596,8 +596,8 @@ func optionMaxratePresets(d Deps, s settings.Settings) []*screensharev1.FieldOpt
 // its own refusals being diagnostics on the field rather than a greyed entry (diagnostics.go).
 //
 // The voice channel leads and carries the mark: a group already sitting in one needs nothing handed around.
-func optionGroupSources(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
-	out := []*screensharev1.FieldOption{optionEntry(groupdomain.SourceDiscord, nil, true)}
+func optionGroupSources(_ Deps, _ settings.Settings) []*mirrormev1.FieldOption {
+	out := []*mirrormev1.FieldOption{optionEntry(groupdomain.SourceDiscord, nil, true)}
 	for _, source := range groupdomain.Sources {
 		if source != groupdomain.SourceDiscord {
 			out = append(out, optionEntry(source, nil, false))
@@ -613,8 +613,8 @@ func optionGroupSources(_ Deps, _ settings.Settings) []*screensharev1.FieldOptio
 //
 // The whole screen is marked: it is what a stream shares unless somebody says otherwise,
 // and the one kind that needs nothing picked.
-func optionShareKinds(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
-	out := make([]*screensharev1.FieldOption, 0, len(share.Kinds))
+func optionShareKinds(_ Deps, _ settings.Settings) []*mirrormev1.FieldOption {
+	out := make([]*mirrormev1.FieldOption, 0, len(share.Kinds))
 	for _, kind := range share.Kinds {
 		out = append(out, optionEntry(kind, nil, kind == share.Monitor))
 	}
@@ -630,15 +630,15 @@ func optionShareKinds(_ Deps, _ settings.Settings) []*screensharev1.FieldOption 
 // as a stale monitor index is (optionMonitors):
 // a window closed since the pick is what the user has to see in order to pick another,
 // and a list that dropped it would show another window above a capture that still names the gone one.
-func optionShareWindows(d Deps, s settings.Settings) []*screensharev1.FieldOption {
-	out := make([]*screensharev1.FieldOption, 0, len(d.Windows)+1)
+func optionShareWindows(d Deps, s settings.Settings) []*mirrormev1.FieldOption {
+	out := make([]*mirrormev1.FieldOption, 0, len(d.Windows)+1)
 	for _, w := range d.Windows {
 		out = append(out, optionEntry(strconv.FormatUint(w.Handle, 10), nil, false))
 	}
 	if s.Publish.ShareWindow == "" {
 		return out
 	}
-	if !slices.ContainsFunc(out, func(o *screensharev1.FieldOption) bool {
+	if !slices.ContainsFunc(out, func(o *mirrormev1.FieldOption) bool {
 		return o.GetValue() == s.Publish.ShareWindow
 	}) {
 		out = append(out, optionEntry(s.Publish.ShareWindow,

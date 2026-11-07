@@ -2,14 +2,14 @@ package transport
 
 import (
 	"bjoernblessin.de/go-utils/util/assert"
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
 	"fmt"
 	"slices"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // RTSP streams through the relay's RTSP listener, one RTP stream per track inside the session, so
@@ -159,11 +159,11 @@ const EncryptedRtspProtocol = "tcp"
 // the stream did something else.
 func (RTSP) ValidatePublishSettings(s settings.Settings) error {
 	if !slices.Contains(RtspProtocols, s.Publish.RtspPublishProtocol) {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN,
-			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_RTSP_PROTOCOL, s.Publish.RtspPublishProtocol))
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN,
+			text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_RTSP_PROTOCOL, s.Publish.RtspPublishProtocol))
 	}
 	if s.Publish.RtspPublishProtocol != EncryptedRtspProtocol {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_ENCRYPTED_RTSP_INTERLEAVES_RTP)
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_ENCRYPTED_RTSP_INTERLEAVES_RTP)
 	}
 	return nil
 }

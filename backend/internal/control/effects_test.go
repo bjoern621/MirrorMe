@@ -8,11 +8,11 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/events"
-	"bjoernblessin.de/screenshare/internal/group"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/events"
+	"bjoernblessin.de/mirrorme/internal/group"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // A live Set naming the pipeline already publishing succeeds and neither starts nor restarts,
@@ -24,7 +24,7 @@ func TestALiveSetRepeatsADiscordStream(t *testing.T) {
 	backend := &probedBackend{}
 	server := New(backend, events.New(), "test")
 
-	idle, err := server.Ask(context.Background(), &screensharev1.AskRequest{Question: &screensharev1.AskRequest_Form{}})
+	idle, err := server.Ask(context.Background(), &mirrormev1.AskRequest{Question: &mirrormev1.AskRequest_Form{}})
 	if err != nil {
 		t.Fatalf("resolving a form answered %v, want an answer", err)
 	}
@@ -34,8 +34,8 @@ func TestALiveSetRepeatsADiscordStream(t *testing.T) {
 	running := backend.Brokered(wire.ToSettings(draft))
 	backend.publish = wire.PublishSnapshot{Live: &wire.LiveSnapshot{Settings: running}}
 
-	if _, err := server.Set(context.Background(), &screensharev1.SetRequest{State: &screensharev1.SetRequest_Publish{
-		Publish: &screensharev1.PublishWanted{Live: true, Settings: draft},
+	if _, err := server.Set(context.Background(), &mirrormev1.SetRequest{State: &mirrormev1.SetRequest_Publish{
+		Publish: &mirrormev1.PublishWanted{Live: true, Settings: draft},
 	}}); err != nil {
 		t.Errorf("asking for the stream already publishing answered %v, want the repeat to succeed", err)
 	}
@@ -50,15 +50,15 @@ func TestALiveSetStartsOrRestartsByWhatIsInForce(t *testing.T) {
 	backend := &probedBackend{}
 	server := New(backend, events.New(), "test")
 
-	idle, err := server.Ask(context.Background(), &screensharev1.AskRequest{Question: &screensharev1.AskRequest_Form{}})
+	idle, err := server.Ask(context.Background(), &mirrormev1.AskRequest{Question: &mirrormev1.AskRequest_Form{}})
 	if err != nil {
 		t.Fatalf("resolving a form answered %v, want an answer", err)
 	}
 	draft := idle.GetForm().GetSettings()
 	// The empty draft repairs to no frame rate here, which no engine renders and SamePipeline refuses to compare.
 	draft.Publish.Fps = 30
-	live := &screensharev1.SetRequest{State: &screensharev1.SetRequest_Publish{
-		Publish: &screensharev1.PublishWanted{Live: true, Settings: draft},
+	live := &mirrormev1.SetRequest{State: &mirrormev1.SetRequest_Publish{
+		Publish: &mirrormev1.PublishWanted{Live: true, Settings: draft},
 	}}
 
 	if err := set(server, live); err != nil {
@@ -87,7 +87,7 @@ func TestSendReportAnswersTheStoredName(t *testing.T) {
 	backend.reportID = "7f3a91c2"
 	server := New(backend, events.New(), "test")
 
-	sent, err := server.Do(context.Background(), &screensharev1.DoRequest{Action: &screensharev1.DoRequest_SendReport{SendReport: empty()}})
+	sent, err := server.Do(context.Background(), &mirrormev1.DoRequest{Action: &mirrormev1.DoRequest_SendReport{SendReport: empty()}})
 	if err != nil {
 		t.Fatalf("sending a report answered %v, want the send to succeed", err)
 	}
@@ -104,7 +104,7 @@ func TestSendReportRefusesWithNoRelay(t *testing.T) {
 	backend.err = errors.New("the settings name no relay")
 	server := New(backend, events.New(), "test")
 
-	if _, err := server.Do(context.Background(), &screensharev1.DoRequest{Action: &screensharev1.DoRequest_SendReport{SendReport: empty()}}); err == nil {
+	if _, err := server.Do(context.Background(), &mirrormev1.DoRequest{Action: &mirrormev1.DoRequest_SendReport{SendReport: empty()}}); err == nil {
 		t.Fatal("sending a report to no relay succeeded, want a refusal")
 	} else if got := status.Code(err); got != codes.FailedPrecondition {
 		t.Errorf("code = %s, want %s", got, codes.FailedPrecondition)

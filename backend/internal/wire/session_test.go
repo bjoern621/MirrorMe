@@ -6,11 +6,11 @@ import (
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/ffmpeg"
-	"bjoernblessin.de/screenshare/internal/relay"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/watchsvc"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/ffmpeg"
+	"bjoernblessin.de/mirrorme/internal/relay"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/watchsvc"
 )
 
 // The figures a run can leave unmeasured, in the spelling PublishStats declares its fields under.
@@ -35,7 +35,7 @@ func allMissing() ffmpeg.Missing {
 
 // presentFigures reports which of the unmeasurable figures the sample carries,
 // read off the message's own descriptor rather than off a second list.
-func presentFigures(stats *screensharev1.PublishStats) map[protoreflect.Name]bool {
+func presentFigures(stats *mirrormev1.PublishStats) map[protoreflect.Name]bool {
 	m := stats.ProtoReflect()
 	present := map[protoreflect.Name]bool{}
 	for _, name := range missingNames {
@@ -94,7 +94,7 @@ func TestEveryUnmeasurableFigureHasAFieldThatCanBeAbsent(t *testing.T) {
 		t.Errorf("the domain can leave %d figures unmeasured and the contract carries %d", flags, len(missingNames))
 	}
 
-	fields := (&screensharev1.PublishStats{}).ProtoReflect().Descriptor().Fields()
+	fields := (&mirrormev1.PublishStats{}).ProtoReflect().Descriptor().Fields()
 	optional := 0
 	for i := 0; i < fields.Len(); i++ {
 		if fields.Get(i).HasPresence() {

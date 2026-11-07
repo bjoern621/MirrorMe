@@ -18,7 +18,7 @@ import (
 // SCM_RIGHTS over a Unix socket is the kernel's own way to move one,
 // installing a descriptor of the receiver's own against the same file,
 // so a pool announces a socket path where every other handle kind announces a number
-// (api/proto/screenshare/v1/frame.proto, FramePool.fd_socket).
+// (api/proto/mirrorme/v1/frame.proto, FramePool.fd_socket).
 //
 // Every connection is answered with the same set, in slot order, for as long as the pool lives.
 // Reconnecting reads the same descriptors again,

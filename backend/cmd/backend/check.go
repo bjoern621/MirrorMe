@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"os"
 
-	"bjoernblessin.de/screenshare/internal/group"
-	"bjoernblessin.de/screenshare/internal/groupclient"
-	"bjoernblessin.de/screenshare/internal/member"
-	"bjoernblessin.de/screenshare/internal/reach"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/group"
+	"bjoernblessin.de/mirrorme/internal/groupclient"
+	"bjoernblessin.de/mirrorme/internal/member"
+	"bjoernblessin.de/mirrorme/internal/reach"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // runCheck dials the relay the stored settings name, leg by leg, and prints what each answered.

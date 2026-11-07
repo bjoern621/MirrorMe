@@ -4,9 +4,9 @@ import (
 	"slices"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/text/texttest"
+	"bjoernblessin.de/mirrorme/internal/text/texttest"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
 )
 
 // ValidatePublishAudio matches the configured track against a carriage's audio names, so those

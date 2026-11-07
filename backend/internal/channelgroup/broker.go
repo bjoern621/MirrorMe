@@ -22,10 +22,10 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/group"
-	"bjoernblessin.de/screenshare/internal/groupclient"
-	"bjoernblessin.de/screenshare/internal/linkstore"
-	"bjoernblessin.de/screenshare/internal/voiceroster"
+	"bjoernblessin.de/mirrorme/internal/group"
+	"bjoernblessin.de/mirrorme/internal/groupclient"
+	"bjoernblessin.de/mirrorme/internal/linkstore"
+	"bjoernblessin.de/mirrorme/internal/voiceroster"
 )
 
 // RetireAfter is how long a channel stays mapped after its last member left.

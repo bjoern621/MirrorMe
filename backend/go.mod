@@ -1,10 +1,10 @@
-module bjoernblessin.de/screenshare
+module bjoernblessin.de/mirrorme
 
 go 1.25.3
 
 require (
 	bjoernblessin.de/go-utils v1.0.1
-	bjoernblessin.de/screenshare/api v0.0.0
+	bjoernblessin.de/mirrorme/api v0.0.0
 	github.com/Microsoft/go-winio v0.6.2
 	github.com/bwmarrin/discordgo v0.29.0
 	github.com/go-gst/go-glib v0.0.2
@@ -18,7 +18,7 @@ require (
 // The control contract is a sibling module in this repository rather than a
 // published one: it is generated from api/proto and versioned with the code that
 // serves it, so it is reached by path and never by download.
-replace bjoernblessin.de/screenshare/api => ../api
+replace bjoernblessin.de/mirrorme/api => ../api
 
 require (
 	github.com/gorilla/websocket v1.4.2 // indirect

@@ -1,10 +1,10 @@
 package wire
 
 import (
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
-	"bjoernblessin.de/screenshare/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/receive"
 )
 
 // The frame channel's shapes on the contract.
@@ -30,7 +30,7 @@ const (
 
 // FrameSource is what one frame subscription draws from.
 //
-// The domain side of screenshare.v1.FrameSubscribe, each arm carrying exactly what tells one
+// The domain side of mirrorme.v1.FrameSubscribe, each arm carrying exactly what tells one
 // of its own kind apart.
 // A relay decode carries the pair that identifies it, the relay re-serving each stream on all
 // its listeners and one stream being decodable over several protocols at once.
@@ -51,7 +51,7 @@ type FrameSource struct {
 //
 // A relay decode with half a ref is left as it arrived: which half is missing is a sentence
 // the service writes, and this is the shape it reads to write it.
-func FrameSourceOf(m *screensharev1.FrameSubscribe) (FrameSource, bool) {
+func FrameSourceOf(m *mirrormev1.FrameSubscribe) (FrameSource, bool) {
 	switch {
 	case m.GetStream() != nil:
 		return FrameSource{Kind: FrameSourceRelay, Stream: StreamRefOf(m.GetStream())}, true
@@ -69,15 +69,15 @@ func FrameSourceOf(m *screensharev1.FrameSubscribe) (FrameSource, bool) {
 
 // FrameEventOf is one thing a subscription said, as the message carrying it,
 // and nil for an event that holds neither a pool nor a frame.
-func FrameEventOf(event receive.Event) *screensharev1.FrameEvent {
+func FrameEventOf(event receive.Event) *mirrormev1.FrameEvent {
 	switch {
 	case event.Pool != nil:
-		return &screensharev1.FrameEvent{
-			Event: &screensharev1.FrameEvent_Pool{Pool: framePoolOf(*event.Pool)},
+		return &mirrormev1.FrameEvent{
+			Event: &mirrormev1.FrameEvent_Pool{Pool: framePoolOf(*event.Pool)},
 		}
 	case event.Frame != nil:
-		return &screensharev1.FrameEvent{
-			Event: &screensharev1.FrameEvent_Ready{Ready: frameReadyOf(*event.Frame)},
+		return &mirrormev1.FrameEvent{
+			Event: &mirrormev1.FrameEvent_Ready{Ready: frameReadyOf(*event.Frame)},
 		}
 	default:
 		return nil
@@ -85,10 +85,10 @@ func FrameEventOf(event receive.Event) *screensharev1.FrameEvent {
 }
 
 // FrameEndOf is why a subscription ended: its statement and the words beside it.
-func FrameEndOf(err error) *screensharev1.FrameEvent {
+func FrameEndOf(err error) *mirrormev1.FrameEvent {
 	statement, words := text.Statement(err)
-	return &screensharev1.FrameEvent{
-		Event: &screensharev1.FrameEvent_End{End: &screensharev1.FrameEnd{Message: words, Cause: statement}},
+	return &mirrormev1.FrameEvent{
+		Event: &mirrormev1.FrameEvent_End{End: &mirrormev1.FrameEnd{Message: words, Cause: statement}},
 	}
 }
 
@@ -96,24 +96,24 @@ func FrameEndOf(err error) *screensharev1.FrameEvent {
 // the consumer tells a re-announcement from a repeat by it,
 // and every release is checked against it.
 // Slot indices are the pool's own and start again on the next generation.
-func framePoolOf(pool receive.Pool) *screensharev1.FramePool {
-	slots := make([]*screensharev1.FrameSlot, 0, len(pool.Slots))
+func framePoolOf(pool receive.Pool) *mirrormev1.FramePool {
+	slots := make([]*mirrormev1.FrameSlot, 0, len(pool.Slots))
 	for _, slot := range pool.Slots {
-		planes := make([]*screensharev1.FramePlane, 0, len(slot.Planes))
+		planes := make([]*mirrormev1.FramePlane, 0, len(slot.Planes))
 		for _, plane := range slot.Planes {
-			planes = append(planes, &screensharev1.FramePlane{
+			planes = append(planes, &mirrormev1.FramePlane{
 				Offset: plane.Offset,
 				Stride: plane.Stride,
 			})
 		}
-		slots = append(slots, &screensharev1.FrameSlot{
+		slots = append(slots, &mirrormev1.FrameSlot{
 			Index:  uint32(slot.Index),
 			Handle: slot.Handle,
 			Planes: planes,
 		})
 	}
 
-	return &screensharev1.FramePool{
+	return &mirrormev1.FramePool{
 		Generation:    pool.Generation,
 		HandleType:    frameHandleTypeOf(pool.Kind),
 		Format:        frameFormatOf(pool.Format),
@@ -129,8 +129,8 @@ func framePoolOf(pool receive.Pool) *screensharev1.FramePool {
 	}
 }
 
-func frameReadyOf(frame receive.Frame) *screensharev1.FrameReady {
-	return &screensharev1.FrameReady{
+func frameReadyOf(frame receive.Frame) *mirrormev1.FrameReady {
+	return &mirrormev1.FrameReady{
 		Generation: frame.Generation,
 		Slot:       uint32(frame.Slot),
 		Serial:     frame.Serial,
@@ -143,24 +143,24 @@ func frameReadyOf(frame receive.Frame) *screensharev1.FrameReady {
 // An unlisted kind crosses as unspecified rather than panicking:
 // a consumer told nothing about the handle refuses to import it,
 // the same outcome one step earlier and without taking the backend down.
-func frameHandleTypeOf(kind receive.HandleKind) screensharev1.FrameHandleType {
+func frameHandleTypeOf(kind receive.HandleKind) mirrormev1.FrameHandleType {
 	switch kind {
 	case receive.HandleD3D11GlobalShared:
-		return screensharev1.FrameHandleType_FRAME_HANDLE_TYPE_D3D11_GLOBAL_SHARED
+		return mirrormev1.FrameHandleType_FRAME_HANDLE_TYPE_D3D11_GLOBAL_SHARED
 	case receive.HandleDMABufFD:
-		return screensharev1.FrameHandleType_FRAME_HANDLE_TYPE_DMABUF_FD
+		return mirrormev1.FrameHandleType_FRAME_HANDLE_TYPE_DMABUF_FD
 	default:
-		return screensharev1.FrameHandleType_FRAME_HANDLE_TYPE_UNSPECIFIED
+		return mirrormev1.FrameHandleType_FRAME_HANDLE_TYPE_UNSPECIFIED
 	}
 }
 
-func frameFormatOf(format receive.ShareFormat) screensharev1.FrameFormat {
+func frameFormatOf(format receive.ShareFormat) mirrormev1.FrameFormat {
 	switch format {
 	case receive.ShareFormatRGBA:
-		return screensharev1.FrameFormat_FRAME_FORMAT_R8G8B8A8_UNORM
+		return mirrormev1.FrameFormat_FRAME_FORMAT_R8G8B8A8_UNORM
 	case receive.ShareFormatBGRA:
-		return screensharev1.FrameFormat_FRAME_FORMAT_B8G8R8A8_UNORM
+		return mirrormev1.FrameFormat_FRAME_FORMAT_B8G8R8A8_UNORM
 	default:
-		return screensharev1.FrameFormat_FRAME_FORMAT_UNSPECIFIED
+		return mirrormev1.FrameFormat_FRAME_FORMAT_UNSPECIFIED
 	}
 }

@@ -7,13 +7,13 @@ import (
 	"testing"
 	"time"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/discordclient"
-	"bjoernblessin.de/screenshare/internal/events"
-	"bjoernblessin.de/screenshare/internal/group"
-	"bjoernblessin.de/screenshare/internal/groupclient"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/discordclient"
+	"bjoernblessin.de/mirrorme/internal/events"
+	"bjoernblessin.de/mirrorme/internal/group"
+	"bjoernblessin.de/mirrorme/internal/groupclient"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // One Discord pass answers channel, group, members and streams together,
@@ -209,7 +209,7 @@ func TestStoringALinkAnnouncesIt(t *testing.T) {
 }
 
 // linkedAnnounced is whether a linked Discord state reaches the stream before the wait runs out.
-func linkedAnnounced(stream <-chan *screensharev1.Event) bool {
+func linkedAnnounced(stream <-chan *mirrormev1.Event) bool {
 	deadline := time.After(2 * time.Second)
 	for {
 		select {

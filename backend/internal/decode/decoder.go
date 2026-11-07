@@ -1,8 +1,8 @@
 package decode
 
 import (
-	"bjoernblessin.de/screenshare/internal/pointer"
-	"bjoernblessin.de/screenshare/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/pointer"
+	"bjoernblessin.de/mirrorme/internal/receive"
 )
 
 // What the host drives, stated as interfaces so the contract runs without a GPU.

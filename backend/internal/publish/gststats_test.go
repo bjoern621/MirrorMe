@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/gstrun"
+	"bjoernblessin.de/mirrorme/internal/gstrun"
 )
 
 // The parser takes the cumulative counts off a progress line and ignores every other line

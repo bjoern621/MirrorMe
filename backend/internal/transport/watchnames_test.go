@@ -4,8 +4,8 @@ import (
 	"slices"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // The player and pipeline lists differ by one leg no player URL expresses: WHEP is a signaling

@@ -6,15 +6,15 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/colour"
-	"bjoernblessin.de/screenshare/internal/decode"
-	"bjoernblessin.de/screenshare/internal/receive"
-	"bjoernblessin.de/screenshare/internal/text"
-	"bjoernblessin.de/screenshare/internal/transport"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/colour"
+	"bjoernblessin.de/mirrorme/internal/decode"
+	"bjoernblessin.de/mirrorme/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/text"
+	"bjoernblessin.de/mirrorme/internal/transport"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // StartReceive opens a decode of one stream on one leg, on the decode host.
@@ -223,7 +223,7 @@ func (a *App) SetReceiveAudio(streamName, transportName string, volume float64, 
 	a.procMu.Unlock()
 
 	if !present {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_NOTHING_DECODING, text.Stream(streamName), text.Transport(transportName))
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_NOTHING_DECODING, text.Stream(streamName), text.Transport(transportName))
 	}
 
 	// Bounded rather than refused,
@@ -338,7 +338,7 @@ func (a *App) ReceiveState() []wire.ReceiveStream {
 // and naming the publisher instead would send a reader after somebody who never stopped publishing.
 // The relay snapshot answers the rest,
 // a stream it stopped carrying being one nothing is going to arrive on.
-func (a *App) receiveFailure(streamName string, live bool) *screensharev1.Text {
+func (a *App) receiveFailure(streamName string, live bool) *mirrormev1.Text {
 	assert.Assert(streamName != "", "a decode names the stream it receives")
 
 	if live {
@@ -348,7 +348,7 @@ func (a *App) receiveFailure(streamName string, live bool) *screensharev1.Text {
 		return lapsed
 	}
 	if carried, known := a.relayCarries(streamName); known && !carried {
-		return text.Of(screensharev1.TextCode_TEXT_CODE_STREAM_LEFT_THE_RELAY)
+		return text.Of(mirrormev1.TextCode_TEXT_CODE_STREAM_LEFT_THE_RELAY)
 	}
 	return nil
 }

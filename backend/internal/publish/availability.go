@@ -3,10 +3,10 @@ package publish
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // What each capture backend needs of the platform and the session before it can run, and what
@@ -91,7 +91,7 @@ func gatedOperatingSystems() map[string]bool {
 // An unknown backend is asserted rather than reported: every name reaching here comes off
 // the registry or off settings the registry validated.
 // A privilege the process may or may not hold is no unavailability (Grant).
-func Available(capture string, p platform.Info) (bool, *screensharev1.Text) {
+func Available(capture string, p platform.Info) (bool, *mirrormev1.Text) {
 	need, ok := needsOf(capture)
 	assert.Assert(ok, "an asked-about capture backend is a registered one", capture)
 
@@ -99,14 +99,14 @@ func Available(capture string, p platform.Info) (bool, *screensharev1.Text) {
 		return true, nil
 	}
 	if p.OS != need.os {
-		return false, text.Of(screensharev1.TextCode_TEXT_CODE_CAPTURE_WRONG_OS,
-			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_CAPTURE, capture),
-			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_OS, need.os))
+		return false, text.Of(mirrormev1.TextCode_TEXT_CODE_CAPTURE_WRONG_OS,
+			text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_CAPTURE, capture),
+			text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_OS, need.os))
 	}
 	if need.display != "" && p.Display != need.display {
-		return false, text.Of(screensharev1.TextCode_TEXT_CODE_CAPTURE_WRONG_SESSION,
-			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_CAPTURE, capture),
-			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_DISPLAY, need.display))
+		return false, text.Of(mirrormev1.TextCode_TEXT_CODE_CAPTURE_WRONG_SESSION,
+			text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_CAPTURE, capture),
+			text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_DISPLAY, need.display))
 	}
 	return true, nil
 }
@@ -124,7 +124,7 @@ func Available(capture string, p platform.Info) (bool, *screensharev1.Text) {
 // The verdict is platform.AudioSourceAvailable's and the statement is the source table's.
 // What is added is the one derivation neither package can make alone, capture backend
 // to the operating system it runs on, the column captureNeeds holds.
-func AudioAvailable(capture, audio string) (bool, *screensharev1.Text) {
+func AudioAvailable(capture, audio string) (bool, *mirrormev1.Text) {
 	need, ok := needsOf(capture)
 	assert.Assert(ok, "an asked-about capture backend is a registered one", capture)
 
@@ -135,10 +135,10 @@ func AudioAvailable(capture, audio string) (bool, *screensharev1.Text) {
 	// Some pairs are an engine's question as well as a platform's, and the table names them.
 	// A capture backend fixes the engine, making this the one place able to say it.
 	if engine := engineOf(capture); !audioServedByEngine(need.os, audio, engine) {
-		return false, text.Of(screensharev1.TextCode_TEXT_CODE_AUDIO_SOURCE_UNSERVED_BY_ENGINE,
-			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_AUDIO, audio),
-			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_ENGINE, engine),
-			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_OTHER_ENGINE, EngineGst))
+		return false, text.Of(mirrormev1.TextCode_TEXT_CODE_AUDIO_SOURCE_UNSERVED_BY_ENGINE,
+			text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_AUDIO, audio),
+			text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_ENGINE, engine),
+			text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_OTHER_ENGINE, EngineGst))
 	}
 	return true, nil
 }
@@ -176,15 +176,15 @@ func audioServedByEngine(os, audio, engine string) bool {
 //
 // A backend behind one stays selectable by hand, where the choice is the user's and so
 // is the failure, and it stays out of the set something picks on their behalf (AutoCaptures).
-func Grant(capture string) *screensharev1.Text {
+func Grant(capture string) *mirrormev1.Text {
 	need, ok := needsOf(capture)
 	assert.Assert(ok, "an asked-about capture backend is a registered one", capture)
 
 	if !need.grant {
 		return nil
 	}
-	return text.Of(screensharev1.TextCode_TEXT_CODE_CAPTURE_NEEDS_GRANT,
-		text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_CAPTURE, capture))
+	return text.Of(mirrormev1.TextCode_TEXT_CODE_CAPTURE_NEEDS_GRANT,
+		text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_CAPTURE, capture))
 }
 
 // AutoCaptures lists the backends this platform runs that need nothing granted first, in table

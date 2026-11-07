@@ -5,15 +5,15 @@ import (
 	"slices"
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/display"
-	"bjoernblessin.de/screenshare/internal/encoders"
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/display"
+	"bjoernblessin.de/mirrorme/internal/encoders"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // presetCases are the machines a preset is resolved against: the two Linux sessions, Windows,
@@ -473,8 +473,8 @@ func TestAnUnreachableFollowedPresetBlocksThePublish(t *testing.T) {
 
 	blocked := false
 	for _, d := range form.GetDiagnostics() {
-		if d.GetText().GetCode() == screensharev1.TextCode_TEXT_CODE_PRESET_UNREACHABLE {
-			blocked = d.GetSeverity() == screensharev1.Severity_SEVERITY_ERROR
+		if d.GetText().GetCode() == mirrormev1.TextCode_TEXT_CODE_PRESET_UNREACHABLE {
+			blocked = d.GetSeverity() == mirrormev1.Severity_SEVERITY_ERROR
 		}
 	}
 	if !blocked {

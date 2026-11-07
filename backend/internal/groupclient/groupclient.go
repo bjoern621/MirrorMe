@@ -28,8 +28,8 @@ import (
 	"sync"
 	"time"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 )
@@ -168,13 +168,13 @@ func (c *Client) SendReport(base string, bundle io.Reader) (string, error) {
 	assert.IsNotNil(bundle, "a report carries a bundle")
 
 	if base == "" {
-		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
+		return "", text.Fail(mirrormev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
 	}
 
 	address := base + "/reports"
 	request, err := http.NewRequest(http.MethodPost, address, bundle)
 	if err != nil {
-		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(spoken(address)))
+		return "", text.Because(err, mirrormev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(spoken(address)))
 	}
 	request.Header.Set("Content-Type", "application/gzip")
 
@@ -191,7 +191,7 @@ func (c *Client) SendReport(base string, bundle io.Reader) (string, error) {
 		return "", err
 	}
 	if answer.ReportID == "" {
-		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(base))
+		return "", text.Fail(mirrormev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(base))
 	}
 	return answer.ReportID, nil
 }
@@ -210,7 +210,7 @@ func (c *Client) Token(base, groupKey, memberSecret string) (string, error) {
 	assert.IsNotNil(c.http, "a client calls through a transport")
 
 	if base == "" {
-		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
+		return "", text.Fail(mirrormev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
 	}
 
 	now := time.Now()
@@ -234,11 +234,11 @@ func (c *Client) Token(base, groupKey, memberSecret string) (string, error) {
 		return "", err
 	}
 	if answer.Token == "" {
-		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(base))
+		return "", text.Fail(mirrormev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(base))
 	}
 	expiry, err := time.Parse(time.RFC3339, answer.Expires)
 	if err != nil {
-		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(base))
+		return "", text.Because(err, mirrormev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(base))
 	}
 
 	c.mu.Lock()
@@ -262,7 +262,7 @@ func (c *Client) Streams(base, groupKey string) ([]Stream, error) {
 	assert.IsNotNil(c.http, "a client calls through a transport")
 
 	if base == "" {
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
 	}
 
 	var answer struct {
@@ -281,7 +281,7 @@ func (c *Client) CreateGroup(base string) (groupKey, groupID string, err error) 
 	assert.IsNotNil(c.http, "a client calls through a transport")
 
 	if base == "" {
-		return "", "", text.Fail(screensharev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
+		return "", "", text.Fail(mirrormev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
 	}
 
 	var answer struct {
@@ -292,7 +292,7 @@ func (c *Client) CreateGroup(base string) (groupKey, groupID string, err error) 
 		return "", "", err
 	}
 	if answer.GroupKey == "" {
-		return "", "", text.Fail(screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(base))
+		return "", "", text.Fail(mirrormev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(base))
 	}
 	return answer.GroupKey, answer.GroupID, nil
 }
@@ -310,7 +310,7 @@ func (c *Client) State(base, groupKey, memberSecret, displayName string) (Member
 	assert.IsNotNil(c.http, "a client calls through a transport")
 
 	if base == "" {
-		return Membership{}, text.Fail(screensharev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
+		return Membership{}, text.Fail(mirrormev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
 	}
 
 	var answer Membership
@@ -323,7 +323,7 @@ func (c *Client) State(base, groupKey, memberSecret, displayName string) (Member
 		return Membership{}, err
 	}
 	if answer.MemberID == "" {
-		return Membership{}, text.Fail(screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(base))
+		return Membership{}, text.Fail(mirrormev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(base))
 	}
 	return answer, nil
 }
@@ -336,7 +336,7 @@ func (c *Client) Release(base, groupKey, memberSecret string) error {
 	assert.IsNotNil(c.http, "a client calls through a transport")
 
 	if base == "" {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
 	}
 
 	// The answer names whether there was a lease to release, and nothing here reads it:
@@ -366,7 +366,7 @@ func (c *Client) send(method, address, groupKey string, body any, into any) erro
 
 	request, err := http.NewRequest(method, address, payload)
 	if err != nil {
-		return text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(spoken(address)))
+		return text.Because(err, mirrormev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(spoken(address)))
 	}
 	if payload != nil {
 		request.Header.Set("Content-Type", "application/json")
@@ -412,10 +412,10 @@ func read(address string, resp *http.Response, into any) error {
 			reason = refusal.Error
 		}
 		return text.Because(&Refusal{Status: resp.StatusCode, Reason: reason},
-			screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWERED, text.Address(spoken(address)))
+			mirrormev1.TextCode_TEXT_CODE_ADDRESS_ANSWERED, text.Address(spoken(address)))
 	}
 	if err := json.NewDecoder(resp.Body).Decode(into); err != nil {
-		return text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(spoken(address)))
+		return text.Because(err, mirrormev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(spoken(address)))
 	}
 	return nil
 }
@@ -431,5 +431,5 @@ func unreachable(address string, err error) error {
 	if errors.As(err, &addressed) {
 		err = addressed.Err
 	}
-	return text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNANSWERED, text.Address(spoken(address)))
+	return text.Because(err, mirrormev1.TextCode_TEXT_CODE_ADDRESS_UNANSWERED, text.Address(spoken(address)))
 }

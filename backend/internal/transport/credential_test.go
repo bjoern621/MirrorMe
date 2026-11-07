@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // The run log holds the child's whole command line and the app offers to open it, so a secret

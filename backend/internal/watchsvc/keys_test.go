@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/token"
+	"bjoernblessin.de/mirrorme/internal/token"
 )
 
 // rotatingGroupd answers whichever key set its signer currently publishes, and counts the fetches.

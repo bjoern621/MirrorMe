@@ -5,12 +5,12 @@ import (
 	"slices"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/text/texttest"
+	"bjoernblessin.de/mirrorme/internal/text/texttest"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // A capture backend carries every transport its engine serializes through, so the two engines part
@@ -166,7 +166,7 @@ func TestSamePipelineRefusesSettingsNoEngineRenders(t *testing.T) {
 // rest on one answer rather than two that drift.
 // The refusal names the backend and the source rather than quoting the table's statement,
 // since it is an operational error and the statement is what the greyed option shows
-// (api/proto/screenshare/v1/text.proto).
+// (api/proto/mirrorme/v1/text.proto).
 func TestABackendWhosePlatformServesNoMonitorSourceRefusesDesktopAudio(t *testing.T) {
 	for capture := range captureBackends {
 		available, _ := AudioAvailable(capture, platform.AudioSourceDesktop)
@@ -179,7 +179,7 @@ func TestABackendWhosePlatformServesNoMonitorSourceRefusesDesktopAudio(t *testin
 		if available {
 			// A backend on a serving platform is left to fail, or not, on everything else a pipeline needs.
 			// What is asserted is that the audio source was not what refused it.
-			if err != nil && texttest.Code(err) == screensharev1.TextCode_TEXT_CODE_CAPTURE_RECORDS_NO_AUDIO {
+			if err != nil && texttest.Code(err) == mirrormev1.TextCode_TEXT_CODE_CAPTURE_RECORDS_NO_AUDIO {
 				t.Errorf("%s runs on a platform serving desktop audio and must not refuse it: %v", capture, err)
 			}
 			continue

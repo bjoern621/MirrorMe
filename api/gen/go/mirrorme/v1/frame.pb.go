@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.12
 // 	protoc        (unknown)
-// source: screenshare/v1/frame.proto
+// source: mirrorme/v1/frame.proto
 
-package screensharev1
+package mirrormev1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -63,11 +63,11 @@ func (x FrameHandleType) String() string {
 }
 
 func (FrameHandleType) Descriptor() protoreflect.EnumDescriptor {
-	return file_screenshare_v1_frame_proto_enumTypes[0].Descriptor()
+	return file_mirrorme_v1_frame_proto_enumTypes[0].Descriptor()
 }
 
 func (FrameHandleType) Type() protoreflect.EnumType {
-	return &file_screenshare_v1_frame_proto_enumTypes[0]
+	return &file_mirrorme_v1_frame_proto_enumTypes[0]
 }
 
 func (x FrameHandleType) Number() protoreflect.EnumNumber {
@@ -76,7 +76,7 @@ func (x FrameHandleType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use FrameHandleType.Descriptor instead.
 func (FrameHandleType) EnumDescriptor() ([]byte, []int) {
-	return file_screenshare_v1_frame_proto_rawDescGZIP(), []int{0}
+	return file_mirrorme_v1_frame_proto_rawDescGZIP(), []int{0}
 }
 
 type FrameFormat int32
@@ -112,11 +112,11 @@ func (x FrameFormat) String() string {
 }
 
 func (FrameFormat) Descriptor() protoreflect.EnumDescriptor {
-	return file_screenshare_v1_frame_proto_enumTypes[1].Descriptor()
+	return file_mirrorme_v1_frame_proto_enumTypes[1].Descriptor()
 }
 
 func (FrameFormat) Type() protoreflect.EnumType {
-	return &file_screenshare_v1_frame_proto_enumTypes[1]
+	return &file_mirrorme_v1_frame_proto_enumTypes[1]
 }
 
 func (x FrameFormat) Number() protoreflect.EnumNumber {
@@ -125,7 +125,7 @@ func (x FrameFormat) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use FrameFormat.Descriptor instead.
 func (FrameFormat) EnumDescriptor() ([]byte, []int) {
-	return file_screenshare_v1_frame_proto_rawDescGZIP(), []int{1}
+	return file_mirrorme_v1_frame_proto_rawDescGZIP(), []int{1}
 }
 
 // FramesRequest carries subscribe first and once.
@@ -144,7 +144,7 @@ type FramesRequest struct {
 
 func (x *FramesRequest) Reset() {
 	*x = FramesRequest{}
-	mi := &file_screenshare_v1_frame_proto_msgTypes[0]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -156,7 +156,7 @@ func (x *FramesRequest) String() string {
 func (*FramesRequest) ProtoMessage() {}
 
 func (x *FramesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_frame_proto_msgTypes[0]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -169,7 +169,7 @@ func (x *FramesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FramesRequest.ProtoReflect.Descriptor instead.
 func (*FramesRequest) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_frame_proto_rawDescGZIP(), []int{0}
+	return file_mirrorme_v1_frame_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *FramesRequest) GetRequest() isFramesRequest_Request {
@@ -247,7 +247,7 @@ type FrameSubscribe struct {
 
 func (x *FrameSubscribe) Reset() {
 	*x = FrameSubscribe{}
-	mi := &file_screenshare_v1_frame_proto_msgTypes[1]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -259,7 +259,7 @@ func (x *FrameSubscribe) String() string {
 func (*FrameSubscribe) ProtoMessage() {}
 
 func (x *FrameSubscribe) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_frame_proto_msgTypes[1]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -272,7 +272,7 @@ func (x *FrameSubscribe) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FrameSubscribe.ProtoReflect.Descriptor instead.
 func (*FrameSubscribe) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_frame_proto_rawDescGZIP(), []int{1}
+	return file_mirrorme_v1_frame_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *FrameSubscribe) GetSource() isFrameSubscribe_Source {
@@ -348,7 +348,7 @@ type PublishPreview struct {
 
 func (x *PublishPreview) Reset() {
 	*x = PublishPreview{}
-	mi := &file_screenshare_v1_frame_proto_msgTypes[2]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -360,7 +360,7 @@ func (x *PublishPreview) String() string {
 func (*PublishPreview) ProtoMessage() {}
 
 func (x *PublishPreview) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_frame_proto_msgTypes[2]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -373,7 +373,7 @@ func (x *PublishPreview) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublishPreview.ProtoReflect.Descriptor instead.
 func (*PublishPreview) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_frame_proto_rawDescGZIP(), []int{2}
+	return file_mirrorme_v1_frame_proto_rawDescGZIP(), []int{2}
 }
 
 // MonitorPreview names the live picture of one of this machine's monitors.
@@ -393,7 +393,7 @@ type MonitorPreview struct {
 
 func (x *MonitorPreview) Reset() {
 	*x = MonitorPreview{}
-	mi := &file_screenshare_v1_frame_proto_msgTypes[3]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -405,7 +405,7 @@ func (x *MonitorPreview) String() string {
 func (*MonitorPreview) ProtoMessage() {}
 
 func (x *MonitorPreview) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_frame_proto_msgTypes[3]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -418,7 +418,7 @@ func (x *MonitorPreview) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MonitorPreview.ProtoReflect.Descriptor instead.
 func (*MonitorPreview) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_frame_proto_rawDescGZIP(), []int{3}
+	return file_mirrorme_v1_frame_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *MonitorPreview) GetMonitor() int32 {
@@ -449,7 +449,7 @@ type FrameRelease struct {
 
 func (x *FrameRelease) Reset() {
 	*x = FrameRelease{}
-	mi := &file_screenshare_v1_frame_proto_msgTypes[4]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -461,7 +461,7 @@ func (x *FrameRelease) String() string {
 func (*FrameRelease) ProtoMessage() {}
 
 func (x *FrameRelease) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_frame_proto_msgTypes[4]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -474,7 +474,7 @@ func (x *FrameRelease) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FrameRelease.ProtoReflect.Descriptor instead.
 func (*FrameRelease) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_frame_proto_rawDescGZIP(), []int{4}
+	return file_mirrorme_v1_frame_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *FrameRelease) GetGeneration() uint64 {
@@ -517,7 +517,7 @@ type FrameRenderSize struct {
 
 func (x *FrameRenderSize) Reset() {
 	*x = FrameRenderSize{}
-	mi := &file_screenshare_v1_frame_proto_msgTypes[5]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -529,7 +529,7 @@ func (x *FrameRenderSize) String() string {
 func (*FrameRenderSize) ProtoMessage() {}
 
 func (x *FrameRenderSize) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_frame_proto_msgTypes[5]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -542,7 +542,7 @@ func (x *FrameRenderSize) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FrameRenderSize.ProtoReflect.Descriptor instead.
 func (*FrameRenderSize) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_frame_proto_rawDescGZIP(), []int{5}
+	return file_mirrorme_v1_frame_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *FrameRenderSize) GetWidth() int32 {
@@ -573,7 +573,7 @@ type FrameEvent struct {
 
 func (x *FrameEvent) Reset() {
 	*x = FrameEvent{}
-	mi := &file_screenshare_v1_frame_proto_msgTypes[6]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -585,7 +585,7 @@ func (x *FrameEvent) String() string {
 func (*FrameEvent) ProtoMessage() {}
 
 func (x *FrameEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_frame_proto_msgTypes[6]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -598,7 +598,7 @@ func (x *FrameEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FrameEvent.ProtoReflect.Descriptor instead.
 func (*FrameEvent) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_frame_proto_rawDescGZIP(), []int{6}
+	return file_mirrorme_v1_frame_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *FrameEvent) GetEvent() isFrameEvent_Event {
@@ -672,10 +672,10 @@ type FramePool struct {
 	// Counts this subscription's pools, from one.
 	// A release is checked against it, and it tells a re-announcement from a repeat.
 	Generation uint64          `protobuf:"varint,1,opt,name=generation,proto3" json:"generation,omitempty"`
-	HandleType FrameHandleType `protobuf:"varint,2,opt,name=handle_type,json=handleType,proto3,enum=screenshare.v1.FrameHandleType" json:"handle_type,omitempty"`
+	HandleType FrameHandleType `protobuf:"varint,2,opt,name=handle_type,json=handleType,proto3,enum=mirrorme.v1.FrameHandleType" json:"handle_type,omitempty"`
 	// Pixel layout every slot carries.
 	// What the render chain produced, rather than what the stream was encoded in.
-	Format FrameFormat `protobuf:"varint,3,opt,name=format,proto3,enum=screenshare.v1.FrameFormat" json:"format,omitempty"`
+	Format FrameFormat `protobuf:"varint,3,opt,name=format,proto3,enum=mirrorme.v1.FrameFormat" json:"format,omitempty"`
 	// Slots' pixel dimensions, negotiated by the pipeline rather than set by the render size.
 	// Square pixels wherever the chain converts, so width over height is the picture's shape.
 	Width  uint32 `protobuf:"varint,4,opt,name=width,proto3" json:"width,omitempty"`
@@ -710,7 +710,7 @@ type FramePool struct {
 
 func (x *FramePool) Reset() {
 	*x = FramePool{}
-	mi := &file_screenshare_v1_frame_proto_msgTypes[7]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -722,7 +722,7 @@ func (x *FramePool) String() string {
 func (*FramePool) ProtoMessage() {}
 
 func (x *FramePool) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_frame_proto_msgTypes[7]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -735,7 +735,7 @@ func (x *FramePool) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FramePool.ProtoReflect.Descriptor instead.
 func (*FramePool) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_frame_proto_rawDescGZIP(), []int{7}
+	return file_mirrorme_v1_frame_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *FramePool) GetGeneration() uint64 {
@@ -837,7 +837,7 @@ type FrameSlot struct {
 
 func (x *FrameSlot) Reset() {
 	*x = FrameSlot{}
-	mi := &file_screenshare_v1_frame_proto_msgTypes[8]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -849,7 +849,7 @@ func (x *FrameSlot) String() string {
 func (*FrameSlot) ProtoMessage() {}
 
 func (x *FrameSlot) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_frame_proto_msgTypes[8]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -862,7 +862,7 @@ func (x *FrameSlot) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FrameSlot.ProtoReflect.Descriptor instead.
 func (*FrameSlot) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_frame_proto_rawDescGZIP(), []int{8}
+	return file_mirrorme_v1_frame_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *FrameSlot) GetIndex() uint32 {
@@ -898,7 +898,7 @@ type FramePlane struct {
 
 func (x *FramePlane) Reset() {
 	*x = FramePlane{}
-	mi := &file_screenshare_v1_frame_proto_msgTypes[9]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -910,7 +910,7 @@ func (x *FramePlane) String() string {
 func (*FramePlane) ProtoMessage() {}
 
 func (x *FramePlane) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_frame_proto_msgTypes[9]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -923,7 +923,7 @@ func (x *FramePlane) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FramePlane.ProtoReflect.Descriptor instead.
 func (*FramePlane) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_frame_proto_rawDescGZIP(), []int{9}
+	return file_mirrorme_v1_frame_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *FramePlane) GetOffset() uint64 {
@@ -957,7 +957,7 @@ type FrameReady struct {
 
 func (x *FrameReady) Reset() {
 	*x = FrameReady{}
-	mi := &file_screenshare_v1_frame_proto_msgTypes[10]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -969,7 +969,7 @@ func (x *FrameReady) String() string {
 func (*FrameReady) ProtoMessage() {}
 
 func (x *FrameReady) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_frame_proto_msgTypes[10]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -982,7 +982,7 @@ func (x *FrameReady) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FrameReady.ProtoReflect.Descriptor instead.
 func (*FrameReady) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_frame_proto_rawDescGZIP(), []int{10}
+	return file_mirrorme_v1_frame_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *FrameReady) GetGeneration() uint64 {
@@ -1029,7 +1029,7 @@ type FrameEnd struct {
 
 func (x *FrameEnd) Reset() {
 	*x = FrameEnd{}
-	mi := &file_screenshare_v1_frame_proto_msgTypes[11]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1041,7 +1041,7 @@ func (x *FrameEnd) String() string {
 func (*FrameEnd) ProtoMessage() {}
 
 func (x *FrameEnd) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_frame_proto_msgTypes[11]
+	mi := &file_mirrorme_v1_frame_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1054,7 +1054,7 @@ func (x *FrameEnd) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FrameEnd.ProtoReflect.Descriptor instead.
 func (*FrameEnd) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_frame_proto_rawDescGZIP(), []int{11}
+	return file_mirrorme_v1_frame_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *FrameEnd) GetMessage() string {
@@ -1071,21 +1071,21 @@ func (x *FrameEnd) GetCause() *Text {
 	return nil
 }
 
-var File_screenshare_v1_frame_proto protoreflect.FileDescriptor
+var File_mirrorme_v1_frame_proto protoreflect.FileDescriptor
 
-const file_screenshare_v1_frame_proto_rawDesc = "" +
+const file_mirrorme_v1_frame_proto_rawDesc = "" +
 	"\n" +
-	"\x1ascreenshare/v1/frame.proto\x12\x0escreenshare.v1\x1a\x1cscreenshare/v1/session.proto\x1a\x19screenshare/v1/text.proto\"\xd8\x01\n" +
-	"\rFramesRequest\x12>\n" +
-	"\tsubscribe\x18\x01 \x01(\v2\x1e.screenshare.v1.FrameSubscribeH\x00R\tsubscribe\x128\n" +
-	"\arelease\x18\x02 \x01(\v2\x1c.screenshare.v1.FrameReleaseH\x00R\arelease\x12B\n" +
-	"\vrender_size\x18\x03 \x01(\v2\x1f.screenshare.v1.FrameRenderSizeH\x00R\n" +
+	"\x17mirrorme/v1/frame.proto\x12\vmirrorme.v1\x1a\x19mirrorme/v1/session.proto\x1a\x16mirrorme/v1/text.proto\"\xcf\x01\n" +
+	"\rFramesRequest\x12;\n" +
+	"\tsubscribe\x18\x01 \x01(\v2\x1b.mirrorme.v1.FrameSubscribeH\x00R\tsubscribe\x125\n" +
+	"\arelease\x18\x02 \x01(\v2\x19.mirrorme.v1.FrameReleaseH\x00R\arelease\x12?\n" +
+	"\vrender_size\x18\x03 \x01(\v2\x1c.mirrorme.v1.FrameRenderSizeH\x00R\n" +
 	"renderSizeB\t\n" +
-	"\arequest\"\xe5\x01\n" +
-	"\x0eFrameSubscribe\x123\n" +
-	"\x06stream\x18\x01 \x01(\v2\x19.screenshare.v1.StreamRefH\x00R\x06stream\x12I\n" +
-	"\x0fpublish_preview\x18\x02 \x01(\v2\x1e.screenshare.v1.PublishPreviewH\x00R\x0epublishPreview\x12I\n" +
-	"\x0fmonitor_preview\x18\x03 \x01(\v2\x1e.screenshare.v1.MonitorPreviewH\x00R\x0emonitorPreviewB\b\n" +
+	"\arequest\"\xdc\x01\n" +
+	"\x0eFrameSubscribe\x120\n" +
+	"\x06stream\x18\x01 \x01(\v2\x16.mirrorme.v1.StreamRefH\x00R\x06stream\x12F\n" +
+	"\x0fpublish_preview\x18\x02 \x01(\v2\x1b.mirrorme.v1.PublishPreviewH\x00R\x0epublishPreview\x12F\n" +
+	"\x0fmonitor_preview\x18\x03 \x01(\v2\x1b.mirrorme.v1.MonitorPreviewH\x00R\x0emonitorPreviewB\b\n" +
 	"\x06source\"\x10\n" +
 	"\x0ePublishPreview\"*\n" +
 	"\x0eMonitorPreview\x12\x18\n" +
@@ -1098,35 +1098,35 @@ const file_screenshare_v1_frame_proto_rawDesc = "" +
 	"\x06serial\x18\x02 \x01(\x04R\x06serial\"?\n" +
 	"\x0fFrameRenderSize\x12\x14\n" +
 	"\x05width\x18\x01 \x01(\x05R\x05width\x12\x16\n" +
-	"\x06height\x18\x02 \x01(\x05R\x06height\"\xa8\x01\n" +
+	"\x06height\x18\x02 \x01(\x05R\x06height\"\x9f\x01\n" +
 	"\n" +
-	"FrameEvent\x12/\n" +
-	"\x04pool\x18\x01 \x01(\v2\x19.screenshare.v1.FramePoolH\x00R\x04pool\x122\n" +
-	"\x05ready\x18\x02 \x01(\v2\x1a.screenshare.v1.FrameReadyH\x00R\x05ready\x12,\n" +
-	"\x03end\x18\x03 \x01(\v2\x18.screenshare.v1.FrameEndH\x00R\x03endB\a\n" +
-	"\x05event\"\xc9\x03\n" +
+	"FrameEvent\x12,\n" +
+	"\x04pool\x18\x01 \x01(\v2\x16.mirrorme.v1.FramePoolH\x00R\x04pool\x12/\n" +
+	"\x05ready\x18\x02 \x01(\v2\x17.mirrorme.v1.FrameReadyH\x00R\x05ready\x12)\n" +
+	"\x03end\x18\x03 \x01(\v2\x15.mirrorme.v1.FrameEndH\x00R\x03endB\a\n" +
+	"\x05event\"\xc0\x03\n" +
 	"\tFramePool\x12\x1e\n" +
 	"\n" +
 	"generation\x18\x01 \x01(\x04R\n" +
-	"generation\x12@\n" +
-	"\vhandle_type\x18\x02 \x01(\x0e2\x1f.screenshare.v1.FrameHandleTypeR\n" +
-	"handleType\x123\n" +
-	"\x06format\x18\x03 \x01(\x0e2\x1b.screenshare.v1.FrameFormatR\x06format\x12\x14\n" +
+	"generation\x12=\n" +
+	"\vhandle_type\x18\x02 \x01(\x0e2\x1c.mirrorme.v1.FrameHandleTypeR\n" +
+	"handleType\x120\n" +
+	"\x06format\x18\x03 \x01(\x0e2\x18.mirrorme.v1.FrameFormatR\x06format\x12\x14\n" +
 	"\x05width\x18\x04 \x01(\rR\x05width\x12\x16\n" +
 	"\x06height\x18\x05 \x01(\rR\x06height\x12\x1f\n" +
 	"\vmemory_size\x18\x06 \x01(\x04R\n" +
 	"memorySize\x12&\n" +
-	"\x0ftop_left_origin\x18\a \x01(\bR\rtopLeftOrigin\x12/\n" +
-	"\x05slots\x18\b \x03(\v2\x19.screenshare.v1.FrameSlotR\x05slots\x12!\n" +
+	"\x0ftop_left_origin\x18\a \x01(\bR\rtopLeftOrigin\x12,\n" +
+	"\x05slots\x18\b \x03(\v2\x16.mirrorme.v1.FrameSlotR\x05slots\x12!\n" +
 	"\fproducer_key\x18\t \x01(\rR\vproducerKey\x12!\n" +
 	"\fconsumer_key\x18\n" +
 	" \x01(\rR\vconsumerKey\x12\x1b\n" +
 	"\tfd_socket\x18\v \x01(\tR\bfdSocket\x12\x1a\n" +
-	"\bmodifier\x18\f \x01(\x04R\bmodifier\"m\n" +
+	"\bmodifier\x18\f \x01(\x04R\bmodifier\"j\n" +
 	"\tFrameSlot\x12\x14\n" +
 	"\x05index\x18\x01 \x01(\rR\x05index\x12\x16\n" +
-	"\x06handle\x18\x02 \x01(\x04R\x06handle\x122\n" +
-	"\x06planes\x18\x03 \x03(\v2\x1a.screenshare.v1.FramePlaneR\x06planes\"<\n" +
+	"\x06handle\x18\x02 \x01(\x04R\x06handle\x12/\n" +
+	"\x06planes\x18\x03 \x03(\v2\x17.mirrorme.v1.FramePlaneR\x06planes\"<\n" +
 	"\n" +
 	"FramePlane\x12\x16\n" +
 	"\x06offset\x18\x01 \x01(\x04R\x06offset\x12\x16\n" +
@@ -1138,10 +1138,10 @@ const file_screenshare_v1_frame_proto_rawDesc = "" +
 	"generation\x12\x12\n" +
 	"\x04slot\x18\x02 \x01(\rR\x04slot\x12\x16\n" +
 	"\x06serial\x18\x03 \x01(\x04R\x06serial\x12\x18\n" +
-	"\adropped\x18\x04 \x01(\x04R\adropped\"P\n" +
+	"\adropped\x18\x04 \x01(\x04R\adropped\"M\n" +
 	"\bFrameEnd\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage\x12*\n" +
-	"\x05cause\x18\x02 \x01(\v2\x14.screenshare.v1.TextR\x05cause*\x80\x01\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage\x12'\n" +
+	"\x05cause\x18\x02 \x01(\v2\x11.mirrorme.v1.TextR\x05cause*\x80\x01\n" +
 	"\x0fFrameHandleType\x12!\n" +
 	"\x1dFRAME_HANDLE_TYPE_UNSPECIFIED\x10\x00\x12)\n" +
 	"%FRAME_HANDLE_TYPE_D3D11_GLOBAL_SHARED\x10\x01\x12\x1f\n" +
@@ -1149,59 +1149,59 @@ const file_screenshare_v1_frame_proto_rawDesc = "" +
 	"\vFrameFormat\x12\x1c\n" +
 	"\x18FRAME_FORMAT_UNSPECIFIED\x10\x00\x12\x1f\n" +
 	"\x1bFRAME_FORMAT_R8G8B8A8_UNORM\x10\x01\x12\x1f\n" +
-	"\x1bFRAME_FORMAT_B8G8R8A8_UNORM\x10\x022W\n" +
-	"\fFrameService\x12G\n" +
-	"\x06Frames\x12\x1d.screenshare.v1.FramesRequest\x1a\x1a.screenshare.v1.FrameEvent(\x010\x01B[ZDbjoernblessin.de/screenshare/api/gen/go/screenshare/v1;screensharev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
+	"\x1bFRAME_FORMAT_B8G8R8A8_UNORM\x10\x022Q\n" +
+	"\fFrameService\x12A\n" +
+	"\x06Frames\x12\x1a.mirrorme.v1.FramesRequest\x1a\x17.mirrorme.v1.FrameEvent(\x010\x01BRZ;bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
 
 var (
-	file_screenshare_v1_frame_proto_rawDescOnce sync.Once
-	file_screenshare_v1_frame_proto_rawDescData []byte
+	file_mirrorme_v1_frame_proto_rawDescOnce sync.Once
+	file_mirrorme_v1_frame_proto_rawDescData []byte
 )
 
-func file_screenshare_v1_frame_proto_rawDescGZIP() []byte {
-	file_screenshare_v1_frame_proto_rawDescOnce.Do(func() {
-		file_screenshare_v1_frame_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_screenshare_v1_frame_proto_rawDesc), len(file_screenshare_v1_frame_proto_rawDesc)))
+func file_mirrorme_v1_frame_proto_rawDescGZIP() []byte {
+	file_mirrorme_v1_frame_proto_rawDescOnce.Do(func() {
+		file_mirrorme_v1_frame_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_mirrorme_v1_frame_proto_rawDesc), len(file_mirrorme_v1_frame_proto_rawDesc)))
 	})
-	return file_screenshare_v1_frame_proto_rawDescData
+	return file_mirrorme_v1_frame_proto_rawDescData
 }
 
-var file_screenshare_v1_frame_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_screenshare_v1_frame_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
-var file_screenshare_v1_frame_proto_goTypes = []any{
-	(FrameHandleType)(0),    // 0: screenshare.v1.FrameHandleType
-	(FrameFormat)(0),        // 1: screenshare.v1.FrameFormat
-	(*FramesRequest)(nil),   // 2: screenshare.v1.FramesRequest
-	(*FrameSubscribe)(nil),  // 3: screenshare.v1.FrameSubscribe
-	(*PublishPreview)(nil),  // 4: screenshare.v1.PublishPreview
-	(*MonitorPreview)(nil),  // 5: screenshare.v1.MonitorPreview
-	(*FrameRelease)(nil),    // 6: screenshare.v1.FrameRelease
-	(*FrameRenderSize)(nil), // 7: screenshare.v1.FrameRenderSize
-	(*FrameEvent)(nil),      // 8: screenshare.v1.FrameEvent
-	(*FramePool)(nil),       // 9: screenshare.v1.FramePool
-	(*FrameSlot)(nil),       // 10: screenshare.v1.FrameSlot
-	(*FramePlane)(nil),      // 11: screenshare.v1.FramePlane
-	(*FrameReady)(nil),      // 12: screenshare.v1.FrameReady
-	(*FrameEnd)(nil),        // 13: screenshare.v1.FrameEnd
-	(*StreamRef)(nil),       // 14: screenshare.v1.StreamRef
-	(*Text)(nil),            // 15: screenshare.v1.Text
+var file_mirrorme_v1_frame_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_mirrorme_v1_frame_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_mirrorme_v1_frame_proto_goTypes = []any{
+	(FrameHandleType)(0),    // 0: mirrorme.v1.FrameHandleType
+	(FrameFormat)(0),        // 1: mirrorme.v1.FrameFormat
+	(*FramesRequest)(nil),   // 2: mirrorme.v1.FramesRequest
+	(*FrameSubscribe)(nil),  // 3: mirrorme.v1.FrameSubscribe
+	(*PublishPreview)(nil),  // 4: mirrorme.v1.PublishPreview
+	(*MonitorPreview)(nil),  // 5: mirrorme.v1.MonitorPreview
+	(*FrameRelease)(nil),    // 6: mirrorme.v1.FrameRelease
+	(*FrameRenderSize)(nil), // 7: mirrorme.v1.FrameRenderSize
+	(*FrameEvent)(nil),      // 8: mirrorme.v1.FrameEvent
+	(*FramePool)(nil),       // 9: mirrorme.v1.FramePool
+	(*FrameSlot)(nil),       // 10: mirrorme.v1.FrameSlot
+	(*FramePlane)(nil),      // 11: mirrorme.v1.FramePlane
+	(*FrameReady)(nil),      // 12: mirrorme.v1.FrameReady
+	(*FrameEnd)(nil),        // 13: mirrorme.v1.FrameEnd
+	(*StreamRef)(nil),       // 14: mirrorme.v1.StreamRef
+	(*Text)(nil),            // 15: mirrorme.v1.Text
 }
-var file_screenshare_v1_frame_proto_depIdxs = []int32{
-	3,  // 0: screenshare.v1.FramesRequest.subscribe:type_name -> screenshare.v1.FrameSubscribe
-	6,  // 1: screenshare.v1.FramesRequest.release:type_name -> screenshare.v1.FrameRelease
-	7,  // 2: screenshare.v1.FramesRequest.render_size:type_name -> screenshare.v1.FrameRenderSize
-	14, // 3: screenshare.v1.FrameSubscribe.stream:type_name -> screenshare.v1.StreamRef
-	4,  // 4: screenshare.v1.FrameSubscribe.publish_preview:type_name -> screenshare.v1.PublishPreview
-	5,  // 5: screenshare.v1.FrameSubscribe.monitor_preview:type_name -> screenshare.v1.MonitorPreview
-	9,  // 6: screenshare.v1.FrameEvent.pool:type_name -> screenshare.v1.FramePool
-	12, // 7: screenshare.v1.FrameEvent.ready:type_name -> screenshare.v1.FrameReady
-	13, // 8: screenshare.v1.FrameEvent.end:type_name -> screenshare.v1.FrameEnd
-	0,  // 9: screenshare.v1.FramePool.handle_type:type_name -> screenshare.v1.FrameHandleType
-	1,  // 10: screenshare.v1.FramePool.format:type_name -> screenshare.v1.FrameFormat
-	10, // 11: screenshare.v1.FramePool.slots:type_name -> screenshare.v1.FrameSlot
-	11, // 12: screenshare.v1.FrameSlot.planes:type_name -> screenshare.v1.FramePlane
-	15, // 13: screenshare.v1.FrameEnd.cause:type_name -> screenshare.v1.Text
-	2,  // 14: screenshare.v1.FrameService.Frames:input_type -> screenshare.v1.FramesRequest
-	8,  // 15: screenshare.v1.FrameService.Frames:output_type -> screenshare.v1.FrameEvent
+var file_mirrorme_v1_frame_proto_depIdxs = []int32{
+	3,  // 0: mirrorme.v1.FramesRequest.subscribe:type_name -> mirrorme.v1.FrameSubscribe
+	6,  // 1: mirrorme.v1.FramesRequest.release:type_name -> mirrorme.v1.FrameRelease
+	7,  // 2: mirrorme.v1.FramesRequest.render_size:type_name -> mirrorme.v1.FrameRenderSize
+	14, // 3: mirrorme.v1.FrameSubscribe.stream:type_name -> mirrorme.v1.StreamRef
+	4,  // 4: mirrorme.v1.FrameSubscribe.publish_preview:type_name -> mirrorme.v1.PublishPreview
+	5,  // 5: mirrorme.v1.FrameSubscribe.monitor_preview:type_name -> mirrorme.v1.MonitorPreview
+	9,  // 6: mirrorme.v1.FrameEvent.pool:type_name -> mirrorme.v1.FramePool
+	12, // 7: mirrorme.v1.FrameEvent.ready:type_name -> mirrorme.v1.FrameReady
+	13, // 8: mirrorme.v1.FrameEvent.end:type_name -> mirrorme.v1.FrameEnd
+	0,  // 9: mirrorme.v1.FramePool.handle_type:type_name -> mirrorme.v1.FrameHandleType
+	1,  // 10: mirrorme.v1.FramePool.format:type_name -> mirrorme.v1.FrameFormat
+	10, // 11: mirrorme.v1.FramePool.slots:type_name -> mirrorme.v1.FrameSlot
+	11, // 12: mirrorme.v1.FrameSlot.planes:type_name -> mirrorme.v1.FramePlane
+	15, // 13: mirrorme.v1.FrameEnd.cause:type_name -> mirrorme.v1.Text
+	2,  // 14: mirrorme.v1.FrameService.Frames:input_type -> mirrorme.v1.FramesRequest
+	8,  // 15: mirrorme.v1.FrameService.Frames:output_type -> mirrorme.v1.FrameEvent
 	15, // [15:16] is the sub-list for method output_type
 	14, // [14:15] is the sub-list for method input_type
 	14, // [14:14] is the sub-list for extension type_name
@@ -1209,24 +1209,24 @@ var file_screenshare_v1_frame_proto_depIdxs = []int32{
 	0,  // [0:14] is the sub-list for field type_name
 }
 
-func init() { file_screenshare_v1_frame_proto_init() }
-func file_screenshare_v1_frame_proto_init() {
-	if File_screenshare_v1_frame_proto != nil {
+func init() { file_mirrorme_v1_frame_proto_init() }
+func file_mirrorme_v1_frame_proto_init() {
+	if File_mirrorme_v1_frame_proto != nil {
 		return
 	}
-	file_screenshare_v1_session_proto_init()
-	file_screenshare_v1_text_proto_init()
-	file_screenshare_v1_frame_proto_msgTypes[0].OneofWrappers = []any{
+	file_mirrorme_v1_session_proto_init()
+	file_mirrorme_v1_text_proto_init()
+	file_mirrorme_v1_frame_proto_msgTypes[0].OneofWrappers = []any{
 		(*FramesRequest_Subscribe)(nil),
 		(*FramesRequest_Release)(nil),
 		(*FramesRequest_RenderSize)(nil),
 	}
-	file_screenshare_v1_frame_proto_msgTypes[1].OneofWrappers = []any{
+	file_mirrorme_v1_frame_proto_msgTypes[1].OneofWrappers = []any{
 		(*FrameSubscribe_Stream)(nil),
 		(*FrameSubscribe_PublishPreview)(nil),
 		(*FrameSubscribe_MonitorPreview)(nil),
 	}
-	file_screenshare_v1_frame_proto_msgTypes[6].OneofWrappers = []any{
+	file_mirrorme_v1_frame_proto_msgTypes[6].OneofWrappers = []any{
 		(*FrameEvent_Pool)(nil),
 		(*FrameEvent_Ready)(nil),
 		(*FrameEvent_End)(nil),
@@ -1235,18 +1235,18 @@ func file_screenshare_v1_frame_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_screenshare_v1_frame_proto_rawDesc), len(file_screenshare_v1_frame_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mirrorme_v1_frame_proto_rawDesc), len(file_mirrorme_v1_frame_proto_rawDesc)),
 			NumEnums:      2,
 			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_screenshare_v1_frame_proto_goTypes,
-		DependencyIndexes: file_screenshare_v1_frame_proto_depIdxs,
-		EnumInfos:         file_screenshare_v1_frame_proto_enumTypes,
-		MessageInfos:      file_screenshare_v1_frame_proto_msgTypes,
+		GoTypes:           file_mirrorme_v1_frame_proto_goTypes,
+		DependencyIndexes: file_mirrorme_v1_frame_proto_depIdxs,
+		EnumInfos:         file_mirrorme_v1_frame_proto_enumTypes,
+		MessageInfos:      file_mirrorme_v1_frame_proto_msgTypes,
 	}.Build()
-	File_screenshare_v1_frame_proto = out.File
-	file_screenshare_v1_frame_proto_goTypes = nil
-	file_screenshare_v1_frame_proto_depIdxs = nil
+	File_mirrorme_v1_frame_proto = out.File
+	file_mirrorme_v1_frame_proto_goTypes = nil
+	file_mirrorme_v1_frame_proto_depIdxs = nil
 }

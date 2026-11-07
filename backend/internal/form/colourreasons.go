@@ -3,11 +3,11 @@ package form
 import (
 	"slices"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/gpupath"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/gpupath"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // chromaReason states why the selected codec cannot be handed a pixel format.
@@ -16,7 +16,7 @@ import (
 // on no engine is absent from its Chromas, and one only the other engine's encoder takes carries
 // a gap naming that engine.
 // The gap's code passes through, since it already says which library or element is the limit.
-func (av availability) chromaReason(chroma string) *screensharev1.Text {
+func (av availability) chromaReason(chroma string) *mirrormev1.Text {
 	if !av.knownCodec {
 		return nil
 	}
@@ -36,7 +36,7 @@ func (av availability) chromaReason(chroma string) *screensharev1.Text {
 // The capability table declares it per codec and engine: an encoder signalling no colour
 // description, and a format with no colour range field, both leave a full-range publish watched
 // as limited whatever the form said.
-func (av availability) colorRangeReason(value string) *screensharev1.Text {
+func (av availability) colorRangeReason(value string) *mirrormev1.Text {
 	if !av.knownCodec || av.engine == "" {
 		return nil
 	}
@@ -50,7 +50,7 @@ func (av availability) colorRangeReason(value string) *screensharev1.Text {
 // Planar RGB carries its own code: RGB reaches an encoder only through HEVC's Range Extensions
 // or VP9's identity matrix, a coding-tool fact rather than a subsampling limit,
 // and a reader told only "cannot encode gbrp" would go looking for a setting that would fix it.
-func availabilityChromaBlock(chroma, codec string) *screensharev1.Text {
+func availabilityChromaBlock(chroma, codec string) *mirrormev1.Text {
 	if chroma == "gbrp" {
 		return say(codecCodesNoRGB, argCodec(codec))
 	}
@@ -62,7 +62,7 @@ func availabilityChromaBlock(chroma, codec string) *screensharev1.Text {
 // and signals what it chose, so both fields grey with the row's cost
 // and Repair moves each onto what the encoder signals: a greyed field showing something
 // other than what the run produces is the disagreement the form and the publish exist to prevent.
-func (av availability) encoderColourReason() *screensharev1.Text {
+func (av availability) encoderColourReason() *mirrormev1.Text {
 	if !av.onDevicePath || av.s.Publish.CaptureMemory != gpupath.MemoryGpuEncoderColor {
 		return nil
 	}
@@ -82,7 +82,7 @@ func (av availability) encoderColourReason() *screensharev1.Text {
 // Where none does, it names the software element and one family whose limit stands for the rest,
 // since the others are out for reasons of their own and listing
 // them states again what the first already shows.
-func (av availability) decodeNote() *screensharev1.Text {
+func (av availability) decodeNote() *mirrormev1.Text {
 	if !av.knownCodec {
 		return nil
 	}

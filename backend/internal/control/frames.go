@@ -8,10 +8,10 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/text"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/text"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // The frame channel: the second service on the same socket, carrying handles to memory a consumer maps
@@ -33,7 +33,7 @@ import (
 // a subscription's whole state lives in the backend that lent it,
 // and this is the pipe between that and one gRPC call.
 type FrameServer struct {
-	screensharev1.UnimplementedFrameServiceServer
+	mirrormev1.UnimplementedFrameServiceServer
 
 	backend Backend
 }
@@ -53,7 +53,7 @@ func NewFrames(backend Backend) *FrameServer {
 // The two directions run on two goroutines, as gRPC's bidirectional streams require.
 // Send belongs to this goroutine and Recv to readRequests, and neither is safe to share.
 // The subscription joins them, and its own methods take its lock.
-func (s *FrameServer) Frames(stream screensharev1.FrameService_FramesServer) error {
+func (s *FrameServer) Frames(stream mirrormev1.FrameService_FramesServer) error {
 	first, err := stream.Recv()
 	if err != nil {
 		// A window that closed between opening the call and filling it.
@@ -166,7 +166,7 @@ func describe(source wire.FrameSource) string {
 // The contract is additive:
 // a consumer built against a later minor may send a message this build does not know,
 // and ending its stream over that would turn a compatible addition into a broken tile.
-func readRequests(stream screensharev1.FrameService_FramesServer, frames FrameStream) error {
+func readRequests(stream mirrormev1.FrameService_FramesServer, frames FrameStream) error {
 	for {
 		request, err := stream.Recv()
 		if err != nil {
@@ -189,7 +189,7 @@ func readRequests(stream screensharev1.FrameService_FramesServer, frames FrameSt
 // A pipeline that ended is not a failed request:
 // the subscription did what it was for and the stream it drew from was then over.
 // The same fact reaches every shell as ReceiveExit on the event stream.
-func endOf(stream screensharev1.FrameService_FramesServer, err error) error {
+func endOf(stream mirrormev1.FrameService_FramesServer, err error) error {
 	if err == nil {
 		return nil
 	}

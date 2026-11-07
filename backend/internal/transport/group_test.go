@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/group"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/group"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // A group is a path prefix, so joining one moves every leg at once.

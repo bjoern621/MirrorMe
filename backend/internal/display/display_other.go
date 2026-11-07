@@ -5,7 +5,7 @@ package display
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/platform"
 )
 
 // List enumerates the machine's monitors,

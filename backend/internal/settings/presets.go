@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"sync"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 )
@@ -66,12 +66,12 @@ func LoadPresets() ([]Preset, error) {
 		return nil, nil
 	}
 	if err != nil {
-		return nil, setAside(path, text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNREADABLE, text.Path(path)))
+		return nil, setAside(path, text.Because(err, mirrormev1.TextCode_TEXT_CODE_FILE_UNREADABLE, text.Path(path)))
 	}
 
 	var presets []Preset
 	if err := json.Unmarshal(data, &presets); err != nil {
-		return nil, setAside(path, text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_CORRUPT, text.Path(path)))
+		return nil, setAside(path, text.Because(err, mirrormev1.TextCode_TEXT_CODE_FILE_CORRUPT, text.Path(path)))
 	}
 
 	// A preset saved by an older build carries the old mode names and lacks the keys added since.

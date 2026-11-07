@@ -3,10 +3,10 @@ package form
 import (
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	groupdomain "bjoernblessin.de/screenshare/internal/group"
-	"bjoernblessin.de/screenshare/internal/settings"
+	groupdomain "bjoernblessin.de/mirrorme/internal/group"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // The Discord source on the form: the choice naming it, what it greys,
@@ -19,7 +19,7 @@ func TestTheGroupSourceIsARelayRadioOverBothSources(t *testing.T) {
 	if f.group != GroupRelay {
 		t.Errorf("the choice sits in %q, want the relay group", f.group)
 	}
-	if f.control != screensharev1.ControlKind_CONTROL_KIND_RADIO {
+	if f.control != mirrormev1.ControlKind_CONTROL_KIND_RADIO {
 		t.Errorf("the choice renders as %v, want a radio", f.control)
 	}
 
@@ -63,7 +63,7 @@ func TestTheStatedShareIsAnAppField(t *testing.T) {
 	if f.group != GroupApp {
 		t.Errorf("the stated share sits in %q, want the app group", f.group)
 	}
-	if f.control != screensharev1.ControlKind_CONTROL_KIND_TOGGLE {
+	if f.control != mirrormev1.ControlKind_CONTROL_KIND_TOGGLE {
 		t.Errorf("the stated share renders as %v, want a toggle", f.control)
 	}
 
@@ -194,7 +194,7 @@ func TestAResolvedBrokeredDraftPublishes(t *testing.T) {
 }
 
 // offersValue reports whether one of the entries carries value.
-func offersValue(offered []*screensharev1.FieldOption, value string) bool {
+func offersValue(offered []*mirrormev1.FieldOption, value string) bool {
 	for _, o := range offered {
 		if o.GetValue() == value {
 			return true

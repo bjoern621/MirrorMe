@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/pointer"
+	"bjoernblessin.de/mirrorme/internal/pointer"
 )
 
 // The child reports the pointer on the stream it reports its caps on, under a prefix of its own,

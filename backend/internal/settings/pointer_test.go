@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/pointermode"
+	"bjoernblessin.de/mirrorme/internal/pointermode"
 )
 
 // A file written while the pointer mode sat under "cursor" names the reader's choice there,

@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.12
 // 	protoc        (unknown)
-// source: screenshare/v1/session.proto
+// source: mirrorme/v1/session.proto
 
-package screensharev1
+package mirrormev1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -87,11 +87,11 @@ func (x UpdateStage) String() string {
 }
 
 func (UpdateStage) Descriptor() protoreflect.EnumDescriptor {
-	return file_screenshare_v1_session_proto_enumTypes[0].Descriptor()
+	return file_mirrorme_v1_session_proto_enumTypes[0].Descriptor()
 }
 
 func (UpdateStage) Type() protoreflect.EnumType {
-	return &file_screenshare_v1_session_proto_enumTypes[0]
+	return &file_mirrorme_v1_session_proto_enumTypes[0]
 }
 
 func (x UpdateStage) Number() protoreflect.EnumNumber {
@@ -100,7 +100,7 @@ func (x UpdateStage) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use UpdateStage.Descriptor instead.
 func (UpdateStage) EnumDescriptor() ([]byte, []int) {
-	return file_screenshare_v1_session_proto_rawDescGZIP(), []int{0}
+	return file_mirrorme_v1_session_proto_rawDescGZIP(), []int{0}
 }
 
 // PublishState is whether a stream is in force, what it carries,
@@ -122,7 +122,7 @@ type PublishState struct {
 
 func (x *PublishState) Reset() {
 	*x = PublishState{}
-	mi := &file_screenshare_v1_session_proto_msgTypes[0]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -134,7 +134,7 @@ func (x *PublishState) String() string {
 func (*PublishState) ProtoMessage() {}
 
 func (x *PublishState) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_session_proto_msgTypes[0]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -147,7 +147,7 @@ func (x *PublishState) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublishState.ProtoReflect.Descriptor instead.
 func (*PublishState) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_session_proto_rawDescGZIP(), []int{0}
+	return file_mirrorme_v1_session_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *PublishState) GetLive() *PublishState_Live {
@@ -201,7 +201,7 @@ type PublishStats struct {
 
 func (x *PublishStats) Reset() {
 	*x = PublishStats{}
-	mi := &file_screenshare_v1_session_proto_msgTypes[1]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -213,7 +213,7 @@ func (x *PublishStats) String() string {
 func (*PublishStats) ProtoMessage() {}
 
 func (x *PublishStats) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_session_proto_msgTypes[1]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -226,7 +226,7 @@ func (x *PublishStats) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublishStats.ProtoReflect.Descriptor instead.
 func (*PublishStats) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_session_proto_rawDescGZIP(), []int{1}
+	return file_mirrorme_v1_session_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *PublishStats) GetFrameCount() int64 {
@@ -358,7 +358,7 @@ type RelayReader struct {
 
 func (x *RelayReader) Reset() {
 	*x = RelayReader{}
-	mi := &file_screenshare_v1_session_proto_msgTypes[2]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -370,7 +370,7 @@ func (x *RelayReader) String() string {
 func (*RelayReader) ProtoMessage() {}
 
 func (x *RelayReader) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_session_proto_msgTypes[2]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -383,7 +383,7 @@ func (x *RelayReader) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RelayReader.ProtoReflect.Descriptor instead.
 func (*RelayReader) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_session_proto_rawDescGZIP(), []int{2}
+	return file_mirrorme_v1_session_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *RelayReader) GetType() string {
@@ -515,7 +515,7 @@ type RelayPath struct {
 
 func (x *RelayPath) Reset() {
 	*x = RelayPath{}
-	mi := &file_screenshare_v1_session_proto_msgTypes[3]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -527,7 +527,7 @@ func (x *RelayPath) String() string {
 func (*RelayPath) ProtoMessage() {}
 
 func (x *RelayPath) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_session_proto_msgTypes[3]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -540,7 +540,7 @@ func (x *RelayPath) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RelayPath.ProtoReflect.Descriptor instead.
 func (*RelayPath) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_session_proto_rawDescGZIP(), []int{3}
+	return file_mirrorme_v1_session_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *RelayPath) GetName() string {
@@ -624,7 +624,7 @@ type ViewerReport struct {
 
 func (x *ViewerReport) Reset() {
 	*x = ViewerReport{}
-	mi := &file_screenshare_v1_session_proto_msgTypes[4]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -636,7 +636,7 @@ func (x *ViewerReport) String() string {
 func (*ViewerReport) ProtoMessage() {}
 
 func (x *ViewerReport) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_session_proto_msgTypes[4]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -649,7 +649,7 @@ func (x *ViewerReport) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ViewerReport.ProtoReflect.Descriptor instead.
 func (*ViewerReport) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_session_proto_rawDescGZIP(), []int{4}
+	return file_mirrorme_v1_session_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ViewerReport) GetMemberId() string {
@@ -719,7 +719,7 @@ type RelayStatus struct {
 
 func (x *RelayStatus) Reset() {
 	*x = RelayStatus{}
-	mi := &file_screenshare_v1_session_proto_msgTypes[5]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -731,7 +731,7 @@ func (x *RelayStatus) String() string {
 func (*RelayStatus) ProtoMessage() {}
 
 func (x *RelayStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_session_proto_msgTypes[5]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -744,7 +744,7 @@ func (x *RelayStatus) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RelayStatus.ProtoReflect.Descriptor instead.
 func (*RelayStatus) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_session_proto_rawDescGZIP(), []int{5}
+	return file_mirrorme_v1_session_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *RelayStatus) GetReachable() bool {
@@ -792,7 +792,7 @@ type StreamRef struct {
 
 func (x *StreamRef) Reset() {
 	*x = StreamRef{}
-	mi := &file_screenshare_v1_session_proto_msgTypes[6]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -804,7 +804,7 @@ func (x *StreamRef) String() string {
 func (*StreamRef) ProtoMessage() {}
 
 func (x *StreamRef) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_session_proto_msgTypes[6]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -817,7 +817,7 @@ func (x *StreamRef) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamRef.ProtoReflect.Descriptor instead.
 func (*StreamRef) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_session_proto_rawDescGZIP(), []int{6}
+	return file_mirrorme_v1_session_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *StreamRef) GetStreamName() string {
@@ -856,7 +856,7 @@ type AudioLevel struct {
 
 func (x *AudioLevel) Reset() {
 	*x = AudioLevel{}
-	mi := &file_screenshare_v1_session_proto_msgTypes[7]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -868,7 +868,7 @@ func (x *AudioLevel) String() string {
 func (*AudioLevel) ProtoMessage() {}
 
 func (x *AudioLevel) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_session_proto_msgTypes[7]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -881,7 +881,7 @@ func (x *AudioLevel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AudioLevel.ProtoReflect.Descriptor instead.
 func (*AudioLevel) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_session_proto_rawDescGZIP(), []int{7}
+	return file_mirrorme_v1_session_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *AudioLevel) GetStream() *StreamRef {
@@ -917,7 +917,7 @@ type AudioLevels struct {
 
 func (x *AudioLevels) Reset() {
 	*x = AudioLevels{}
-	mi := &file_screenshare_v1_session_proto_msgTypes[8]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -929,7 +929,7 @@ func (x *AudioLevels) String() string {
 func (*AudioLevels) ProtoMessage() {}
 
 func (x *AudioLevels) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_session_proto_msgTypes[8]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -942,7 +942,7 @@ func (x *AudioLevels) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AudioLevels.ProtoReflect.Descriptor instead.
 func (*AudioLevels) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_session_proto_rawDescGZIP(), []int{8}
+	return file_mirrorme_v1_session_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *AudioLevels) GetLevels() []*AudioLevel {
@@ -970,7 +970,7 @@ type EncodeRate struct {
 
 func (x *EncodeRate) Reset() {
 	*x = EncodeRate{}
-	mi := &file_screenshare_v1_session_proto_msgTypes[9]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -982,7 +982,7 @@ func (x *EncodeRate) String() string {
 func (*EncodeRate) ProtoMessage() {}
 
 func (x *EncodeRate) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_session_proto_msgTypes[9]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -995,7 +995,7 @@ func (x *EncodeRate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EncodeRate.ProtoReflect.Descriptor instead.
 func (*EncodeRate) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_session_proto_rawDescGZIP(), []int{9}
+	return file_mirrorme_v1_session_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *EncodeRate) GetLowFps() float64 {
@@ -1040,7 +1040,7 @@ func (x *EncodeRate) GetHighBounded() bool {
 type UpdateState struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// How far the app has got.
-	Stage UpdateStage `protobuf:"varint,1,opt,name=stage,proto3,enum=screenshare.v1.UpdateStage" json:"stage,omitempty"`
+	Stage UpdateStage `protobuf:"varint,1,opt,name=stage,proto3,enum=mirrorme.v1.UpdateStage" json:"stage,omitempty"`
 	// The build serving this connection, as the handshake spells it.
 	Running string `protobuf:"bytes,2,opt,name=running,proto3" json:"running,omitempty"`
 	// The published release's tag, empty until a check answers.
@@ -1069,7 +1069,7 @@ type UpdateState struct {
 
 func (x *UpdateState) Reset() {
 	*x = UpdateState{}
-	mi := &file_screenshare_v1_session_proto_msgTypes[10]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1081,7 +1081,7 @@ func (x *UpdateState) String() string {
 func (*UpdateState) ProtoMessage() {}
 
 func (x *UpdateState) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_session_proto_msgTypes[10]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1094,7 +1094,7 @@ func (x *UpdateState) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateState.ProtoReflect.Descriptor instead.
 func (*UpdateState) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_session_proto_rawDescGZIP(), []int{10}
+	return file_mirrorme_v1_session_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *UpdateState) GetStage() UpdateStage {
@@ -1185,7 +1185,7 @@ type PointerPosition struct {
 
 func (x *PointerPosition) Reset() {
 	*x = PointerPosition{}
-	mi := &file_screenshare_v1_session_proto_msgTypes[11]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1197,7 +1197,7 @@ func (x *PointerPosition) String() string {
 func (*PointerPosition) ProtoMessage() {}
 
 func (x *PointerPosition) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_session_proto_msgTypes[11]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1210,7 +1210,7 @@ func (x *PointerPosition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PointerPosition.ProtoReflect.Descriptor instead.
 func (*PointerPosition) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_session_proto_rawDescGZIP(), []int{11}
+	return file_mirrorme_v1_session_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *PointerPosition) GetX() float32 {
@@ -1262,7 +1262,7 @@ type PublishState_Retry struct {
 
 func (x *PublishState_Retry) Reset() {
 	*x = PublishState_Retry{}
-	mi := &file_screenshare_v1_session_proto_msgTypes[12]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1274,7 +1274,7 @@ func (x *PublishState_Retry) String() string {
 func (*PublishState_Retry) ProtoMessage() {}
 
 func (x *PublishState_Retry) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_session_proto_msgTypes[12]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1287,7 +1287,7 @@ func (x *PublishState_Retry) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublishState_Retry.ProtoReflect.Descriptor instead.
 func (*PublishState_Retry) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_session_proto_rawDescGZIP(), []int{0, 0}
+	return file_mirrorme_v1_session_proto_rawDescGZIP(), []int{0, 0}
 }
 
 func (x *PublishState_Retry) GetAttempt() int32 {
@@ -1352,7 +1352,7 @@ type PublishState_Preview struct {
 
 func (x *PublishState_Preview) Reset() {
 	*x = PublishState_Preview{}
-	mi := &file_screenshare_v1_session_proto_msgTypes[13]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1364,7 +1364,7 @@ func (x *PublishState_Preview) String() string {
 func (*PublishState_Preview) ProtoMessage() {}
 
 func (x *PublishState_Preview) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_session_proto_msgTypes[13]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1377,7 +1377,7 @@ func (x *PublishState_Preview) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublishState_Preview.ProtoReflect.Descriptor instead.
 func (*PublishState_Preview) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_session_proto_rawDescGZIP(), []int{0, 1}
+	return file_mirrorme_v1_session_proto_rawDescGZIP(), []int{0, 1}
 }
 
 func (x *PublishState_Preview) GetPort() uint32 {
@@ -1469,7 +1469,7 @@ type PublishState_Live struct {
 
 func (x *PublishState_Live) Reset() {
 	*x = PublishState_Live{}
-	mi := &file_screenshare_v1_session_proto_msgTypes[14]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1481,7 +1481,7 @@ func (x *PublishState_Live) String() string {
 func (*PublishState_Live) ProtoMessage() {}
 
 func (x *PublishState_Live) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_session_proto_msgTypes[14]
+	mi := &file_mirrorme_v1_session_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1494,7 +1494,7 @@ func (x *PublishState_Live) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublishState_Live.ProtoReflect.Descriptor instead.
 func (*PublishState_Live) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_session_proto_rawDescGZIP(), []int{0, 2}
+	return file_mirrorme_v1_session_proto_rawDescGZIP(), []int{0, 2}
 }
 
 func (x *PublishState_Live) GetPublish() *PublishSettings {
@@ -1546,17 +1546,17 @@ func (x *PublishState_Live) GetStreamName() string {
 	return ""
 }
 
-var File_screenshare_v1_session_proto protoreflect.FileDescriptor
+var File_mirrorme_v1_session_proto protoreflect.FileDescriptor
 
-const file_screenshare_v1_session_proto_rawDesc = "" +
+const file_mirrorme_v1_session_proto_rawDesc = "" +
 	"\n" +
-	"\x1cscreenshare/v1/session.proto\x12\x0escreenshare.v1\x1a\x1dscreenshare/v1/settings.proto\x1a\x19screenshare/v1/text.proto\"\xe7\x06\n" +
-	"\fPublishState\x125\n" +
-	"\x04live\x18\x01 \x01(\v2!.screenshare.v1.PublishState.LiveR\x04live\x1a\x7f\n" +
+	"\x19mirrorme/v1/session.proto\x12\vmirrorme.v1\x1a\x1amirrorme/v1/settings.proto\x1a\x16mirrorme/v1/text.proto\"\xd5\x06\n" +
+	"\fPublishState\x122\n" +
+	"\x04live\x18\x01 \x01(\v2\x1e.mirrorme.v1.PublishState.LiveR\x04live\x1a|\n" +
 	"\x05Retry\x12\x18\n" +
 	"\aattempt\x18\x01 \x01(\x05R\aattempt\x12\x16\n" +
-	"\x06budget\x18\x02 \x01(\x05R\x06budget\x12*\n" +
-	"\x05cause\x18\x03 \x01(\v2\x14.screenshare.v1.TextR\x05cause\x12\x18\n" +
+	"\x06budget\x18\x02 \x01(\x05R\x06budget\x12'\n" +
+	"\x05cause\x18\x03 \x01(\v2\x11.mirrorme.v1.TextR\x05cause\x12\x18\n" +
 	"\amessage\x18\x04 \x01(\tR\amessage\x1a\xc7\x01\n" +
 	"\aPreview\x12\x12\n" +
 	"\x04port\x18\x01 \x01(\rR\x04port\x12\x12\n" +
@@ -1565,13 +1565,13 @@ const file_screenshare_v1_session_proto_rawDesc = "" +
 	"\rdecode_memory\x18\x04 \x01(\tR\fdecodeMemory\x12#\n" +
 	"\rrender_memory\x18\x05 \x01(\tR\frenderMemory\x12\x18\n" +
 	"\adecoder\x18\x06 \x01(\tR\adecoder\x12\x1a\n" +
-	"\bhardware\x18\a \x01(\bR\bhardware\x1a\xfc\x02\n" +
-	"\x04Live\x129\n" +
-	"\apublish\x18\x01 \x01(\v2\x1f.screenshare.v1.PublishSettingsR\apublish\x123\n" +
-	"\x05relay\x18\x04 \x01(\v2\x1d.screenshare.v1.RelaySettingsR\x05relay\x12\x18\n" +
-	"\apending\x18\x02 \x01(\bR\apending\x128\n" +
-	"\x05retry\x18\x03 \x01(\v2\".screenshare.v1.PublishState.RetryR\x05retry\x12>\n" +
-	"\apreview\x18\x05 \x01(\v2$.screenshare.v1.PublishState.PreviewR\apreview\x12/\n" +
+	"\bhardware\x18\a \x01(\bR\bhardware\x1a\xf0\x02\n" +
+	"\x04Live\x126\n" +
+	"\apublish\x18\x01 \x01(\v2\x1c.mirrorme.v1.PublishSettingsR\apublish\x120\n" +
+	"\x05relay\x18\x04 \x01(\v2\x1a.mirrorme.v1.RelaySettingsR\x05relay\x12\x18\n" +
+	"\apending\x18\x02 \x01(\bR\apending\x125\n" +
+	"\x05retry\x18\x03 \x01(\v2\x1f.mirrorme.v1.PublishState.RetryR\x05retry\x12;\n" +
+	"\apreview\x18\x05 \x01(\v2!.mirrorme.v1.PublishState.PreviewR\apreview\x12/\n" +
 	"\x11rate_ceiling_mbps\x18\x06 \x01(\x01H\x00R\x0frateCeilingMbps\x88\x01\x01\x12\x1f\n" +
 	"\vstream_name\x18\a \x01(\tR\n" +
 	"streamNameB\x14\n" +
@@ -1627,16 +1627,16 @@ const file_screenshare_v1_session_proto_rawDesc = "" +
 	"\r_packets_sentB\x0f\n" +
 	"\r_packets_lostB\x12\n" +
 	"\x10_packets_droppedB\x13\n" +
-	"\x11_frames_discarded\"\xa2\x02\n" +
+	"\x11_frames_discarded\"\x9c\x02\n" +
 	"\tRelayPath\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
 	"\x05ready\x18\x02 \x01(\bR\x05ready\x12\x16\n" +
 	"\x06tracks\x18\x03 \x01(\tR\x06tracks\x12\x16\n" +
 	"\x06format\x18\x04 \x01(\tR\x06format\x12\x18\n" +
 	"\areaders\x18\x05 \x01(\x05R\areaders\x12\x17\n" +
-	"\ain_mbps\x18\x06 \x01(\x01R\x06inMbps\x12@\n" +
-	"\rreader_roster\x18\a \x03(\v2\x1b.screenshare.v1.RelayReaderR\freaderRoster\x126\n" +
-	"\aviewers\x18\t \x03(\v2\x1c.screenshare.v1.ViewerReportR\aviewersJ\x04\b\b\x10\tR\bown_name\"\xa9\x02\n" +
+	"\ain_mbps\x18\x06 \x01(\x01R\x06inMbps\x12=\n" +
+	"\rreader_roster\x18\a \x03(\v2\x18.mirrorme.v1.RelayReaderR\freaderRoster\x123\n" +
+	"\aviewers\x18\t \x03(\v2\x19.mirrorme.v1.ViewerReportR\aviewersJ\x04\b\b\x10\tR\bown_name\"\xa9\x02\n" +
 	"\fViewerReport\x12\x1b\n" +
 	"\tmember_id\x18\x01 \x01(\tR\bmemberId\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x1c\n" +
@@ -1651,39 +1651,39 @@ const file_screenshare_v1_session_proto_rawDesc = "" +
 	"\t_total_msB\f\n" +
 	"\n" +
 	"_shown_fpsB\x0e\n" +
-	"\f_dropped_fps\"\xa2\x01\n" +
+	"\f_dropped_fps\"\x9c\x01\n" +
 	"\vRelayStatus\x12\x1c\n" +
 	"\treachable\x18\x01 \x01(\bR\treachable\x12\x14\n" +
-	"\x05error\x18\x02 \x01(\tR\x05error\x12.\n" +
-	"\afailure\x18\x04 \x01(\v2\x14.screenshare.v1.TextR\afailure\x12/\n" +
-	"\x05paths\x18\x03 \x03(\v2\x19.screenshare.v1.RelayPathR\x05paths\"V\n" +
+	"\x05error\x18\x02 \x01(\tR\x05error\x12+\n" +
+	"\afailure\x18\x04 \x01(\v2\x11.mirrorme.v1.TextR\afailure\x12,\n" +
+	"\x05paths\x18\x03 \x03(\v2\x16.mirrorme.v1.RelayPathR\x05paths\"V\n" +
 	"\tStreamRef\x12\x1f\n" +
 	"\vstream_name\x18\x03 \x01(\tR\n" +
 	"streamName\x12\x1c\n" +
-	"\ttransport\x18\x02 \x01(\tR\ttransportJ\x04\b\x01\x10\x02R\x04name\"o\n" +
+	"\ttransport\x18\x02 \x01(\tR\ttransportJ\x04\b\x01\x10\x02R\x04name\"l\n" +
 	"\n" +
-	"AudioLevel\x121\n" +
-	"\x06stream\x18\x01 \x01(\v2\x19.screenshare.v1.StreamRefR\x06stream\x12\x17\n" +
+	"AudioLevel\x12.\n" +
+	"\x06stream\x18\x01 \x01(\v2\x16.mirrorme.v1.StreamRefR\x06stream\x12\x17\n" +
 	"\apeak_db\x18\x02 \x01(\x01R\x06peakDb\x12\x15\n" +
-	"\x06rms_db\x18\x03 \x01(\x01R\x05rmsDb\"A\n" +
-	"\vAudioLevels\x122\n" +
-	"\x06levels\x18\x01 \x03(\v2\x1a.screenshare.v1.AudioLevelR\x06levels\"\x84\x01\n" +
+	"\x06rms_db\x18\x03 \x01(\x01R\x05rmsDb\">\n" +
+	"\vAudioLevels\x12/\n" +
+	"\x06levels\x18\x01 \x03(\v2\x17.mirrorme.v1.AudioLevelR\x06levels\"\x84\x01\n" +
 	"\n" +
 	"EncodeRate\x12\x17\n" +
 	"\alow_fps\x18\x01 \x01(\x01R\x06lowFps\x12\x19\n" +
 	"\bhigh_fps\x18\x02 \x01(\x01R\ahighFps\x12\x1f\n" +
 	"\vlow_bounded\x18\x03 \x01(\bR\n" +
 	"lowBounded\x12!\n" +
-	"\fhigh_bounded\x18\x04 \x01(\bR\vhighBounded\"\xd8\x02\n" +
-	"\vUpdateState\x121\n" +
-	"\x05stage\x18\x01 \x01(\x0e2\x1b.screenshare.v1.UpdateStageR\x05stage\x12\x18\n" +
+	"\fhigh_bounded\x18\x04 \x01(\bR\vhighBounded\"\xcc\x02\n" +
+	"\vUpdateState\x12.\n" +
+	"\x05stage\x18\x01 \x01(\x0e2\x18.mirrorme.v1.UpdateStageR\x05stage\x12\x18\n" +
 	"\arunning\x18\x02 \x01(\tR\arunning\x12\x16\n" +
 	"\x06latest\x18\x03 \x01(\tR\x06latest\x12\x12\n" +
 	"\x04page\x18\x04 \x01(\tR\x04page\x12\x18\n" +
-	"\apercent\x18\x05 \x01(\x05R\apercent\x122\n" +
-	"\tunchecked\x18\x06 \x01(\v2\x14.screenshare.v1.TextR\tunchecked\x12:\n" +
-	"\runinstallable\x18\a \x01(\v2\x14.screenshare.v1.TextR\runinstallable\x12.\n" +
-	"\afailure\x18\b \x01(\v2\x14.screenshare.v1.TextR\afailure\x12\x16\n" +
+	"\apercent\x18\x05 \x01(\x05R\apercent\x12/\n" +
+	"\tunchecked\x18\x06 \x01(\v2\x11.mirrorme.v1.TextR\tunchecked\x127\n" +
+	"\runinstallable\x18\a \x01(\v2\x11.mirrorme.v1.TextR\runinstallable\x12+\n" +
+	"\afailure\x18\b \x01(\v2\x11.mirrorme.v1.TextR\afailure\x12\x16\n" +
 	"\x06detail\x18\t \x01(\tR\x06detail\"\x88\x01\n" +
 	"\x0fPointerPosition\x12\f\n" +
 	"\x01x\x18\x05 \x01(\x02R\x01x\x12\f\n" +
@@ -1699,60 +1699,60 @@ const file_screenshare_v1_session_proto_rawDesc = "" +
 	"\x16UPDATE_STAGE_AVAILABLE\x10\x05\x12\x19\n" +
 	"\x15UPDATE_STAGE_FETCHING\x10\x06\x12\x16\n" +
 	"\x12UPDATE_STAGE_READY\x10\a\x12\x17\n" +
-	"\x13UPDATE_STAGE_FAILED\x10\bB[ZDbjoernblessin.de/screenshare/api/gen/go/screenshare/v1;screensharev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
+	"\x13UPDATE_STAGE_FAILED\x10\bBRZ;bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
 
 var (
-	file_screenshare_v1_session_proto_rawDescOnce sync.Once
-	file_screenshare_v1_session_proto_rawDescData []byte
+	file_mirrorme_v1_session_proto_rawDescOnce sync.Once
+	file_mirrorme_v1_session_proto_rawDescData []byte
 )
 
-func file_screenshare_v1_session_proto_rawDescGZIP() []byte {
-	file_screenshare_v1_session_proto_rawDescOnce.Do(func() {
-		file_screenshare_v1_session_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_screenshare_v1_session_proto_rawDesc), len(file_screenshare_v1_session_proto_rawDesc)))
+func file_mirrorme_v1_session_proto_rawDescGZIP() []byte {
+	file_mirrorme_v1_session_proto_rawDescOnce.Do(func() {
+		file_mirrorme_v1_session_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_mirrorme_v1_session_proto_rawDesc), len(file_mirrorme_v1_session_proto_rawDesc)))
 	})
-	return file_screenshare_v1_session_proto_rawDescData
+	return file_mirrorme_v1_session_proto_rawDescData
 }
 
-var file_screenshare_v1_session_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_screenshare_v1_session_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
-var file_screenshare_v1_session_proto_goTypes = []any{
-	(UpdateStage)(0),             // 0: screenshare.v1.UpdateStage
-	(*PublishState)(nil),         // 1: screenshare.v1.PublishState
-	(*PublishStats)(nil),         // 2: screenshare.v1.PublishStats
-	(*RelayReader)(nil),          // 3: screenshare.v1.RelayReader
-	(*RelayPath)(nil),            // 4: screenshare.v1.RelayPath
-	(*ViewerReport)(nil),         // 5: screenshare.v1.ViewerReport
-	(*RelayStatus)(nil),          // 6: screenshare.v1.RelayStatus
-	(*StreamRef)(nil),            // 7: screenshare.v1.StreamRef
-	(*AudioLevel)(nil),           // 8: screenshare.v1.AudioLevel
-	(*AudioLevels)(nil),          // 9: screenshare.v1.AudioLevels
-	(*EncodeRate)(nil),           // 10: screenshare.v1.EncodeRate
-	(*UpdateState)(nil),          // 11: screenshare.v1.UpdateState
-	(*PointerPosition)(nil),      // 12: screenshare.v1.PointerPosition
-	(*PublishState_Retry)(nil),   // 13: screenshare.v1.PublishState.Retry
-	(*PublishState_Preview)(nil), // 14: screenshare.v1.PublishState.Preview
-	(*PublishState_Live)(nil),    // 15: screenshare.v1.PublishState.Live
-	(*Text)(nil),                 // 16: screenshare.v1.Text
-	(*PublishSettings)(nil),      // 17: screenshare.v1.PublishSettings
-	(*RelaySettings)(nil),        // 18: screenshare.v1.RelaySettings
+var file_mirrorme_v1_session_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_mirrorme_v1_session_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_mirrorme_v1_session_proto_goTypes = []any{
+	(UpdateStage)(0),             // 0: mirrorme.v1.UpdateStage
+	(*PublishState)(nil),         // 1: mirrorme.v1.PublishState
+	(*PublishStats)(nil),         // 2: mirrorme.v1.PublishStats
+	(*RelayReader)(nil),          // 3: mirrorme.v1.RelayReader
+	(*RelayPath)(nil),            // 4: mirrorme.v1.RelayPath
+	(*ViewerReport)(nil),         // 5: mirrorme.v1.ViewerReport
+	(*RelayStatus)(nil),          // 6: mirrorme.v1.RelayStatus
+	(*StreamRef)(nil),            // 7: mirrorme.v1.StreamRef
+	(*AudioLevel)(nil),           // 8: mirrorme.v1.AudioLevel
+	(*AudioLevels)(nil),          // 9: mirrorme.v1.AudioLevels
+	(*EncodeRate)(nil),           // 10: mirrorme.v1.EncodeRate
+	(*UpdateState)(nil),          // 11: mirrorme.v1.UpdateState
+	(*PointerPosition)(nil),      // 12: mirrorme.v1.PointerPosition
+	(*PublishState_Retry)(nil),   // 13: mirrorme.v1.PublishState.Retry
+	(*PublishState_Preview)(nil), // 14: mirrorme.v1.PublishState.Preview
+	(*PublishState_Live)(nil),    // 15: mirrorme.v1.PublishState.Live
+	(*Text)(nil),                 // 16: mirrorme.v1.Text
+	(*PublishSettings)(nil),      // 17: mirrorme.v1.PublishSettings
+	(*RelaySettings)(nil),        // 18: mirrorme.v1.RelaySettings
 }
-var file_screenshare_v1_session_proto_depIdxs = []int32{
-	15, // 0: screenshare.v1.PublishState.live:type_name -> screenshare.v1.PublishState.Live
-	3,  // 1: screenshare.v1.RelayPath.reader_roster:type_name -> screenshare.v1.RelayReader
-	5,  // 2: screenshare.v1.RelayPath.viewers:type_name -> screenshare.v1.ViewerReport
-	16, // 3: screenshare.v1.RelayStatus.failure:type_name -> screenshare.v1.Text
-	4,  // 4: screenshare.v1.RelayStatus.paths:type_name -> screenshare.v1.RelayPath
-	7,  // 5: screenshare.v1.AudioLevel.stream:type_name -> screenshare.v1.StreamRef
-	8,  // 6: screenshare.v1.AudioLevels.levels:type_name -> screenshare.v1.AudioLevel
-	0,  // 7: screenshare.v1.UpdateState.stage:type_name -> screenshare.v1.UpdateStage
-	16, // 8: screenshare.v1.UpdateState.unchecked:type_name -> screenshare.v1.Text
-	16, // 9: screenshare.v1.UpdateState.uninstallable:type_name -> screenshare.v1.Text
-	16, // 10: screenshare.v1.UpdateState.failure:type_name -> screenshare.v1.Text
-	16, // 11: screenshare.v1.PublishState.Retry.cause:type_name -> screenshare.v1.Text
-	17, // 12: screenshare.v1.PublishState.Live.publish:type_name -> screenshare.v1.PublishSettings
-	18, // 13: screenshare.v1.PublishState.Live.relay:type_name -> screenshare.v1.RelaySettings
-	13, // 14: screenshare.v1.PublishState.Live.retry:type_name -> screenshare.v1.PublishState.Retry
-	14, // 15: screenshare.v1.PublishState.Live.preview:type_name -> screenshare.v1.PublishState.Preview
+var file_mirrorme_v1_session_proto_depIdxs = []int32{
+	15, // 0: mirrorme.v1.PublishState.live:type_name -> mirrorme.v1.PublishState.Live
+	3,  // 1: mirrorme.v1.RelayPath.reader_roster:type_name -> mirrorme.v1.RelayReader
+	5,  // 2: mirrorme.v1.RelayPath.viewers:type_name -> mirrorme.v1.ViewerReport
+	16, // 3: mirrorme.v1.RelayStatus.failure:type_name -> mirrorme.v1.Text
+	4,  // 4: mirrorme.v1.RelayStatus.paths:type_name -> mirrorme.v1.RelayPath
+	7,  // 5: mirrorme.v1.AudioLevel.stream:type_name -> mirrorme.v1.StreamRef
+	8,  // 6: mirrorme.v1.AudioLevels.levels:type_name -> mirrorme.v1.AudioLevel
+	0,  // 7: mirrorme.v1.UpdateState.stage:type_name -> mirrorme.v1.UpdateStage
+	16, // 8: mirrorme.v1.UpdateState.unchecked:type_name -> mirrorme.v1.Text
+	16, // 9: mirrorme.v1.UpdateState.uninstallable:type_name -> mirrorme.v1.Text
+	16, // 10: mirrorme.v1.UpdateState.failure:type_name -> mirrorme.v1.Text
+	16, // 11: mirrorme.v1.PublishState.Retry.cause:type_name -> mirrorme.v1.Text
+	17, // 12: mirrorme.v1.PublishState.Live.publish:type_name -> mirrorme.v1.PublishSettings
+	18, // 13: mirrorme.v1.PublishState.Live.relay:type_name -> mirrorme.v1.RelaySettings
+	13, // 14: mirrorme.v1.PublishState.Live.retry:type_name -> mirrorme.v1.PublishState.Retry
+	14, // 15: mirrorme.v1.PublishState.Live.preview:type_name -> mirrorme.v1.PublishState.Preview
 	16, // [16:16] is the sub-list for method output_type
 	16, // [16:16] is the sub-list for method input_type
 	16, // [16:16] is the sub-list for extension type_name
@@ -1760,33 +1760,33 @@ var file_screenshare_v1_session_proto_depIdxs = []int32{
 	0,  // [0:16] is the sub-list for field type_name
 }
 
-func init() { file_screenshare_v1_session_proto_init() }
-func file_screenshare_v1_session_proto_init() {
-	if File_screenshare_v1_session_proto != nil {
+func init() { file_mirrorme_v1_session_proto_init() }
+func file_mirrorme_v1_session_proto_init() {
+	if File_mirrorme_v1_session_proto != nil {
 		return
 	}
-	file_screenshare_v1_settings_proto_init()
-	file_screenshare_v1_text_proto_init()
-	file_screenshare_v1_session_proto_msgTypes[1].OneofWrappers = []any{}
-	file_screenshare_v1_session_proto_msgTypes[2].OneofWrappers = []any{}
-	file_screenshare_v1_session_proto_msgTypes[4].OneofWrappers = []any{}
-	file_screenshare_v1_session_proto_msgTypes[14].OneofWrappers = []any{}
+	file_mirrorme_v1_settings_proto_init()
+	file_mirrorme_v1_text_proto_init()
+	file_mirrorme_v1_session_proto_msgTypes[1].OneofWrappers = []any{}
+	file_mirrorme_v1_session_proto_msgTypes[2].OneofWrappers = []any{}
+	file_mirrorme_v1_session_proto_msgTypes[4].OneofWrappers = []any{}
+	file_mirrorme_v1_session_proto_msgTypes[14].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_screenshare_v1_session_proto_rawDesc), len(file_screenshare_v1_session_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mirrorme_v1_session_proto_rawDesc), len(file_mirrorme_v1_session_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_screenshare_v1_session_proto_goTypes,
-		DependencyIndexes: file_screenshare_v1_session_proto_depIdxs,
-		EnumInfos:         file_screenshare_v1_session_proto_enumTypes,
-		MessageInfos:      file_screenshare_v1_session_proto_msgTypes,
+		GoTypes:           file_mirrorme_v1_session_proto_goTypes,
+		DependencyIndexes: file_mirrorme_v1_session_proto_depIdxs,
+		EnumInfos:         file_mirrorme_v1_session_proto_enumTypes,
+		MessageInfos:      file_mirrorme_v1_session_proto_msgTypes,
 	}.Build()
-	File_screenshare_v1_session_proto = out.File
-	file_screenshare_v1_session_proto_goTypes = nil
-	file_screenshare_v1_session_proto_depIdxs = nil
+	File_mirrorme_v1_session_proto = out.File
+	file_mirrorme_v1_session_proto_goTypes = nil
+	file_mirrorme_v1_session_proto_depIdxs = nil
 }

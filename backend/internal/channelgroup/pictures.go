@@ -3,7 +3,7 @@ package channelgroup
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/groupclient"
+	"bjoernblessin.de/mirrorme/internal/groupclient"
 )
 
 // A member id and a Discord account meet here and nowhere else.

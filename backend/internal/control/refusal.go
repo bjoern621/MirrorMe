@@ -8,7 +8,7 @@ import (
 
 // A backend refusal the request earned, as against the machine's state.
 //
-// The contract (api/proto/screenshare/v1/control.proto) splits them:
+// The contract (api/proto/mirrorme/v1/control.proto) splits them:
 // INVALID_ARGUMENT for a request naming something absent from this build or this machine,
 // FAILED_PRECONDITION for one whose arguments are all real and whose moment is wrong.
 // Both arrive here as an error from one method, so the type carries the difference.

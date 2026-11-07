@@ -1,9 +1,9 @@
 package form
 
 import (
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/receive"
 )
 
 // renderChainReason states why this machine cannot render through a chain, nil for one it can.
@@ -18,7 +18,7 @@ import (
 // It is a settings file naming a chain this build dropped,
 // which the repair moves off on the same resolve.
 // Refusing it here would grey an entry no list offers.
-func (av availability) renderChainReason(name string) *screensharev1.Text {
+func (av availability) renderChainReason(name string) *mirrormev1.Text {
 	for _, c := range receive.Chains() {
 		if c.Name != name || c.Available {
 			continue

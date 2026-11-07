@@ -7,7 +7,7 @@ import (
 	"io"
 	"strings"
 
-	"bjoernblessin.de/screenshare/internal/qa"
+	"bjoernblessin.de/mirrorme/internal/qa"
 )
 
 // item names a check that needs a person at the running app.

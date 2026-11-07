@@ -11,12 +11,12 @@ import (
 	"sync"
 	"sync/atomic"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/ffmpeg"
+	"bjoernblessin.de/mirrorme/internal/ffmpeg"
 )
 
 // superviseConfig launches one child process for an engine that is not ffmpeg.
@@ -108,7 +108,7 @@ func supervise(cfg superviseConfig) (Handle, error) {
 
 	if err := cmd.Start(); err != nil {
 		logFile.Close()
-		return nil, text.Because(err, screensharev1.TextCode_TEXT_CODE_PROGRAM_UNSTARTED, text.Program(filepath.Base(cfg.exe)))
+		return nil, text.Because(err, mirrormev1.TextCode_TEXT_CODE_PROGRAM_UNSTARTED, text.Program(filepath.Base(cfg.exe)))
 	}
 	// Registered before the goroutine that waits on the child, for the reason KillOnAppExit documents.
 	// A GStreamer pipeline orphans exactly like an ffmpeg one.
@@ -151,7 +151,7 @@ func supervise(cfg superviseConfig) (Handle, error) {
 
 		var reportErr error
 		if !proc.stopped.Load() && waitErr != nil {
-			reportErr = text.Because(waitErr, screensharev1.TextCode_TEXT_CODE_PROGRAM_EXITED, text.Program(filepath.Base(cfg.exe)))
+			reportErr = text.Because(waitErr, mirrormev1.TextCode_TEXT_CODE_PROGRAM_EXITED, text.Program(filepath.Base(cfg.exe)))
 		}
 		if cfg.onExit != nil {
 			cfg.onExit(reportErr, strings.TrimSpace(tail.String()), logPath)

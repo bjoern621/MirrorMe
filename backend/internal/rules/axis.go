@@ -3,7 +3,7 @@ package rules
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 )
 
 // The vocabulary, declared once, so a rule
@@ -76,7 +76,7 @@ type Axis struct {
 	// the reading attached without the rule spelling it.
 	// Every axis carries one, asserted at load:
 	// a fact worth constraining on is worth naming in the refusal.
-	Arg screensharev1.TextArgName
+	Arg mirrormev1.TextArgName
 }
 
 // axes is the vocabulary, in domain order.
@@ -85,28 +85,28 @@ type Axis struct {
 // so one set of facts yields the identifiers in one sequence and a shell reading them meets
 // the subject before the qualifier.
 var axes = []Axis{
-	{Name: AxisCapture, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_CAPTURE},
-	{Name: AxisEngine, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_ENGINE},
-	{Name: AxisCodec, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_CODEC},
-	{Name: AxisFamily, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_FAMILY},
-	{Name: AxisFormat, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_FORMAT},
-	{Name: AxisEncoder, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_ENCODER},
-	{Name: AxisChroma, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_CHROMA},
-	{Name: AxisColorRange, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_COLOR_RANGE},
-	{Name: AxisMode, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_MODE},
-	{Name: AxisTune, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_TUNE},
-	{Name: AxisMemory, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_MEMORY},
-	{Name: AxisPointer, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_CURSOR},
-	{Name: AxisTransport, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_TRANSPORT},
-	{Name: AxisAudioCodec, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_AUDIO_CODEC},
-	{Name: AxisOS, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_OS},
-	{Name: AxisDisplay, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_DISPLAY},
-	{Name: AxisGpuDriver, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_GPU_DRIVER},
-	{Name: AxisGpuModel, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_GPU_MODEL},
-	{Name: AxisBitrateM, Kind: KindNumber, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_BITRATE_MBPS},
-	{Name: AxisCq, Kind: KindNumber, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_CQ},
-	{Name: AxisGop, Kind: KindNumber, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_GOP_LIMIT_FRAMES},
-	{Name: AxisGpuDriverVersion, Kind: KindNumber, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_GPU_DRIVER_VERSION},
+	{Name: AxisCapture, Kind: KindText, Arg: mirrormev1.TextArgName_TEXT_ARG_NAME_CAPTURE},
+	{Name: AxisEngine, Kind: KindText, Arg: mirrormev1.TextArgName_TEXT_ARG_NAME_ENGINE},
+	{Name: AxisCodec, Kind: KindText, Arg: mirrormev1.TextArgName_TEXT_ARG_NAME_CODEC},
+	{Name: AxisFamily, Kind: KindText, Arg: mirrormev1.TextArgName_TEXT_ARG_NAME_FAMILY},
+	{Name: AxisFormat, Kind: KindText, Arg: mirrormev1.TextArgName_TEXT_ARG_NAME_FORMAT},
+	{Name: AxisEncoder, Kind: KindText, Arg: mirrormev1.TextArgName_TEXT_ARG_NAME_ENCODER},
+	{Name: AxisChroma, Kind: KindText, Arg: mirrormev1.TextArgName_TEXT_ARG_NAME_CHROMA},
+	{Name: AxisColorRange, Kind: KindText, Arg: mirrormev1.TextArgName_TEXT_ARG_NAME_COLOR_RANGE},
+	{Name: AxisMode, Kind: KindText, Arg: mirrormev1.TextArgName_TEXT_ARG_NAME_MODE},
+	{Name: AxisTune, Kind: KindText, Arg: mirrormev1.TextArgName_TEXT_ARG_NAME_TUNE},
+	{Name: AxisMemory, Kind: KindText, Arg: mirrormev1.TextArgName_TEXT_ARG_NAME_MEMORY},
+	{Name: AxisPointer, Kind: KindText, Arg: mirrormev1.TextArgName_TEXT_ARG_NAME_CURSOR},
+	{Name: AxisTransport, Kind: KindText, Arg: mirrormev1.TextArgName_TEXT_ARG_NAME_TRANSPORT},
+	{Name: AxisAudioCodec, Kind: KindText, Arg: mirrormev1.TextArgName_TEXT_ARG_NAME_AUDIO_CODEC},
+	{Name: AxisOS, Kind: KindText, Arg: mirrormev1.TextArgName_TEXT_ARG_NAME_OS},
+	{Name: AxisDisplay, Kind: KindText, Arg: mirrormev1.TextArgName_TEXT_ARG_NAME_DISPLAY},
+	{Name: AxisGpuDriver, Kind: KindText, Arg: mirrormev1.TextArgName_TEXT_ARG_NAME_GPU_DRIVER},
+	{Name: AxisGpuModel, Kind: KindText, Arg: mirrormev1.TextArgName_TEXT_ARG_NAME_GPU_MODEL},
+	{Name: AxisBitrateM, Kind: KindNumber, Arg: mirrormev1.TextArgName_TEXT_ARG_NAME_BITRATE_MBPS},
+	{Name: AxisCq, Kind: KindNumber, Arg: mirrormev1.TextArgName_TEXT_ARG_NAME_CQ},
+	{Name: AxisGop, Kind: KindNumber, Arg: mirrormev1.TextArgName_TEXT_ARG_NAME_GOP_LIMIT_FRAMES},
+	{Name: AxisGpuDriverVersion, Kind: KindNumber, Arg: mirrormev1.TextArgName_TEXT_ARG_NAME_GPU_DRIVER_VERSION},
 }
 
 // One vocabulary, so a duplicate name or an axis with nothing to carry its reading
@@ -117,7 +117,7 @@ func init() {
 		assert.Assert(a.Name != "", "an axis carries an identifier")
 		assert.Assert(!seen[a.Name], "an axis is declared once", a.Name)
 		assert.Assert(a.Kind == KindText || a.Kind == KindNumber, "an axis states what it reads as", a.Name)
-		assert.Assert(a.Arg != screensharev1.TextArgName_TEXT_ARG_NAME_UNSPECIFIED,
+		assert.Assert(a.Arg != mirrormev1.TextArgName_TEXT_ARG_NAME_UNSPECIFIED,
 			"an axis names the argument a reason carries it under", a.Name)
 		seen[a.Name] = true
 	}

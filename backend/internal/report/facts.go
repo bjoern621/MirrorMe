@@ -14,9 +14,9 @@ import (
 	"strings"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/ffmpeg"
-	"bjoernblessin.de/screenshare/internal/gpu"
-	"bjoernblessin.de/screenshare/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/ffmpeg"
+	"bjoernblessin.de/mirrorme/internal/gpu"
+	"bjoernblessin.de/mirrorme/internal/platform"
 )
 
 // The two ways a report leaves this machine.

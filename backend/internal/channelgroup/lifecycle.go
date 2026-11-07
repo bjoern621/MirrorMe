@@ -5,7 +5,7 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/voiceroster"
+	"bjoernblessin.de/mirrorme/internal/voiceroster"
 )
 
 // Leave releases every member the leaver's account holds in the channel left,

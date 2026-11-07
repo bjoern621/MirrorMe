@@ -3,12 +3,12 @@ package app
 import (
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/group"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/text"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/group"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/text"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // Two readers hold the publish state to one rule: a shell renders "attempt n of m" off the attempt
@@ -77,7 +77,7 @@ func TestARetryCarriesWhyOnEveryAttempt(t *testing.T) {
 	a := &App{retry: &publishRetry{
 		settings: settings.Settings{},
 		attempts: 1,
-		cause:    text.Of(screensharev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED),
+		cause:    text.Of(mirrormev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED),
 		message:  "the relay closed the connection",
 	}}
 
@@ -86,7 +86,7 @@ func TestARetryCarriesWhyOnEveryAttempt(t *testing.T) {
 	if retry == nil {
 		t.Fatal("a pending relaunch carries no retry, want one saying why it is pending")
 	}
-	if got := retry.Cause.GetCode(); got != screensharev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED {
+	if got := retry.Cause.GetCode(); got != mirrormev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED {
 		t.Errorf("a pending relaunch states %v, want the lapsed membership behind it", got)
 	}
 	if retry.Message != "the relay closed the connection" {

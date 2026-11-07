@@ -26,12 +26,12 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/groupsvc"
-	"bjoernblessin.de/screenshare/internal/membership"
-	"bjoernblessin.de/screenshare/internal/metrics"
-	"bjoernblessin.de/screenshare/internal/relay"
-	"bjoernblessin.de/screenshare/internal/reportstore"
-	"bjoernblessin.de/screenshare/internal/token"
+	"bjoernblessin.de/mirrorme/internal/groupsvc"
+	"bjoernblessin.de/mirrorme/internal/membership"
+	"bjoernblessin.de/mirrorme/internal/metrics"
+	"bjoernblessin.de/mirrorme/internal/relay"
+	"bjoernblessin.de/mirrorme/internal/reportstore"
+	"bjoernblessin.de/mirrorme/internal/token"
 )
 
 // version is the build stamp every answer names (internal/groupsvc, version.go),

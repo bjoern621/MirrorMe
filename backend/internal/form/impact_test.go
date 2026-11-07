@@ -5,13 +5,13 @@ import (
 	"strconv"
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/transport"
+	"bjoernblessin.de/mirrorme/internal/transport"
 )
 
-func impactTestCodes(o *screensharev1.FieldOption) []screensharev1.TextCode {
-	codes := make([]screensharev1.TextCode, 0, len(o.GetImpacts()))
+func impactTestCodes(o *mirrormev1.FieldOption) []mirrormev1.TextCode {
+	codes := make([]mirrormev1.TextCode, 0, len(o.GetImpacts()))
 	for _, w := range o.GetImpacts() {
 		codes = append(codes, w.GetText().GetCode())
 	}
@@ -22,7 +22,7 @@ func TestAPixelFormatNoHardwareDecodesCarriesTheViewersCost(t *testing.T) {
 	chroma := priceTestField(t, Resolve(estimateTestDeps(), estimateTestStream()), KeyChroma)
 
 	light := impactTestCodes(priceTestOption(t, chroma, "yuv420p"))
-	if !slices.Equal(light, []screensharev1.TextCode{screensharev1.TextCode_TEXT_CODE_DECODES_IN_HARDWARE_EVERYWHERE}) {
+	if !slices.Equal(light, []mirrormev1.TextCode{mirrormev1.TextCode_TEXT_CODE_DECODES_IN_HARDWARE_EVERYWHERE}) {
 		t.Errorf("4:2:0 decodes in hardware everywhere and carries %v", light)
 	}
 	full := priceTestOption(t, chroma, "yuv444p")
@@ -41,7 +41,7 @@ func TestARateAboveTheRefreshCarriesTheRepeatedFrames(t *testing.T) {
 		if rate, _ := strconv.Atoi(o.GetValue()); !o.GetEnabled() || rate <= 60 {
 			continue
 		}
-		if !impactTestHas(o, screensharev1.TextCode_TEXT_CODE_FPS_ABOVE_REFRESH) {
+		if !impactTestHas(o, mirrormev1.TextCode_TEXT_CODE_FPS_ABOVE_REFRESH) {
 			t.Errorf("%s fps sits above the 60 Hz panel and carries %v", o.GetValue(), impactTestCodes(o))
 		}
 	}
@@ -56,7 +56,7 @@ func TestADiagnosticEveryEntryRaisesSitsOnNone(t *testing.T) {
 	form := Resolve(estimateTestDeps(), s)
 
 	for _, o := range priceTestField(t, form, KeyFps).GetOptions() {
-		if impactTestHas(o, screensharev1.TextCode_TEXT_CODE_NO_UPLINK_STATED) {
+		if impactTestHas(o, mirrormev1.TextCode_TEXT_CODE_NO_UPLINK_STATED) {
 			t.Errorf("%s fps carries the missing uplink, which every rate raises alike", o.GetValue())
 		}
 	}
@@ -76,7 +76,7 @@ func TestARuledOutEntryCarriesNoImpact(t *testing.T) {
 	}
 }
 
-func impactTestHas(o *screensharev1.FieldOption, code screensharev1.TextCode) bool {
+func impactTestHas(o *mirrormev1.FieldOption, code mirrormev1.TextCode) bool {
 	for _, w := range o.GetImpacts() {
 		if w.GetText().GetCode() == code {
 			return true
@@ -96,9 +96,9 @@ func TestEachWatchProtocolStatesHowFarBehindItPlays(t *testing.T) {
 			t.Errorf("watch protocol %q has no measured delay", o.GetValue())
 			continue
 		}
-		var got *screensharev1.Diagnostic
+		var got *mirrormev1.Diagnostic
 		for _, w := range o.GetImpacts() {
-			if w.GetText().GetCode() == screensharev1.TextCode_TEXT_CODE_WATCH_DELAY {
+			if w.GetText().GetCode() == mirrormev1.TextCode_TEXT_CODE_WATCH_DELAY {
 				got = w
 			}
 		}

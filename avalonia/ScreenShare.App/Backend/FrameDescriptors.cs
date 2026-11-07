@@ -11,7 +11,7 @@ namespace ScreenShare.App.Backend;
 /// a frame in the backend names something else here, or nothing at all.
 /// <c>SCM_RIGHTS</c> over a Unix socket is the kernel's way to move one, installing an entry in this process's
 /// own table for the same memory, which is why a dmabuf pool announces a socket path where a shared-texture pool
-/// announces a number (<c>api/proto/screenshare/v1/frame.proto</c>, <c>FramePool.fd_socket</c>).
+/// announces a number (<c>api/proto/mirrorme/v1/frame.proto</c>, <c>FramePool.fd_socket</c>).
 ///
 /// <b>Reads and does not import.</b> What the descriptors become on the GPU belongs to the control that draws;
 /// this is the transport, beside the channel that named the socket.

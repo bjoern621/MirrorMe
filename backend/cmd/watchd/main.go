@@ -15,8 +15,8 @@ import (
 
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/token"
-	"bjoernblessin.de/screenshare/internal/watchsvc"
+	"bjoernblessin.de/mirrorme/internal/token"
+	"bjoernblessin.de/mirrorme/internal/watchsvc"
 )
 
 // version is the build stamp every answer names (internal/serving).

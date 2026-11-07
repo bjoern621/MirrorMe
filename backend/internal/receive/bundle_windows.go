@@ -7,7 +7,7 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/gstbundle"
+	"bjoernblessin.de/mirrorme/internal/gstbundle"
 )
 
 // useBundledPlugins aims this process's GStreamer and GLib at what ships beside the binary:

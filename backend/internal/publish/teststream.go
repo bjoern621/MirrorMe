@@ -3,14 +3,14 @@ package publish
 import (
 	"fmt"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/transport"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/transport"
 )
 
 // One gst-launch-1.0 process per test stream, encoding a videotestsrc pattern into the relay,
@@ -137,7 +137,7 @@ func BuildTestStreamArgs(s settings.Settings, name string, surface TestSurface) 
 	}
 	sink, ok := transport.GstSink(s)
 	if !ok {
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(EngineGst), text.Transport(s.Publish.Transport))
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(EngineGst), text.Transport(s.Publish.Transport))
 	}
 
 	args := []string{

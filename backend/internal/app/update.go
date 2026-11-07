@@ -6,8 +6,8 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/update"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/update"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // What this install knows about the release published beside it (internal/update).

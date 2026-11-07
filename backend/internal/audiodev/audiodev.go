@@ -34,7 +34,7 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/platform"
 )
 
 // SeedWait bounds the first read alone.

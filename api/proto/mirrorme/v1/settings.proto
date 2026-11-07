@@ -1,14 +1,14 @@
 syntax = "proto3";
 
-// The screen-sharing control plane, version 1.
+// The MirrorMe control plane, version 1.
 //
 // Everything a shell needs to draw the product and to act on it crosses this package.
 // A shell holds no domain knowledge of its own:
 // it draws what these messages describe and calls the methods control.proto declares
 // (docs/ipc-api.md).
-package screenshare.v1;
+package mirrorme.v1;
 
-option go_package = "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1;screensharev1";
+option go_package = "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1";
 option csharp_namespace = "ScreenShare.Api.V1";
 
 // Settings is every user-controllable aspect of the product,

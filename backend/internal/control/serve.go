@@ -28,7 +28,7 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 )
 
 // stopGrace is what a call in flight has when the service stops, before the connections are cut.
@@ -78,19 +78,19 @@ func Serve(listener net.Listener, srv *Server) *Service {
 	assert.IsNotNil(srv, "a control service serves a server")
 
 	server := grpc.NewServer()
-	screensharev1.RegisterControlServiceServer(server, srv)
+	mirrormev1.RegisterControlServiceServer(server, srv)
 	// The frame channel rides the same socket,
 	// so framing, versioning and cancellation are not reinvented for a stream of handle metadata.
 	// The boundary rule holds across it: one service carries control and description,
 	// the other carries handles, and neither carries pixels (docs/ipc-api.md).
-	screensharev1.RegisterFrameServiceServer(server, NewFrames(srv.backend))
+	mirrormev1.RegisterFrameServiceServer(server, NewFrames(srv.backend))
 
 	service := &Service{server: server, endpoint: listener.Addr().String()}
 
 	go func() {
 		logger.Infof("control: serving %s and %s on %s",
-			screensharev1.ControlService_ServiceDesc.ServiceName,
-			screensharev1.FrameService_ServiceDesc.ServiceName,
+			mirrormev1.ControlService_ServiceDesc.ServiceName,
+			mirrormev1.FrameService_ServiceDesc.ServiceName,
 			service.endpoint)
 		// A stopped server ends its accept loop with no error,
 		// so anything arriving here is the listener itself failing.

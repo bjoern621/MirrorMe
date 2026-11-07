@@ -11,8 +11,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
@@ -59,7 +59,7 @@ func MeasureUplink(ctx context.Context) (float64, error) {
 
 	req, err := http.NewRequestWithContext(httptrace.WithClientTrace(ctx, trace), http.MethodPost, uploadURL, bytes.NewReader(payload))
 	if err != nil {
-		return 0, text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(uploadURL))
+		return 0, text.Because(err, mirrormev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(uploadURL))
 	}
 	req.Header.Set("Content-Type", "application/octet-stream")
 	req.ContentLength = int64(len(payload))
@@ -67,7 +67,7 @@ func MeasureUplink(ctx context.Context) (float64, error) {
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		logger.Warnf("uplink probe failed: %v", err)
-		return 0, text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNANSWERED, text.Address(uploadURL))
+		return 0, text.Because(err, mirrormev1.TextCode_TEXT_CODE_ADDRESS_UNANSWERED, text.Address(uploadURL))
 	}
 	defer resp.Body.Close()
 	_, _ = io.Copy(io.Discard, resp.Body) // drained so the connection stays reusable
@@ -76,12 +76,12 @@ func MeasureUplink(ctx context.Context) (float64, error) {
 	// the payload.
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		logger.Warnf("uplink probe rejected: %s", resp.Status)
-		return 0, text.Because(errors.New(resp.Status), screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWERED, text.Address(uploadURL))
+		return 0, text.Because(errors.New(resp.Status), mirrormev1.TextCode_TEXT_CODE_ADDRESS_ANSWERED, text.Address(uploadURL))
 	}
 
 	start, end := bodyStart.Load(), bodyEnd.Load()
 	if start == 0 || end <= start {
-		return 0, text.Fail(screensharev1.TextCode_TEXT_CODE_MEASURE_HAS_NO_TIME)
+		return 0, text.Fail(mirrormev1.TextCode_TEXT_CODE_MEASURE_HAS_NO_TIME)
 	}
 	elapsed := time.Duration(end - start).Seconds()
 

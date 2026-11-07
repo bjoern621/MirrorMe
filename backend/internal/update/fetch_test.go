@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/release"
+	"bjoernblessin.de/mirrorme/internal/release"
 )
 
 // The asset is named after the version and the release after the tag,

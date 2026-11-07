@@ -8,13 +8,13 @@ import (
 	"path/filepath"
 	"time"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/ffmpeg"
-	"bjoernblessin.de/screenshare/internal/gstbundle"
+	"bjoernblessin.de/mirrorme/internal/ffmpeg"
+	"bjoernblessin.de/mirrorme/internal/gstbundle"
 )
 
 // Bringing the host up.
@@ -86,7 +86,7 @@ func (c *Client) ensure() error {
 func (c *Client) spawn() error {
 	exe, err := os.Executable()
 	if err != nil {
-		return text.Because(err, screensharev1.TextCode_TEXT_CODE_PROGRAM_MISSING, text.Program(Subcommand))
+		return text.Because(err, mirrormev1.TextCode_TEXT_CODE_PROGRAM_MISSING, text.Program(Subcommand))
 	}
 
 	dir, err := os.MkdirTemp(socketRoot(), "screenshare-decode-")
@@ -118,7 +118,7 @@ func (c *Client) spawn() error {
 	if err := cmd.Start(); err != nil {
 		logFile.Close()
 		os.RemoveAll(dir)
-		return text.Because(err, screensharev1.TextCode_TEXT_CODE_PROGRAM_UNSTARTED, text.Program(Subcommand))
+		return text.Because(err, mirrormev1.TextCode_TEXT_CODE_PROGRAM_UNSTARTED, text.Program(Subcommand))
 	}
 	// A host outliving the backend holds the GPU and the frame sockets with nothing driving it.
 	ffmpeg.KillOnAppExit(cmd)
@@ -140,13 +140,13 @@ func (c *Client) spawn() error {
 	ctrl, err := c.dialWithin(connControl, dialTimeout)
 	if err != nil {
 		cmd.Process.Kill()
-		return text.Because(err, screensharev1.TextCode_TEXT_CODE_DECODE_HOST_UNANSWERED)
+		return text.Because(err, mirrormev1.TextCode_TEXT_CODE_DECODE_HOST_UNANSWERED)
 	}
 	lifecycle, err := c.dial(connLifecycle)
 	if err != nil {
 		ctrl.Close()
 		cmd.Process.Kill()
-		return text.Because(err, screensharev1.TextCode_TEXT_CODE_DECODE_HOST_UNANSWERED)
+		return text.Because(err, mirrormev1.TextCode_TEXT_CODE_DECODE_HOST_UNANSWERED)
 	}
 
 	c.mu.Lock()

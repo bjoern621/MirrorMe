@@ -17,24 +17,24 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/display"
-	"bjoernblessin.de/screenshare/internal/encoderate"
-	"bjoernblessin.de/screenshare/internal/encoders"
-	"bjoernblessin.de/screenshare/internal/events"
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/pointer"
-	"bjoernblessin.de/screenshare/internal/portal"
-	"bjoernblessin.de/screenshare/internal/reach"
-	"bjoernblessin.de/screenshare/internal/receive"
-	"bjoernblessin.de/screenshare/internal/relay"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/timeline"
-	"bjoernblessin.de/screenshare/internal/update"
-	"bjoernblessin.de/screenshare/internal/window"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/display"
+	"bjoernblessin.de/mirrorme/internal/encoderate"
+	"bjoernblessin.de/mirrorme/internal/encoders"
+	"bjoernblessin.de/mirrorme/internal/events"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/pointer"
+	"bjoernblessin.de/mirrorme/internal/portal"
+	"bjoernblessin.de/mirrorme/internal/reach"
+	"bjoernblessin.de/mirrorme/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/relay"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/timeline"
+	"bjoernblessin.de/mirrorme/internal/update"
+	"bjoernblessin.de/mirrorme/internal/window"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // Backend is everything the service reaches to answer a read or run an effect.
@@ -52,7 +52,7 @@ type Backend interface {
 	// Settings is what the backend holds, and the draft a form starts from.
 	Settings() settings.Settings
 	// StoreNotice says why the persisted settings could not be restored, nil where they were.
-	StoreNotice() *screensharev1.Text
+	StoreNotice() *mirrormev1.Text
 	Monitors() []display.Monitor
 	Windows() []window.Window
 	// Platform names the OS and, on Linux, the display server.
@@ -274,7 +274,7 @@ const (
 // Every answer is read through to the backend, the tables or the broker on the call that asks,
 // so two copies of one fact never drift apart.
 type Server struct {
-	screensharev1.UnimplementedControlServiceServer
+	mirrormev1.UnimplementedControlServiceServer
 
 	backend Backend
 	events  *events.Broker

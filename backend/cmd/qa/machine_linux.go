@@ -7,8 +7,8 @@ import (
 	"regexp"
 	"strings"
 
-	"bjoernblessin.de/screenshare/internal/gpu"
-	"bjoernblessin.de/screenshare/internal/qa"
+	"bjoernblessin.de/mirrorme/internal/gpu"
+	"bjoernblessin.de/mirrorme/internal/qa"
 )
 
 func platform() qa.Machine {

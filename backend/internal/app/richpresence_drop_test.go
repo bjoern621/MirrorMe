@@ -3,8 +3,8 @@ package app
 import (
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/discordrpc"
-	"bjoernblessin.de/screenshare/internal/group"
+	"bjoernblessin.de/mirrorme/internal/discordrpc"
+	"bjoernblessin.de/mirrorme/internal/group"
 )
 
 // What takes the activity off a profile, one test per way it ends.

@@ -4,13 +4,13 @@ import (
 	"slices"
 	"strconv"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // gstRates carries the rate-control figures as the element property values they are spelled in:
@@ -141,11 +141,11 @@ var gstLiveDelay = map[string][]string{
 func gstEncoder(s settings.Settings, gop int, memory string, device capabilities.Device) (encoder []string, link []string, err error) {
 	gst, ok := gstCodecs[s.Publish.Codec()]
 	if !ok {
-		return nil, nil, text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(EngineGst), text.Codec(s.Publish.Codec()))
+		return nil, nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(EngineGst), text.Codec(s.Publish.Codec()))
 	}
 	c, ok := capabilities.Get(s.Publish.Codec())
 	if !ok {
-		return nil, nil, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(s.Publish.Codec()))
+		return nil, nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(s.Publish.Codec()))
 	}
 	if err := gstEncoderRefusal(s, c, gst); err != nil {
 		return nil, nil, err

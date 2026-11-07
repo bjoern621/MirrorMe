@@ -5,12 +5,12 @@ import (
 	"strings"
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/text/texttest"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/text/texttest"
 )
 
 // The second track is mixed from a list, and that list decides the branch's shape: one chain per
@@ -218,7 +218,7 @@ func TestAnApplicationNamingNoProgramIsRefused(t *testing.T) {
 	if err == nil {
 		t.Fatalf("an application naming no program built %v, want AUDIO_DEVICE_UNNAMED", branch)
 	}
-	if got := texttest.Code(err); got != screensharev1.TextCode_TEXT_CODE_AUDIO_DEVICE_UNNAMED {
+	if got := texttest.Code(err); got != mirrormev1.TextCode_TEXT_CODE_AUDIO_DEVICE_UNNAMED {
 		t.Errorf("an application naming no program answered %v, want AUDIO_DEVICE_UNNAMED", got)
 	}
 }

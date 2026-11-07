@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/platform"
 )
 
 // The enumeration is the one part of the audio list touching the machine,

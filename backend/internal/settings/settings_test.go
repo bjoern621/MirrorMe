@@ -8,10 +8,10 @@ import (
 	"strings"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/gpupath"
-	"bjoernblessin.de/screenshare/internal/group"
-	"bjoernblessin.de/screenshare/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/gpupath"
+	"bjoernblessin.de/mirrorme/internal/group"
+	"bjoernblessin.de/mirrorme/internal/platform"
 )
 
 // isolateConfig points os.UserConfigDir at a fresh temp directory.
@@ -705,7 +705,7 @@ func TestTheSrtPassphraseFollowsTheGroupKey(t *testing.T) {
 
 // A burst ceiling of zero is an answer and not an absence: the encode bounded by nothing,
 // which the form offers as an entry of its own beside the ceiling's own band
-// (api/proto/screenshare/v1/form.proto, CONTROL_KIND_NUMBER_SELECT).
+// (api/proto/mirrorme/v1/form.proto, CONTROL_KIND_NUMBER_SELECT).
 // A store that replaced it with a default would take that answer back on the next start.
 func TestAnUncappedBurstSurvivesTheStore(t *testing.T) {
 	isolateConfig(t)

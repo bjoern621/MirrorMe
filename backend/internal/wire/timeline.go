@@ -3,14 +3,14 @@ package wire
 import (
 	"time"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/timeline"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/timeline"
 )
 
 // StreamTimeline puts the judged run in the contract's shape, for the read and the event alike.
-func StreamTimeline(s timeline.Snapshot) *screensharev1.StreamTimeline {
-	return &screensharev1.StreamTimeline{
-		Verdict: &screensharev1.StreamVerdict{
+func StreamTimeline(s timeline.Snapshot) *mirrormev1.StreamTimeline {
+	return &mirrormev1.StreamTimeline{
+		Verdict: &mirrormev1.StreamVerdict{
 			Level:   s.Level,
 			Cause:   s.Cause,
 			Message: s.Message,
@@ -21,9 +21,9 @@ func StreamTimeline(s timeline.Snapshot) *screensharev1.StreamTimeline {
 }
 
 // StreamTimelineEvent announces the judged run on every change.
-func StreamTimelineEvent(s timeline.Snapshot) *screensharev1.Event {
-	return &screensharev1.Event{
-		Payload: &screensharev1.Event_StreamTimeline{StreamTimeline: StreamTimeline(s)},
+func StreamTimelineEvent(s timeline.Snapshot) *mirrormev1.Event {
+	return &mirrormev1.Event{
+		Payload: &mirrormev1.Event_StreamTimeline{StreamTimeline: StreamTimeline(s)},
 	}
 }
 

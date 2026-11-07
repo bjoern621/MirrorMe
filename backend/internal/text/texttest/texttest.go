@@ -3,13 +3,13 @@
 package texttest
 
 import (
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // Code is the code of a failure's outermost statement.
-func Code(err error) screensharev1.TextCode {
+func Code(err error) mirrormev1.TextCode {
 	statement, _ := text.Statement(err)
 	return statement.GetCode()
 }
@@ -32,7 +32,7 @@ func Nums(err error) []int64 {
 	statement, _ := text.Statement(err)
 	var out []int64
 	for _, arg := range statement.GetArgs() {
-		if n, ok := arg.GetValue().(*screensharev1.TextArg_Number); ok {
+		if n, ok := arg.GetValue().(*mirrormev1.TextArg_Number); ok {
 			out = append(out, n.Number)
 		}
 	}

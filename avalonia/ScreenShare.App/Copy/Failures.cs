@@ -5,7 +5,7 @@ namespace ScreenShare.App.Copy;
 
 /// <summary>
 /// Sentence for each failure inside the app that a refusal or a state names as its cause
-/// (api/proto/screenshare/v1/text.proto, "Failures inside the app").
+/// (api/proto/mirrorme/v1/text.proto, "Failures inside the app").
 /// </summary>
 public static class Failures
 {

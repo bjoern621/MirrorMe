@@ -3,13 +3,13 @@ package publish
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/framestamp"
-	"bjoernblessin.de/screenshare/internal/pointermode"
-	"bjoernblessin.de/screenshare/internal/portal"
-	"bjoernblessin.de/screenshare/internal/rules"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/framestamp"
+	"bjoernblessin.de/mirrorme/internal/pointermode"
+	"bjoernblessin.de/mirrorme/internal/portal"
+	"bjoernblessin.de/mirrorme/internal/rules"
 )
 
 // What each capture backend can do with the pointer.
@@ -111,7 +111,7 @@ func pointerRules() []rules.Rule {
 			Verdict: rules.Refuse,
 			Field:   rules.AxisPointer,
 			Values:  rules.OneOf(pointermode.Metadata),
-			Reason:  screensharev1.TextCode_TEXT_CODE_FORMAT_CARRIES_NO_CURSOR_METADATA,
+			Reason:  mirrormev1.TextCode_TEXT_CODE_FORMAT_CARRIES_NO_CURSOR_METADATA,
 		})
 	}
 	return out
@@ -123,13 +123,13 @@ func pointerRules() []rules.Rule {
 // to different places.
 // A capture that cannot draw the pointer is a property of how it reads the screen, and a capture
 // with no position to report is a property of what it reports beside the picture.
-func pointerRefusal(capture, mode string) screensharev1.TextCode {
+func pointerRefusal(capture, mode string) mirrormev1.TextCode {
 	if mode == pointermode.Metadata {
-		return screensharev1.TextCode_TEXT_CODE_CAPTURE_HAS_NO_CURSOR_METADATA
+		return mirrormev1.TextCode_TEXT_CODE_CAPTURE_HAS_NO_CURSOR_METADATA
 	}
 	assert.Assert(capture == "kmsgrab",
 		"the only backend that cannot draw the pointer is the scanout one", capture, mode)
-	return screensharev1.TextCode_TEXT_CODE_KMSGRAB_HAS_NO_CURSOR_PLANE
+	return mirrormev1.TextCode_TEXT_CODE_KMSGRAB_HAS_NO_CURSOR_PLANE
 }
 
 func serves(capture, mode string) bool {

@@ -5,9 +5,9 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
 )
 
 // The rate-control tables state what no Go domain package carries.
@@ -122,7 +122,7 @@ type availabilityEngineRule struct {
 	forwards bool
 	// reason names why an ignored value never reaches the encoder, or what a forwarded one does there.
 	// A code and not a sentence, one per row: each states a fact about one named element.
-	reason screensharev1.TextCode
+	reason mirrormev1.TextCode
 }
 
 // The table decides which knobs a builder never reads,
@@ -133,7 +133,7 @@ type availabilityEngineRule struct {
 func init() {
 	for i, r := range availabilityEngineRules {
 		assert.Assert(r.knob != "", "a departure names the control it governs", i)
-		assert.Assert(r.reason != screensharev1.TextCode_TEXT_CODE_UNSPECIFIED,
+		assert.Assert(r.reason != mirrormev1.TextCode_TEXT_CODE_UNSPECIFIED,
 			"a departure states the fact behind it", r.knob, i)
 		assert.Assert(r.engine == "" || slices.Contains(capabilities.Engines, r.engine),
 			"a departure that names an engine names a publish engine", r.engine, r.knob)
@@ -154,41 +154,41 @@ var availabilityEngineRules = []availabilityEngineRule{
 		engine:   capabilities.EngineFfmpeg,
 		knob:     KeyEffort,
 		families: []string{capabilities.FamilyVaapi},
-		reason:   screensharev1.TextCode_TEXT_CODE_FFMPEG_VAAPI_QUALITY_IS_THE_DRIVERS_SCALE,
+		reason:   mirrormev1.TextCode_TEXT_CODE_FFMPEG_VAAPI_QUALITY_IS_THE_DRIVERS_SCALE,
 	},
 	{
 		knob:   KeyVbvMs,
 		codecs: []string{"librav1e"},
-		reason: screensharev1.TextCode_TEXT_CODE_RAV1E_SIZES_NO_RATE_BUFFER,
+		reason: mirrormev1.TextCode_TEXT_CODE_RAV1E_SIZES_NO_RATE_BUFFER,
 	},
 	{
 		engine: capabilities.EngineGst,
 		knob:   KeyGop,
 		codecs: []string{"librav1e"},
-		reason: screensharev1.TextCode_TEXT_CODE_GST_RAV1ENC_NO_KEYFRAME_INTERVAL,
+		reason: mirrormev1.TextCode_TEXT_CODE_GST_RAV1ENC_NO_KEYFRAME_INTERVAL,
 	},
 	{
 		engine:   capabilities.EngineGst,
 		knob:     KeyVbvMs,
 		families: []string{capabilities.FamilyNvenc},
-		reason:   screensharev1.TextCode_TEXT_CODE_GST_NVENC_NO_RATE_BUFFER,
+		reason:   mirrormev1.TextCode_TEXT_CODE_GST_NVENC_NO_RATE_BUFFER,
 	},
 	{
 		engine:   capabilities.EngineGst,
 		knob:     KeyVbvMs,
 		families: []string{capabilities.FamilyQsv},
-		reason:   screensharev1.TextCode_TEXT_CODE_GST_QSV_NO_RATE_BUFFER,
+		reason:   mirrormev1.TextCode_TEXT_CODE_GST_QSV_NO_RATE_BUFFER,
 	},
 	{
 		knob:     KeyBitrateM,
 		families: []string{capabilities.FamilyVaapi, capabilities.FamilyAmf, capabilities.FamilyVulkan, capabilities.FamilyQsv},
 		modes:    []string{capabilities.ModeAbr},
 		forwards: true,
-		reason:   screensharev1.TextCode_TEXT_CODE_FIXED_FUNCTION_ABR_DERIVES_CEILING,
+		reason:   mirrormev1.TextCode_TEXT_CODE_FIXED_FUNCTION_ABR_DERIVES_CEILING,
 	},
 	{
 		knob:     KeyBframes,
 		families: []string{capabilities.FamilyAmf},
-		reason:   screensharev1.TextCode_TEXT_CODE_AMF_CODES_NO_BFRAMES,
+		reason:   mirrormev1.TextCode_TEXT_CODE_AMF_CODES_NO_BFRAMES,
 	},
 }

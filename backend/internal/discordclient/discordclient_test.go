@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/groupclient"
+	"bjoernblessin.de/mirrorme/internal/groupclient"
 )
 
 // manager answers as discordd would for one linked install in one channel.

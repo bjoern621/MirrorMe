@@ -8,8 +8,8 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/groupsvc"
-	"bjoernblessin.de/screenshare/internal/membership"
+	"bjoernblessin.de/mirrorme/internal/groupsvc"
+	"bjoernblessin.de/mirrorme/internal/membership"
 )
 
 // Groups is the membership one scrape reads.

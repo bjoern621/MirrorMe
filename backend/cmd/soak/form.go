@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
 	"google.golang.org/protobuf/proto"
 
-	v1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	v1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 )
 
 // Fields whose value reaches something outside this process,
@@ -281,7 +281,7 @@ func checkForm(run *session, form *v1.Form, settings *v1.Settings) {
 				}
 				// A number-select accepts its range, the entries being shortcuts rather than the domain,
 				// so a held value off the ladder is ordinary there
-				// (api/proto/screenshare/v1/form.proto, CONTROL_KIND_NUMBER_SELECT).
+				// (api/proto/mirrorme/v1/form.proto, CONTROL_KIND_NUMBER_SELECT).
 				offers := field.GetControl() != v1.ControlKind_CONTROL_KIND_NUMBER_SELECT
 				if offers && len(field.GetOptions()) > 0 && !held && value != "" {
 					run.report.report("form.value_not_offered", "form/unlisted-value/"+key,
@@ -404,7 +404,7 @@ func formDiff(a, b *v1.Form) string {
 }
 
 // refusalLine spells a refusal for the report: its code, then the words beside it.
-func refusalLine(refusal *screensharev1.Refusal) string {
+func refusalLine(refusal *mirrormev1.Refusal) string {
 	if refusal == nil {
 		return ""
 	}

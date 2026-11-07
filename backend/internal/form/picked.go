@@ -4,16 +4,16 @@ import (
 	"slices"
 
 	"bjoernblessin.de/go-utils/util/assert"
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // pick holds what the settings come to with one entry of a control picked and nothing else moved.
 type pick struct {
-	estimate *screensharev1.Estimate
-	impacts  []*screensharev1.Diagnostic
+	estimate *mirrormev1.Estimate
+	impacts  []*mirrormev1.Diagnostic
 }
 
 // pickOptions writes onto each enabled entry of one control what picking it would do:
@@ -23,7 +23,7 @@ type pick struct {
 // a figure or a statement repeated down a list says nothing about the choice it sits beside.
 // Which controls carry either is therefore read off the estimate and the rules rather than listed,
 // so a setting that a rule starts reading marks its entries with nothing here to edit.
-func pickOptions(d Deps, s settings.Settings, key string, options []*screensharev1.FieldOption) {
+func pickOptions(d Deps, s settings.Settings, key string, options []*mirrormev1.FieldOption) {
 	picks := make([]*pick, len(options))
 	for i, o := range options {
 		if o.GetEnabled() {
@@ -40,7 +40,7 @@ func pickOptions(d Deps, s settings.Settings, key string, options []*screenshare
 		if pricesDiffer {
 			o.Estimate = picks[i].estimate
 		}
-		o.Impacts = slices.DeleteFunc(picks[i].impacts, func(w *screensharev1.Diagnostic) bool {
+		o.Impacts = slices.DeleteFunc(picks[i].impacts, func(w *mirrormev1.Diagnostic) bool {
 			return slices.Contains(shared, pickImpactOf(w))
 		})
 	}
@@ -63,7 +63,7 @@ func picked(d Deps, s settings.Settings, key, value string) *pick {
 }
 
 func pickPricesDiffer(picks []*pick) bool {
-	var first *screensharev1.Estimate
+	var first *mirrormev1.Estimate
 	for _, p := range picks {
 		if p == nil || p.estimate == nil {
 			continue
@@ -83,17 +83,17 @@ func pickPricesDiffer(picks []*pick) bool {
 // so an uplink shortfall at 30 fps and at 60 fps count as one statement.
 // A statement in pickFigureClaims keeps its figure, two figures there being two claims.
 type pickImpact struct {
-	code     screensharev1.TextCode
-	severity screensharev1.Severity
+	code     mirrormev1.TextCode
+	severity mirrormev1.Severity
 	anchor   string
 	figure   string
 }
 
 // pickFigureClaims are the statements whose figure is what they claim:
 // "0.4 s behind" and "3.4 s behind" tell two entries apart.
-var pickFigureClaims = []screensharev1.TextCode{watchDelay}
+var pickFigureClaims = []mirrormev1.TextCode{watchDelay}
 
-func pickImpactOf(w *screensharev1.Diagnostic) pickImpact {
+func pickImpactOf(w *mirrormev1.Diagnostic) pickImpact {
 	i := pickImpact{code: w.GetText().GetCode(), severity: w.GetSeverity(), anchor: w.GetFieldKey()}
 	if slices.Contains(pickFigureClaims, i.code) {
 		i.figure = w.GetText().String()

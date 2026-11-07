@@ -5,7 +5,7 @@
 // (docs/ipc-api.md, "Events").
 //
 // The events are the contract's own messages rather than a shape of this package's own.
-// A producer builds a screensharev1.Event and this package decides who receives it and in what order:
+// A producer builds a mirrormev1.Event and this package decides who receives it and in what order:
 // a second state vocabulary between the producer and the wire is the drift the contract removes.
 //
 // Two rules of the contract are structural here.
@@ -24,37 +24,37 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 )
 
 // Kinds lists every event kind, in the order events.proto declares them.
 //
 // A kind is the contract's own enum value, not a string this package spells,
 // so a subscription names something the compiler checked rather than something waiting on a typo.
-var Kinds = []screensharev1.EventKind{
-	screensharev1.EventKind_EVENT_KIND_PUBLISH_STATE,
-	screensharev1.EventKind_EVENT_KIND_PUBLISH_STATS,
-	screensharev1.EventKind_EVENT_KIND_PUBLISH_EXIT,
-	screensharev1.EventKind_EVENT_KIND_RELAY_STATUS,
-	screensharev1.EventKind_EVENT_KIND_VIEWER_STATE,
-	screensharev1.EventKind_EVENT_KIND_VIEWER_EXIT,
-	screensharev1.EventKind_EVENT_KIND_TEST_STREAM_STATE,
-	screensharev1.EventKind_EVENT_KIND_TEST_STREAM_EXIT,
-	screensharev1.EventKind_EVENT_KIND_CATALOG,
-	screensharev1.EventKind_EVENT_KIND_SETTINGS_CHANGED,
-	screensharev1.EventKind_EVENT_KIND_RECEIVE_STATE,
-	screensharev1.EventKind_EVENT_KIND_RECEIVE_EXIT,
-	screensharev1.EventKind_EVENT_KIND_RECEIVE_STATS,
-	screensharev1.EventKind_EVENT_KIND_MONITOR_PREVIEW_STATE,
-	screensharev1.EventKind_EVENT_KIND_MEMBERS_STATE,
-	screensharev1.EventKind_EVENT_KIND_DISCORD_STATE,
-	screensharev1.EventKind_EVENT_KIND_UPDATE_STATE,
-	screensharev1.EventKind_EVENT_KIND_STREAM_TIMELINE,
-	screensharev1.EventKind_EVENT_KIND_SETTINGS,
-	screensharev1.EventKind_EVENT_KIND_PRESETS,
-	screensharev1.EventKind_EVENT_KIND_SHARE_WINDOWS,
-	screensharev1.EventKind_EVENT_KIND_AUDIO_LEVELS,
-	screensharev1.EventKind_EVENT_KIND_POINTER,
+var Kinds = []mirrormev1.EventKind{
+	mirrormev1.EventKind_EVENT_KIND_PUBLISH_STATE,
+	mirrormev1.EventKind_EVENT_KIND_PUBLISH_STATS,
+	mirrormev1.EventKind_EVENT_KIND_PUBLISH_EXIT,
+	mirrormev1.EventKind_EVENT_KIND_RELAY_STATUS,
+	mirrormev1.EventKind_EVENT_KIND_VIEWER_STATE,
+	mirrormev1.EventKind_EVENT_KIND_VIEWER_EXIT,
+	mirrormev1.EventKind_EVENT_KIND_TEST_STREAM_STATE,
+	mirrormev1.EventKind_EVENT_KIND_TEST_STREAM_EXIT,
+	mirrormev1.EventKind_EVENT_KIND_CATALOG,
+	mirrormev1.EventKind_EVENT_KIND_SETTINGS_CHANGED,
+	mirrormev1.EventKind_EVENT_KIND_RECEIVE_STATE,
+	mirrormev1.EventKind_EVENT_KIND_RECEIVE_EXIT,
+	mirrormev1.EventKind_EVENT_KIND_RECEIVE_STATS,
+	mirrormev1.EventKind_EVENT_KIND_MONITOR_PREVIEW_STATE,
+	mirrormev1.EventKind_EVENT_KIND_MEMBERS_STATE,
+	mirrormev1.EventKind_EVENT_KIND_DISCORD_STATE,
+	mirrormev1.EventKind_EVENT_KIND_UPDATE_STATE,
+	mirrormev1.EventKind_EVENT_KIND_STREAM_TIMELINE,
+	mirrormev1.EventKind_EVENT_KIND_SETTINGS,
+	mirrormev1.EventKind_EVENT_KIND_PRESETS,
+	mirrormev1.EventKind_EVENT_KIND_SHARE_WINDOWS,
+	mirrormev1.EventKind_EVENT_KIND_AUDIO_LEVELS,
+	mirrormev1.EventKind_EVENT_KIND_POINTER,
 }
 
 // queueDepth is how many events one subscriber may fall behind by before the oldest is dropped.
@@ -78,10 +78,10 @@ type Broker struct {
 // subscriber is one open Subscribe call.
 type subscriber struct {
 	// kinds is the filter, nil for a subscriber that asked for everything.
-	kinds map[screensharev1.EventKind]bool
+	kinds map[mirrormev1.EventKind]bool
 	// out is buffered to queueDepth and closed by the cancel function alone,
 	// so a send never races a close.
-	out chan *screensharev1.Event
+	out chan *mirrormev1.Event
 	// sequence numbers the events this subscription was sent, from one.
 	//
 	// Per subscriber and not per broker, which makes the number mean what the contract says.
@@ -98,7 +98,7 @@ func New() *Broker {
 	return &Broker{subscribers: map[uint64]*subscriber{}}
 }
 
-func Known(kind screensharev1.EventKind) bool {
+func Known(kind mirrormev1.EventKind) bool {
 	for _, k := range Kinds {
 		if k == kind {
 			return true
@@ -118,10 +118,10 @@ func Known(kind screensharev1.EventKind) bool {
 // so a shell asking for a kind this build has none of learns it at the subscribe.
 // EVENT_KIND_UNSPECIFIED is one of the unknown ones:
 // a request that failed to say what it wanted is not a request for all of it.
-func (b *Broker) Subscribe(kinds []screensharev1.EventKind) (<-chan *screensharev1.Event, func(), error) {
-	var filter map[screensharev1.EventKind]bool
+func (b *Broker) Subscribe(kinds []mirrormev1.EventKind) (<-chan *mirrormev1.Event, func(), error) {
+	var filter map[mirrormev1.EventKind]bool
 	if len(kinds) > 0 {
-		filter = make(map[screensharev1.EventKind]bool, len(kinds))
+		filter = make(map[mirrormev1.EventKind]bool, len(kinds))
 		for _, kind := range kinds {
 			if !Known(kind) {
 				return nil, nil, &UnknownKindError{Kind: kind}
@@ -130,7 +130,7 @@ func (b *Broker) Subscribe(kinds []screensharev1.EventKind) (<-chan *screenshare
 		}
 	}
 
-	sub := &subscriber{kinds: filter, out: make(chan *screensharev1.Event, queueDepth)}
+	sub := &subscriber{kinds: filter, out: make(chan *mirrormev1.Event, queueDepth)}
 
 	b.mu.Lock()
 	b.nextID++
@@ -173,7 +173,7 @@ func (b *Broker) Subscribe(kinds []screensharev1.EventKind) (<-chan *screenshare
 //
 // The clone per subscriber is what keeps the number per reader:
 // one shared message would have every stream writing its own sequence into the same field.
-func (b *Broker) Publish(e *screensharev1.Event) {
+func (b *Broker) Publish(e *mirrormev1.Event) {
 	assert.IsNotNil(e, "an announced change is an event")
 	kind := KindOf(e)
 	assert.Assert(Known(kind), "an announced change names a declared kind", kind.String())
@@ -187,7 +187,7 @@ func (b *Broker) Publish(e *screensharev1.Event) {
 		}
 
 		sub.sequence++
-		event := proto.Clone(e).(*screensharev1.Event)
+		event := proto.Clone(e).(*mirrormev1.Event)
 		event.Sequence = sub.sequence
 		assert.Assert(event.Sequence > 0, "a delivered event is numbered from one", event.Sequence)
 
@@ -221,59 +221,59 @@ func (b *Broker) Publish(e *screensharev1.Event) {
 
 // KindOf reads the kind off the payload the event carries,
 // so no producer states one that disagrees with what it sent.
-func KindOf(e *screensharev1.Event) screensharev1.EventKind {
+func KindOf(e *mirrormev1.Event) mirrormev1.EventKind {
 	assert.IsNotNil(e, "an event kind belongs to an event")
 
 	switch e.GetPayload().(type) {
-	case *screensharev1.Event_PublishState:
-		return screensharev1.EventKind_EVENT_KIND_PUBLISH_STATE
-	case *screensharev1.Event_PublishStats:
-		return screensharev1.EventKind_EVENT_KIND_PUBLISH_STATS
-	case *screensharev1.Event_PublishExit:
-		return screensharev1.EventKind_EVENT_KIND_PUBLISH_EXIT
-	case *screensharev1.Event_RelayStatus:
-		return screensharev1.EventKind_EVENT_KIND_RELAY_STATUS
-	case *screensharev1.Event_ViewerState:
-		return screensharev1.EventKind_EVENT_KIND_VIEWER_STATE
-	case *screensharev1.Event_ViewerExit:
-		return screensharev1.EventKind_EVENT_KIND_VIEWER_EXIT
-	case *screensharev1.Event_TestStreamState:
-		return screensharev1.EventKind_EVENT_KIND_TEST_STREAM_STATE
-	case *screensharev1.Event_TestStreamExit:
-		return screensharev1.EventKind_EVENT_KIND_TEST_STREAM_EXIT
-	case *screensharev1.Event_Catalog:
-		return screensharev1.EventKind_EVENT_KIND_CATALOG
-	case *screensharev1.Event_SettingsChanged:
-		return screensharev1.EventKind_EVENT_KIND_SETTINGS_CHANGED
-	case *screensharev1.Event_ReceiveState:
-		return screensharev1.EventKind_EVENT_KIND_RECEIVE_STATE
-	case *screensharev1.Event_ReceiveExit:
-		return screensharev1.EventKind_EVENT_KIND_RECEIVE_EXIT
-	case *screensharev1.Event_ReceiveStats:
-		return screensharev1.EventKind_EVENT_KIND_RECEIVE_STATS
-	case *screensharev1.Event_MonitorPreviewState:
-		return screensharev1.EventKind_EVENT_KIND_MONITOR_PREVIEW_STATE
-	case *screensharev1.Event_MembersState:
-		return screensharev1.EventKind_EVENT_KIND_MEMBERS_STATE
-	case *screensharev1.Event_DiscordState:
-		return screensharev1.EventKind_EVENT_KIND_DISCORD_STATE
-	case *screensharev1.Event_UpdateState:
-		return screensharev1.EventKind_EVENT_KIND_UPDATE_STATE
-	case *screensharev1.Event_StreamTimeline:
-		return screensharev1.EventKind_EVENT_KIND_STREAM_TIMELINE
-	case *screensharev1.Event_Settings:
-		return screensharev1.EventKind_EVENT_KIND_SETTINGS
-	case *screensharev1.Event_Presets:
-		return screensharev1.EventKind_EVENT_KIND_PRESETS
-	case *screensharev1.Event_ShareWindows:
-		return screensharev1.EventKind_EVENT_KIND_SHARE_WINDOWS
-	case *screensharev1.Event_AudioLevels:
-		return screensharev1.EventKind_EVENT_KIND_AUDIO_LEVELS
-	case *screensharev1.Event_Pointer:
-		return screensharev1.EventKind_EVENT_KIND_POINTER
+	case *mirrormev1.Event_PublishState:
+		return mirrormev1.EventKind_EVENT_KIND_PUBLISH_STATE
+	case *mirrormev1.Event_PublishStats:
+		return mirrormev1.EventKind_EVENT_KIND_PUBLISH_STATS
+	case *mirrormev1.Event_PublishExit:
+		return mirrormev1.EventKind_EVENT_KIND_PUBLISH_EXIT
+	case *mirrormev1.Event_RelayStatus:
+		return mirrormev1.EventKind_EVENT_KIND_RELAY_STATUS
+	case *mirrormev1.Event_ViewerState:
+		return mirrormev1.EventKind_EVENT_KIND_VIEWER_STATE
+	case *mirrormev1.Event_ViewerExit:
+		return mirrormev1.EventKind_EVENT_KIND_VIEWER_EXIT
+	case *mirrormev1.Event_TestStreamState:
+		return mirrormev1.EventKind_EVENT_KIND_TEST_STREAM_STATE
+	case *mirrormev1.Event_TestStreamExit:
+		return mirrormev1.EventKind_EVENT_KIND_TEST_STREAM_EXIT
+	case *mirrormev1.Event_Catalog:
+		return mirrormev1.EventKind_EVENT_KIND_CATALOG
+	case *mirrormev1.Event_SettingsChanged:
+		return mirrormev1.EventKind_EVENT_KIND_SETTINGS_CHANGED
+	case *mirrormev1.Event_ReceiveState:
+		return mirrormev1.EventKind_EVENT_KIND_RECEIVE_STATE
+	case *mirrormev1.Event_ReceiveExit:
+		return mirrormev1.EventKind_EVENT_KIND_RECEIVE_EXIT
+	case *mirrormev1.Event_ReceiveStats:
+		return mirrormev1.EventKind_EVENT_KIND_RECEIVE_STATS
+	case *mirrormev1.Event_MonitorPreviewState:
+		return mirrormev1.EventKind_EVENT_KIND_MONITOR_PREVIEW_STATE
+	case *mirrormev1.Event_MembersState:
+		return mirrormev1.EventKind_EVENT_KIND_MEMBERS_STATE
+	case *mirrormev1.Event_DiscordState:
+		return mirrormev1.EventKind_EVENT_KIND_DISCORD_STATE
+	case *mirrormev1.Event_UpdateState:
+		return mirrormev1.EventKind_EVENT_KIND_UPDATE_STATE
+	case *mirrormev1.Event_StreamTimeline:
+		return mirrormev1.EventKind_EVENT_KIND_STREAM_TIMELINE
+	case *mirrormev1.Event_Settings:
+		return mirrormev1.EventKind_EVENT_KIND_SETTINGS
+	case *mirrormev1.Event_Presets:
+		return mirrormev1.EventKind_EVENT_KIND_PRESETS
+	case *mirrormev1.Event_ShareWindows:
+		return mirrormev1.EventKind_EVENT_KIND_SHARE_WINDOWS
+	case *mirrormev1.Event_AudioLevels:
+		return mirrormev1.EventKind_EVENT_KIND_AUDIO_LEVELS
+	case *mirrormev1.Event_Pointer:
+		return mirrormev1.EventKind_EVENT_KIND_POINTER
 	default:
 		assert.Never("unexpected event payload", e.GetPayload())
-		return screensharev1.EventKind_EVENT_KIND_UNSPECIFIED
+		return mirrormev1.EventKind_EVENT_KIND_UNSPECIFIED
 	}
 }
 
@@ -292,7 +292,7 @@ func KindNames() []string {
 // An Umgebungsfehler rather than a bug in this code:
 // the value came off the wire from a shell that may have been built against another minor version.
 type UnknownKindError struct {
-	Kind screensharev1.EventKind
+	Kind mirrormev1.EventKind
 }
 
 func (e *UnknownKindError) Error() string {

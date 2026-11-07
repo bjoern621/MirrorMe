@@ -12,7 +12,7 @@ public readonly record struct Counter(string Label, string Tip);
 /// Every word of the stats panel: its headings, its rows and the counters of the transport's elements.
 /// Keyed on the identifiers that both sides share:
 /// the contract's field names for a decode's sample, and an element's own names for its counters
-/// (<c>api/proto/screenshare/v1/text.proto</c>).
+/// (<c>api/proto/mirrorme/v1/text.proto</c>).
 /// The leg a decode opened on decides its transport rows: SRT counts a link, RTSP a jitter buffer per track.
 /// </summary>
 public static class Counters

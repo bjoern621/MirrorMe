@@ -8,7 +8,7 @@ import (
 
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/platform"
 )
 
 // pwDumpExe writes the daemon's objects as JSON,

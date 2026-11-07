@@ -21,11 +21,11 @@ import (
 
 	"github.com/go-gst/go-gst/pkg/gst"
 
-	"bjoernblessin.de/screenshare/internal/gstrun"
-	"bjoernblessin.de/screenshare/internal/receive"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/transport"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/gstrun"
+	"bjoernblessin.de/mirrorme/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/transport"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // Every native leg, a real relay in the middle: deploy/mediamtx-groups.yml with its token check and

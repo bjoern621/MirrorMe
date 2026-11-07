@@ -18,9 +18,9 @@ import (
 	"sync"
 	"time"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
-	"bjoernblessin.de/screenshare/internal/watchsvc"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
+	"bjoernblessin.de/mirrorme/internal/watchsvc"
 
 	"bjoernblessin.de/go-utils/util/assert"
 )
@@ -105,9 +105,9 @@ func formatOfTracks(tracks []string) string {
 type Status struct {
 	Reachable bool `json:"reachable"`
 	// Failure states why an unreachable relay is, and Error carries the words beside it.
-	Failure *screensharev1.Text `json:"-"`
-	Error   string              `json:"error,omitempty"`
-	Paths   []Path              `json:"paths"`
+	Failure *mirrormev1.Text `json:"-"`
+	Error   string           `json:"error,omitempty"`
+	Paths   []Path           `json:"paths"`
 	// FromIndex marks a snapshot off the group service's index rather than the relay's own API, what
 	// a member gets on a relay that authenticates it (internal/app, groups.go).
 	//
@@ -190,14 +190,14 @@ func (c *Client) Fetch(host string, apiPort int) Status {
 
 	resp, err := httpClient.Get(url)
 	if err != nil {
-		return Unreachable(text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNANSWERED, text.Address(url)))
+		return Unreachable(text.Because(err, mirrormev1.TextCode_TEXT_CODE_ADDRESS_UNANSWERED, text.Address(url)))
 	}
 	defer resp.Body.Close()
 
 	var list apiPathList
 	err = json.NewDecoder(resp.Body).Decode(&list)
 	if err != nil {
-		return Unreachable(text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(url)))
+		return Unreachable(text.Because(err, mirrormev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(url)))
 	}
 
 	// Per-protocol lists are read before the lock and never under it.

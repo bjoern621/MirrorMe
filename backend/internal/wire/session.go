@@ -3,11 +3,11 @@ package wire
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/encoderate"
-	"bjoernblessin.de/screenshare/internal/ffmpeg"
-	"bjoernblessin.de/screenshare/internal/relay"
-	"bjoernblessin.de/screenshare/internal/settings"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/encoderate"
+	"bjoernblessin.de/mirrorme/internal/ffmpeg"
+	"bjoernblessin.de/mirrorme/internal/relay"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // Two running-state shapes with no owner below this package.
@@ -19,7 +19,7 @@ import (
 // so a home in either would make the other import a package it has no other use for.
 
 // PublishSnapshot is what is publishing, at one instant,
-// and the domain side of screenshare.v1.PublishState.
+// and the domain side of mirrorme.v1.PublishState.
 //
 // It nests the way that message does, which makes the conversion below total.
 // "A running stream has settings", "an attempt belongs to a retry" and "a retry belongs to a stream
@@ -77,7 +77,7 @@ type RetrySnapshot struct {
 	Attempt, Budget int
 	// Cause is this app's statement about what ended the pipeline, nil where nothing here names it.
 	// Message is that pipeline's own last words.
-	Cause   *screensharev1.Text
+	Cause   *mirrormev1.Text
 	Message string
 }
 
@@ -108,15 +108,15 @@ type StreamRef struct{ StreamName, Transport string }
 // in the shape written, so no state is left to reject.
 // An idle snapshot has no settings to contradict, a live one cannot omit them,
 // and an attempt count exists only inside a retry.
-func PublishState(p PublishSnapshot) *screensharev1.PublishState {
+func PublishState(p PublishSnapshot) *mirrormev1.PublishState {
 	if p.Live == nil {
-		return &screensharev1.PublishState{}
+		return &mirrormev1.PublishState{}
 	}
 
 	// The publish and relay groups, and not the viewer one:
 	// the running pipeline was built from those two,
 	// and a live state carrying how this machine watches would claim a render chain built it.
-	live := &screensharev1.PublishState_Live{
+	live := &mirrormev1.PublishState_Live{
 		Publish:         PublishSettings(p.Live.Settings.Publish),
 		Relay:           RelaySettings(p.Live.Settings.Relay),
 		Pending:         p.Live.Pending,
@@ -124,7 +124,7 @@ func PublishState(p PublishSnapshot) *screensharev1.PublishState {
 		StreamName:      p.Live.Settings.StreamName(),
 	}
 	if r := p.Live.Retry; r != nil {
-		live.Retry = &screensharev1.PublishState_Retry{
+		live.Retry = &mirrormev1.PublishState_Retry{
 			Attempt: int32(r.Attempt),
 			Budget:  int32(r.Budget),
 			Cause:   r.Cause,
@@ -132,7 +132,7 @@ func PublishState(p PublishSnapshot) *screensharev1.PublishState {
 		}
 	}
 	if v := p.Live.Preview; v != nil {
-		live.Preview = &screensharev1.PublishState_Preview{
+		live.Preview = &mirrormev1.PublishState_Preview{
 			Port:         uint32(v.Port),
 			Live:         v.Live,
 			Chain:        v.Chain,
@@ -142,7 +142,7 @@ func PublishState(p PublishSnapshot) *screensharev1.PublishState {
 			Hardware:     v.Hardware,
 		}
 	}
-	return &screensharev1.PublishState{Live: live}
+	return &mirrormev1.PublishState{Live: live}
 }
 
 // PublishStats carries one encoder progress sample across.
@@ -155,8 +155,8 @@ func PublishState(p PublishSnapshot) *screensharev1.PublishState {
 // frames the encoder repeated to hold the output rate,
 // and frames discarded, ahead of the encoder or ahead of the relay leg.
 // The frame counts carry no presence, a run that has encoded no frames having encoded zero of them.
-func PublishStats(s ffmpeg.Stats) *screensharev1.PublishStats {
-	out := &screensharev1.PublishStats{
+func PublishStats(s ffmpeg.Stats) *mirrormev1.PublishStats {
+	out := &mirrormev1.PublishStats{
 		FrameCount:       int64(s.Frame),
 		DuplicatedFrames: int64(s.Dup),
 		DroppedFrames:    int64(s.Drop),
@@ -189,14 +189,14 @@ func measured(dst **float64, value float64, missing bool) {
 // An unreachable relay converts to a snapshot and not to a failure:
 // an environment condition the screen has to say something about,
 // and a failed call would leave the shell nothing to say it with.
-func RelayStatus(s relay.Status) *screensharev1.RelayStatus {
-	paths := make([]*screensharev1.RelayPath, 0, len(s.Paths))
+func RelayStatus(s relay.Status) *mirrormev1.RelayStatus {
+	paths := make([]*mirrormev1.RelayPath, 0, len(s.Paths))
 	for _, path := range s.Paths {
 		paths = append(paths, RelayPath(path))
 	}
 
 	assert.Assert(len(paths) == len(s.Paths), "a snapshot carries a path per path the relay reported", len(paths), len(s.Paths))
-	return &screensharev1.RelayStatus{
+	return &mirrormev1.RelayStatus{
 		Reachable: s.Reachable,
 		Failure:   s.Failure,
 		Error:     s.Error,
@@ -211,22 +211,22 @@ func RelayStatus(s relay.Status) *screensharev1.RelayStatus {
 // the relay's own API reads the count and the roster off one array,
 // and the group index answers the count with the roster left at the service
 // (internal/relay, Status.FromIndex).
-func RelayPath(p relay.Path) *screensharev1.RelayPath {
+func RelayPath(p relay.Path) *mirrormev1.RelayPath {
 	assert.Assert(p.Readers >= 0, "a path counts the readers it is serving", p.Readers)
 	assert.Assert(len(p.Roster) == p.Readers || len(p.Roster) == 0,
 		"a path's roster names every reader it counts or none of them", len(p.Roster), p.Readers)
 
-	roster := make([]*screensharev1.RelayReader, 0, len(p.Roster))
+	roster := make([]*mirrormev1.RelayReader, 0, len(p.Roster))
 	for _, reader := range p.Roster {
 		roster = append(roster, RelayReader(reader))
 	}
 
-	viewers := make([]*screensharev1.ViewerReport, 0, len(p.Viewers))
+	viewers := make([]*mirrormev1.ViewerReport, 0, len(p.Viewers))
 	for _, viewer := range p.Viewers {
 		viewers = append(viewers, ViewerReport(viewer))
 	}
 
-	return &screensharev1.RelayPath{
+	return &mirrormev1.RelayPath{
 		Name:         p.Name,
 		Ready:        p.Ready,
 		Tracks:       p.Tracks,
@@ -240,10 +240,10 @@ func RelayPath(p relay.Path) *screensharev1.RelayPath {
 
 // ViewerReport carries one viewer of this machine's stream across.
 // Figures cross as the pointers they are, so an unmeasured one stays absent.
-func ViewerReport(v relay.Viewer) *screensharev1.ViewerReport {
+func ViewerReport(v relay.Viewer) *mirrormev1.ViewerReport {
 	assert.Assert(v.Member != "", "a viewer report names the member it came from")
 
-	return &screensharev1.ViewerReport{
+	return &mirrormev1.ViewerReport{
 		MemberId:    v.Member,
 		DisplayName: v.DisplayName,
 		Transport:   v.Transport,
@@ -267,8 +267,8 @@ func ViewerReport(v relay.Viewer) *screensharev1.ViewerReport {
 // and an empty one crosses as empty and reads as unknown,
 // which is what an empty format on the path beside it already means
 // (docs/development-principles.md, "Contracts").
-func RelayReader(r relay.Reader) *screensharev1.RelayReader {
-	return &screensharev1.RelayReader{
+func RelayReader(r relay.Reader) *mirrormev1.RelayReader {
+	return &mirrormev1.RelayReader{
 		Type:            r.Type,
 		Id:              r.ID,
 		Transport:       r.Transport,
@@ -298,8 +298,8 @@ func optional(value string) *string {
 // ViewerState carries the open external viewers across.
 // A nil or empty slice crosses as an empty list,
 // which is what "no viewer is open" looks like on the wire.
-func ViewerState(refs []StreamRef) *screensharev1.ViewerState {
-	out := make([]*screensharev1.StreamRef, 0, len(refs))
+func ViewerState(refs []StreamRef) *mirrormev1.ViewerState {
+	out := make([]*mirrormev1.StreamRef, 0, len(refs))
 	for _, ref := range refs {
 		assert.Assert(ref.StreamName != "" && ref.Transport != "",
 			"a viewer is identified by a stream and the transport it is received over", ref.StreamName, ref.Transport)
@@ -307,7 +307,7 @@ func ViewerState(refs []StreamRef) *screensharev1.ViewerState {
 	}
 
 	assert.Assert(len(out) == len(refs), "a message per open viewer", len(out), len(refs))
-	return &screensharev1.ViewerState{Viewers: out}
+	return &mirrormev1.ViewerState{Viewers: out}
 }
 
 // ReceiveStream is one running decode at one instant:
@@ -363,7 +363,7 @@ type ReceiveStream struct {
 	ToneMapMissing string
 	// Failure is why this decode carries no picture, nil while one is opening.
 	// Read beside Live, which separates a decode still connecting from one nothing arrives on.
-	Failure *screensharev1.Text
+	Failure *mirrormev1.Text
 }
 
 // AudioLevel is how loud one decode is at one instant, measured before its volume element,
@@ -380,13 +380,13 @@ type AudioLevel struct {
 // AudioLevels carries one instant's levels across.
 // A decode with no audio branch has no entry at all,
 // a different fact from a silent one and drawn differently.
-func AudioLevels(levels []AudioLevel) *screensharev1.AudioLevels {
-	out := make([]*screensharev1.AudioLevel, 0, len(levels))
+func AudioLevels(levels []AudioLevel) *mirrormev1.AudioLevels {
+	out := make([]*mirrormev1.AudioLevel, 0, len(levels))
 	for _, l := range levels {
 		assert.Assert(l.Stream.StreamName != "" && l.Stream.Transport != "",
 			"a level belongs to a decode identified by a stream and a transport",
 			l.Stream.StreamName, l.Stream.Transport)
-		out = append(out, &screensharev1.AudioLevel{
+		out = append(out, &mirrormev1.AudioLevel{
 			Stream: StreamRefMessage(l.Stream),
 			PeakDb: l.PeakDB,
 			RmsDb:  l.RMSDB,
@@ -394,19 +394,19 @@ func AudioLevels(levels []AudioLevel) *screensharev1.AudioLevels {
 	}
 
 	assert.Assert(len(out) == len(levels), "a message per metered decode", len(out), len(levels))
-	return &screensharev1.AudioLevels{Levels: out}
+	return &mirrormev1.AudioLevels{Levels: out}
 }
 
 // ReceiveState carries the running decodes across.
 // A nil or empty slice crosses as an empty list,
 // which is what "nothing is being decoded" looks like on the wire.
-func ReceiveState(streams []ReceiveStream) *screensharev1.ReceiveState {
-	out := make([]*screensharev1.ReceiveStream, 0, len(streams))
+func ReceiveState(streams []ReceiveStream) *mirrormev1.ReceiveState {
+	out := make([]*mirrormev1.ReceiveStream, 0, len(streams))
 	for _, r := range streams {
 		assert.Assert(r.Stream.StreamName != "" && r.Stream.Transport != "",
 			"a decode is identified by a stream and the transport it is received over",
 			r.Stream.StreamName, r.Stream.Transport)
-		out = append(out, &screensharev1.ReceiveStream{
+		out = append(out, &mirrormev1.ReceiveStream{
 			Stream:         StreamRefMessage(r.Stream),
 			Live:           r.Live,
 			Chain:          r.Chain,
@@ -427,12 +427,12 @@ func ReceiveState(streams []ReceiveStream) *screensharev1.ReceiveState {
 	}
 
 	assert.Assert(len(out) == len(streams), "a message per running decode", len(out), len(streams))
-	return &screensharev1.ReceiveState{Streams: out}
+	return &mirrormev1.ReceiveState{Streams: out}
 }
 
 // ReceiveStatValue is one counter an element keeps, under the element's own name for it.
 // Nothing here is labelled: a key is the element's word, a label is a reader's
-// (api/proto/screenshare/v1/text.proto).
+// (api/proto/mirrorme/v1/text.proto).
 type ReceiveStatValue struct {
 	Key   string
 	Value float64
@@ -530,7 +530,7 @@ type ReceiveStreamStats struct {
 // A stage nothing measured is absent, every field being a pointer for the reason the figures above
 // are: an unmeasured stage and a stage that cost nothing are the two readings this may never mix.
 // Which stages a machine can measure follows from where it sits
-// (api/proto/screenshare/v1/events.proto, DelayBudget).
+// (api/proto/mirrorme/v1/events.proto, DelayBudget).
 type DelayBudget struct {
 	Publish *float64
 	// Path is the two legs and the relay between them,
@@ -548,14 +548,14 @@ type DelayBudget struct {
 // ReceiveStats carries one sample of every running decode across.
 // A nil or empty slice crosses as an empty list,
 // which is what a tick with nothing decoding looks like.
-func ReceiveStats(streams []ReceiveStreamStats) *screensharev1.ReceiveStats {
-	out := make([]*screensharev1.ReceiveStreamStats, 0, len(streams))
+func ReceiveStats(streams []ReceiveStreamStats) *mirrormev1.ReceiveStats {
+	out := make([]*mirrormev1.ReceiveStreamStats, 0, len(streams))
 	for _, s := range streams {
 		assert.Assert(s.Stream.StreamName != "" && s.Stream.Transport != "",
 			"a sample belongs to a decode identified by a stream and the transport it is received over",
 			s.Stream.StreamName, s.Stream.Transport)
 
-		msg := &screensharev1.ReceiveStreamStats{
+		msg := &mirrormev1.ReceiveStreamStats{
 			Stream: StreamRefMessage(s.Stream),
 
 			CodecDescription: s.Codec,
@@ -604,7 +604,7 @@ func ReceiveStats(streams []ReceiveStreamStats) *screensharev1.ReceiveStats {
 
 			Groups: receiveStatGroups(s.Groups),
 
-			Delay: &screensharev1.DelayBudget{
+			Delay: &mirrormev1.DelayBudget{
 				PublishMs: s.Delay.Publish,
 				PathMs:    s.Delay.Path,
 				ArriveMs:  s.Delay.Arrive,
@@ -628,26 +628,26 @@ func ReceiveStats(streams []ReceiveStreamStats) *screensharev1.ReceiveStats {
 	}
 
 	assert.Assert(len(out) == len(streams), "a message per sampled decode", len(out), len(streams))
-	return &screensharev1.ReceiveStats{Streams: out}
+	return &mirrormev1.ReceiveStats{Streams: out}
 }
 
 // receiveStatGroups carries the leg's own counters across,
 // in the order the pipeline holds the elements.
 // A group with no values never reaches here:
 // the receiver leaves out an element that answers none of the keys it is read for.
-func receiveStatGroups(groups []ReceiveStatGroup) []*screensharev1.ReceiveStatGroup {
-	out := make([]*screensharev1.ReceiveStatGroup, 0, len(groups))
+func receiveStatGroups(groups []ReceiveStatGroup) []*mirrormev1.ReceiveStatGroup {
+	out := make([]*mirrormev1.ReceiveStatGroup, 0, len(groups))
 	for _, g := range groups {
 		assert.Assert(g.Factory != "" && len(g.Values) > 0,
 			"a reported group names its factory and carries at least one counter", g.Factory, len(g.Values))
 
-		values := make([]*screensharev1.ReceiveStatValue, 0, len(g.Values))
+		values := make([]*mirrormev1.ReceiveStatValue, 0, len(g.Values))
 		for _, v := range g.Values {
 			assert.Assert(v.Key != "", "a counter carries the element's own name for it", g.Element)
-			values = append(values, &screensharev1.ReceiveStatValue{Key: v.Key, Value: v.Value})
+			values = append(values, &mirrormev1.ReceiveStatValue{Key: v.Key, Value: v.Value})
 		}
 
-		out = append(out, &screensharev1.ReceiveStatGroup{
+		out = append(out, &mirrormev1.ReceiveStatGroup{
 			Factory: g.Factory,
 			Element: g.Element,
 			Values:  values,
@@ -675,31 +675,31 @@ type PreviewedMonitor struct {
 // MonitorPreviewState carries the running monitor previews across.
 // A nil or empty slice crosses as an empty list,
 // which is what "no screen is being previewed" looks like on the wire.
-func MonitorPreviewState(monitors []PreviewedMonitor) *screensharev1.MonitorPreviewState {
-	out := make([]*screensharev1.PreviewedMonitor, 0, len(monitors))
+func MonitorPreviewState(monitors []PreviewedMonitor) *mirrormev1.MonitorPreviewState {
+	out := make([]*mirrormev1.PreviewedMonitor, 0, len(monitors))
 	for _, m := range monitors {
-		out = append(out, &screensharev1.PreviewedMonitor{
+		out = append(out, &mirrormev1.PreviewedMonitor{
 			Monitor: int32(m.Monitor),
 			Live:    m.Live,
 		})
 	}
 
 	assert.Assert(len(out) == len(monitors), "a message per running preview", len(out), len(monitors))
-	return &screensharev1.MonitorPreviewState{Monitors: out}
+	return &mirrormev1.MonitorPreviewState{Monitors: out}
 }
 
 // StreamRefMessage carries one viewer's identity across.
 // One function: that identity travels on the state, on the exit event and on the two calls
 // that open and close a viewer, and a pair spelled out at each of them is how a name and
 // a stream_name end up naming one thing.
-func StreamRefMessage(ref StreamRef) *screensharev1.StreamRef {
-	return &screensharev1.StreamRef{StreamName: ref.StreamName, Transport: ref.Transport}
+func StreamRefMessage(ref StreamRef) *mirrormev1.StreamRef {
+	return &mirrormev1.StreamRef{StreamName: ref.StreamName, Transport: ref.Transport}
 }
 
 // StreamRefOf reads a viewer's identity back off the contract.
 // A message that arrived without one reads as the zero ref,
 // which the control service refuses with INVALID_ARGUMENT rather than acting on.
-func StreamRefOf(m *screensharev1.StreamRef) StreamRef {
+func StreamRefOf(m *mirrormev1.StreamRef) StreamRef {
 	return StreamRef{StreamName: m.GetStreamName(), Transport: m.GetTransport()}
 }
 
@@ -715,7 +715,7 @@ type TestStreamSlot struct {
 	Attempt int
 	// Cause is this app's statement about why the slot carries no publisher, nil while one runs.
 	// Message is the child's own last words.
-	Cause   *screensharev1.Text
+	Cause   *mirrormev1.Text
 	Message string
 	// LogPath is that child's whole run log, opened through OpenLog.
 	LogPath string
@@ -725,14 +725,14 @@ type TestStreamSlot struct {
 // how many publishers are alive, and a row per slot the set holds.
 // A nil or empty slice crosses as an empty list,
 // which is what an unlaunched set looks like on the wire.
-func TestStreamState(running int, slots ...TestStreamSlot) *screensharev1.TestStreamState {
+func TestStreamState(running int, slots ...TestStreamSlot) *mirrormev1.TestStreamState {
 	assert.Assert(running >= 0, "a count of live publishers is not negative", running)
 
-	out := make([]*screensharev1.TestStreamSlot, 0, len(slots))
+	out := make([]*mirrormev1.TestStreamSlot, 0, len(slots))
 	for _, s := range slots {
 		assert.Assert(s.Slot >= 0, "a synthetic publisher holds a slot in the set", s.Slot)
 		assert.Assert(s.Name != "", "a synthetic publisher is carried under a name", s.Slot)
-		out = append(out, &screensharev1.TestStreamSlot{
+		out = append(out, &mirrormev1.TestStreamSlot{
 			Slot:    int32(s.Slot),
 			Name:    s.Name,
 			Running: s.Running,
@@ -744,7 +744,7 @@ func TestStreamState(running int, slots ...TestStreamSlot) *screensharev1.TestSt
 	}
 
 	assert.Assert(len(out) == len(slots), "a message per slot of the set", len(out), len(slots))
-	return &screensharev1.TestStreamState{RunningCount: int32(running), Slots: out}
+	return &mirrormev1.TestStreamState{RunningCount: int32(running), Slots: out}
 }
 
 // Member is one member of the group this machine is in.
@@ -768,7 +768,7 @@ type Member struct {
 }
 
 // MembersSnapshot is who this machine shares a group with, at one instant,
-// and the domain side of screenshare.v1.MembersState.
+// and the domain side of mirrorme.v1.MembersState.
 //
 // The fields travel together, a reader needing them all to draw one thing:
 // an empty list under Joined is a group whose members have not been read,
@@ -776,7 +776,7 @@ type Member struct {
 type MembersSnapshot struct {
 	Members []Member
 	// Refusal is why the group service did not take this machine's presence, nil where it did.
-	Refusal *screensharev1.Text
+	Refusal *mirrormev1.Text
 	// Joined is whether this machine is in the group, which quitting keeps and leaving clears.
 	Joined bool
 	// PublishingUnread is whether a connection list the group service reads Publishing off would not
@@ -787,11 +787,11 @@ type MembersSnapshot struct {
 // MembersState carries the group's membership across.
 // A nil or empty slice crosses as an empty list,
 // which is what a machine in no group looks like on the wire.
-func MembersState(m MembersSnapshot) *screensharev1.MembersState {
-	out := make([]*screensharev1.Member, 0, len(m.Members))
+func MembersState(m MembersSnapshot) *mirrormev1.MembersState {
+	out := make([]*mirrormev1.Member, 0, len(m.Members))
 	for _, member := range m.Members {
 		assert.Assert(member.MemberID != "", "a member of a group is identified by a member id", member.DisplayName)
-		out = append(out, &screensharev1.Member{
+		out = append(out, &mirrormev1.Member{
 			MemberId:    member.MemberID,
 			DisplayName: member.DisplayName,
 			Publishing:  member.Publishing,
@@ -801,7 +801,7 @@ func MembersState(m MembersSnapshot) *screensharev1.MembersState {
 	}
 
 	assert.Assert(len(out) == len(m.Members), "a message per member of the group", len(out), len(m.Members))
-	return &screensharev1.MembersState{
+	return &mirrormev1.MembersState{
 		Members:          out,
 		Refusal:          m.Refusal,
 		Joined:           m.Joined,
@@ -811,10 +811,10 @@ func MembersState(m MembersSnapshot) *screensharev1.MembersState {
 
 // EncodeRate carries the probe's bracket across:
 // the machine reached LowFps and did not reach HighFps.
-func EncodeRate(r encoderate.Rate) *screensharev1.EncodeRate {
+func EncodeRate(r encoderate.Rate) *mirrormev1.EncodeRate {
 	assert.Assert(r.LowFps <= r.HighFps, "the harder content codes no faster than the easier", r.LowFps, r.HighFps)
 
-	return &screensharev1.EncodeRate{
+	return &mirrormev1.EncodeRate{
 		LowFps:      r.LowFps,
 		HighFps:     r.HighFps,
 		LowBounded:  r.LowBounded,
@@ -826,8 +826,8 @@ func EncodeRate(r encoderate.Rate) *screensharev1.EncodeRate {
 // An empty message is a clean exit, so nothing here refuses one.
 //
 // cause is this app's statement about the ending,
-// message the child's own words, which stay raw (api/proto/screenshare/v1/text.proto).
+// message the child's own words, which stay raw (api/proto/mirrorme/v1/text.proto).
 // A nil cause is an ending nothing here names, and the message stands alone.
-func ExitInfo(message, logPath string, cause *screensharev1.Text) *screensharev1.ExitInfo {
-	return &screensharev1.ExitInfo{Message: message, LogPath: logPath, Cause: cause}
+func ExitInfo(message, logPath string, cause *mirrormev1.Text) *mirrormev1.ExitInfo {
+	return &mirrormev1.ExitInfo{Message: message, LogPath: logPath, Cause: cause}
 }

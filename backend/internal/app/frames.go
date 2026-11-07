@@ -1,12 +1,12 @@
 package app
 
 import (
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/decode"
+	"bjoernblessin.de/mirrorme/internal/decode"
 )
 
 // SubscribeFrames opens one consumer's view of a running decode's frames.
@@ -34,7 +34,7 @@ func (a *App) SubscribeFrames(streamName, transportName string) (decode.Subscrip
 	a.procMu.Unlock()
 
 	if !present {
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_NOTHING_DECODING, text.Stream(streamName), text.Transport(transportName))
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_NOTHING_DECODING, text.Stream(streamName), text.Transport(transportName))
 	}
 	return receiver.Subscribe()
 }

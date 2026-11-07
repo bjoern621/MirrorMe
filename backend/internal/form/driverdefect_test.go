@@ -3,11 +3,11 @@ package form
 import (
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/rules"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/rules"
 )
 
 // A control the machine's driver miscodes greys with the driver's own reason,
@@ -50,7 +50,7 @@ func TestADriverDefectGreysTheControlItWithholds(t *testing.T) {
 			}
 			var named bool
 			for _, reason := range v.ValueReasons(rules.AxisMode, capabilities.ModeCbr) {
-				if reason.GetCode() == screensharev1.TextCode_TEXT_CODE_DRIVER_DEFECT_WITHHOLDS_OPTION {
+				if reason.GetCode() == mirrormev1.TextCode_TEXT_CODE_DRIVER_DEFECT_WITHHOLDS_OPTION {
 					named = true
 				}
 			}

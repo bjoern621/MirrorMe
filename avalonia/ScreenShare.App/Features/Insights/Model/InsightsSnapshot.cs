@@ -42,7 +42,7 @@ public sealed record InsightsSnapshot
 
     /// <summary>
     /// That pipeline's own last words, raw and never matched against
-    /// (<c>api/proto/screenshare/v1/text.proto</c>).
+    /// (<c>api/proto/mirrorme/v1/text.proto</c>).
     /// Empty where it said nothing.
     /// </summary>
     public string RetryMessage { get; init; } = "";

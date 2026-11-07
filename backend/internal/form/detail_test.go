@@ -4,9 +4,9 @@ import (
 	"strconv"
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
 )
 
 // Each step sits where the anchor's step sits on the codec's own scale,
@@ -22,7 +22,7 @@ func TestTheDetailLadderPlacesEachStepOnTheCodecsScale(t *testing.T) {
 
 		steps := map[string]int{}
 		for _, o := range optionCqSteps(fieldTestDeps(), s) {
-			if o.GetNote().GetCode() != screensharev1.TextCode_TEXT_CODE_DETAIL_STEP {
+			if o.GetNote().GetCode() != mirrormev1.TextCode_TEXT_CODE_DETAIL_STEP {
 				continue
 			}
 			cq, err := strconv.Atoi(o.GetValue())
@@ -58,7 +58,7 @@ func TestEveryDetailStepCarriesWhatItCosts(t *testing.T) {
 	s.Publish.Preset = ""
 	cq := priceTestField(t, Resolve(estimateTestDeps(), s), KeyCq)
 
-	if cq.GetControl() != screensharev1.ControlKind_CONTROL_KIND_NUMBER_SELECT {
+	if cq.GetControl() != mirrormev1.ControlKind_CONTROL_KIND_NUMBER_SELECT {
 		t.Fatalf("the quantizer is a %v, so its steps are no shortcut beside a typed value", cq.GetControl())
 	}
 	for _, o := range cq.GetOptions() {

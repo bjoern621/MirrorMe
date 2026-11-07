@@ -3,7 +3,7 @@ package form
 import (
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/rules"
+	"bjoernblessin.de/mirrorme/internal/rules"
 )
 
 // An axis that is a settings field carries that field's key, so a rule matching on the pixel format

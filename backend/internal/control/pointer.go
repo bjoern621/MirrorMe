@@ -5,10 +5,10 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/pointer"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/pointer"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // pointerCadence is how often this machine's own pointer is read for a watch naming EVENT_KIND_POINTER.
@@ -51,7 +51,7 @@ type pointerFeed struct {
 }
 
 // pointerOf opens a feed on the stream ref names, nil being this machine's own publish.
-func (s *Server) pointerOf(ref *screensharev1.StreamRef) *pointerFeed {
+func (s *Server) pointerOf(ref *mirrormev1.StreamRef) *pointerFeed {
 	assert.Assert(pointerCadence > 0, "the pointer ticks at a positive interval", pointerCadence)
 
 	if ref == nil {
@@ -65,7 +65,7 @@ func (s *Server) pointerOf(ref *screensharev1.StreamRef) *pointerFeed {
 }
 
 // next is the event one tick sends, and false where the pointer reports nothing or has not moved.
-func (p *pointerFeed) next() (*screensharev1.Event, bool) {
+func (p *pointerFeed) next() (*mirrormev1.Event, bool) {
 	spot, reporting := p.read()
 	if !reporting {
 		return nil, false
@@ -77,5 +77,5 @@ func (p *pointerFeed) next() (*screensharev1.Event, bool) {
 	}
 	p.lastX, p.lastY, p.lastVisible, p.sent = message.GetX(), message.GetY(), message.GetVisible(), true
 
-	return &screensharev1.Event{Payload: &screensharev1.Event_Pointer{Pointer: message}}, true
+	return &mirrormev1.Event{Payload: &mirrormev1.Event_Pointer{Pointer: message}}, true
 }

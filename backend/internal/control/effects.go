@@ -11,13 +11,13 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/form"
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/text"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/form"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/text"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // The arms of Set and Do.
@@ -46,7 +46,7 @@ import (
 // where INVALID_ARGUMENT would fit better.
 // Telling the two apart needs a typed refusal on Backend.
 // A guess off the statement, landing wrong, would tell a shell to blame the user for a full disk.
-func fromBackend(err error, code screensharev1.TextCode, args ...*screensharev1.TextArg) error {
+func fromBackend(err error, code mirrormev1.TextCode, args ...*mirrormev1.TextArg) error {
 	assert.IsNotNil(err, "a classified failure is a failure", code.String())
 
 	return unavailable(text.Because(err, code, args...))
@@ -61,8 +61,8 @@ func fromBackend(err error, code screensharev1.TextCode, args ...*screensharev1.
 //
 // Emptiness is tested against the zero message rather than one chosen field,
 // so a field added to the contract stays covered without an edit here.
-func draftOf(m *screensharev1.Settings) (settings.Settings, error) {
-	if m == nil || proto.Equal(m, &screensharev1.Settings{}) {
+func draftOf(m *mirrormev1.Settings) (settings.Settings, error) {
+	if m == nil || proto.Equal(m, &mirrormev1.Settings{}) {
 		return settings.Settings{}, invalidArgument(text.Fail(settingsAbsent))
 	}
 	return wire.ToSettings(m), nil
@@ -73,8 +73,8 @@ func draftOf(m *screensharev1.Settings) (settings.Settings, error) {
 //
 // A preset is a PublishSettings and nothing else: where the relay is belongs to a deployment,
 // how this machine watches to a viewer, so neither is part of applying one.
-func presetOf(m *screensharev1.PublishSettings) (settings.Publish, error) {
-	if m == nil || proto.Equal(m, &screensharev1.PublishSettings{}) {
+func presetOf(m *mirrormev1.PublishSettings) (settings.Publish, error) {
+	if m == nil || proto.Equal(m, &mirrormev1.PublishSettings{}) {
 		return settings.Publish{}, invalidArgument(text.Fail(settingsAbsent))
 	}
 	return wire.ToPublish(m), nil
@@ -84,7 +84,7 @@ func presetOf(m *screensharev1.PublishSettings) (settings.Publish, error) {
 //
 // Half a pair is INVALID_ARGUMENT for the reason StreamRef exists:
 // one stream is watched over several legs at once, so half an identity names nothing that can exist.
-func keyOf(m *screensharev1.StreamRef) (wire.StreamRef, error) {
+func keyOf(m *mirrormev1.StreamRef) (wire.StreamRef, error) {
 	ref := wire.StreamRefOf(m)
 	if ref.StreamName == "" {
 		return wire.StreamRef{}, invalidArgument(text.Fail(streamUnnamed))
@@ -101,7 +101,7 @@ func keyOf(m *screensharev1.StreamRef) (wire.StreamRef, error) {
 // so reaching a live pipeline is setPublish's business.
 // Two arms because the user's two intentions differ: keep this for next time,
 // and put this on the air.
-func (s *Server) saveSettings(m *screensharev1.Settings) error {
+func (s *Server) saveSettings(m *mirrormev1.Settings) error {
 	draft, err := draftOf(m)
 	if err != nil {
 		return err
@@ -120,7 +120,7 @@ func (s *Server) saveSettings(m *screensharev1.Settings) error {
 // Dropping a name no preset carries succeeds: the state it names already holds.
 // settings.DeletePreset rewrites the file without the name, so the store is read first
 // and an absent name leaves the file untouched.
-func (s *Server) setPreset(w *screensharev1.PresetWanted) error {
+func (s *Server) setPreset(w *mirrormev1.PresetWanted) error {
 	name := w.GetName()
 	if name == "" {
 		return invalidArgument(text.Fail(presetUnnamed))
@@ -194,7 +194,7 @@ func (s *Server) resolveFollowed(draft settings.Settings) (settings.Settings, er
 // a pipeline waiting out a retry backoff included: the user asked for it and has not stopped it.
 // publish.SamePipeline decides sameness here, in the form and at the backend,
 // "these two settings are one stream" being one fact.
-func (s *Server) setPublish(w *screensharev1.PublishWanted) error {
+func (s *Server) setPublish(w *mirrormev1.PublishWanted) error {
 	if !w.GetLive() {
 		s.backend.StopPublish()
 		return nil
@@ -238,7 +238,7 @@ func (s *Server) setPublish(w *screensharev1.PublishWanted) error {
 //
 // The transport is per viewer and independent of the publish leg,
 // so one stream is watchable over any leg the relay serves it on.
-func (s *Server) setViewer(w *screensharev1.ViewerWanted) error {
+func (s *Server) setViewer(w *mirrormev1.ViewerWanted) error {
 	if !w.GetOpen() {
 		ref, err := keyOf(w.GetViewer())
 		if err != nil {
@@ -280,7 +280,7 @@ func (s *Server) setViewer(w *screensharev1.ViewerWanted) error {
 // (docs/development-principles.md, "Effects across a process boundary"):
 // the effect lands in a program this process does not own, so there is no state to read back,
 // no stop to write, and nothing here reaches the viewer state.
-func (s *Server) openInBrowser(m *screensharev1.StreamRef) error {
+func (s *Server) openInBrowser(m *mirrormev1.StreamRef) error {
 	ref, err := keyOf(m)
 	if err != nil {
 		return err
@@ -305,7 +305,7 @@ func (s *Server) openInBrowser(m *screensharev1.StreamRef) error {
 // Whether the stream carries more range than a display shows is known once the decoder negotiates
 // and not before, and whether this machine can roll it down is the backend's registry,
 // so a refusal here would guess at both.
-func (s *Server) setReceive(w *screensharev1.ReceiveWanted) error {
+func (s *Server) setReceive(w *mirrormev1.ReceiveWanted) error {
 	if !w.GetOpen() {
 		ref, err := keyOf(w.GetStream())
 		if err != nil {
@@ -335,7 +335,7 @@ func (s *Server) setReceive(w *screensharev1.ReceiveWanted) error {
 // The backend answers that, a Refused separating the index naming no output of this machine
 // (INVALID_ARGUMENT) from a session that cannot read one screen apart from another
 // (FAILED_PRECONDITION).
-func (s *Server) setMonitorPreview(w *screensharev1.MonitorPreviewWanted) error {
+func (s *Server) setMonitorPreview(w *mirrormev1.MonitorPreviewWanted) error {
 	monitor := int(w.GetMonitor())
 	if !w.GetOpen() {
 		s.backend.StopMonitorPreview(monitor)
@@ -361,7 +361,7 @@ func (s *Server) setMonitorPreview(w *screensharev1.MonitorPreviewWanted) error 
 // The volume is not range-checked here.
 // The bound lives at the backend, which brings a figure past the end of the range back,
 // and a refusal would turn a slider that overshot into an error a reader has to read.
-func (s *Server) setReceiveAudio(a *screensharev1.ReceiveAudio) error {
+func (s *Server) setReceiveAudio(a *mirrormev1.ReceiveAudio) error {
 	ref, err := keyOf(a.GetStream())
 	if err != nil {
 		return err
@@ -412,7 +412,7 @@ func (s *Server) setTestStreams(count int) error {
 	assert.Assert(max > 0, "a backend that runs test streams runs at least one", max)
 	if count > max {
 		return resourceExhausted(text.Fail(testStreamsAboveLimit,
-			argCount(count), text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_COUNT_LIMIT, int64(max))))
+			argCount(count), text.Num(mirrormev1.TextArgName_TEXT_ARG_NAME_COUNT_LIMIT, int64(max))))
 	}
 
 	if err := s.backend.StartTestStreams(count); err != nil {
@@ -438,12 +438,12 @@ func (s *Server) forgetPortalConsent() error {
 // so the one write moving a machine between groups stays where every other settings write is.
 // A relay with no group service and an unreachable one are both the caller's to fix,
 // so each leaves as the backend's own sentence rather than as a group key drawn nowhere.
-func (s *Server) createGroup(relay *screensharev1.RelaySettings) (*screensharev1.Group, error) {
+func (s *Server) createGroup(relay *mirrormev1.RelaySettings) (*mirrormev1.Group, error) {
 	groupKey, groupID, err := s.backend.CreateGroup(wire.ToRelay(relay))
 	if err != nil {
 		return nil, fromBackend(err, groupKeyUndrawn)
 	}
-	return &screensharev1.Group{Key: groupKey, Id: groupID}, nil
+	return &mirrormev1.Group{Key: groupKey, Id: groupID}, nil
 }
 
 // setDiscordLink links this install to a Discord account, or drops the link.
@@ -452,7 +452,7 @@ func (s *Server) createGroup(relay *screensharev1.RelaySettings) (*screensharev1
 // The secret lands in the stored settings, so the answer carries nothing to show.
 // An install already linked holds the state a link names, and runs no second flow.
 // Unlinking drops the stored secret and reaches nothing.
-func (s *Server) setDiscordLink(ctx context.Context, w *screensharev1.DiscordLinkWanted) error {
+func (s *Server) setDiscordLink(ctx context.Context, w *mirrormev1.DiscordLinkWanted) error {
 	if !w.GetLinked() {
 		if err := s.backend.UnlinkDiscord(); err != nil {
 			return fromBackend(err, discordUnlinkFailed)

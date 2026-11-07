@@ -3,10 +3,10 @@ package control
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/receive"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // levelCadence is how often a watch naming EVENT_KIND_AUDIO_LEVELS sends.
@@ -26,10 +26,10 @@ const levelCadence = receive.LevelInterval
 // It sends whether or not anything is decoding.
 // An empty tick states that nothing is carrying audio, so a shell can take a meter away.
 // Going silent instead would be indistinguishable from a backend that stopped answering.
-func (s *Server) levelsEvent() *screensharev1.Event {
+func (s *Server) levelsEvent() *mirrormev1.Event {
 	assert.Assert(levelCadence > 0, "levels tick at a positive interval", levelCadence)
 
-	return &screensharev1.Event{
-		Payload: &screensharev1.Event_AudioLevels{AudioLevels: wire.AudioLevels(s.backend.AudioLevels())},
+	return &mirrormev1.Event{
+		Payload: &mirrormev1.Event_AudioLevels{AudioLevels: wire.AudioLevels(s.backend.AudioLevels())},
 	}
 }

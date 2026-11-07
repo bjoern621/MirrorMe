@@ -3,9 +3,9 @@ package publish
 import (
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/rules"
+	"bjoernblessin.de/mirrorme/internal/rules"
 )
 
 // The engine that cannot read what it captured says so
@@ -38,7 +38,7 @@ func TestTheEngineThatCannotReadTheSurfaceSaysSo(t *testing.T) {
 		}
 		// Naming the engine that does carry the surface's colour is what states the way out rather than
 		// only the limit.
-		if !namesArg(notes[0], screensharev1.TextArgName_TEXT_ARG_NAME_OTHER_ENGINE, EngineGst) {
+		if !namesArg(notes[0], mirrormev1.TextArgName_TEXT_ARG_NAME_OTHER_ENGINE, EngineGst) {
 			t.Errorf("the note is %v, and it does not name the engine that carries it", notes[0])
 		}
 	}
@@ -58,7 +58,7 @@ func TestTheNoteIsOnTheTenBitFormatAlone(t *testing.T) {
 }
 
 // namesArg reports whether a statement carries the identifier under the argument name.
-func namesArg(t *screensharev1.Text, name screensharev1.TextArgName, id string) bool {
+func namesArg(t *mirrormev1.Text, name mirrormev1.TextArgName, id string) bool {
 	for _, a := range t.GetArgs() {
 		if a.GetName() == name && a.GetId() == id {
 			return true

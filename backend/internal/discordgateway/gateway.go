@@ -17,8 +17,8 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/discordavatar"
-	"bjoernblessin.de/screenshare/internal/voiceroster"
+	"bjoernblessin.de/mirrorme/internal/discordavatar"
+	"bjoernblessin.de/mirrorme/internal/voiceroster"
 )
 
 // Gateway is one bot connection feeding one roster.

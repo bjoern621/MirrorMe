@@ -6,10 +6,10 @@ import (
 	"slices"
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/display"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/display"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // The machine every draft below is judged against: one 1080p output at 60 Hz,
@@ -62,7 +62,7 @@ func TestADraftOutsideAGroupIsRefused(t *testing.T) {
 	if refusal == nil {
 		t.Fatalf("no statement names the missing group: %v", diags)
 	}
-	if refusal.GetSeverity() != screensharev1.Severity_SEVERITY_ERROR {
+	if refusal.GetSeverity() != mirrormev1.Severity_SEVERITY_ERROR {
 		t.Errorf("the missing group ranks %v, want the rank that refuses", refusal.GetSeverity())
 	}
 	if refusal.GetFieldKey() != KeyGroupKey {
@@ -92,7 +92,7 @@ func TestADraftWithNoNameToJoinUnderIsRefused(t *testing.T) {
 }
 
 // diagnosticTestNaming is the diagnostic carrying code, nil where none does.
-func diagnosticTestNaming(diags []*screensharev1.Diagnostic, code screensharev1.TextCode) *screensharev1.Diagnostic {
+func diagnosticTestNaming(diags []*mirrormev1.Diagnostic, code mirrormev1.TextCode) *mirrormev1.Diagnostic {
 	for _, w := range diags {
 		if w.GetText().GetCode() == code {
 			return w
@@ -101,8 +101,8 @@ func diagnosticTestNaming(diags []*screensharev1.Diagnostic, code screensharev1.
 	return nil
 }
 
-func diagnosticTestOfRank(diags []*screensharev1.Diagnostic, rank screensharev1.Severity) []*screensharev1.Diagnostic {
-	var out []*screensharev1.Diagnostic
+func diagnosticTestOfRank(diags []*mirrormev1.Diagnostic, rank mirrormev1.Severity) []*mirrormev1.Diagnostic {
+	var out []*mirrormev1.Diagnostic
 	for _, w := range diags {
 		if w.GetSeverity() == rank {
 			out = append(out, w)
@@ -177,7 +177,7 @@ func TestAnUnbuildableCombinationRefusesAndSaysWhy(t *testing.T) {
 
 	est := estimate(d, s)
 	diags := diagnostics(d, s, est, nil)
-	errors := diagnosticTestOfRank(diags, screensharev1.Severity_SEVERITY_ERROR)
+	errors := diagnosticTestOfRank(diags, mirrormev1.Severity_SEVERITY_ERROR)
 	if len(errors) != 1 {
 		t.Fatalf("errors = %d, and settings that cannot be published are refused once: %v", len(errors), diags)
 	}
@@ -216,7 +216,7 @@ func TestAHealthyConfigurationRefusesNothing(t *testing.T) {
 	}
 
 	diags := diagnostics(d, s, est, nil)
-	if errors := diagnosticTestOfRank(diags, screensharev1.Severity_SEVERITY_ERROR); len(errors) != 0 {
+	if errors := diagnosticTestOfRank(diags, mirrormev1.Severity_SEVERITY_ERROR); len(errors) != 0 {
 		t.Errorf("errors = %v, and these settings publish as they stand", errors)
 	}
 	if !publishable(diags) {
@@ -250,10 +250,10 @@ func TestEveryDiagnosticIsRankedAndSaysSomething(t *testing.T) {
 	for name, s := range diagnosticTestDrafts() {
 		t.Run(name, func(t *testing.T) {
 			for _, w := range diagnostics(d, s, estimate(d, s), nil) {
-				if w.GetSeverity() == screensharev1.Severity_SEVERITY_UNSPECIFIED {
+				if w.GetSeverity() == mirrormev1.Severity_SEVERITY_UNSPECIFIED {
 					t.Errorf("diagnostic %v carries no rank", codeOf(w.GetText()))
 				}
-				if codeOf(w.GetText()) == screensharev1.TextCode_TEXT_CODE_UNSPECIFIED {
+				if codeOf(w.GetText()) == mirrormev1.TextCode_TEXT_CODE_UNSPECIFIED {
 					t.Errorf("a diagnostic anchored on %q says nothing", w.GetFieldKey())
 				}
 			}
@@ -292,7 +292,7 @@ func TestALineUnderThePredictionWarnsWithoutRefusing(t *testing.T) {
 		t.Error("a line too narrow for the stream does not make the settings unbuildable")
 	}
 	found := false
-	for _, w := range diagnosticTestOfRank(diags, screensharev1.Severity_SEVERITY_WARNING) {
+	for _, w := range diagnosticTestOfRank(diags, mirrormev1.Severity_SEVERITY_WARNING) {
 		if w.GetFieldKey() == KeyUplinkMbps {
 			found = true
 		}
@@ -332,7 +332,7 @@ func TestAPixelFormatNoGpuDecodesCostsRatherThanRefuses(t *testing.T) {
 		t.Errorf("a software decode at the viewer is a cost and not a refusal: %v", diags)
 	}
 	found := false
-	for _, w := range diagnosticTestOfRank(diags, screensharev1.Severity_SEVERITY_WARNING) {
+	for _, w := range diagnosticTestOfRank(diags, mirrormev1.Severity_SEVERITY_WARNING) {
 		if w.GetFieldKey() == KeyChroma {
 			found = true
 		}
@@ -389,8 +389,8 @@ func TestTheSameDraftWarnsTheSameWayTwice(t *testing.T) {
 
 // diagnosticTestSaid is the diagnostic carrying one statement, and nil where the list carries none.
 func diagnosticTestSaid(
-	diags []*screensharev1.Diagnostic, code screensharev1.TextCode,
-) *screensharev1.Diagnostic {
+	diags []*mirrormev1.Diagnostic, code mirrormev1.TextCode,
+) *mirrormev1.Diagnostic {
 	for _, w := range diags {
 		if codeOf(w.GetText()) == code {
 			return w

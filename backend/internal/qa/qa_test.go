@@ -5,18 +5,18 @@ import (
 	"testing"
 )
 
-const events = `{"Action":"run","Package":"bjoernblessin.de/screenshare/internal/ffmpeg","Test":"TestGpu"}
-{"Action":"output","Package":"bjoernblessin.de/screenshare/internal/ffmpeg","Test":"TestGpu","Output":"=== RUN   TestGpu\n"}
-{"Action":"output","Package":"bjoernblessin.de/screenshare/internal/ffmpeg","Test":"TestGpu","Output":"    gpu_test.go:53: no ffmpeg ddagrab/nvenc row to cover\n"}
-{"Action":"output","Package":"bjoernblessin.de/screenshare/internal/ffmpeg","Test":"TestGpu","Output":"--- SKIP: TestGpu (0.00s)\n"}
-{"Action":"skip","Package":"bjoernblessin.de/screenshare/internal/ffmpeg","Test":"TestGpu"}
-{"Action":"pass","Package":"bjoernblessin.de/screenshare/internal/ffmpeg","Test":"TestArgs/vaapi"}
-{"Action":"fail","Package":"bjoernblessin.de/screenshare/internal/ffmpeg","Test":"TestArgs/nvenc"}
-{"Action":"fail","Package":"bjoernblessin.de/screenshare/internal/ffmpeg","Test":"TestArgs"}
-{"Action":"pass","Package":"bjoernblessin.de/screenshare/internal/ffmpeg","Test":"TestProbe"}
-{"Action":"fail","Package":"bjoernblessin.de/screenshare/internal/ffmpeg"}
-{"Action":"fail","Package":"bjoernblessin.de/screenshare/internal/receive"}
-{"Action":"pass","Package":"bjoernblessin.de/screenshare/internal/text"}
+const events = `{"Action":"run","Package":"bjoernblessin.de/mirrorme/internal/ffmpeg","Test":"TestGpu"}
+{"Action":"output","Package":"bjoernblessin.de/mirrorme/internal/ffmpeg","Test":"TestGpu","Output":"=== RUN   TestGpu\n"}
+{"Action":"output","Package":"bjoernblessin.de/mirrorme/internal/ffmpeg","Test":"TestGpu","Output":"    gpu_test.go:53: no ffmpeg ddagrab/nvenc row to cover\n"}
+{"Action":"output","Package":"bjoernblessin.de/mirrorme/internal/ffmpeg","Test":"TestGpu","Output":"--- SKIP: TestGpu (0.00s)\n"}
+{"Action":"skip","Package":"bjoernblessin.de/mirrorme/internal/ffmpeg","Test":"TestGpu"}
+{"Action":"pass","Package":"bjoernblessin.de/mirrorme/internal/ffmpeg","Test":"TestArgs/vaapi"}
+{"Action":"fail","Package":"bjoernblessin.de/mirrorme/internal/ffmpeg","Test":"TestArgs/nvenc"}
+{"Action":"fail","Package":"bjoernblessin.de/mirrorme/internal/ffmpeg","Test":"TestArgs"}
+{"Action":"pass","Package":"bjoernblessin.de/mirrorme/internal/ffmpeg","Test":"TestProbe"}
+{"Action":"fail","Package":"bjoernblessin.de/mirrorme/internal/ffmpeg"}
+{"Action":"fail","Package":"bjoernblessin.de/mirrorme/internal/receive"}
+{"Action":"pass","Package":"bjoernblessin.de/mirrorme/internal/text"}
 `
 
 func TestSummarizeCountsLeafTests(t *testing.T) {

@@ -3,13 +3,13 @@ package publish
 import (
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/framestamp"
-	"bjoernblessin.de/screenshare/internal/pointermode"
-	"bjoernblessin.de/screenshare/internal/portal"
-	"bjoernblessin.de/screenshare/internal/rules"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/framestamp"
+	"bjoernblessin.de/mirrorme/internal/pointermode"
+	"bjoernblessin.de/mirrorme/internal/portal"
+	"bjoernblessin.de/mirrorme/internal/rules"
 )
 
 // cursorFacts is a configuration the pointer rules bind against.
@@ -67,7 +67,7 @@ func TestTheScanoutBackendCannotDrawThePointer(t *testing.T) {
 	if len(reasons) != 1 {
 		t.Fatalf("the refusal states one fact, got %d", len(reasons))
 	}
-	if got := reasons[0].GetCode(); got != screensharev1.TextCode_TEXT_CODE_KMSGRAB_HAS_NO_CURSOR_PLANE {
+	if got := reasons[0].GetCode(); got != mirrormev1.TextCode_TEXT_CODE_KMSGRAB_HAS_NO_CURSOR_PLANE {
 		t.Errorf("the refusal states %v, want the scanout plane fact", got)
 	}
 	if !v.ValueEnabled(rules.AxisPointer, pointermode.Hidden) {
@@ -152,7 +152,7 @@ func TestAFormatCarryingNoStampRefusesTheMode(t *testing.T) {
 		if len(reasons) != 1 {
 			t.Fatalf("%s: the refusal states one fact, got %d", format, len(reasons))
 		}
-		if got := reasons[0].GetCode(); got != screensharev1.TextCode_TEXT_CODE_FORMAT_CARRIES_NO_CURSOR_METADATA {
+		if got := reasons[0].GetCode(); got != mirrormev1.TextCode_TEXT_CODE_FORMAT_CARRIES_NO_CURSOR_METADATA {
 			t.Errorf("%s states %v, want the fact that its bitstream carries no position", format, got)
 		}
 	}

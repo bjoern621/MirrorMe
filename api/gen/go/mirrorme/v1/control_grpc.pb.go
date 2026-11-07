@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.2
 // - protoc             (unknown)
-// source: screenshare/v1/control.proto
+// source: mirrorme/v1/control.proto
 
-package screensharev1
+package mirrormev1
 
 import (
 	context "context"
@@ -20,12 +20,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ControlService_Hello_FullMethodName = "/screenshare.v1.ControlService/Hello"
-	ControlService_Read_FullMethodName  = "/screenshare.v1.ControlService/Read"
-	ControlService_Watch_FullMethodName = "/screenshare.v1.ControlService/Watch"
-	ControlService_Ask_FullMethodName   = "/screenshare.v1.ControlService/Ask"
-	ControlService_Set_FullMethodName   = "/screenshare.v1.ControlService/Set"
-	ControlService_Do_FullMethodName    = "/screenshare.v1.ControlService/Do"
+	ControlService_Hello_FullMethodName = "/mirrorme.v1.ControlService/Hello"
+	ControlService_Read_FullMethodName  = "/mirrorme.v1.ControlService/Read"
+	ControlService_Watch_FullMethodName = "/mirrorme.v1.ControlService/Watch"
+	ControlService_Ask_FullMethodName   = "/mirrorme.v1.ControlService/Ask"
+	ControlService_Set_FullMethodName   = "/mirrorme.v1.ControlService/Set"
+	ControlService_Do_FullMethodName    = "/mirrorme.v1.ControlService/Do"
 )
 
 // ControlServiceClient is the client API for ControlService service.
@@ -343,7 +343,7 @@ func _ControlService_Do_Handler(srv interface{}, ctx context.Context, dec func(i
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var ControlService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "screenshare.v1.ControlService",
+	ServiceName: "mirrorme.v1.ControlService",
 	HandlerType: (*ControlServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -374,5 +374,5 @@ var ControlService_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "screenshare/v1/control.proto",
+	Metadata: "mirrorme/v1/control.proto",
 }

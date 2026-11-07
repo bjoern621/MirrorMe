@@ -1,15 +1,15 @@
 package form
 
 import (
-	"bjoernblessin.de/screenshare/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/platform"
 	"slices"
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // What the form promises about a control and what applying it costs are one answer,
@@ -110,7 +110,7 @@ func TestAControlMarkedLiveIsOneTheReaderCanReach(t *testing.T) {
 	}
 }
 
-func unreachable(f *screensharev1.Field) string {
+func unreachable(f *mirrormev1.Field) string {
 	if !f.GetVisible() {
 		return "not drawn"
 	}

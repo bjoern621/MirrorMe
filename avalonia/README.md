@@ -130,7 +130,7 @@ Every value a control offers, every label, every greyed entry and the sentence e
 What it contributes is layout, typography, colour, motion, input handling and accessibility.
 
 `docs/ipc-api.md` states the rule.
-`api/proto/screenshare/v1` is the contract.
+`api/proto/mirrorme/v1` is the contract.
 Read `Form` first: `Ask form` takes a settings draft and returns the whole screen, and a view model renders it rather than evaluating it.
 
 So a `switch` over a codec name, a list of rate-control modes, a hardcoded resolution ladder or a hand-written tooltip is a defect, in the way a view field mirroring a model field is.
@@ -537,7 +537,7 @@ No fence crosses: Windows pairs the handle with a keyed mutex, and the Linux exp
 That split also settles where the publish side lives.
 Capture, encode and the publish pipeline stay in Go, and this module owns the settings form that configures them, so the shell talks to one Go process whether it is asking for frames or for an encoder change.
 
-The control half is `api/proto/screenshare/v1`, gRPC over a named pipe on Windows and a Unix socket elsewhere (`docs/ipc-api.md`).
+The control half is `api/proto/mirrorme/v1`, gRPC over a named pipe on Windows and a Unix socket elsewhere (`docs/ipc-api.md`).
 The frame half is a channel of its own: shared GPU handles and a buffer-ownership protocol, with no pixel crossing the control one.
 
 **No DevTools.**

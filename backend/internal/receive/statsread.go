@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-gst/go-gst/pkg/gst"
 
-	"bjoernblessin.de/screenshare/internal/colour"
+	"bjoernblessin.de/mirrorme/internal/colour"
 )
 
 // Stats reads the running pipeline:

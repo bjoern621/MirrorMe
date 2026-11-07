@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/group"
+	"bjoernblessin.de/mirrorme/internal/group"
 )
 
 // relayInDiscordMode is a relay whose settings still hold a manual key,

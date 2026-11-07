@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/pointer"
+	"bjoernblessin.de/mirrorme/internal/pointer"
 )
 
 // pointerHold is the newest reading and the picture it was taken over.

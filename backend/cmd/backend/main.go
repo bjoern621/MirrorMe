@@ -11,14 +11,14 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/app"
-	"bjoernblessin.de/screenshare/internal/decode"
-	"bjoernblessin.de/screenshare/internal/gstrun"
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/reach"
-	"bjoernblessin.de/screenshare/internal/release"
-	"bjoernblessin.de/screenshare/internal/transport"
-	"bjoernblessin.de/screenshare/internal/update"
+	"bjoernblessin.de/mirrorme/internal/app"
+	"bjoernblessin.de/mirrorme/internal/decode"
+	"bjoernblessin.de/mirrorme/internal/gstrun"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/reach"
+	"bjoernblessin.de/mirrorme/internal/release"
+	"bjoernblessin.de/mirrorme/internal/transport"
+	"bjoernblessin.de/mirrorme/internal/update"
 )
 
 // version is the build stamp the control handshake answers with (docs/ipc-api.md, "Versioning").

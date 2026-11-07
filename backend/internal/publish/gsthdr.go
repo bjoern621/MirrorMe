@@ -5,13 +5,13 @@ import (
 	"io"
 	"strings"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
-	"bjoernblessin.de/screenshare/internal/colour"
-	"bjoernblessin.de/screenshare/internal/gstrun"
-	"bjoernblessin.de/screenshare/internal/pointer"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/colour"
+	"bjoernblessin.de/mirrorme/internal/gstrun"
+	"bjoernblessin.de/mirrorme/internal/pointer"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // gstReadChild splits the publish child's standard output between its readers: the meter counting
@@ -127,6 +127,6 @@ func hdrRefusal(s settings.Settings, caps string) error {
 	if !hdrCapture(caps) || s.Publish.Chroma == tenBitChroma {
 		return nil
 	}
-	return text.Fail(screensharev1.TextCode_TEXT_CODE_HDR_CAPTURE_EIGHT_BIT,
-		text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_TRANSFER, captureTransfer(caps)), text.Chroma(s.Publish.Chroma), text.Value(tenBitChroma))
+	return text.Fail(mirrormev1.TextCode_TEXT_CODE_HDR_CAPTURE_EIGHT_BIT,
+		text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_TRANSFER, captureTransfer(caps)), text.Chroma(s.Publish.Chroma), text.Value(tenBitChroma))
 }

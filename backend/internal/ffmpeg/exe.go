@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"runtime"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 )
@@ -34,7 +34,7 @@ func FindExe(name string) (string, error) {
 		// this resolves the GStreamer launcher as well as the ffmpeg pair,
 		// and a missing GStreamer binary reported under an instruction to install ffmpeg sends the reader
 		// after the wrong package.
-		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_PROGRAM_MISSING, text.Program(name))
+		return "", text.Fail(mirrormev1.TextCode_TEXT_CODE_PROGRAM_MISSING, text.Program(name))
 	}
 	return path, nil
 }
@@ -83,13 +83,13 @@ const logDirMode = 0o755
 func LogDir() (string, error) {
 	base, err := os.UserConfigDir()
 	if err != nil {
-		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_CONFIG_DIR_UNKNOWN)
+		return "", text.Because(err, mirrormev1.TextCode_TEXT_CODE_CONFIG_DIR_UNKNOWN)
 	}
 
 	dir := filepath.Join(base, "mirrorme", "logs")
 	err = os.MkdirAll(dir, logDirMode)
 	if err != nil {
-		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNWRITABLE, text.Path(dir))
+		return "", text.Because(err, mirrormev1.TextCode_TEXT_CODE_FILE_UNWRITABLE, text.Path(dir))
 	}
 
 	assert.Assert(dir != "", "a resolved log directory is a path", base)

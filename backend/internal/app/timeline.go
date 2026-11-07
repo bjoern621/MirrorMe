@@ -1,8 +1,8 @@
 package app
 
 import (
-	"bjoernblessin.de/screenshare/internal/timeline"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/timeline"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // StreamTimeline reports this machine's publish run as a viewer would judge it (internal/timeline).

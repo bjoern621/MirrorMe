@@ -3,7 +3,7 @@ package publish
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/share"
+	"bjoernblessin.de/mirrorme/internal/share"
 )
 
 // What each capture backend can be pointed at.

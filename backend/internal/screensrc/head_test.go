@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/share"
+	"bjoernblessin.de/mirrorme/internal/share"
 )
 
 // offDesktop is a rectangle no machine running this test has an output for,

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/relay"
+	"bjoernblessin.de/mirrorme/internal/relay"
 )
 
 // What a scrape reads is the registry as it stands,

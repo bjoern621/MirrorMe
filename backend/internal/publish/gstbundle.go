@@ -3,8 +3,8 @@ package publish
 import (
 	"os"
 
-	"bjoernblessin.de/screenshare/internal/ffmpeg"
-	"bjoernblessin.de/screenshare/internal/gstbundle"
+	"bjoernblessin.de/mirrorme/internal/ffmpeg"
+	"bjoernblessin.de/mirrorme/internal/gstbundle"
 )
 
 // FindGstExe locates the GStreamer launcher the measuring pipelines here spawn: the test streams'

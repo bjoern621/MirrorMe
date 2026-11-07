@@ -1,11 +1,11 @@
 package form
 
 import (
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/share"
-	"bjoernblessin.de/screenshare/internal/window"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/share"
+	"bjoernblessin.de/mirrorme/internal/window"
 )
 
 // What the share group's controls decide, and what each of them is held against.
@@ -27,7 +27,7 @@ func shareKindState(av availability) state {
 }
 
 // shareKindReason is why one kind is out of reach, and nil where it is reachable.
-func shareKindReason(av availability, kind string) *screensharev1.Text {
+func shareKindReason(av availability, kind string) *mirrormev1.Text {
 	if !share.Known(kind) {
 		return nil
 	}

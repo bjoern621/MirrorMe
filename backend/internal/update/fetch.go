@@ -13,12 +13,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/release"
+	"bjoernblessin.de/mirrorme/internal/release"
 )
 
 // Downloading one release asset and proving it is the file the release names.
@@ -72,17 +72,17 @@ func Fetch(ctx context.Context, asset release.Asset, dir string, progress func(i
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, asset.URL, nil)
 	if err != nil {
-		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(asset.URL))
+		return "", text.Because(err, mirrormev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(asset.URL))
 	}
 
 	response, err := http.DefaultClient.Do(request)
 	if err != nil {
-		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNANSWERED, text.Address(asset.URL))
+		return "", text.Because(err, mirrormev1.TextCode_TEXT_CODE_ADDRESS_UNANSWERED, text.Address(asset.URL))
 	}
 	defer func() { _ = response.Body.Close() }()
 
 	if response.StatusCode != http.StatusOK {
-		return "", text.Because(errors.New(response.Status), screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWERED,
+		return "", text.Because(errors.New(response.Status), mirrormev1.TextCode_TEXT_CODE_ADDRESS_ANSWERED,
 			text.Address(asset.URL))
 	}
 

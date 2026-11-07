@@ -5,8 +5,8 @@ package receive
 import (
 	"runtime"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"github.com/go-gst/go-gst/pkg/gst"
 )
@@ -26,11 +26,11 @@ type unbuiltSharer struct{}
 func newSharer() sharer { return unbuiltSharer{} }
 
 func (unbuiltSharer) open(*gst.Sample, int) (Pool, error) {
-	return Pool{}, text.Fail(screensharev1.TextCode_TEXT_CODE_FRAMES_NEED_PLAYER, text.Os(runtime.GOOS))
+	return Pool{}, text.Fail(mirrormev1.TextCode_TEXT_CODE_FRAMES_NEED_PLAYER, text.Os(runtime.GOOS))
 }
 
 func (unbuiltSharer) write(int, *gst.Sample) error {
-	return text.Fail(screensharev1.TextCode_TEXT_CODE_FRAMES_UNSHARED)
+	return text.Fail(mirrormev1.TextCode_TEXT_CODE_FRAMES_UNSHARED)
 }
 
 func (unbuiltSharer) close() {}

@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.12
 // 	protoc        (unknown)
-// source: screenshare/v1/form.proto
+// source: mirrorme/v1/form.proto
 
-package screensharev1
+package mirrormev1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -118,11 +118,11 @@ func (x ControlKind) String() string {
 }
 
 func (ControlKind) Descriptor() protoreflect.EnumDescriptor {
-	return file_screenshare_v1_form_proto_enumTypes[0].Descriptor()
+	return file_mirrorme_v1_form_proto_enumTypes[0].Descriptor()
 }
 
 func (ControlKind) Type() protoreflect.EnumType {
-	return &file_screenshare_v1_form_proto_enumTypes[0]
+	return &file_mirrorme_v1_form_proto_enumTypes[0]
 }
 
 func (x ControlKind) Number() protoreflect.EnumNumber {
@@ -131,7 +131,7 @@ func (x ControlKind) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ControlKind.Descriptor instead.
 func (ControlKind) EnumDescriptor() ([]byte, []int) {
-	return file_screenshare_v1_form_proto_rawDescGZIP(), []int{0}
+	return file_mirrorme_v1_form_proto_rawDescGZIP(), []int{0}
 }
 
 // Meaning of a numeric field's value.
@@ -187,11 +187,11 @@ func (x Unit) String() string {
 }
 
 func (Unit) Descriptor() protoreflect.EnumDescriptor {
-	return file_screenshare_v1_form_proto_enumTypes[1].Descriptor()
+	return file_mirrorme_v1_form_proto_enumTypes[1].Descriptor()
 }
 
 func (Unit) Type() protoreflect.EnumType {
-	return &file_screenshare_v1_form_proto_enumTypes[1]
+	return &file_mirrorme_v1_form_proto_enumTypes[1]
 }
 
 func (x Unit) Number() protoreflect.EnumNumber {
@@ -200,7 +200,7 @@ func (x Unit) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Unit.Descriptor instead.
 func (Unit) EnumDescriptor() ([]byte, []int) {
-	return file_screenshare_v1_form_proto_rawDescGZIP(), []int{1}
+	return file_mirrorme_v1_form_proto_rawDescGZIP(), []int{1}
 }
 
 // Ranks a diagnostic by the cost of ignoring it.
@@ -246,11 +246,11 @@ func (x Severity) String() string {
 }
 
 func (Severity) Descriptor() protoreflect.EnumDescriptor {
-	return file_screenshare_v1_form_proto_enumTypes[2].Descriptor()
+	return file_mirrorme_v1_form_proto_enumTypes[2].Descriptor()
 }
 
 func (Severity) Type() protoreflect.EnumType {
-	return &file_screenshare_v1_form_proto_enumTypes[2]
+	return &file_mirrorme_v1_form_proto_enumTypes[2]
 }
 
 func (x Severity) Number() protoreflect.EnumNumber {
@@ -259,7 +259,7 @@ func (x Severity) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Severity.Descriptor instead.
 func (Severity) EnumDescriptor() ([]byte, []int) {
-	return file_screenshare_v1_form_proto_rawDescGZIP(), []int{2}
+	return file_mirrorme_v1_form_proto_rawDescGZIP(), []int{2}
 }
 
 // A settings value, shaped the way a control edits it.
@@ -279,7 +279,7 @@ type FieldValue struct {
 
 func (x *FieldValue) Reset() {
 	*x = FieldValue{}
-	mi := &file_screenshare_v1_form_proto_msgTypes[0]
+	mi := &file_mirrorme_v1_form_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -291,7 +291,7 @@ func (x *FieldValue) String() string {
 func (*FieldValue) ProtoMessage() {}
 
 func (x *FieldValue) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_form_proto_msgTypes[0]
+	mi := &file_mirrorme_v1_form_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -304,7 +304,7 @@ func (x *FieldValue) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FieldValue.ProtoReflect.Descriptor instead.
 func (*FieldValue) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_form_proto_rawDescGZIP(), []int{0}
+	return file_mirrorme_v1_form_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *FieldValue) GetKind() isFieldValue_Kind {
@@ -392,7 +392,7 @@ type NumericRange struct {
 
 func (x *NumericRange) Reset() {
 	*x = NumericRange{}
-	mi := &file_screenshare_v1_form_proto_msgTypes[1]
+	mi := &file_mirrorme_v1_form_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -404,7 +404,7 @@ func (x *NumericRange) String() string {
 func (*NumericRange) ProtoMessage() {}
 
 func (x *NumericRange) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_form_proto_msgTypes[1]
+	mi := &file_mirrorme_v1_form_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -417,7 +417,7 @@ func (x *NumericRange) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericRange.ProtoReflect.Descriptor instead.
 func (*NumericRange) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_form_proto_rawDescGZIP(), []int{1}
+	return file_mirrorme_v1_form_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *NumericRange) GetMin() int64 {
@@ -484,7 +484,7 @@ type FieldOption struct {
 
 func (x *FieldOption) Reset() {
 	*x = FieldOption{}
-	mi := &file_screenshare_v1_form_proto_msgTypes[2]
+	mi := &file_mirrorme_v1_form_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -496,7 +496,7 @@ func (x *FieldOption) String() string {
 func (*FieldOption) ProtoMessage() {}
 
 func (x *FieldOption) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_form_proto_msgTypes[2]
+	mi := &file_mirrorme_v1_form_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -509,7 +509,7 @@ func (x *FieldOption) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FieldOption.ProtoReflect.Descriptor instead.
 func (*FieldOption) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_form_proto_rawDescGZIP(), []int{2}
+	return file_mirrorme_v1_form_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *FieldOption) GetValue() string {
@@ -571,9 +571,9 @@ type Field struct {
 	// Qualification turns it into an address to write through
 	// instead of a name to hunt for across three messages.
 	Key     string      `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
-	Control ControlKind `protobuf:"varint,2,opt,name=control,proto3,enum=screenshare.v1.ControlKind" json:"control,omitempty"`
+	Control ControlKind `protobuf:"varint,2,opt,name=control,proto3,enum=mirrorme.v1.ControlKind" json:"control,omitempty"`
 	// Meaning of the number, absent where a field is no quantity.
-	Unit Unit `protobuf:"varint,14,opt,name=unit,proto3,enum=screenshare.v1.Unit" json:"unit,omitempty"`
+	Unit Unit `protobuf:"varint,14,opt,name=unit,proto3,enum=mirrorme.v1.Unit" json:"unit,omitempty"`
 	// False for a backend implementation knob meaningless outside one selection,
 	// as the DRM download strategy is away from its capture backend.
 	// Test: would the help text teach somebody on another backend anything worth knowing.
@@ -632,7 +632,7 @@ type Field struct {
 
 func (x *Field) Reset() {
 	*x = Field{}
-	mi := &file_screenshare_v1_form_proto_msgTypes[3]
+	mi := &file_mirrorme_v1_form_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -644,7 +644,7 @@ func (x *Field) String() string {
 func (*Field) ProtoMessage() {}
 
 func (x *Field) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_form_proto_msgTypes[3]
+	mi := &file_mirrorme_v1_form_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -657,7 +657,7 @@ func (x *Field) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Field.ProtoReflect.Descriptor instead.
 func (*Field) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_form_proto_rawDescGZIP(), []int{3}
+	return file_mirrorme_v1_form_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Field) GetKey() string {
@@ -784,7 +784,7 @@ type FieldGroup struct {
 
 func (x *FieldGroup) Reset() {
 	*x = FieldGroup{}
-	mi := &file_screenshare_v1_form_proto_msgTypes[4]
+	mi := &file_mirrorme_v1_form_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -796,7 +796,7 @@ func (x *FieldGroup) String() string {
 func (*FieldGroup) ProtoMessage() {}
 
 func (x *FieldGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_form_proto_msgTypes[4]
+	mi := &file_mirrorme_v1_form_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -809,7 +809,7 @@ func (x *FieldGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FieldGroup.ProtoReflect.Descriptor instead.
 func (*FieldGroup) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_form_proto_rawDescGZIP(), []int{4}
+	return file_mirrorme_v1_form_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *FieldGroup) GetKey() string {
@@ -840,7 +840,7 @@ func (x *FieldGroup) GetApplied() bool {
 // a warning that halts publishing is a name at odds with its contents.
 type Diagnostic struct {
 	state    protoimpl.MessageState `protogen:"open.v1"`
-	Severity Severity               `protobuf:"varint,1,opt,name=severity,proto3,enum=screenshare.v1.Severity" json:"severity,omitempty"`
+	Severity Severity               `protobuf:"varint,1,opt,name=severity,proto3,enum=mirrorme.v1.Severity" json:"severity,omitempty"`
 	Text     *Text                  `protobuf:"bytes,4,opt,name=text,proto3" json:"text,omitempty"`
 	// Control the diagnostic concerns,
 	// empty where it concerns the combination and no single field.
@@ -852,7 +852,7 @@ type Diagnostic struct {
 
 func (x *Diagnostic) Reset() {
 	*x = Diagnostic{}
-	mi := &file_screenshare_v1_form_proto_msgTypes[5]
+	mi := &file_mirrorme_v1_form_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -864,7 +864,7 @@ func (x *Diagnostic) String() string {
 func (*Diagnostic) ProtoMessage() {}
 
 func (x *Diagnostic) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_form_proto_msgTypes[5]
+	mi := &file_mirrorme_v1_form_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -877,7 +877,7 @@ func (x *Diagnostic) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Diagnostic.ProtoReflect.Descriptor instead.
 func (*Diagnostic) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_form_proto_rawDescGZIP(), []int{5}
+	return file_mirrorme_v1_form_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *Diagnostic) GetSeverity() Severity {
@@ -920,7 +920,7 @@ type Estimate struct {
 
 func (x *Estimate) Reset() {
 	*x = Estimate{}
-	mi := &file_screenshare_v1_form_proto_msgTypes[6]
+	mi := &file_mirrorme_v1_form_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -932,7 +932,7 @@ func (x *Estimate) String() string {
 func (*Estimate) ProtoMessage() {}
 
 func (x *Estimate) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_form_proto_msgTypes[6]
+	mi := &file_mirrorme_v1_form_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -945,7 +945,7 @@ func (x *Estimate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Estimate.ProtoReflect.Descriptor instead.
 func (*Estimate) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_form_proto_rawDescGZIP(), []int{6}
+	return file_mirrorme_v1_form_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Estimate) GetBitrateMbps() float64 {
@@ -989,7 +989,7 @@ type Summary struct {
 
 func (x *Summary) Reset() {
 	*x = Summary{}
-	mi := &file_screenshare_v1_form_proto_msgTypes[7]
+	mi := &file_mirrorme_v1_form_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1001,7 +1001,7 @@ func (x *Summary) String() string {
 func (*Summary) ProtoMessage() {}
 
 func (x *Summary) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_form_proto_msgTypes[7]
+	mi := &file_mirrorme_v1_form_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1014,7 +1014,7 @@ func (x *Summary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Summary.ProtoReflect.Descriptor instead.
 func (*Summary) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_form_proto_rawDescGZIP(), []int{7}
+	return file_mirrorme_v1_form_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *Summary) GetCommand() string {
@@ -1094,7 +1094,7 @@ type Form struct {
 
 func (x *Form) Reset() {
 	*x = Form{}
-	mi := &file_screenshare_v1_form_proto_msgTypes[8]
+	mi := &file_mirrorme_v1_form_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1106,7 +1106,7 @@ func (x *Form) String() string {
 func (*Form) ProtoMessage() {}
 
 func (x *Form) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_form_proto_msgTypes[8]
+	mi := &file_mirrorme_v1_form_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1119,7 +1119,7 @@ func (x *Form) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Form.ProtoReflect.Descriptor instead.
 func (*Form) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_form_proto_rawDescGZIP(), []int{8}
+	return file_mirrorme_v1_form_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *Form) GetSettings() *Settings {
@@ -1236,7 +1236,7 @@ type BuiltinPreset struct {
 
 func (x *BuiltinPreset) Reset() {
 	*x = BuiltinPreset{}
-	mi := &file_screenshare_v1_form_proto_msgTypes[9]
+	mi := &file_mirrorme_v1_form_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1248,7 +1248,7 @@ func (x *BuiltinPreset) String() string {
 func (*BuiltinPreset) ProtoMessage() {}
 
 func (x *BuiltinPreset) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_form_proto_msgTypes[9]
+	mi := &file_mirrorme_v1_form_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1261,7 +1261,7 @@ func (x *BuiltinPreset) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuiltinPreset.ProtoReflect.Descriptor instead.
 func (*BuiltinPreset) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_form_proto_rawDescGZIP(), []int{9}
+	return file_mirrorme_v1_form_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *BuiltinPreset) GetKey() string {
@@ -1299,11 +1299,11 @@ func (x *BuiltinPreset) GetEstimate() *Estimate {
 	return nil
 }
 
-var File_screenshare_v1_form_proto protoreflect.FileDescriptor
+var File_mirrorme_v1_form_proto protoreflect.FileDescriptor
 
-const file_screenshare_v1_form_proto_rawDesc = "" +
+const file_mirrorme_v1_form_proto_rawDesc = "" +
 	"\n" +
-	"\x19screenshare/v1/form.proto\x12\x0escreenshare.v1\x1a\x1dscreenshare/v1/settings.proto\x1a\x19screenshare/v1/text.proto\"v\n" +
+	"\x16mirrorme/v1/form.proto\x12\vmirrorme.v1\x1a\x1amirrorme/v1/settings.proto\x1a\x16mirrorme/v1/text.proto\"v\n" +
 	"\n" +
 	"FieldValue\x12\x14\n" +
 	"\x04text\x18\x01 \x01(\tH\x00R\x04text\x12\x18\n" +
@@ -1314,66 +1314,66 @@ const file_screenshare_v1_form_proto_rawDesc = "" +
 	"\fNumericRange\x12\x10\n" +
 	"\x03min\x18\x01 \x01(\x03R\x03min\x12\x10\n" +
 	"\x03max\x18\x02 \x01(\x03R\x03max\x12\x12\n" +
-	"\x04step\x18\x03 \x01(\x03R\x04step\"\xca\x02\n" +
+	"\x04step\x18\x03 \x01(\x03R\x04step\"\xbe\x02\n" +
 	"\vFieldOption\x12\x14\n" +
-	"\x05value\x18\x01 \x01(\tR\x05value\x12(\n" +
-	"\x04note\x18\b \x01(\v2\x14.screenshare.v1.TextR\x04note\x12\x18\n" +
-	"\aenabled\x18\x05 \x01(\bR\aenabled\x12,\n" +
-	"\x06reason\x18\t \x01(\v2\x14.screenshare.v1.TextR\x06reason\x12 \n" +
-	"\vrecommended\x18\a \x01(\bR\vrecommended\x124\n" +
+	"\x05value\x18\x01 \x01(\tR\x05value\x12%\n" +
+	"\x04note\x18\b \x01(\v2\x11.mirrorme.v1.TextR\x04note\x12\x18\n" +
+	"\aenabled\x18\x05 \x01(\bR\aenabled\x12)\n" +
+	"\x06reason\x18\t \x01(\v2\x11.mirrorme.v1.TextR\x06reason\x12 \n" +
+	"\vrecommended\x18\a \x01(\bR\vrecommended\x121\n" +
 	"\bestimate\x18\n" +
-	" \x01(\v2\x18.screenshare.v1.EstimateR\bestimate\x124\n" +
-	"\aimpacts\x18\v \x03(\v2\x1a.screenshare.v1.DiagnosticR\aimpactsJ\x04\b\x02\x10\x03J\x04\b\x03\x10\x04J\x04\b\x04\x10\x05J\x04\b\x06\x10\aR\x05labelR\x06detail\"\xb2\x04\n" +
+	" \x01(\v2\x15.mirrorme.v1.EstimateR\bestimate\x121\n" +
+	"\aimpacts\x18\v \x03(\v2\x17.mirrorme.v1.DiagnosticR\aimpactsJ\x04\b\x02\x10\x03J\x04\b\x03\x10\x04J\x04\b\x04\x10\x05J\x04\b\x06\x10\aR\x05labelR\x06detail\"\x9a\x04\n" +
 	"\x05Field\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x125\n" +
-	"\acontrol\x18\x02 \x01(\x0e2\x1b.screenshare.v1.ControlKindR\acontrol\x12(\n" +
-	"\x04unit\x18\x0e \x01(\x0e2\x14.screenshare.v1.UnitR\x04unit\x12\x18\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x122\n" +
+	"\acontrol\x18\x02 \x01(\x0e2\x18.mirrorme.v1.ControlKindR\acontrol\x12%\n" +
+	"\x04unit\x18\x0e \x01(\x0e2\x11.mirrorme.v1.UnitR\x04unit\x12\x18\n" +
 	"\avisible\x18\a \x01(\bR\avisible\x12\x18\n" +
-	"\aenabled\x18\b \x01(\bR\aenabled\x12,\n" +
-	"\x06reason\x18\x0f \x01(\v2\x14.screenshare.v1.TextR\x06reason\x12(\n" +
-	"\x04note\x18\x10 \x01(\v2\x14.screenshare.v1.TextR\x04note\x12\x12\n" +
-	"\x04live\x18\x12 \x01(\bR\x04live\x120\n" +
-	"\x05value\x18\v \x01(\v2\x1a.screenshare.v1.FieldValueR\x05value\x12?\n" +
-	"\rdefault_value\x18\x11 \x01(\v2\x1a.screenshare.v1.FieldValueR\fdefaultValue\x125\n" +
-	"\aoptions\x18\f \x03(\v2\x1b.screenshare.v1.FieldOptionR\aoptions\x122\n" +
-	"\x05range\x18\r \x01(\v2\x1c.screenshare.v1.NumericRangeR\x05rangeJ\x04\b\x03\x10\x04J\x04\b\x04\x10\x05J\x04\b\x05\x10\x06J\x04\b\x06\x10\aJ\x04\b\t\x10\n" +
+	"\aenabled\x18\b \x01(\bR\aenabled\x12)\n" +
+	"\x06reason\x18\x0f \x01(\v2\x11.mirrorme.v1.TextR\x06reason\x12%\n" +
+	"\x04note\x18\x10 \x01(\v2\x11.mirrorme.v1.TextR\x04note\x12\x12\n" +
+	"\x04live\x18\x12 \x01(\bR\x04live\x12-\n" +
+	"\x05value\x18\v \x01(\v2\x17.mirrorme.v1.FieldValueR\x05value\x12<\n" +
+	"\rdefault_value\x18\x11 \x01(\v2\x17.mirrorme.v1.FieldValueR\fdefaultValue\x122\n" +
+	"\aoptions\x18\f \x03(\v2\x18.mirrorme.v1.FieldOptionR\aoptions\x12/\n" +
+	"\x05range\x18\r \x01(\v2\x19.mirrorme.v1.NumericRangeR\x05rangeJ\x04\b\x03\x10\x04J\x04\b\x04\x10\x05J\x04\b\x05\x10\x06J\x04\b\x06\x10\aJ\x04\b\t\x10\n" +
 	"J\x04\b\n" +
-	"\x10\vR\x05labelR\x04helpR\adoc_url\"\x8f\x01\n" +
+	"\x10\vR\x05labelR\x04helpR\adoc_url\"\x8c\x01\n" +
 	"\n" +
 	"FieldGroup\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12-\n" +
-	"\x06fields\x18\x04 \x03(\v2\x15.screenshare.v1.FieldR\x06fields\x12\x18\n" +
-	"\aapplied\x18\x06 \x01(\bR\aappliedJ\x04\b\x02\x10\x03J\x04\b\x03\x10\x04J\x04\b\x05\x10\x06R\x05titleR\x04helpR\asummary\"\x98\x01\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12*\n" +
+	"\x06fields\x18\x04 \x03(\v2\x12.mirrorme.v1.FieldR\x06fields\x12\x18\n" +
+	"\aapplied\x18\x06 \x01(\bR\aappliedJ\x04\b\x02\x10\x03J\x04\b\x03\x10\x04J\x04\b\x05\x10\x06R\x05titleR\x04helpR\asummary\"\x92\x01\n" +
 	"\n" +
-	"Diagnostic\x124\n" +
-	"\bseverity\x18\x01 \x01(\x0e2\x18.screenshare.v1.SeverityR\bseverity\x12(\n" +
-	"\x04text\x18\x04 \x01(\v2\x14.screenshare.v1.TextR\x04text\x12\x1b\n" +
+	"Diagnostic\x121\n" +
+	"\bseverity\x18\x01 \x01(\x0e2\x15.mirrorme.v1.SeverityR\bseverity\x12%\n" +
+	"\x04text\x18\x04 \x01(\v2\x11.mirrorme.v1.TextR\x04text\x12\x1b\n" +
 	"\tfield_key\x18\x03 \x01(\tR\bfieldKeyJ\x04\b\x02\x10\x03R\amessage\"m\n" +
 	"\bEstimate\x12!\n" +
 	"\fbitrate_mbps\x18\x01 \x01(\x01R\vbitrateMbps\x12\x19\n" +
 	"\braw_mbps\x18\x02 \x01(\x01R\arawMbps\x12#\n" +
-	"\rheadroom_mbps\x18\x03 \x01(\x01R\fheadroomMbps\"\xc0\x01\n" +
+	"\rheadroom_mbps\x18\x03 \x01(\x01R\fheadroomMbps\"\xba\x01\n" +
 	"\aSummary\x12\x18\n" +
-	"\acommand\x18\x02 \x01(\tR\acommand\x12@\n" +
-	"\x0fcommand_refusal\x18\x05 \x01(\v2\x17.screenshare.v1.RefusalR\x0ecommandRefusal\x124\n" +
-	"\bestimate\x18\x04 \x01(\v2\x18.screenshare.v1.EstimateR\bestimateJ\x04\b\x01\x10\x02J\x04\b\x03\x10\x04R\bheadlineR\rcommand_error\"\xde\x03\n" +
-	"\x04Form\x124\n" +
-	"\bsettings\x18\x01 \x01(\v2\x18.screenshare.v1.SettingsR\bsettings\x12.\n" +
-	"\x13repaired_field_keys\x18\a \x03(\tR\x11repairedFieldKeys\x122\n" +
-	"\x06groups\x18\x03 \x03(\v2\x1a.screenshare.v1.FieldGroupR\x06groups\x12<\n" +
-	"\vdiagnostics\x18\b \x03(\v2\x1a.screenshare.v1.DiagnosticR\vdiagnostics\x121\n" +
-	"\asummary\x18\x05 \x01(\v2\x17.screenshare.v1.SummaryR\asummary\x127\n" +
-	"\apresets\x18\t \x03(\v2\x1d.screenshare.v1.BuiltinPresetR\apresets\x12 \n" +
+	"\acommand\x18\x02 \x01(\tR\acommand\x12=\n" +
+	"\x0fcommand_refusal\x18\x05 \x01(\v2\x14.mirrorme.v1.RefusalR\x0ecommandRefusal\x121\n" +
+	"\bestimate\x18\x04 \x01(\v2\x15.mirrorme.v1.EstimateR\bestimateJ\x04\b\x01\x10\x02J\x04\b\x03\x10\x04R\bheadlineR\rcommand_error\"\xcf\x03\n" +
+	"\x04Form\x121\n" +
+	"\bsettings\x18\x01 \x01(\v2\x15.mirrorme.v1.SettingsR\bsettings\x12.\n" +
+	"\x13repaired_field_keys\x18\a \x03(\tR\x11repairedFieldKeys\x12/\n" +
+	"\x06groups\x18\x03 \x03(\v2\x17.mirrorme.v1.FieldGroupR\x06groups\x129\n" +
+	"\vdiagnostics\x18\b \x03(\v2\x17.mirrorme.v1.DiagnosticR\vdiagnostics\x12.\n" +
+	"\asummary\x18\x05 \x01(\v2\x14.mirrorme.v1.SummaryR\asummary\x124\n" +
+	"\apresets\x18\t \x03(\v2\x1a.mirrorme.v1.BuiltinPresetR\apresets\x12 \n" +
 	"\vpublishable\x18\x06 \x01(\bR\vpublishable\x125\n" +
 	"\x17preset_owned_field_keys\x18\n" +
 	" \x03(\tR\x14presetOwnedFieldKeys\x12\x19\n" +
-	"\bin_force\x18\v \x01(\bR\ainForceJ\x04\b\x02\x10\x03J\x04\b\x04\x10\x05R\brepairedR\bwarnings\"\xde\x01\n" +
+	"\bin_force\x18\v \x01(\bR\ainForceJ\x04\b\x02\x10\x03J\x04\b\x04\x10\x05R\brepairedR\bwarnings\"\xd5\x01\n" +
 	"\rBuiltinPreset\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12;\n" +
-	"\bsettings\x18\x02 \x01(\v2\x1f.screenshare.v1.PublishSettingsR\bsettings\x12,\n" +
-	"\x06reason\x18\x03 \x01(\v2\x14.screenshare.v1.TextR\x06reason\x12\x1a\n" +
-	"\bselected\x18\x04 \x01(\bR\bselected\x124\n" +
-	"\bestimate\x18\x05 \x01(\v2\x18.screenshare.v1.EstimateR\bestimate*\xf9\x01\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x128\n" +
+	"\bsettings\x18\x02 \x01(\v2\x1c.mirrorme.v1.PublishSettingsR\bsettings\x12)\n" +
+	"\x06reason\x18\x03 \x01(\v2\x11.mirrorme.v1.TextR\x06reason\x12\x1a\n" +
+	"\bselected\x18\x04 \x01(\bR\bselected\x121\n" +
+	"\bestimate\x18\x05 \x01(\v2\x15.mirrorme.v1.EstimateR\bestimate*\xf9\x01\n" +
 	"\vControlKind\x12\x1c\n" +
 	"\x18CONTROL_KIND_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11CONTROL_KIND_TEXT\x10\x01\x12\x17\n" +
@@ -1395,67 +1395,67 @@ const file_screenshare_v1_form_proto_rawDesc = "" +
 	"\x14SEVERITY_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rSEVERITY_INFO\x10\x01\x12\x14\n" +
 	"\x10SEVERITY_WARNING\x10\x02\x12\x12\n" +
-	"\x0eSEVERITY_ERROR\x10\x03B[ZDbjoernblessin.de/screenshare/api/gen/go/screenshare/v1;screensharev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
+	"\x0eSEVERITY_ERROR\x10\x03BRZ;bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
 
 var (
-	file_screenshare_v1_form_proto_rawDescOnce sync.Once
-	file_screenshare_v1_form_proto_rawDescData []byte
+	file_mirrorme_v1_form_proto_rawDescOnce sync.Once
+	file_mirrorme_v1_form_proto_rawDescData []byte
 )
 
-func file_screenshare_v1_form_proto_rawDescGZIP() []byte {
-	file_screenshare_v1_form_proto_rawDescOnce.Do(func() {
-		file_screenshare_v1_form_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_screenshare_v1_form_proto_rawDesc), len(file_screenshare_v1_form_proto_rawDesc)))
+func file_mirrorme_v1_form_proto_rawDescGZIP() []byte {
+	file_mirrorme_v1_form_proto_rawDescOnce.Do(func() {
+		file_mirrorme_v1_form_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_mirrorme_v1_form_proto_rawDesc), len(file_mirrorme_v1_form_proto_rawDesc)))
 	})
-	return file_screenshare_v1_form_proto_rawDescData
+	return file_mirrorme_v1_form_proto_rawDescData
 }
 
-var file_screenshare_v1_form_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_screenshare_v1_form_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
-var file_screenshare_v1_form_proto_goTypes = []any{
-	(ControlKind)(0),        // 0: screenshare.v1.ControlKind
-	(Unit)(0),               // 1: screenshare.v1.Unit
-	(Severity)(0),           // 2: screenshare.v1.Severity
-	(*FieldValue)(nil),      // 3: screenshare.v1.FieldValue
-	(*NumericRange)(nil),    // 4: screenshare.v1.NumericRange
-	(*FieldOption)(nil),     // 5: screenshare.v1.FieldOption
-	(*Field)(nil),           // 6: screenshare.v1.Field
-	(*FieldGroup)(nil),      // 7: screenshare.v1.FieldGroup
-	(*Diagnostic)(nil),      // 8: screenshare.v1.Diagnostic
-	(*Estimate)(nil),        // 9: screenshare.v1.Estimate
-	(*Summary)(nil),         // 10: screenshare.v1.Summary
-	(*Form)(nil),            // 11: screenshare.v1.Form
-	(*BuiltinPreset)(nil),   // 12: screenshare.v1.BuiltinPreset
-	(*Text)(nil),            // 13: screenshare.v1.Text
-	(*Refusal)(nil),         // 14: screenshare.v1.Refusal
-	(*Settings)(nil),        // 15: screenshare.v1.Settings
-	(*PublishSettings)(nil), // 16: screenshare.v1.PublishSettings
+var file_mirrorme_v1_form_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_mirrorme_v1_form_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_mirrorme_v1_form_proto_goTypes = []any{
+	(ControlKind)(0),        // 0: mirrorme.v1.ControlKind
+	(Unit)(0),               // 1: mirrorme.v1.Unit
+	(Severity)(0),           // 2: mirrorme.v1.Severity
+	(*FieldValue)(nil),      // 3: mirrorme.v1.FieldValue
+	(*NumericRange)(nil),    // 4: mirrorme.v1.NumericRange
+	(*FieldOption)(nil),     // 5: mirrorme.v1.FieldOption
+	(*Field)(nil),           // 6: mirrorme.v1.Field
+	(*FieldGroup)(nil),      // 7: mirrorme.v1.FieldGroup
+	(*Diagnostic)(nil),      // 8: mirrorme.v1.Diagnostic
+	(*Estimate)(nil),        // 9: mirrorme.v1.Estimate
+	(*Summary)(nil),         // 10: mirrorme.v1.Summary
+	(*Form)(nil),            // 11: mirrorme.v1.Form
+	(*BuiltinPreset)(nil),   // 12: mirrorme.v1.BuiltinPreset
+	(*Text)(nil),            // 13: mirrorme.v1.Text
+	(*Refusal)(nil),         // 14: mirrorme.v1.Refusal
+	(*Settings)(nil),        // 15: mirrorme.v1.Settings
+	(*PublishSettings)(nil), // 16: mirrorme.v1.PublishSettings
 }
-var file_screenshare_v1_form_proto_depIdxs = []int32{
-	13, // 0: screenshare.v1.FieldOption.note:type_name -> screenshare.v1.Text
-	13, // 1: screenshare.v1.FieldOption.reason:type_name -> screenshare.v1.Text
-	9,  // 2: screenshare.v1.FieldOption.estimate:type_name -> screenshare.v1.Estimate
-	8,  // 3: screenshare.v1.FieldOption.impacts:type_name -> screenshare.v1.Diagnostic
-	0,  // 4: screenshare.v1.Field.control:type_name -> screenshare.v1.ControlKind
-	1,  // 5: screenshare.v1.Field.unit:type_name -> screenshare.v1.Unit
-	13, // 6: screenshare.v1.Field.reason:type_name -> screenshare.v1.Text
-	13, // 7: screenshare.v1.Field.note:type_name -> screenshare.v1.Text
-	3,  // 8: screenshare.v1.Field.value:type_name -> screenshare.v1.FieldValue
-	3,  // 9: screenshare.v1.Field.default_value:type_name -> screenshare.v1.FieldValue
-	5,  // 10: screenshare.v1.Field.options:type_name -> screenshare.v1.FieldOption
-	4,  // 11: screenshare.v1.Field.range:type_name -> screenshare.v1.NumericRange
-	6,  // 12: screenshare.v1.FieldGroup.fields:type_name -> screenshare.v1.Field
-	2,  // 13: screenshare.v1.Diagnostic.severity:type_name -> screenshare.v1.Severity
-	13, // 14: screenshare.v1.Diagnostic.text:type_name -> screenshare.v1.Text
-	14, // 15: screenshare.v1.Summary.command_refusal:type_name -> screenshare.v1.Refusal
-	9,  // 16: screenshare.v1.Summary.estimate:type_name -> screenshare.v1.Estimate
-	15, // 17: screenshare.v1.Form.settings:type_name -> screenshare.v1.Settings
-	7,  // 18: screenshare.v1.Form.groups:type_name -> screenshare.v1.FieldGroup
-	8,  // 19: screenshare.v1.Form.diagnostics:type_name -> screenshare.v1.Diagnostic
-	10, // 20: screenshare.v1.Form.summary:type_name -> screenshare.v1.Summary
-	12, // 21: screenshare.v1.Form.presets:type_name -> screenshare.v1.BuiltinPreset
-	16, // 22: screenshare.v1.BuiltinPreset.settings:type_name -> screenshare.v1.PublishSettings
-	13, // 23: screenshare.v1.BuiltinPreset.reason:type_name -> screenshare.v1.Text
-	9,  // 24: screenshare.v1.BuiltinPreset.estimate:type_name -> screenshare.v1.Estimate
+var file_mirrorme_v1_form_proto_depIdxs = []int32{
+	13, // 0: mirrorme.v1.FieldOption.note:type_name -> mirrorme.v1.Text
+	13, // 1: mirrorme.v1.FieldOption.reason:type_name -> mirrorme.v1.Text
+	9,  // 2: mirrorme.v1.FieldOption.estimate:type_name -> mirrorme.v1.Estimate
+	8,  // 3: mirrorme.v1.FieldOption.impacts:type_name -> mirrorme.v1.Diagnostic
+	0,  // 4: mirrorme.v1.Field.control:type_name -> mirrorme.v1.ControlKind
+	1,  // 5: mirrorme.v1.Field.unit:type_name -> mirrorme.v1.Unit
+	13, // 6: mirrorme.v1.Field.reason:type_name -> mirrorme.v1.Text
+	13, // 7: mirrorme.v1.Field.note:type_name -> mirrorme.v1.Text
+	3,  // 8: mirrorme.v1.Field.value:type_name -> mirrorme.v1.FieldValue
+	3,  // 9: mirrorme.v1.Field.default_value:type_name -> mirrorme.v1.FieldValue
+	5,  // 10: mirrorme.v1.Field.options:type_name -> mirrorme.v1.FieldOption
+	4,  // 11: mirrorme.v1.Field.range:type_name -> mirrorme.v1.NumericRange
+	6,  // 12: mirrorme.v1.FieldGroup.fields:type_name -> mirrorme.v1.Field
+	2,  // 13: mirrorme.v1.Diagnostic.severity:type_name -> mirrorme.v1.Severity
+	13, // 14: mirrorme.v1.Diagnostic.text:type_name -> mirrorme.v1.Text
+	14, // 15: mirrorme.v1.Summary.command_refusal:type_name -> mirrorme.v1.Refusal
+	9,  // 16: mirrorme.v1.Summary.estimate:type_name -> mirrorme.v1.Estimate
+	15, // 17: mirrorme.v1.Form.settings:type_name -> mirrorme.v1.Settings
+	7,  // 18: mirrorme.v1.Form.groups:type_name -> mirrorme.v1.FieldGroup
+	8,  // 19: mirrorme.v1.Form.diagnostics:type_name -> mirrorme.v1.Diagnostic
+	10, // 20: mirrorme.v1.Form.summary:type_name -> mirrorme.v1.Summary
+	12, // 21: mirrorme.v1.Form.presets:type_name -> mirrorme.v1.BuiltinPreset
+	16, // 22: mirrorme.v1.BuiltinPreset.settings:type_name -> mirrorme.v1.PublishSettings
+	13, // 23: mirrorme.v1.BuiltinPreset.reason:type_name -> mirrorme.v1.Text
+	9,  // 24: mirrorme.v1.BuiltinPreset.estimate:type_name -> mirrorme.v1.Estimate
 	25, // [25:25] is the sub-list for method output_type
 	25, // [25:25] is the sub-list for method input_type
 	25, // [25:25] is the sub-list for extension type_name
@@ -1463,14 +1463,14 @@ var file_screenshare_v1_form_proto_depIdxs = []int32{
 	0,  // [0:25] is the sub-list for field type_name
 }
 
-func init() { file_screenshare_v1_form_proto_init() }
-func file_screenshare_v1_form_proto_init() {
-	if File_screenshare_v1_form_proto != nil {
+func init() { file_mirrorme_v1_form_proto_init() }
+func file_mirrorme_v1_form_proto_init() {
+	if File_mirrorme_v1_form_proto != nil {
 		return
 	}
-	file_screenshare_v1_settings_proto_init()
-	file_screenshare_v1_text_proto_init()
-	file_screenshare_v1_form_proto_msgTypes[0].OneofWrappers = []any{
+	file_mirrorme_v1_settings_proto_init()
+	file_mirrorme_v1_text_proto_init()
+	file_mirrorme_v1_form_proto_msgTypes[0].OneofWrappers = []any{
 		(*FieldValue_Text)(nil),
 		(*FieldValue_Number)(nil),
 		(*FieldValue_Decimal)(nil),
@@ -1480,18 +1480,18 @@ func file_screenshare_v1_form_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_screenshare_v1_form_proto_rawDesc), len(file_screenshare_v1_form_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mirrorme_v1_form_proto_rawDesc), len(file_mirrorme_v1_form_proto_rawDesc)),
 			NumEnums:      3,
 			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_screenshare_v1_form_proto_goTypes,
-		DependencyIndexes: file_screenshare_v1_form_proto_depIdxs,
-		EnumInfos:         file_screenshare_v1_form_proto_enumTypes,
-		MessageInfos:      file_screenshare_v1_form_proto_msgTypes,
+		GoTypes:           file_mirrorme_v1_form_proto_goTypes,
+		DependencyIndexes: file_mirrorme_v1_form_proto_depIdxs,
+		EnumInfos:         file_mirrorme_v1_form_proto_enumTypes,
+		MessageInfos:      file_mirrorme_v1_form_proto_msgTypes,
 	}.Build()
-	File_screenshare_v1_form_proto = out.File
-	file_screenshare_v1_form_proto_goTypes = nil
-	file_screenshare_v1_form_proto_depIdxs = nil
+	File_mirrorme_v1_form_proto = out.File
+	file_mirrorme_v1_form_proto_goTypes = nil
+	file_mirrorme_v1_form_proto_depIdxs = nil
 }

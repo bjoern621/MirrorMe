@@ -6,16 +6,16 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/control"
-	"bjoernblessin.de/screenshare/internal/decode"
-	"bjoernblessin.de/screenshare/internal/display"
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/receive"
-	"bjoernblessin.de/screenshare/internal/screensrc"
-	"bjoernblessin.de/screenshare/internal/text"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/control"
+	"bjoernblessin.de/mirrorme/internal/decode"
+	"bjoernblessin.de/mirrorme/internal/display"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/screensrc"
+	"bjoernblessin.de/mirrorme/internal/text"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // Monitor previews: this machine reading its own screens,
@@ -64,8 +64,8 @@ func (a *App) StartMonitorPreview(monitor int) error {
 	if _, enumerated := display.At(monitor); !enumerated {
 		// Typed: an index naming no output of this machine is what the contract calls INVALID_ARGUMENT,
 		// against a session that cannot read one screen apart from another (control/refusal.go).
-		return control.Refuse(text.Fail(screensharev1.TextCode_TEXT_CODE_MONITOR_NOT_ENUMERATED,
-			text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_MONITOR, int64(monitor))))
+		return control.Refuse(text.Fail(mirrormev1.TextCode_TEXT_CODE_MONITOR_NOT_ENUMERATED,
+			text.Num(mirrormev1.TextArgName_TEXT_ARG_NAME_MONITOR, int64(monitor))))
 	}
 
 	source, err := screensrc.PreviewSource(platform.Detect(), monitor)
@@ -167,7 +167,7 @@ func (a *App) SubscribeMonitorFrames(monitor int) (decode.Subscription, error) {
 	a.procMu.Unlock()
 
 	if !present {
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_MONITOR_NOT_PREVIEWING, text.Monitor(monitor))
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_MONITOR_NOT_PREVIEWING, text.Monitor(monitor))
 	}
 	return receiver.Subscribe()
 }

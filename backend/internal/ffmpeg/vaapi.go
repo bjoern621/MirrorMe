@@ -3,8 +3,8 @@ package ffmpeg
 import (
 	"path/filepath"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // The VAAPI half of the publish command: the device the encoder runs on.
@@ -21,7 +21,7 @@ import (
 func VaapiDevice() ([]string, error) {
 	node := vaapiRenderNode()
 	if node == "" {
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_NO_RENDER_NODE)
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_NO_RENDER_NODE)
 	}
 	return []string{"-vaapi_device", node}, nil
 }

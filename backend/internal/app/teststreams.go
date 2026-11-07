@@ -8,13 +8,13 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/ffmpeg"
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/transport"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/ffmpeg"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/transport"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // maxTestStreams bounds StartTestStreams: each test stream runs its own x264 encoder,
@@ -51,7 +51,7 @@ type testStream struct {
 	// cause is this app's statement about why the slot carries no publisher,
 	// message the last child's own last words, both held from the exit that emptied the slot.
 	// logPath is that child's run log, which outlives it.
-	cause   *screensharev1.Text
+	cause   *mirrormev1.Text
 	message string
 	logPath string
 }

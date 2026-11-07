@@ -1,7 +1,7 @@
 package transport
 
 import (
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // What a relay's certificate is measured against, for the two legs that terminate TLS at the relay

@@ -7,16 +7,16 @@ import (
 	"sync"
 	"time"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 )
 
 // Snapshot holds the run as judged when it was taken.
 type Snapshot struct {
-	Level     screensharev1.StreamVerdict_Level
-	Cause     *screensharev1.Text
+	Level     mirrormev1.StreamVerdict_Level
+	Cause     *mirrormev1.Text
 	Message   string
 	LogPath   string
 	StartedAt time.Time
@@ -40,10 +40,10 @@ type run struct {
 	dipLow float64
 
 	restarting   bool
-	restartCause *screensharev1.Text
+	restartCause *mirrormev1.Text
 
 	stopped     bool
-	stopCause   *screensharev1.Text
+	stopCause   *mirrormev1.Text
 	stopMessage string
 	stopLog     string
 }
@@ -104,7 +104,7 @@ func (tl *Timeline) Sample(fps float64) bool {
 }
 
 // Restart marks the pipeline ending with a relaunch scheduled. cause may be nil.
-func (tl *Timeline) Restart(cause *screensharev1.Text) {
+func (tl *Timeline) Restart(cause *mirrormev1.Text) {
 	tl.mu.Lock()
 	defer tl.mu.Unlock()
 
@@ -118,7 +118,7 @@ func (tl *Timeline) Restart(cause *screensharev1.Text) {
 }
 
 // Stop marks the run ended on a failure no retry recovers.
-func (tl *Timeline) Stop(cause *screensharev1.Text, message, logPath string) {
+func (tl *Timeline) Stop(cause *mirrormev1.Text, message, logPath string) {
 	tl.mu.Lock()
 	defer tl.mu.Unlock()
 
@@ -145,25 +145,25 @@ func (tl *Timeline) Snapshot() Snapshot {
 	defer tl.mu.Unlock()
 
 	out := Snapshot{
-		Level:     screensharev1.StreamVerdict_LEVEL_CLEAN,
+		Level:     mirrormev1.StreamVerdict_LEVEL_CLEAN,
 		StartedAt: tl.run.startedAt,
 	}
 	switch {
 	case tl.run.stopped:
-		out.Level = screensharev1.StreamVerdict_LEVEL_STOPPED
+		out.Level = mirrormev1.StreamVerdict_LEVEL_STOPPED
 		out.Cause = tl.run.stopCause
 		out.Message = tl.run.stopMessage
 		out.LogPath = tl.run.stopLog
 	case tl.run.restarting:
-		out.Level = screensharev1.StreamVerdict_LEVEL_DISAPPOINTS
+		out.Level = mirrormev1.StreamVerdict_LEVEL_DISAPPOINTS
 		out.Cause = tl.run.restartCause
 	case tl.run.dipping:
-		out.Level = screensharev1.StreamVerdict_LEVEL_DISAPPOINTS
-		out.Cause = text.Of(screensharev1.TextCode_TEXT_CODE_VERDICT_DIP,
-			text.Dec(screensharev1.TextArgName_TEXT_ARG_NAME_FPS, tl.run.dipLow),
-			text.Dec(screensharev1.TextArgName_TEXT_ARG_NAME_TARGET_FPS, tl.run.targetFps))
+		out.Level = mirrormev1.StreamVerdict_LEVEL_DISAPPOINTS
+		out.Cause = text.Of(mirrormev1.TextCode_TEXT_CODE_VERDICT_DIP,
+			text.Dec(mirrormev1.TextArgName_TEXT_ARG_NAME_FPS, tl.run.dipLow),
+			text.Dec(mirrormev1.TextArgName_TEXT_ARG_NAME_TARGET_FPS, tl.run.targetFps))
 	}
 
-	assert.Assert(out.Level != screensharev1.StreamVerdict_LEVEL_CLEAN || out.Cause == nil, "a clean run names no cause")
+	assert.Assert(out.Level != mirrormev1.StreamVerdict_LEVEL_CLEAN || out.Cause == nil, "a clean run names no cause")
 	return out
 }

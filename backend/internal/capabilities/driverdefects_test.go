@@ -4,11 +4,11 @@ import (
 	"slices"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/text/texttest"
+	"bjoernblessin.de/mirrorme/internal/text/texttest"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/rules"
+	"bjoernblessin.de/mirrorme/internal/rules"
 )
 
 // Every defect names a driver, a gappable option and a value that option has,
@@ -23,7 +23,7 @@ func TestEveryDriverDefectIsWellFormed(t *testing.T) {
 			if _, ok := optionAxes[d.Option]; !ok {
 				t.Errorf("%s declares a defect on %q, which is no gappable option", c.Name, d.Option)
 			}
-			if d.Reason == screensharev1.TextCode_TEXT_CODE_UNSPECIFIED {
+			if d.Reason == mirrormev1.TextCode_TEXT_CODE_UNSPECIFIED {
 				t.Errorf("%s declares a defect on %s with no reason, so a shell would grey it silently",
 					c.Name, d.Option)
 			}
@@ -82,7 +82,7 @@ func TestADriverDefectNarrowsToTheModelsItNames(t *testing.T) {
 		Models: []string{carried},
 		Option: OptionMode,
 		Value:  ModeCbr,
-		Reason: screensharev1.TextCode_TEXT_CODE_DRIVER_DEFECT_WITHHOLDS_OPTION,
+		Reason: mirrormev1.TextCode_TEXT_CODE_DRIVER_DEFECT_WITHHOLDS_OPTION,
 	}}}
 
 	for _, tc := range []struct {
@@ -109,7 +109,7 @@ func TestADriverDefectLiftsAtTheReleaseThatFixesIt(t *testing.T) {
 		Option:  OptionMode,
 		Value:   ModeCbr,
 		FixedIn: fixedIn,
-		Reason:  screensharev1.TextCode_TEXT_CODE_DRIVER_DEFECT_WITHHOLDS_OPTION,
+		Reason:  mirrormev1.TextCode_TEXT_CODE_DRIVER_DEFECT_WITHHOLDS_OPTION,
 	}}}
 
 	for _, tc := range []struct {
@@ -149,7 +149,7 @@ func TestValidateRefusesADriverDefectAndNamesTheDriver(t *testing.T) {
 		if err == nil {
 			t.Fatalf("on %s: a rate control this driver miscodes must be refused", engine)
 		}
-		if texttest.Code(err) != screensharev1.TextCode_TEXT_CODE_DRIVER_DEFECT_WITHHOLDS_OPTION {
+		if texttest.Code(err) != mirrormev1.TextCode_TEXT_CODE_DRIVER_DEFECT_WITHHOLDS_OPTION {
 			t.Errorf("on %s: a driver defect refuses as one, got %v", engine, err)
 		}
 		if !slices.Contains(texttest.IDs(err), "radeonsi") {

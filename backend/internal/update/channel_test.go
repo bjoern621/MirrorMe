@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 )
 
 // The table decides what a reader is offered before anything reaches the network,
@@ -15,8 +15,8 @@ func TestWhatEachChannelMayDo(t *testing.T) {
 		channel       Channel
 		version       string
 		check         string
-		unchecked     screensharev1.TextCode
-		uninstallable screensharev1.TextCode
+		unchecked     mirrormev1.TextCode
+		uninstallable mirrormev1.TextCode
 		method        Method
 	}{
 		{channel: WindowsSetup, version: "0.5.0", method: MethodRun},
@@ -27,12 +27,12 @@ func TestWhatEachChannelMayDo(t *testing.T) {
 		{
 			channel:       Nix,
 			version:       "0.5.0",
-			uninstallable: screensharev1.TextCode_TEXT_CODE_UPDATE_CHANNEL_MANAGED,
+			uninstallable: mirrormev1.TextCode_TEXT_CODE_UPDATE_CHANNEL_MANAGED,
 		},
 		{
 			channel:       Pacman,
 			version:       "0.5.0",
-			uninstallable: screensharev1.TextCode_TEXT_CODE_UPDATE_CHANNEL_MANAGED,
+			uninstallable: mirrormev1.TextCode_TEXT_CODE_UPDATE_CHANNEL_MANAGED,
 		},
 
 		// The environment switches the whole thing off, whatever the channel could do.
@@ -40,7 +40,7 @@ func TestWhatEachChannelMayDo(t *testing.T) {
 			channel:   Portable,
 			version:   "0.5.0",
 			check:     "0",
-			unchecked: screensharev1.TextCode_TEXT_CODE_UPDATE_CHECK_OFF,
+			unchecked: mirrormev1.TextCode_TEXT_CODE_UPDATE_CHECK_OFF,
 			method:    MethodSwap,
 		},
 		// Any other value leaves it on, absence included.
@@ -50,22 +50,22 @@ func TestWhatEachChannelMayDo(t *testing.T) {
 		{
 			channel:       Unstamped,
 			version:       "dev",
-			unchecked:     screensharev1.TextCode_TEXT_CODE_UPDATE_BUILD_UNSTAMPED,
-			uninstallable: screensharev1.TextCode_TEXT_CODE_UPDATE_BUILD_UNSTAMPED,
+			unchecked:     mirrormev1.TextCode_TEXT_CODE_UPDATE_BUILD_UNSTAMPED,
+			uninstallable: mirrormev1.TextCode_TEXT_CODE_UPDATE_BUILD_UNSTAMPED,
 		},
 		// Both facts at once: the environment is what a reader can clear, so it is what the reason names.
 		{
 			channel:       Unstamped,
 			version:       "dev",
 			check:         "0",
-			unchecked:     screensharev1.TextCode_TEXT_CODE_UPDATE_CHECK_OFF,
-			uninstallable: screensharev1.TextCode_TEXT_CODE_UPDATE_BUILD_UNSTAMPED,
+			unchecked:     mirrormev1.TextCode_TEXT_CODE_UPDATE_CHECK_OFF,
+			uninstallable: mirrormev1.TextCode_TEXT_CODE_UPDATE_BUILD_UNSTAMPED,
 		},
 		// A stamped channel carrying an unstamped version is a recipe that dropped the flag.
 		{
 			channel:   Portable,
 			version:   "dev",
-			unchecked: screensharev1.TextCode_TEXT_CODE_UPDATE_BUILD_UNSTAMPED,
+			unchecked: mirrormev1.TextCode_TEXT_CODE_UPDATE_BUILD_UNSTAMPED,
 			method:    MethodSwap,
 		},
 	}

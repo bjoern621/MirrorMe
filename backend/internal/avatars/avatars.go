@@ -16,13 +16,13 @@ import (
 	"sync"
 	"time"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/discordavatar"
+	"bjoernblessin.de/mirrorme/internal/discordavatar"
 )
 
 // timeout bounds one read. Nothing waits on it, so it is generous rather than tight.
@@ -157,7 +157,7 @@ func (c *Cache) fetch(address string) ([]byte, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= 400 {
-		return nil, text.Because(errors.New(resp.Status), screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWERED, text.Address(address))
+		return nil, text.Because(errors.New(resp.Status), mirrormev1.TextCode_TEXT_CODE_ADDRESS_ANSWERED, text.Address(address))
 	}
 	return io.ReadAll(io.LimitReader(resp.Body, maxBytes))
 }

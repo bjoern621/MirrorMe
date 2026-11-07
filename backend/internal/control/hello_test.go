@@ -6,27 +6,27 @@ import (
 	"fmt"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/pointer"
+	"bjoernblessin.de/mirrorme/internal/pointer"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/display"
-	"bjoernblessin.de/screenshare/internal/encoderate"
-	"bjoernblessin.de/screenshare/internal/encoders"
-	"bjoernblessin.de/screenshare/internal/events"
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/portal"
-	"bjoernblessin.de/screenshare/internal/reach"
-	"bjoernblessin.de/screenshare/internal/relay"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/timeline"
-	"bjoernblessin.de/screenshare/internal/update"
-	"bjoernblessin.de/screenshare/internal/window"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/display"
+	"bjoernblessin.de/mirrorme/internal/encoderate"
+	"bjoernblessin.de/mirrorme/internal/encoders"
+	"bjoernblessin.de/mirrorme/internal/events"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/portal"
+	"bjoernblessin.de/mirrorme/internal/reach"
+	"bjoernblessin.de/mirrorme/internal/relay"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/timeline"
+	"bjoernblessin.de/mirrorme/internal/update"
+	"bjoernblessin.de/mirrorme/internal/window"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // fakeBackend is a backend with no window, no encoder and no relay.
@@ -60,7 +60,7 @@ type fakeBackend struct {
 }
 
 func (f *fakeBackend) Settings() settings.Settings                    { return f.settings }
-func (f *fakeBackend) StoreNotice() *screensharev1.Text               { return nil }
+func (f *fakeBackend) StoreNotice() *mirrormev1.Text                  { return nil }
 func (f *fakeBackend) Monitors() []display.Monitor                    { return nil }
 func (f *fakeBackend) Windows() []window.Window                       { return nil }
 func (f *fakeBackend) Platform() platform.Info                        { return platform.Info{} }
@@ -159,15 +159,15 @@ func (f *fakeBackend) InstallUpdate() error              { return f.err }
 func TestAMismatchedMajorNamesBothVersions(t *testing.T) {
 	server := New(&fakeBackend{}, events.New(), "test")
 
-	_, err := server.Hello(context.Background(), &screensharev1.HelloRequest{
+	_, err := server.Hello(context.Background(), &mirrormev1.HelloRequest{
 		Client:        "avalonia",
 		ProtocolMajor: ProtocolMajor + 1,
 	})
 	refusal := refusalOf(t, err, codes.FailedPrecondition)
-	if got := argOf(refusal, screensharev1.TextArgName_TEXT_ARG_NAME_PROTOCOL_MAJOR).GetNumber(); got != ProtocolMajor {
+	if got := argOf(refusal, mirrormev1.TextArgName_TEXT_ARG_NAME_PROTOCOL_MAJOR).GetNumber(); got != ProtocolMajor {
 		t.Errorf("refusal names backend major %d, want %d", got, ProtocolMajor)
 	}
-	if got := argOf(refusal, screensharev1.TextArgName_TEXT_ARG_NAME_ASKED_PROTOCOL_MAJOR).GetNumber(); got != ProtocolMajor+1 {
+	if got := argOf(refusal, mirrormev1.TextArgName_TEXT_ARG_NAME_ASKED_PROTOCOL_MAJOR).GetNumber(); got != ProtocolMajor+1 {
 		t.Errorf("refusal names shell major %d, want %d", got, ProtocolMajor+1)
 	}
 }
@@ -178,7 +178,7 @@ func TestAMatchingMajorIsAnsweredWithThisBuildsNumbers(t *testing.T) {
 	const version = "v9.9.9-test"
 	server := New(&fakeBackend{}, events.New(), version)
 
-	answer, err := server.Hello(context.Background(), &screensharev1.HelloRequest{
+	answer, err := server.Hello(context.Background(), &mirrormev1.HelloRequest{
 		Client:        "avalonia",
 		ProtocolMajor: ProtocolMajor,
 	})
@@ -202,7 +202,7 @@ func TestAMatchingMajorIsAnsweredWithThisBuildsNumbers(t *testing.T) {
 func TestAShellThatNamesNoMajorIsRefused(t *testing.T) {
 	server := New(&fakeBackend{}, events.New(), "test")
 
-	_, err := server.Hello(context.Background(), &screensharev1.HelloRequest{Client: "cli"})
+	_, err := server.Hello(context.Background(), &mirrormev1.HelloRequest{Client: "cli"})
 	if status.Code(err) != codes.FailedPrecondition {
 		t.Errorf("code = %s, want %s", status.Code(err), codes.FailedPrecondition)
 	}

@@ -7,24 +7,24 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/control"
-	"bjoernblessin.de/screenshare/internal/display"
-	"bjoernblessin.de/screenshare/internal/encoderate"
-	"bjoernblessin.de/screenshare/internal/encoders"
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/pointer"
-	"bjoernblessin.de/screenshare/internal/portal"
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/reach"
-	"bjoernblessin.de/screenshare/internal/relay"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/timeline"
-	"bjoernblessin.de/screenshare/internal/update"
-	"bjoernblessin.de/screenshare/internal/window"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/control"
+	"bjoernblessin.de/mirrorme/internal/display"
+	"bjoernblessin.de/mirrorme/internal/encoderate"
+	"bjoernblessin.de/mirrorme/internal/encoders"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/pointer"
+	"bjoernblessin.de/mirrorme/internal/portal"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/reach"
+	"bjoernblessin.de/mirrorme/internal/relay"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/timeline"
+	"bjoernblessin.de/mirrorme/internal/update"
+	"bjoernblessin.de/mirrorme/internal/window"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // The control contract's place in this process: the adapter the service reads and acts through, and
@@ -56,12 +56,12 @@ var _ control.Backend = controlBackend{}
 
 // --- Reads ---
 
-func (b controlBackend) Settings() settings.Settings      { return b.app.GetSettings() }
-func (b controlBackend) StoreNotice() *screensharev1.Text { return b.app.StoreNotice() }
-func (b controlBackend) Monitors() []display.Monitor      { return b.app.Monitors() }
-func (b controlBackend) Windows() []window.Window         { return b.app.Windows() }
-func (b controlBackend) Platform() platform.Info          { return b.app.Platform() }
-func (b controlBackend) Device() capabilities.Device      { return b.app.Device() }
+func (b controlBackend) Settings() settings.Settings   { return b.app.GetSettings() }
+func (b controlBackend) StoreNotice() *mirrormev1.Text { return b.app.StoreNotice() }
+func (b controlBackend) Monitors() []display.Monitor   { return b.app.Monitors() }
+func (b controlBackend) Windows() []window.Window      { return b.app.Windows() }
+func (b controlBackend) Platform() platform.Info       { return b.app.Platform() }
+func (b controlBackend) Device() capabilities.Device   { return b.app.Device() }
 
 func (b controlBackend) Encoders(ctx context.Context) encoders.Availability {
 	return b.app.probeEncoders(ctx)

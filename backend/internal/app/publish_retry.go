@@ -7,12 +7,12 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/form"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/text"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/form"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/text"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // publishBackoff is the wait before each relaunch of a publish that ended on its own,
@@ -53,7 +53,7 @@ type publishRetry struct {
 	// message that pipeline's own last words.
 	// Held here because the state carries them on every attempt:
 	// a shell mounting mid-backoff reads why, where the exit event reaches only shells that listened.
-	cause   *screensharev1.Text
+	cause   *mirrormev1.Text
 	message string
 }
 
@@ -100,7 +100,7 @@ func (a *App) publishEnded(run *publishRun, err error, stderrTail string, logPat
 	}
 
 	message := ""
-	var cause *screensharev1.Text
+	var cause *mirrormev1.Text
 	if err != nil {
 		// Read before the lock: the membership snapshot is written by the poll,
 		// not by anything holding procMu.
@@ -138,9 +138,9 @@ func (a *App) publishEnded(run *publishRun, err error, stderrTail string, logPat
 		if next, ok := form.NextTransport(run.settings); ok {
 			walked := run.settings
 			walked.Publish.Transport = next
-			cause = text.Of(screensharev1.TextCode_TEXT_CODE_TRANSPORT_FALLING_BACK,
-				text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_TRANSPORT, run.settings.Publish.Transport),
-				text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_NEXT_TRANSPORT, next))
+			cause = text.Of(mirrormev1.TextCode_TEXT_CODE_TRANSPORT_FALLING_BACK,
+				text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_TRANSPORT, run.settings.Publish.Transport),
+				text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_NEXT_TRANSPORT, next))
 			retrying = true
 			a.scheduleRetryLocked(walked, 0, publishBackoff[0], cause, message)
 			a.timeline.Restart(cause)
@@ -174,7 +174,7 @@ func (a *App) publishEnded(run *publishRun, err error, stderrTail string, logPat
 // The retry is placed before the timer is armed,
 // so a fire beating this call's return blocks on the lock,
 // and finds the retry it belongs to rather than a window with none.
-func (a *App) scheduleRetryLocked(s settings.Settings, spent int, wait time.Duration, cause *screensharev1.Text, message string) {
+func (a *App) scheduleRetryLocked(s settings.Settings, spent int, wait time.Duration, cause *mirrormev1.Text, message string) {
 	assert.Assert(spent >= 0 && spent < len(publishBackoff), "a publish retry indexes the backoff", spent, len(publishBackoff))
 	assert.Assert(a.retry == nil, "a publish schedules its retry with none pending", s.Publish.Name())
 

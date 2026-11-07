@@ -4,14 +4,14 @@ import (
 	"bytes"
 	"path/filepath"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/ffmpeg"
-	"bjoernblessin.de/screenshare/internal/report"
+	"bjoernblessin.de/mirrorme/internal/ffmpeg"
+	"bjoernblessin.de/mirrorme/internal/report"
 )
 
 // sendReport builds one bundle and delivers it to the group service beside the stored relay
@@ -21,7 +21,7 @@ func (a *App) sendReport(kind string, include ...string) (string, error) {
 	s := a.GetSettings()
 	base, ok := s.Relay.GroupService()
 	if !ok {
-		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
+		return "", text.Fail(mirrormev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
 	}
 	dir, err := ffmpeg.LogDir()
 	if err != nil {

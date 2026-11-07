@@ -6,8 +6,8 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // Hello settles the contract version before any other method is reached
@@ -28,13 +28,13 @@ import (
 // It is informational in both directions: a shell built against a lower minor works,
 // and one built against a higher minor may find a kind or an arm missing,
 // reported as INVALID_ARGUMENT at the call rather than here.
-func (s *Server) Hello(ctx context.Context, req *screensharev1.HelloRequest) (*screensharev1.HelloResponse, error) {
+func (s *Server) Hello(ctx context.Context, req *mirrormev1.HelloRequest) (*mirrormev1.HelloResponse, error) {
 	assert.IsNotNil(req, "a handshake carries a request")
 
 	if req.GetProtocolMajor() != ProtocolMajor {
 		return nil, failedPrecondition(text.Fail(protocolMajorMismatch,
-			text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_PROTOCOL_MAJOR, ProtocolMajor),
-			text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_ASKED_PROTOCOL_MAJOR, int64(req.GetProtocolMajor()))))
+			text.Num(mirrormev1.TextArgName_TEXT_ARG_NAME_PROTOCOL_MAJOR, ProtocolMajor),
+			text.Num(mirrormev1.TextArgName_TEXT_ARG_NAME_ASKED_PROTOCOL_MAJOR, int64(req.GetProtocolMajor()))))
 	}
 
 	// The client name carries no behaviour.
@@ -42,7 +42,7 @@ func (s *Server) Hello(ctx context.Context, req *screensharev1.HelloRequest) (*s
 	// which of them held the connection that then misbehaved.
 	logger.Infof("control: '%s' connected on protocol major %d", req.GetClient(), req.GetProtocolMajor())
 
-	answer := &screensharev1.HelloResponse{
+	answer := &mirrormev1.HelloResponse{
 		ProtocolMajor:  ProtocolMajor,
 		ProtocolMinor:  ProtocolMinor,
 		BackendVersion: s.version,

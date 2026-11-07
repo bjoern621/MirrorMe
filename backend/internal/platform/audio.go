@@ -5,9 +5,9 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // The second-track capture sources, and what each platform serves them with.
@@ -111,11 +111,11 @@ type AudioSource struct {
 	// A statement rather than a sentence:
 	// the source and the operating system are the whole of what it is about,
 	// so a surface holding both writes it at its own length
-	// (api/proto/screenshare/v1/text.proto, docs/field-availability.md).
-	Reason *screensharev1.Text `json:"reason"`
+	// (api/proto/mirrorme/v1/text.proto, docs/field-availability.md).
+	Reason *mirrormev1.Text `json:"reason"`
 	// Server states what serves the source here, nil on a platform that serves it with nothing.
 	// The note a form puts beside the entry, naming the same two identifiers Reason does.
-	Server *screensharev1.Text `json:"server"`
+	Server *mirrormev1.Text `json:"server"`
 }
 
 // audioSourceNeed is one row of the declaration: a source and the platforms serving it.
@@ -230,7 +230,7 @@ func AudioSourceIDs(info Info) []string {
 // a stored settings file naming a source this build never heard of is an environment fact,
 // the repair walks it back onto a declared value,
 // and greying it on the way would state a reason about a source nothing can describe.
-func AudioSourceAvailable(id string, info Info) (bool, *screensharev1.Text) {
+func AudioSourceAvailable(id string, info Info) (bool, *mirrormev1.Text) {
 	for _, n := range audioSourceNeeds {
 		if n.id == id {
 			return audioAvailable(n, info)
@@ -239,7 +239,7 @@ func AudioSourceAvailable(id string, info Info) (bool, *screensharev1.Text) {
 	return true, nil
 }
 
-func audioAvailable(n audioSourceNeed, info Info) (bool, *screensharev1.Text) {
+func audioAvailable(n audioSourceNeed, info Info) (bool, *mirrormev1.Text) {
 	if slices.Contains(n.platforms, info.OS) {
 		return true, nil
 	}
@@ -251,9 +251,9 @@ func audioAvailable(n audioSourceNeed, info Info) (bool, *screensharev1.Text) {
 		// nothing opens it anywhere, so an unknown machine is not one it might work on.
 		return true, nil
 	}
-	return false, text.Of(screensharev1.TextCode_TEXT_CODE_AUDIO_SOURCE_UNSERVED,
-		text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_AUDIO, n.id),
-		text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_OS, info.OS))
+	return false, text.Of(mirrormev1.TextCode_TEXT_CODE_AUDIO_SOURCE_UNSERVED,
+		text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_AUDIO, n.id),
+		text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_OS, info.OS))
 }
 
 // audioServer states what serves one declared row on one platform,
@@ -263,13 +263,13 @@ func audioAvailable(n audioSourceNeed, info Info) (bool, *screensharev1.Text) {
 // so the statement names the source and the platform,
 // and leaves the surface to say which mechanism that is.
 // A sentence written here would describe one machine to users of the other two.
-func audioServer(n audioSourceNeed, info Info) *screensharev1.Text {
+func audioServer(n audioSourceNeed, info Info) *mirrormev1.Text {
 	if n.id == AudioSourceNone || !slices.Contains(n.platforms, info.OS) {
 		return nil
 	}
-	return text.Of(screensharev1.TextCode_TEXT_CODE_AUDIO_SOURCE_SERVER,
-		text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_AUDIO, n.id),
-		text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_OS, info.OS))
+	return text.Of(mirrormev1.TextCode_TEXT_CODE_AUDIO_SOURCE_SERVER,
+		text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_AUDIO, n.id),
+		text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_OS, info.OS))
 }
 
 // KnownAudioSource reports whether a value names one of the declared kinds.

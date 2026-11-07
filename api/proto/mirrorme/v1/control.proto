@@ -1,15 +1,15 @@
 syntax = "proto3";
 
-package screenshare.v1;
+package mirrorme.v1;
 
 import "google/protobuf/empty.proto";
-import "screenshare/v1/events.proto";
-import "screenshare/v1/form.proto";
-import "screenshare/v1/session.proto";
-import "screenshare/v1/settings.proto";
-import "screenshare/v1/text.proto";
+import "mirrorme/v1/events.proto";
+import "mirrorme/v1/form.proto";
+import "mirrorme/v1/session.proto";
+import "mirrorme/v1/settings.proto";
+import "mirrorme/v1/text.proto";
 
-option go_package = "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1;screensharev1";
+option go_package = "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1";
 option csharp_namespace = "ScreenShare.Api.V1";
 
 // The whole surface a shell may reach.

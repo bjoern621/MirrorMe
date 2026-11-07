@@ -4,12 +4,12 @@ import (
 	"slices"
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/share"
-	"bjoernblessin.de/screenshare/internal/window"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/share"
+	"bjoernblessin.de/mirrorme/internal/window"
 )
 
 // shareDeps is a Windows machine with two outputs and one window open,
@@ -52,7 +52,7 @@ func TestAKindTheBackendCannotReadGreys(t *testing.T) {
 	if enabled {
 		t.Fatal("ddagrab reads no window and the control offers one")
 	}
-	if got := reason.GetCode(); got != screensharev1.TextCode_TEXT_CODE_CAPTURE_TAKES_NO_SHARE_KIND {
+	if got := reason.GetCode(); got != mirrormev1.TextCode_TEXT_CODE_CAPTURE_TAKES_NO_SHARE_KIND {
 		t.Errorf("the refusal is %s", got)
 	}
 }
@@ -68,7 +68,7 @@ func TestThePortalAnswersWhatIsSharedItself(t *testing.T) {
 	if st.enabled {
 		t.Fatal("the portal decides what is shared and the control is live")
 	}
-	if got := st.reason.GetCode(); got != screensharev1.TextCode_TEXT_CODE_CAPTURE_ASKS_WHAT_TO_SHARE {
+	if got := st.reason.GetCode(); got != mirrormev1.TextCode_TEXT_CODE_CAPTURE_ASKS_WHAT_TO_SHARE {
 		t.Errorf("the refusal is %s", got)
 	}
 }
@@ -107,7 +107,7 @@ func TestAWindowKindNeedsASessionThatListsWindows(t *testing.T) {
 	if enabled {
 		t.Fatal("an X11 session lists no windows and the control offers the kind")
 	}
-	if got := reason.GetCode(); got != screensharev1.TextCode_TEXT_CODE_NO_WINDOW_ENUMERATION {
+	if got := reason.GetCode(); got != mirrormev1.TextCode_TEXT_CODE_NO_WINDOW_ENUMERATION {
 		t.Errorf("the refusal is %s", got)
 	}
 }
@@ -145,7 +145,7 @@ func TestAClosedWindowIsNamedRatherThanDropped(t *testing.T) {
 	s := shareDraft(share.Window)
 	s.Publish.ShareWindow = "999"
 
-	var closed *screensharev1.FieldOption
+	var closed *mirrormev1.FieldOption
 	for _, o := range fieldRowFor(t, KeyShareWindow).options(d, s) {
 		if o.GetValue() == "999" {
 			closed = o
@@ -154,7 +154,7 @@ func TestAClosedWindowIsNamedRatherThanDropped(t *testing.T) {
 	if closed == nil {
 		t.Fatal("the picked window left the list when it closed")
 	}
-	if got := closed.GetNote().GetCode(); got != screensharev1.TextCode_TEXT_CODE_WINDOW_GONE {
+	if got := closed.GetNote().GetCode(); got != mirrormev1.TextCode_TEXT_CODE_WINDOW_GONE {
 		t.Errorf("the note is %s", got)
 	}
 }

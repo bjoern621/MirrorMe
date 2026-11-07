@@ -100,7 +100,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="../../api/proto/screenshare/v1/*.proto" ProtoRoot="../../api/proto" GrpcServices="Client" />
+    <Protobuf Include="../../api/proto/mirrorme/v1/*.proto" ProtoRoot="../../api/proto" GrpcServices="Client" />
   </ItemGroup>
 
   <!--

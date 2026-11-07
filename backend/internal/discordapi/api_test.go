@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/channelgroup"
-	"bjoernblessin.de/screenshare/internal/discordoauth"
+	"bjoernblessin.de/mirrorme/internal/channelgroup"
+	"bjoernblessin.de/mirrorme/internal/discordoauth"
 )
 
 // fakeBroker answers one linked install standing in one channel.

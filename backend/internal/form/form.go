@@ -5,7 +5,7 @@
 // The wording does not live here at all.
 // Every reason, note and diagnostic is a code and the identifiers it is about, and every field
 // and group is a key: what any of that reads as on screen is written where the screen
-// is (api/proto/screenshare/v1/text.proto).
+// is (api/proto/mirrorme/v1/text.proto).
 //
 // What a value means is the tables' answer and not this package's.
 // capabilities holds the codec facts, transport the carriage, gpupath the frame-memory pairs,
@@ -21,17 +21,17 @@ package form
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/display"
-	"bjoernblessin.de/screenshare/internal/encoders"
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/portal"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/text"
-	"bjoernblessin.de/screenshare/internal/window"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/display"
+	"bjoernblessin.de/mirrorme/internal/encoders"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/portal"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/text"
+	"bjoernblessin.de/mirrorme/internal/window"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // Deps is what a resolve reads that is not a fixed table.
@@ -72,7 +72,7 @@ type Deps struct {
 	// (internal/update, Offer.Unchecked).
 	// The channel's own statement, so the greyed toggle and the band carry one wording.
 	// The zero value is live, matching a caller that never asked the channel.
-	UpdateUnchecked *screensharev1.Text
+	UpdateUnchecked *mirrormev1.Text
 	// TrayOff is whether this run holds the icon out of the tray whatever the setting holds
 	// (MIRRORME_TRAY=0, avalonia/README.md, "The tray").
 	// The zero value is a run that draws the icon the setting asks for.
@@ -85,10 +85,10 @@ type state struct {
 	visible bool
 	enabled bool
 	// reason stands in place of a disabled field, nil on an enabled one.
-	reason *screensharev1.Text
+	reason *mirrormev1.Text
 	// note rides a field that stays editable and means something its label does not describe here.
 	// Not a third form of unavailability.
-	note *screensharev1.Text
+	note *mirrormev1.Text
 }
 
 // field is one control's fixed description: what it edits, how it is drawn, what its number means,
@@ -104,10 +104,10 @@ type state struct {
 type field struct {
 	key     string
 	group   string
-	control screensharev1.ControlKind
+	control mirrormev1.ControlKind
 	// unit is what the number means.
 	// UNIT_UNSPECIFIED on a field that is not a quantity.
-	unit screensharev1.Unit
+	unit mirrormev1.Unit
 
 	// repeat marks a row drawn once per entry of the audio source list,
 	// plus once for the row that grows the list.
@@ -120,20 +120,20 @@ type field struct {
 
 	// value reads what the row holds out of the draft.
 	// Every row that is not repeated has one: a control with no value is one a shell cannot render.
-	value func(settings.Settings) *screensharev1.FieldValue
+	value func(settings.Settings) *mirrormev1.FieldValue
 	// itemValue is value for a repeated row, read off the entry being drawn.
 	// Exactly one of the two is set, and the table asserts it.
-	itemValue func(settings.AudioSource) *screensharev1.FieldValue
+	itemValue func(settings.AudioSource) *mirrormev1.FieldValue
 	// options lists what a select or radio offers, with value, note and recommended filled.
 	// The enabled flag and its reason are availability's,
 	// which keeps one place deciding what is greyed.
 	// nil on a control that takes no options.
-	options func(Deps, settings.Settings) []*screensharev1.FieldOption
+	options func(Deps, settings.Settings) []*mirrormev1.FieldOption
 	// itemOptions is options for a repeated row, given the entry as well:
 	// what an audio kind holds depends on which kind that entry named.
-	itemOptions func(Deps, settings.Settings, settings.AudioSource) []*screensharev1.FieldOption
+	itemOptions func(Deps, settings.Settings, settings.AudioSource) []*mirrormev1.FieldOption
 	// bounds sizes a number or a slider. nil on a control that takes no range.
-	bounds func(Deps, settings.Settings) *screensharev1.NumericRange
+	bounds func(Deps, settings.Settings) *mirrormev1.NumericRange
 }
 
 // group is one heading's key.
@@ -170,7 +170,7 @@ type group struct {
 // The built-in presets are resolved against the repaired draft for a sharper form
 // of the same reason: a candidate counts only where the repair leaves it untouched,
 // so one stranded value still in the draft would leave every preset unreachable (presets.go).
-func Resolve(d Deps, draft settings.Settings) *screensharev1.Form {
+func Resolve(d Deps, draft settings.Settings) *mirrormev1.Form {
 	s, repaired := Repair(d, draft)
 
 	followed, ok := presetByKey(s.Publish.Preset)
@@ -200,10 +200,10 @@ func Resolve(d Deps, draft settings.Settings) *screensharev1.Form {
 	resolved := resolveGroups(av, d, s, fresh)
 	diags := diagnostics(d, s, est, resolved)
 	if unreached {
-		diags = append([]*screensharev1.Diagnostic{presetUnreached(s)}, diags...)
+		diags = append([]*mirrormev1.Diagnostic{presetUnreached(s)}, diags...)
 	}
 
-	form := &screensharev1.Form{
+	form := &mirrormev1.Form{
 		Settings:          wire.Settings(s),
 		RepairedFieldKeys: repaired,
 		Groups:            resolved,
@@ -226,11 +226,11 @@ func Resolve(d Deps, draft settings.Settings) *screensharev1.Form {
 
 // presetUnreached states that nothing this machine runs delivers what the followed preset promises.
 // It leads the list, being the verdict that stops the start on a draft the fields show as its seed.
-func presetUnreached(s settings.Settings) *screensharev1.Diagnostic {
-	return diagnosticFor(screensharev1.Severity_SEVERITY_ERROR, "",
-		text.Of(screensharev1.TextCode_TEXT_CODE_PRESET_UNREACHABLE,
-			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_PRESET, s.Publish.Preset),
-			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_TRANSPORT, s.Publish.Transport)))
+func presetUnreached(s settings.Settings) *mirrormev1.Diagnostic {
+	return diagnosticFor(mirrormev1.Severity_SEVERITY_ERROR, "",
+		text.Of(mirrormev1.TextCode_TEXT_CODE_PRESET_UNREACHABLE,
+			text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_PRESET, s.Publish.Preset),
+			text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_TRANSPORT, s.Publish.Transport)))
 }
 
 // resolveGroups renders the groups in table order, each holding the rows of fieldTable that name
@@ -239,10 +239,10 @@ func presetUnreached(s settings.Settings) *screensharev1.Diagnostic {
 // A group no row names is dropped rather than drawn as a heading with nothing under it.
 // A field availability hid is not: it is rendered with its visible flag false,
 // which is how a shell is told about a control it is not to draw.
-func resolveGroups(av availability, d Deps, s, fresh settings.Settings) []*screensharev1.FieldGroup {
-	out := make([]*screensharev1.FieldGroup, 0, len(groups))
+func resolveGroups(av availability, d Deps, s, fresh settings.Settings) []*mirrormev1.FieldGroup {
+	out := make([]*mirrormev1.FieldGroup, 0, len(groups))
 	for _, g := range groups {
-		fields := make([]*screensharev1.Field, 0, len(fieldTable))
+		fields := make([]*mirrormev1.Field, 0, len(fieldTable))
 		drawn := false
 		for i := range fieldTable {
 			f := &fieldTable[i]
@@ -266,7 +266,7 @@ func resolveGroups(av availability, d Deps, s, fresh settings.Settings) []*scree
 		if len(fields) == 0 {
 			continue
 		}
-		out = append(out, &screensharev1.FieldGroup{Key: g.key, Fields: fields, Applied: g.applied})
+		out = append(out, &mirrormev1.FieldGroup{Key: g.key, Fields: fields, Applied: g.applied})
 	}
 	return out
 }
@@ -278,8 +278,8 @@ func resolveGroups(av availability, d Deps, s, fresh settings.Settings) []*scree
 // Its key names one index past the end,
 // so picking a kind on it is the write that appends (keys.go, listField).
 // A kind set back to none takes an entry off again, on the repair's next pass.
-func resolveEntries(av availability, d Deps, s, fresh settings.Settings, group string) []*screensharev1.Field {
-	var out []*screensharev1.Field
+func resolveEntries(av availability, d Deps, s, fresh settings.Settings, group string) []*mirrormev1.Field {
+	var out []*mirrormev1.Field
 	for entry := range len(s.Publish.AudioSources) + 1 {
 		for i := range fieldTable {
 			f := &fieldTable[i]
@@ -303,7 +303,7 @@ const noEntry = -1
 // not from a second column of the table.
 // One reader for both keeps the value a shell writes back and the value it puts back
 // the same shape, and a row added to the table carries a default with nothing else to fill in.
-func resolveField(av availability, d Deps, s, fresh settings.Settings, f *field, entry int) *screensharev1.Field {
+func resolveField(av availability, d Deps, s, fresh settings.Settings, f *field, entry int) *mirrormev1.Field {
 	assert.IsNotNil(f, "a resolved field belongs to a row of the field table")
 	assert.Assert(f.repeat == (entry != noEntry), "a repeated control is drawn for an entry", f.key, entry)
 
@@ -313,7 +313,7 @@ func resolveField(av availability, d Deps, s, fresh settings.Settings, f *field,
 	}
 	st := fieldStateOf(av, f.key, entry)
 
-	out := &screensharev1.Field{
+	out := &mirrormev1.Field{
 		Key:     key,
 		Control: f.control,
 		Unit:    f.unit,
@@ -348,7 +348,7 @@ func resolveField(av availability, d Deps, s, fresh settings.Settings, f *field,
 // no kind, unity gain, unmuted.
 // The entry becomes exactly that the moment a kind is picked on it,
 // so reading it out of settings that do not carry it answers rather than leaving a hole.
-func fieldValue(f *field, s settings.Settings, entry int) *screensharev1.FieldValue {
+func fieldValue(f *field, s settings.Settings, entry int) *mirrormev1.FieldValue {
 	if !f.repeat {
 		assert.IsNotNil(f.value, "a control has a value to show", f.key)
 		return f.value(s)
@@ -381,8 +381,8 @@ func audioEntry(s settings.Settings, entry int) settings.AudioSource {
 // A shell re-sorting on it would be a second place deciding what the list looks like,
 // one a second shell could disagree with and one the repair walking a stranded value to the first
 // legal entry cannot see (repair.go, docs/ipc-api.md, "The rule").
-func resolveOptions(av availability, d Deps, s settings.Settings, f *field, entry int) []*screensharev1.FieldOption {
-	var built []*screensharev1.FieldOption
+func resolveOptions(av availability, d Deps, s settings.Settings, f *field, entry int) []*mirrormev1.FieldOption {
+	var built []*mirrormev1.FieldOption
 	if f.repeat {
 		assert.IsNotNil(f.itemOptions, "an ordered option list belongs to a control that offers entries", f.key)
 		built = f.itemOptions(d, s, audioEntry(s, entry))
@@ -390,8 +390,8 @@ func resolveOptions(av availability, d Deps, s settings.Settings, f *field, entr
 		assert.IsNotNil(f.options, "an ordered option list belongs to a control that offers entries", f.key)
 		built = f.options(d, s)
 	}
-	reachable := make([]*screensharev1.FieldOption, 0, len(built))
-	var ruledOut []*screensharev1.FieldOption
+	reachable := make([]*mirrormev1.FieldOption, 0, len(built))
+	var ruledOut []*mirrormev1.FieldOption
 
 	for _, o := range built {
 		enabled, reason := optionStateOf(av, f.key, o.GetValue(), entry)
@@ -424,9 +424,9 @@ func resolveOptions(av availability, d Deps, s settings.Settings, f *field, entr
 //
 // Stated on the form rather than left to be derived, so a shell disables its start button
 // without ranking diagnostics itself.
-func publishable(diags []*screensharev1.Diagnostic) bool {
+func publishable(diags []*mirrormev1.Diagnostic) bool {
 	for _, w := range diags {
-		if w.GetSeverity() == screensharev1.Severity_SEVERITY_ERROR {
+		if w.GetSeverity() == mirrormev1.Severity_SEVERITY_ERROR {
 			return false
 		}
 	}
@@ -436,22 +436,22 @@ func publishable(diags []*screensharev1.Diagnostic) bool {
 // Value constructors.
 // The oneof is what lets a shell bind a control generically instead of switching on the key.
 
-func stringValue(v string) *screensharev1.FieldValue {
-	return &screensharev1.FieldValue{Kind: &screensharev1.FieldValue_Text{Text: v}}
+func stringValue(v string) *mirrormev1.FieldValue {
+	return &mirrormev1.FieldValue{Kind: &mirrormev1.FieldValue_Text{Text: v}}
 }
 
-func number(v int) *screensharev1.FieldValue {
-	return &screensharev1.FieldValue{Kind: &screensharev1.FieldValue_Number{Number: int64(v)}}
+func number(v int) *mirrormev1.FieldValue {
+	return &mirrormev1.FieldValue{Kind: &mirrormev1.FieldValue_Number{Number: int64(v)}}
 }
 
-func flag(v bool) *screensharev1.FieldValue {
-	return &screensharev1.FieldValue{Kind: &screensharev1.FieldValue_Flag{Flag: v}}
+func flag(v bool) *mirrormev1.FieldValue {
+	return &mirrormev1.FieldValue{Kind: &mirrormev1.FieldValue_Flag{Flag: v}}
 }
 
 // bounded makes a range.
 // A step of zero means one, as absence does on the contract, so a caller states the step
 // only where it is not one.
-func bounded(min, max, step int) *screensharev1.NumericRange {
+func bounded(min, max, step int) *mirrormev1.NumericRange {
 	assert.Assert(min <= max, "a range's floor is under its ceiling", min, max)
-	return &screensharev1.NumericRange{Min: int64(min), Max: int64(max), Step: int64(step)}
+	return &mirrormev1.NumericRange{Min: int64(min), Max: int64(max), Step: int64(step)}
 }

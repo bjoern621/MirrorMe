@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package screenshare.v1;
+package mirrorme.v1;
 
-import "screenshare/v1/text.proto";
+import "mirrorme/v1/text.proto";
 
-option go_package = "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1;screensharev1";
+option go_package = "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1";
 option csharp_namespace = "ScreenShare.Api.V1";
 
 // Every fixed fact the backend holds about this machine and about the encoding model:

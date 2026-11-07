@@ -5,7 +5,7 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 )
 
 // diagnosticsAboutStrandedControls names every control this combination leaves nothing to pick on.
@@ -27,8 +27,8 @@ import (
 // An empty list is a different fact and states none of this.
 // It is a machine that enumerated nothing, no monitor or no open window,
 // which each such field answers for itself, and which the repair reads as nothing to walk to.
-func diagnosticsAboutStrandedControls(groups []*screensharev1.FieldGroup) []*screensharev1.Diagnostic {
-	var out []*screensharev1.Diagnostic
+func diagnosticsAboutStrandedControls(groups []*mirrormev1.FieldGroup) []*mirrormev1.Diagnostic {
+	var out []*mirrormev1.Diagnostic
 	named := map[string]bool{}
 
 	for _, g := range groups {
@@ -37,7 +37,7 @@ func diagnosticsAboutStrandedControls(groups []*screensharev1.FieldGroup) []*scr
 			if !f.GetVisible() || !f.GetEnabled() || len(f.GetOptions()) == 0 {
 				continue
 			}
-			if slices.ContainsFunc(f.GetOptions(), func(o *screensharev1.FieldOption) bool {
+			if slices.ContainsFunc(f.GetOptions(), func(o *mirrormev1.FieldOption) bool {
 				return o.GetEnabled()
 			}) {
 				continue
@@ -62,16 +62,16 @@ func diagnosticsAboutStrandedControls(groups []*screensharev1.FieldGroup) []*scr
 // that cannot go out and the form says so by refusing the publish.
 // Everywhere else it costs a tile rather than the stream,
 // and a refusal would ground a working publish over the viewer's own gap.
-func strandedSeverity(groupKey string) screensharev1.Severity {
+func strandedSeverity(groupKey string) mirrormev1.Severity {
 	for _, g := range groups {
 		if g.key != groupKey {
 			continue
 		}
 		if g.publishReads {
-			return screensharev1.Severity_SEVERITY_ERROR
+			return mirrormev1.Severity_SEVERITY_ERROR
 		}
-		return screensharev1.Severity_SEVERITY_WARNING
+		return mirrormev1.Severity_SEVERITY_WARNING
 	}
 	assert.Never("a resolved group is one the table declares", groupKey)
-	return screensharev1.Severity_SEVERITY_UNSPECIFIED
+	return mirrormev1.Severity_SEVERITY_UNSPECIFIED
 }

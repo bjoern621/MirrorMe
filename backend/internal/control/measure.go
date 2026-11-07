@@ -3,10 +3,10 @@ package control
 import (
 	"context"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/text"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/text"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // The measurements.
@@ -49,7 +49,7 @@ func (s *Server) measureUplink(ctx context.Context) (float64, error) {
 // so a request carrying none is refused by the gate Set and Do use (draftOf, in effects.go):
 // the empty draft would time an encoder nobody chose,
 // and the figure would read as an answer about the one they did.
-func (s *Server) measureEncodeRate(ctx context.Context, m *screensharev1.Settings) (*screensharev1.EncodeRate, error) {
+func (s *Server) measureEncodeRate(ctx context.Context, m *mirrormev1.Settings) (*mirrormev1.EncodeRate, error) {
 	draft, err := draftOf(m)
 	if err != nil {
 		return nil, err

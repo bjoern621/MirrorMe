@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/receive"
 )
 
 // Tone mapping is part of what a decode is built from,

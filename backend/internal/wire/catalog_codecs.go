@@ -5,10 +5,10 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // The codec half of the catalog: the capability tables and the gaps that narrow them per engine.
@@ -25,10 +25,10 @@ import (
 // that has it, with no reason shown anywhere.
 // Carrying the gap lets a form offer the format on that engine's capture backends and name who
 // lacks it on the others.
-func catalogCodecs() []*screensharev1.VideoCodec {
-	out := make([]*screensharev1.VideoCodec, 0, len(capabilities.Codecs))
+func catalogCodecs() []*mirrormev1.VideoCodec {
+	out := make([]*mirrormev1.VideoCodec, 0, len(capabilities.Codecs))
 	for _, c := range capabilities.Codecs {
-		out = append(out, &screensharev1.VideoCodec{
+		out = append(out, &mirrormev1.VideoCodec{
 			Name:        c.Name,
 			Family:      c.Family,
 			Format:      c.Format,
@@ -49,10 +49,10 @@ func catalogCodecs() []*screensharev1.VideoCodec {
 // a stream being published once and watched on whatever the watchers have.
 // A shell reads it to say what a publish choice costs a viewer,
 // a note on a control.
-func catalogDecoders() []*screensharev1.Decoder {
-	out := make([]*screensharev1.Decoder, 0, len(capabilities.Decoders))
+func catalogDecoders() []*mirrormev1.Decoder {
+	out := make([]*mirrormev1.Decoder, 0, len(capabilities.Decoders))
 	for _, d := range capabilities.Decoders {
-		out = append(out, &screensharev1.Decoder{
+		out = append(out, &mirrormev1.Decoder{
 			Element: d.Element,
 			Family:  d.Family,
 			Format:  d.Format,
@@ -68,18 +68,18 @@ func catalogDecoders() []*screensharev1.Decoder {
 // The sample rate and the bitrate are the row's rather than the user's.
 // They cross so a shell can state what a track costs without a table of its own,
 // and so the figure it shows is the one both engines build their branch from.
-func catalogAudioCodecs() []*screensharev1.AudioCodec {
-	out := make([]*screensharev1.AudioCodec, 0, len(capabilities.AudioCodecs))
+func catalogAudioCodecs() []*mirrormev1.AudioCodec {
+	out := make([]*mirrormev1.AudioCodec, 0, len(capabilities.AudioCodecs))
 	for _, a := range capabilities.AudioCodecs {
-		encoders := make([]*screensharev1.AudioEncoder, 0, len(a.Encoders))
+		encoders := make([]*mirrormev1.AudioEncoder, 0, len(a.Encoders))
 		for _, e := range a.Encoders {
-			encoders = append(encoders, &screensharev1.AudioEncoder{
+			encoders = append(encoders, &mirrormev1.AudioEncoder{
 				Engine:  engineEnum(e.Engine),
 				Element: e.Element,
 				Parser:  e.Parser,
 			})
 		}
-		out = append(out, &screensharev1.AudioCodec{
+		out = append(out, &mirrormev1.AudioCodec{
 			Name:        a.Name,
 			Format:      a.Format,
 			RateHz:      int32(a.Rate),
@@ -97,13 +97,13 @@ func catalogAudioCodecs() []*screensharev1.AudioCodec {
 // The reason crosses verbatim, naming the limit and which side has it,
 // so a shell shows it where the option would have been and the reader learns what to change rather
 // than only that the option is gone.
-func catalogGaps(gaps []capabilities.Gap) []*screensharev1.Gap {
+func catalogGaps(gaps []capabilities.Gap) []*mirrormev1.Gap {
 	if len(gaps) == 0 {
 		return nil
 	}
-	out := make([]*screensharev1.Gap, 0, len(gaps))
+	out := make([]*mirrormev1.Gap, 0, len(gaps))
 	for _, g := range gaps {
-		out = append(out, &screensharev1.Gap{
+		out = append(out, &mirrormev1.Gap{
 			Engine: gapEngine(g.Engine),
 			Option: gapOptionName(g.Option),
 			Value:  g.Value,
@@ -165,8 +165,8 @@ func catalogOptions() []string {
 // and a bound it does not declare stays absent on the row rather than crossing as nought.
 // Absence is how the table says there is no quantizer scale and no bitrate ceiling.
 // Zero is a number the encoder would have accepted.
-func engineLimits(cqMax, bitrateLimit map[string]int) []*screensharev1.EngineLimit {
-	var out []*screensharev1.EngineLimit
+func engineLimits(cqMax, bitrateLimit map[string]int) []*mirrormev1.EngineLimit {
+	var out []*mirrormev1.EngineLimit
 	for _, engine := range capabilities.Engines {
 		cq, hasCq := cqMax[engine]
 		bitrate, hasBitrate := bitrateLimit[engine]
@@ -174,7 +174,7 @@ func engineLimits(cqMax, bitrateLimit map[string]int) []*screensharev1.EngineLim
 			continue
 		}
 
-		limit := &screensharev1.EngineLimit{Engine: engineEnum(engine)}
+		limit := &mirrormev1.EngineLimit{Engine: engineEnum(engine)}
 		if hasCq {
 			v := int32(cq)
 			limit.CqMax = &v

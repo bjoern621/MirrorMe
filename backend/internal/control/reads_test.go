@@ -1,22 +1,22 @@
 package control
 
 import (
-	"bjoernblessin.de/screenshare/internal/pointer"
+	"bjoernblessin.de/mirrorme/internal/pointer"
 	"context"
 	"testing"
 
 	"google.golang.org/protobuf/proto"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/encoders"
-	"bjoernblessin.de/screenshare/internal/events"
-	"bjoernblessin.de/screenshare/internal/group"
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/portal"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/encoders"
+	"bjoernblessin.de/mirrorme/internal/events"
+	"bjoernblessin.de/mirrorme/internal/group"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/portal"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // probedBackend is a machine whose encoder probe has been taken:
@@ -69,7 +69,7 @@ var qsvMissing = encoders.Availability{Usable: map[string]map[string]bool{
 //
 // Which row that entry is about follows the format the draft holds, the pair being what addresses one:
 // the defaults publish HEVC, so "qsv" here is the Quick Sync HEVC encoder.
-func encoderOption(t *testing.T, form *screensharev1.Form, encoder string) *screensharev1.FieldOption {
+func encoderOption(t *testing.T, form *mirrormev1.Form, encoder string) *mirrormev1.FieldOption {
 	t.Helper()
 
 	for _, group := range form.GetGroups() {
@@ -103,7 +103,7 @@ func encoderOption(t *testing.T, form *screensharev1.Form, encoder string) *scre
 func TestResolveFormGreysAnEncoderTheProbeCouldNotRun(t *testing.T) {
 	server := New(&probedBackend{probed: qsvMissing}, events.New(), "test")
 
-	form, err := server.Ask(context.Background(), &screensharev1.AskRequest{Question: &screensharev1.AskRequest_Form{}})
+	form, err := server.Ask(context.Background(), &mirrormev1.AskRequest{Question: &mirrormev1.AskRequest_Form{}})
 	if err != nil {
 		t.Fatalf("resolving a form answered %v, want an answer", err)
 	}
@@ -115,10 +115,10 @@ func TestResolveFormGreysAnEncoderTheProbeCouldNotRun(t *testing.T) {
 	// The statement names the family whose device is missing, and the surface writes the sentence.
 	// How "no Intel Quick Sync encoder on this computer" reads belongs there.
 	// A reason greying the codec without naming the family would leave the reader nothing to act on.
-	if option.GetReason().GetCode() != screensharev1.TextCode_TEXT_CODE_PROBE_NO_DEVICE {
+	if option.GetReason().GetCode() != mirrormev1.TextCode_TEXT_CODE_PROBE_NO_DEVICE {
 		t.Errorf("the Quick Sync encoder greys with %v, want the probe's no-device verdict", option.GetReason().GetCode())
 	}
-	if got := textArgID(option.GetReason(), screensharev1.TextArgName_TEXT_ARG_NAME_FAMILY); got != "qsv" {
+	if got := textArgID(option.GetReason(), mirrormev1.TextArgName_TEXT_ARG_NAME_FAMILY); got != "qsv" {
 		t.Errorf("the Quick Sync encoder greys naming family %q, which is not the hardware that is missing", got)
 	}
 }
@@ -133,7 +133,7 @@ func TestResolveFormGreysAnEncoderTheProbeCouldNotRun(t *testing.T) {
 func TestResolveFormGreysNothingBeforeTheProbeHasRun(t *testing.T) {
 	server := New(&probedBackend{}, events.New(), "test")
 
-	form, err := server.Ask(context.Background(), &screensharev1.AskRequest{Question: &screensharev1.AskRequest_Form{}})
+	form, err := server.Ask(context.Background(), &mirrormev1.AskRequest{Question: &mirrormev1.AskRequest_Form{}})
 	if err != nil {
 		t.Fatalf("resolving a form answered %v, want an answer", err)
 	}
@@ -152,7 +152,7 @@ func TestResolveFormReportsADraftTheRunningStreamWasBuiltFrom(t *testing.T) {
 	backend := &probedBackend{}
 	server := New(backend, events.New(), "test")
 
-	idle, err := server.Ask(context.Background(), &screensharev1.AskRequest{Question: &screensharev1.AskRequest_Form{}})
+	idle, err := server.Ask(context.Background(), &mirrormev1.AskRequest{Question: &mirrormev1.AskRequest_Form{}})
 	if err != nil {
 		t.Fatalf("resolving a form answered %v, want an answer", err)
 	}
@@ -163,7 +163,7 @@ func TestResolveFormReportsADraftTheRunningStreamWasBuiltFrom(t *testing.T) {
 	running := idle.GetForm().GetSettings()
 	backend.publish = wire.PublishSnapshot{Live: &wire.LiveSnapshot{Settings: backend.Brokered(wire.ToSettings(running))}}
 
-	same, err := server.Ask(context.Background(), &screensharev1.AskRequest{Question: &screensharev1.AskRequest_Form{Form: running}})
+	same, err := server.Ask(context.Background(), &mirrormev1.AskRequest{Question: &mirrormev1.AskRequest_Form{Form: running}})
 	if err != nil {
 		t.Fatalf("resolving the running settings answered %v, want an answer", err)
 	}
@@ -171,9 +171,9 @@ func TestResolveFormReportsADraftTheRunningStreamWasBuiltFrom(t *testing.T) {
 		t.Error("the settings the stream was built from are not reported in force")
 	}
 
-	moved := proto.Clone(running).(*screensharev1.Settings)
+	moved := proto.Clone(running).(*mirrormev1.Settings)
 	moved.Publish.Fps = running.GetPublish().GetFps() + 1
-	changed, err := server.Ask(context.Background(), &screensharev1.AskRequest{Question: &screensharev1.AskRequest_Form{Form: moved}})
+	changed, err := server.Ask(context.Background(), &mirrormev1.AskRequest{Question: &mirrormev1.AskRequest_Form{Form: moved}})
 	if err != nil {
 		t.Fatalf("resolving a moved draft answered %v, want an answer", err)
 	}
@@ -190,7 +190,7 @@ func TestReadingTheCatalogNeverProbes(t *testing.T) {
 	backend := &probedBackend{probed: qsvMissing}
 	server := New(backend, events.New(), "test")
 
-	got := readState(t, server, screensharev1.EventKind_EVENT_KIND_CATALOG)
+	got := readState(t, server, mirrormev1.EventKind_EVENT_KIND_CATALOG)
 	if backend.probes != 0 {
 		t.Errorf("reading the catalog ran the probe %d times, want none", backend.probes)
 	}
@@ -218,7 +218,7 @@ func TestProbeEncodersAnnouncesWhatItFound(t *testing.T) {
 	}
 	defer cancel()
 
-	if _, err := server.Do(context.Background(), &screensharev1.DoRequest{Action: &screensharev1.DoRequest_ProbeEncoders{ProbeEncoders: empty()}}); err != nil {
+	if _, err := server.Do(context.Background(), &mirrormev1.DoRequest{Action: &mirrormev1.DoRequest_ProbeEncoders{ProbeEncoders: empty()}}); err != nil {
 		t.Fatalf("probing answered %v, want an answer", err)
 	}
 	if backend.probes != 1 {
@@ -242,7 +242,7 @@ func TestProbeEncodersAnnouncesWhatItFound(t *testing.T) {
 // textArgID reads one identifier out of a statement, and the empty string where it carries none.
 // A statement names what it is about by argument name,
 // so a test asks for one the way a surface does.
-func textArgID(t *screensharev1.Text, name screensharev1.TextArgName) string {
+func textArgID(t *mirrormev1.Text, name mirrormev1.TextArgName) string {
 	for _, arg := range t.GetArgs() {
 		if arg.GetName() == name {
 			return arg.GetId()
@@ -259,14 +259,14 @@ func TestResolveFormReportsADiscordStreamInForce(t *testing.T) {
 	backend := &probedBackend{}
 	server := New(backend, events.New(), "test")
 
-	idle, err := server.Ask(context.Background(), &screensharev1.AskRequest{Question: &screensharev1.AskRequest_Form{}})
+	idle, err := server.Ask(context.Background(), &mirrormev1.AskRequest{Question: &mirrormev1.AskRequest_Form{}})
 	if err != nil {
 		t.Fatalf("resolving a form answered %v, want an answer", err)
 	}
 	draft := idle.GetForm().GetSettings()
 	draft.Relay.GroupSource = group.SourceDiscord
 
-	resolved, err := server.Ask(context.Background(), &screensharev1.AskRequest{Question: &screensharev1.AskRequest_Form{Form: draft}})
+	resolved, err := server.Ask(context.Background(), &mirrormev1.AskRequest{Question: &mirrormev1.AskRequest_Form{Form: draft}})
 	if err != nil {
 		t.Fatalf("resolving a Discord draft answered %v, want an answer", err)
 	}
@@ -275,7 +275,7 @@ func TestResolveFormReportsADiscordStreamInForce(t *testing.T) {
 	running := backend.Brokered(wire.ToSettings(resolved.GetForm().GetSettings()))
 	backend.publish = wire.PublishSnapshot{Live: &wire.LiveSnapshot{Settings: running}}
 
-	same, err := server.Ask(context.Background(), &screensharev1.AskRequest{Question: &screensharev1.AskRequest_Form{Form: draft}})
+	same, err := server.Ask(context.Background(), &mirrormev1.AskRequest{Question: &mirrormev1.AskRequest_Form{Form: draft}})
 	if err != nil {
 		t.Fatalf("resolving the running settings answered %v, want an answer", err)
 	}

@@ -5,7 +5,7 @@ package form
 //
 // A group carries a key and nothing else.
 // The heading and the paragraph under it are the surface's, looked up by that key
-// (api/proto/screenshare/v1/form.proto): the order and the membership are arguments
+// (api/proto/mirrorme/v1/form.proto): the order and the membership are arguments
 // about the domain, and the wording is an argument about a screen.
 // A shell that regrouped or reordered them would be arguing about the model rather than the layout.
 //

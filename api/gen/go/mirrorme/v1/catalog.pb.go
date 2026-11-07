@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.12
 // 	protoc        (unknown)
-// source: screenshare/v1/catalog.proto
+// source: mirrorme/v1/catalog.proto
 
-package screensharev1
+package mirrormev1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -72,11 +72,11 @@ func (x Engine) String() string {
 }
 
 func (Engine) Descriptor() protoreflect.EnumDescriptor {
-	return file_screenshare_v1_catalog_proto_enumTypes[0].Descriptor()
+	return file_mirrorme_v1_catalog_proto_enumTypes[0].Descriptor()
 }
 
 func (Engine) Type() protoreflect.EnumType {
-	return &file_screenshare_v1_catalog_proto_enumTypes[0]
+	return &file_mirrorme_v1_catalog_proto_enumTypes[0]
 }
 
 func (x Engine) Number() protoreflect.EnumNumber {
@@ -85,7 +85,7 @@ func (x Engine) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Engine.Descriptor instead.
 func (Engine) EnumDescriptor() ([]byte, []int) {
-	return file_screenshare_v1_catalog_proto_rawDescGZIP(), []int{0}
+	return file_mirrorme_v1_catalog_proto_rawDescGZIP(), []int{0}
 }
 
 // Which half of the path a fact is about: publisher to relay, or relay to viewer.
@@ -125,11 +125,11 @@ func (x Leg) String() string {
 }
 
 func (Leg) Descriptor() protoreflect.EnumDescriptor {
-	return file_screenshare_v1_catalog_proto_enumTypes[1].Descriptor()
+	return file_mirrorme_v1_catalog_proto_enumTypes[1].Descriptor()
 }
 
 func (Leg) Type() protoreflect.EnumType {
-	return &file_screenshare_v1_catalog_proto_enumTypes[1]
+	return &file_mirrorme_v1_catalog_proto_enumTypes[1]
 }
 
 func (x Leg) Number() protoreflect.EnumNumber {
@@ -138,7 +138,7 @@ func (x Leg) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Leg.Descriptor instead.
 func (Leg) EnumDescriptor() ([]byte, []int) {
-	return file_screenshare_v1_catalog_proto_rawDescGZIP(), []int{1}
+	return file_mirrorme_v1_catalog_proto_rawDescGZIP(), []int{1}
 }
 
 // Who converts the captured frames to the encoder's layout on a GPU path.
@@ -179,11 +179,11 @@ func (x PathColour) String() string {
 }
 
 func (PathColour) Descriptor() protoreflect.EnumDescriptor {
-	return file_screenshare_v1_catalog_proto_enumTypes[2].Descriptor()
+	return file_mirrorme_v1_catalog_proto_enumTypes[2].Descriptor()
 }
 
 func (PathColour) Type() protoreflect.EnumType {
-	return &file_screenshare_v1_catalog_proto_enumTypes[2]
+	return &file_mirrorme_v1_catalog_proto_enumTypes[2]
 }
 
 func (x PathColour) Number() protoreflect.EnumNumber {
@@ -192,7 +192,7 @@ func (x PathColour) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use PathColour.Descriptor instead.
 func (PathColour) EnumDescriptor() ([]byte, []int) {
-	return file_screenshare_v1_catalog_proto_rawDescGZIP(), []int{2}
+	return file_mirrorme_v1_catalog_proto_rawDescGZIP(), []int{2}
 }
 
 // One thing a codec or an audio codec cannot do,
@@ -205,7 +205,7 @@ type Gap struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// ENGINE_ANY means the format or the library has no such capability,
 	// rather than one builder failing to reach it.
-	Engine Engine `protobuf:"varint,1,opt,name=engine,proto3,enum=screenshare.v1.Engine" json:"engine,omitempty"`
+	Engine Engine `protobuf:"varint,1,opt,name=engine,proto3,enum=mirrorme.v1.Engine" json:"engine,omitempty"`
 	// Settings field the value is taken from, named as PublishSettings names it.
 	// Empty takes the codec off that engine altogether,
 	// since no value of any option reaches an encoder that is not there.
@@ -221,7 +221,7 @@ type Gap struct {
 
 func (x *Gap) Reset() {
 	*x = Gap{}
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[0]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -233,7 +233,7 @@ func (x *Gap) String() string {
 func (*Gap) ProtoMessage() {}
 
 func (x *Gap) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[0]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -246,7 +246,7 @@ func (x *Gap) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Gap.ProtoReflect.Descriptor instead.
 func (*Gap) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_catalog_proto_rawDescGZIP(), []int{0}
+	return file_mirrorme_v1_catalog_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Gap) GetEngine() Engine {
@@ -288,7 +288,7 @@ func (x *Gap) GetReason() *Text {
 // and an absent ceiling is not a ceiling of zero.
 type EngineLimit struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
-	Engine Engine                 `protobuf:"varint,1,opt,name=engine,proto3,enum=screenshare.v1.Engine" json:"engine,omitempty"`
+	Engine Engine                 `protobuf:"varint,1,opt,name=engine,proto3,enum=mirrorme.v1.Engine" json:"engine,omitempty"`
 	// Ceiling of the constant-quality scale.
 	// The scale is the library's rather than the app's,
 	// so a shell reads it here instead of assuming a constant.
@@ -301,7 +301,7 @@ type EngineLimit struct {
 
 func (x *EngineLimit) Reset() {
 	*x = EngineLimit{}
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[1]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -313,7 +313,7 @@ func (x *EngineLimit) String() string {
 func (*EngineLimit) ProtoMessage() {}
 
 func (x *EngineLimit) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[1]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -326,7 +326,7 @@ func (x *EngineLimit) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EngineLimit.ProtoReflect.Descriptor instead.
 func (*EngineLimit) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_catalog_proto_rawDescGZIP(), []int{1}
+	return file_mirrorme_v1_catalog_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *EngineLimit) GetEngine() Engine {
@@ -380,7 +380,7 @@ type VideoCodec struct {
 
 func (x *VideoCodec) Reset() {
 	*x = VideoCodec{}
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[2]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -392,7 +392,7 @@ func (x *VideoCodec) String() string {
 func (*VideoCodec) ProtoMessage() {}
 
 func (x *VideoCodec) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[2]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -405,7 +405,7 @@ func (x *VideoCodec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VideoCodec.ProtoReflect.Descriptor instead.
 func (*VideoCodec) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_catalog_proto_rawDescGZIP(), []int{2}
+	return file_mirrorme_v1_catalog_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *VideoCodec) GetName() string {
@@ -487,7 +487,7 @@ type Decoder struct {
 
 func (x *Decoder) Reset() {
 	*x = Decoder{}
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[3]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -499,7 +499,7 @@ func (x *Decoder) String() string {
 func (*Decoder) ProtoMessage() {}
 
 func (x *Decoder) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[3]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -512,7 +512,7 @@ func (x *Decoder) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Decoder.ProtoReflect.Descriptor instead.
 func (*Decoder) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_catalog_proto_rawDescGZIP(), []int{3}
+	return file_mirrorme_v1_catalog_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Decoder) GetElement() string {
@@ -546,7 +546,7 @@ func (x *Decoder) GetChromas() []string {
 // How one publish engine codes one audio codec.
 type AudioEncoder struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
-	Engine Engine                 `protobuf:"varint,1,opt,name=engine,proto3,enum=screenshare.v1.Engine" json:"engine,omitempty"`
+	Engine Engine                 `protobuf:"varint,1,opt,name=engine,proto3,enum=mirrorme.v1.Engine" json:"engine,omitempty"`
 	// Encoder element, or ffmpeg encoder name.
 	Element string `protobuf:"bytes,2,opt,name=element,proto3" json:"element,omitempty"`
 	// Element that has to follow it where the muxer needs framed input, empty where none does.
@@ -557,7 +557,7 @@ type AudioEncoder struct {
 
 func (x *AudioEncoder) Reset() {
 	*x = AudioEncoder{}
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[4]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -569,7 +569,7 @@ func (x *AudioEncoder) String() string {
 func (*AudioEncoder) ProtoMessage() {}
 
 func (x *AudioEncoder) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[4]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -582,7 +582,7 @@ func (x *AudioEncoder) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AudioEncoder.ProtoReflect.Descriptor instead.
 func (*AudioEncoder) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_catalog_proto_rawDescGZIP(), []int{4}
+	return file_mirrorme_v1_catalog_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *AudioEncoder) GetEngine() Engine {
@@ -631,7 +631,7 @@ type AudioCodec struct {
 
 func (x *AudioCodec) Reset() {
 	*x = AudioCodec{}
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[5]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -643,7 +643,7 @@ func (x *AudioCodec) String() string {
 func (*AudioCodec) ProtoMessage() {}
 
 func (x *AudioCodec) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[5]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -656,7 +656,7 @@ func (x *AudioCodec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AudioCodec.ProtoReflect.Descriptor instead.
 func (*AudioCodec) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_catalog_proto_rawDescGZIP(), []int{5}
+	return file_mirrorme_v1_catalog_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *AudioCodec) GetName() string {
@@ -714,7 +714,7 @@ type EngineCodecs struct {
 
 func (x *EngineCodecs) Reset() {
 	*x = EngineCodecs{}
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[6]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -726,7 +726,7 @@ func (x *EngineCodecs) String() string {
 func (*EngineCodecs) ProtoMessage() {}
 
 func (x *EngineCodecs) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[6]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -739,7 +739,7 @@ func (x *EngineCodecs) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EngineCodecs.ProtoReflect.Descriptor instead.
 func (*EngineCodecs) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_catalog_proto_rawDescGZIP(), []int{6}
+	return file_mirrorme_v1_catalog_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *EngineCodecs) GetUsable() map[string]bool {
@@ -756,7 +756,7 @@ func (x *EngineCodecs) GetUsable() map[string]bool {
 // and a form must not present it as one.
 type EngineProbe struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
-	Engine Engine                 `protobuf:"varint,1,opt,name=engine,proto3,enum=screenshare.v1.Engine" json:"engine,omitempty"`
+	Engine Engine                 `protobuf:"varint,1,opt,name=engine,proto3,enum=mirrorme.v1.Engine" json:"engine,omitempty"`
 	// Types that are valid to be assigned to Result:
 	//
 	//	*EngineProbe_Probed
@@ -768,7 +768,7 @@ type EngineProbe struct {
 
 func (x *EngineProbe) Reset() {
 	*x = EngineProbe{}
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[7]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -780,7 +780,7 @@ func (x *EngineProbe) String() string {
 func (*EngineProbe) ProtoMessage() {}
 
 func (x *EngineProbe) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[7]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -793,7 +793,7 @@ func (x *EngineProbe) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EngineProbe.ProtoReflect.Descriptor instead.
 func (*EngineProbe) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_catalog_proto_rawDescGZIP(), []int{7}
+	return file_mirrorme_v1_catalog_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *EngineProbe) GetEngine() Engine {
@@ -860,7 +860,7 @@ type EncoderAvailability struct {
 
 func (x *EncoderAvailability) Reset() {
 	*x = EncoderAvailability{}
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[8]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -872,7 +872,7 @@ func (x *EncoderAvailability) String() string {
 func (*EncoderAvailability) ProtoMessage() {}
 
 func (x *EncoderAvailability) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[8]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -885,7 +885,7 @@ func (x *EncoderAvailability) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EncoderAvailability.ProtoReflect.Descriptor instead.
 func (*EncoderAvailability) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_catalog_proto_rawDescGZIP(), []int{8}
+	return file_mirrorme_v1_catalog_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *EncoderAvailability) GetEngines() []*EngineProbe {
@@ -903,10 +903,10 @@ func (x *EncoderAvailability) GetEngines() []*EngineProbe {
 // A selection matching no row takes the system-memory copy.
 type GpuPath struct {
 	state   protoimpl.MessageState `protogen:"open.v1"`
-	Engine  Engine                 `protobuf:"varint,1,opt,name=engine,proto3,enum=screenshare.v1.Engine" json:"engine,omitempty"`
+	Engine  Engine                 `protobuf:"varint,1,opt,name=engine,proto3,enum=mirrorme.v1.Engine" json:"engine,omitempty"`
 	Capture string                 `protobuf:"bytes,2,opt,name=capture,proto3" json:"capture,omitempty"`
 	Family  string                 `protobuf:"bytes,3,opt,name=family,proto3" json:"family,omitempty"`
-	Colour  PathColour             `protobuf:"varint,5,opt,name=colour,proto3,enum=screenshare.v1.PathColour" json:"colour,omitempty"`
+	Colour  PathColour             `protobuf:"varint,5,opt,name=colour,proto3,enum=mirrorme.v1.PathColour" json:"colour,omitempty"`
 	// What carries the frames from the capture end to the encode end,
 	// so a row says which mechanism has to work rather than only that one does.
 	// One code per row: the mechanism is exactly what differs between them.
@@ -921,7 +921,7 @@ type GpuPath struct {
 
 func (x *GpuPath) Reset() {
 	*x = GpuPath{}
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[9]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -933,7 +933,7 @@ func (x *GpuPath) String() string {
 func (*GpuPath) ProtoMessage() {}
 
 func (x *GpuPath) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[9]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -946,7 +946,7 @@ func (x *GpuPath) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GpuPath.ProtoReflect.Descriptor instead.
 func (*GpuPath) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_catalog_proto_rawDescGZIP(), []int{9}
+	return file_mirrorme_v1_catalog_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GpuPath) GetEngine() Engine {
@@ -999,8 +999,8 @@ func (x *GpuPath) GetCost() *Text {
 type TransportCarriage struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
 	Name   string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Leg    Leg                    `protobuf:"varint,2,opt,name=leg,proto3,enum=screenshare.v1.Leg" json:"leg,omitempty"`
-	Engine Engine                 `protobuf:"varint,3,opt,name=engine,proto3,enum=screenshare.v1.Engine" json:"engine,omitempty"`
+	Leg    Leg                    `protobuf:"varint,2,opt,name=leg,proto3,enum=mirrorme.v1.Leg" json:"leg,omitempty"`
+	Engine Engine                 `protobuf:"varint,3,opt,name=engine,proto3,enum=mirrorme.v1.Engine" json:"engine,omitempty"`
 	// Bitstream formats this leg carries, and the second-track codecs.
 	// They travel together because what a listener carries as a bitstream
 	// and what it carries as a track are one fact about that listener.
@@ -1012,7 +1012,7 @@ type TransportCarriage struct {
 
 func (x *TransportCarriage) Reset() {
 	*x = TransportCarriage{}
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[10]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1024,7 +1024,7 @@ func (x *TransportCarriage) String() string {
 func (*TransportCarriage) ProtoMessage() {}
 
 func (x *TransportCarriage) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[10]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1037,7 +1037,7 @@ func (x *TransportCarriage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TransportCarriage.ProtoReflect.Descriptor instead.
 func (*TransportCarriage) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_catalog_proto_rawDescGZIP(), []int{10}
+	return file_mirrorme_v1_catalog_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *TransportCarriage) GetName() string {
@@ -1083,7 +1083,7 @@ type CaptureBackend struct {
 	// Publish engine that runs it.
 	// Most other availability hangs off this,
 	// because the two engines express the same rate-control modes through different properties.
-	Engine Engine `protobuf:"varint,2,opt,name=engine,proto3,enum=screenshare.v1.Engine" json:"engine,omitempty"`
+	Engine Engine `protobuf:"varint,2,opt,name=engine,proto3,enum=mirrorme.v1.Engine" json:"engine,omitempty"`
 	// Publish legs this backend's engine can carry,
 	// which is why the portal path offers no WebRTC: GStreamer has no sink for it.
 	Transports []string `protobuf:"bytes,3,rep,name=transports,proto3" json:"transports,omitempty"`
@@ -1103,7 +1103,7 @@ type CaptureBackend struct {
 
 func (x *CaptureBackend) Reset() {
 	*x = CaptureBackend{}
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[11]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1115,7 +1115,7 @@ func (x *CaptureBackend) String() string {
 func (*CaptureBackend) ProtoMessage() {}
 
 func (x *CaptureBackend) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[11]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1128,7 +1128,7 @@ func (x *CaptureBackend) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CaptureBackend.ProtoReflect.Descriptor instead.
 func (*CaptureBackend) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_catalog_proto_rawDescGZIP(), []int{11}
+	return file_mirrorme_v1_catalog_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *CaptureBackend) GetName() string {
@@ -1198,7 +1198,7 @@ type Monitor struct {
 
 func (x *Monitor) Reset() {
 	*x = Monitor{}
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[12]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1210,7 +1210,7 @@ func (x *Monitor) String() string {
 func (*Monitor) ProtoMessage() {}
 
 func (x *Monitor) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[12]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1223,7 +1223,7 @@ func (x *Monitor) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Monitor.ProtoReflect.Descriptor instead.
 func (*Monitor) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_catalog_proto_rawDescGZIP(), []int{12}
+	return file_mirrorme_v1_catalog_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *Monitor) GetIndex() int32 {
@@ -1301,7 +1301,7 @@ type ShareWindow struct {
 
 func (x *ShareWindow) Reset() {
 	*x = ShareWindow{}
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[13]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1313,7 +1313,7 @@ func (x *ShareWindow) String() string {
 func (*ShareWindow) ProtoMessage() {}
 
 func (x *ShareWindow) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[13]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1326,7 +1326,7 @@ func (x *ShareWindow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShareWindow.ProtoReflect.Descriptor instead.
 func (*ShareWindow) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_catalog_proto_rawDescGZIP(), []int{13}
+	return file_mirrorme_v1_catalog_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ShareWindow) GetHandle() string {
@@ -1378,7 +1378,7 @@ type Platform struct {
 
 func (x *Platform) Reset() {
 	*x = Platform{}
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[14]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1390,7 +1390,7 @@ func (x *Platform) String() string {
 func (*Platform) ProtoMessage() {}
 
 func (x *Platform) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[14]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1403,7 +1403,7 @@ func (x *Platform) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Platform.ProtoReflect.Descriptor instead.
 func (*Platform) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_catalog_proto_rawDescGZIP(), []int{14}
+	return file_mirrorme_v1_catalog_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *Platform) GetOs() string {
@@ -1431,7 +1431,7 @@ type TransportList struct {
 
 func (x *TransportList) Reset() {
 	*x = TransportList{}
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[15]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1443,7 +1443,7 @@ func (x *TransportList) String() string {
 func (*TransportList) ProtoMessage() {}
 
 func (x *TransportList) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[15]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1456,7 +1456,7 @@ func (x *TransportList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TransportList.ProtoReflect.Descriptor instead.
 func (*TransportList) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_catalog_proto_rawDescGZIP(), []int{15}
+	return file_mirrorme_v1_catalog_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *TransportList) GetTransports() []string {
@@ -1540,7 +1540,7 @@ type Catalog struct {
 
 func (x *Catalog) Reset() {
 	*x = Catalog{}
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[16]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1552,7 +1552,7 @@ func (x *Catalog) String() string {
 func (*Catalog) ProtoMessage() {}
 
 func (x *Catalog) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[16]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1565,7 +1565,7 @@ func (x *Catalog) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Catalog.ProtoReflect.Descriptor instead.
 func (*Catalog) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_catalog_proto_rawDescGZIP(), []int{16}
+	return file_mirrorme_v1_catalog_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *Catalog) GetPlatform() *Platform {
@@ -1730,7 +1730,7 @@ type AudioDevice struct {
 
 func (x *AudioDevice) Reset() {
 	*x = AudioDevice{}
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[17]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1742,7 +1742,7 @@ func (x *AudioDevice) String() string {
 func (*AudioDevice) ProtoMessage() {}
 
 func (x *AudioDevice) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_catalog_proto_msgTypes[17]
+	mi := &file_mirrorme_v1_catalog_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1755,7 +1755,7 @@ func (x *AudioDevice) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AudioDevice.ProtoReflect.Descriptor instead.
 func (*AudioDevice) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_catalog_proto_rawDescGZIP(), []int{17}
+	return file_mirrorme_v1_catalog_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *AudioDevice) GetKind() string {
@@ -1779,22 +1779,22 @@ func (x *AudioDevice) GetName() string {
 	return ""
 }
 
-var File_screenshare_v1_catalog_proto protoreflect.FileDescriptor
+var File_mirrorme_v1_catalog_proto protoreflect.FileDescriptor
 
-const file_screenshare_v1_catalog_proto_rawDesc = "" +
+const file_mirrorme_v1_catalog_proto_rawDesc = "" +
 	"\n" +
-	"\x1cscreenshare/v1/catalog.proto\x12\x0escreenshare.v1\x1a\x19screenshare/v1/text.proto\"\x97\x01\n" +
-	"\x03Gap\x12.\n" +
-	"\x06engine\x18\x01 \x01(\x0e2\x16.screenshare.v1.EngineR\x06engine\x12\x16\n" +
+	"\x19mirrorme/v1/catalog.proto\x12\vmirrorme.v1\x1a\x16mirrorme/v1/text.proto\"\x91\x01\n" +
+	"\x03Gap\x12+\n" +
+	"\x06engine\x18\x01 \x01(\x0e2\x13.mirrorme.v1.EngineR\x06engine\x12\x16\n" +
 	"\x06option\x18\x02 \x01(\tR\x06option\x12\x14\n" +
-	"\x05value\x18\x03 \x01(\tR\x05value\x12,\n" +
-	"\x06reason\x18\x05 \x01(\v2\x14.screenshare.v1.TextR\x06reasonJ\x04\b\x04\x10\x05\"\xae\x01\n" +
-	"\vEngineLimit\x12.\n" +
-	"\x06engine\x18\x01 \x01(\x0e2\x16.screenshare.v1.EngineR\x06engine\x12\x1a\n" +
+	"\x05value\x18\x03 \x01(\tR\x05value\x12)\n" +
+	"\x06reason\x18\x05 \x01(\v2\x11.mirrorme.v1.TextR\x06reasonJ\x04\b\x04\x10\x05\"\xab\x01\n" +
+	"\vEngineLimit\x12+\n" +
+	"\x06engine\x18\x01 \x01(\x0e2\x13.mirrorme.v1.EngineR\x06engine\x12\x1a\n" +
 	"\x06cq_max\x18\x02 \x01(\x05H\x00R\x05cqMax\x88\x01\x01\x121\n" +
 	"\x12bitrate_limit_mbps\x18\x03 \x01(\x05H\x01R\x10bitrateLimitMbps\x88\x01\x01B\t\n" +
 	"\a_cq_maxB\x15\n" +
-	"\x13_bitrate_limit_mbps\"\xac\x02\n" +
+	"\x13_bitrate_limit_mbps\"\xa6\x02\n" +
 	"\n" +
 	"VideoCodec\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n" +
@@ -1803,60 +1803,60 @@ const file_screenshare_v1_catalog_proto_rawDesc = "" +
 	"\aencoder\x18\n" +
 	" \x01(\tR\aencoder\x12 \n" +
 	"\vimplemented\x18\x04 \x01(\bR\vimplemented\x12\x18\n" +
-	"\achromas\x18\x05 \x03(\tR\achromas\x123\n" +
-	"\x06limits\x18\t \x03(\v2\x1b.screenshare.v1.EngineLimitR\x06limits\x12'\n" +
-	"\x04gaps\x18\b \x03(\v2\x13.screenshare.v1.GapR\x04gapsJ\x04\b\x06\x10\aJ\x04\b\a\x10\bR\x06cq_maxR\x12bitrate_limit_mbps\"{\n" +
+	"\achromas\x18\x05 \x03(\tR\achromas\x120\n" +
+	"\x06limits\x18\t \x03(\v2\x18.mirrorme.v1.EngineLimitR\x06limits\x12$\n" +
+	"\x04gaps\x18\b \x03(\v2\x10.mirrorme.v1.GapR\x04gapsJ\x04\b\x06\x10\aJ\x04\b\a\x10\bR\x06cq_maxR\x12bitrate_limit_mbps\"{\n" +
 	"\aDecoder\x12\x18\n" +
 	"\aelement\x18\x01 \x01(\tR\aelement\x12\x16\n" +
 	"\x06family\x18\x02 \x01(\tR\x06family\x12\x16\n" +
 	"\x06format\x18\x03 \x01(\tR\x06format\x12\x18\n" +
-	"\achromas\x18\x04 \x03(\tR\achromasJ\x04\b\x05\x10\x06R\x06reason\"p\n" +
-	"\fAudioEncoder\x12.\n" +
-	"\x06engine\x18\x01 \x01(\x0e2\x16.screenshare.v1.EngineR\x06engine\x12\x18\n" +
+	"\achromas\x18\x04 \x03(\tR\achromasJ\x04\b\x05\x10\x06R\x06reason\"m\n" +
+	"\fAudioEncoder\x12+\n" +
+	"\x06engine\x18\x01 \x01(\x0e2\x13.mirrorme.v1.EngineR\x06engine\x12\x18\n" +
 	"\aelement\x18\x02 \x01(\tR\aelement\x12\x16\n" +
-	"\x06parser\x18\x03 \x01(\tR\x06parser\"\xd7\x01\n" +
+	"\x06parser\x18\x03 \x01(\tR\x06parser\"\xd1\x01\n" +
 	"\n" +
 	"AudioCodec\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n" +
 	"\x06format\x18\x02 \x01(\tR\x06format\x12\x17\n" +
 	"\arate_hz\x18\x03 \x01(\x05R\x06rateHz\x12!\n" +
-	"\fbitrate_kbps\x18\x04 \x01(\x05R\vbitrateKbps\x128\n" +
-	"\bencoders\x18\x05 \x03(\v2\x1c.screenshare.v1.AudioEncoderR\bencoders\x12'\n" +
-	"\x04gaps\x18\x06 \x03(\v2\x13.screenshare.v1.GapR\x04gaps\"\x8b\x01\n" +
-	"\fEngineCodecs\x12@\n" +
-	"\x06usable\x18\x01 \x03(\v2(.screenshare.v1.EngineCodecs.UsableEntryR\x06usable\x1a9\n" +
+	"\fbitrate_kbps\x18\x04 \x01(\x05R\vbitrateKbps\x125\n" +
+	"\bencoders\x18\x05 \x03(\v2\x19.mirrorme.v1.AudioEncoderR\bencoders\x12$\n" +
+	"\x04gaps\x18\x06 \x03(\v2\x10.mirrorme.v1.GapR\x04gaps\"\x88\x01\n" +
+	"\fEngineCodecs\x12=\n" +
+	"\x06usable\x18\x01 \x03(\v2%.mirrorme.v1.EngineCodecs.UsableEntryR\x06usable\x1a9\n" +
 	"\vUsableEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\"\xb9\x01\n" +
-	"\vEngineProbe\x12.\n" +
-	"\x06engine\x18\x01 \x01(\x0e2\x16.screenshare.v1.EngineR\x06engine\x126\n" +
-	"\x06probed\x18\x02 \x01(\v2\x1c.screenshare.v1.EngineCodecsH\x00R\x06probed\x122\n" +
-	"\bunprobed\x18\x04 \x01(\v2\x14.screenshare.v1.TextH\x00R\bunprobedB\b\n" +
-	"\x06resultJ\x04\b\x03\x10\x04\"j\n" +
-	"\x13EncoderAvailability\x125\n" +
-	"\aengines\x18\x03 \x03(\v2\x1b.screenshare.v1.EngineProbeR\aenginesJ\x04\b\x01\x10\x02J\x04\b\x02\x10\x03R\x06usableR\bunprobed\"\x83\x02\n" +
-	"\aGpuPath\x12.\n" +
-	"\x06engine\x18\x01 \x01(\x0e2\x16.screenshare.v1.EngineR\x06engine\x12\x18\n" +
+	"\x05value\x18\x02 \x01(\bR\x05value:\x028\x01\"\xb0\x01\n" +
+	"\vEngineProbe\x12+\n" +
+	"\x06engine\x18\x01 \x01(\x0e2\x13.mirrorme.v1.EngineR\x06engine\x123\n" +
+	"\x06probed\x18\x02 \x01(\v2\x19.mirrorme.v1.EngineCodecsH\x00R\x06probed\x12/\n" +
+	"\bunprobed\x18\x04 \x01(\v2\x11.mirrorme.v1.TextH\x00R\bunprobedB\b\n" +
+	"\x06resultJ\x04\b\x03\x10\x04\"g\n" +
+	"\x13EncoderAvailability\x122\n" +
+	"\aengines\x18\x03 \x03(\v2\x18.mirrorme.v1.EngineProbeR\aenginesJ\x04\b\x01\x10\x02J\x04\b\x02\x10\x03R\x06usableR\bunprobed\"\xf7\x01\n" +
+	"\aGpuPath\x12+\n" +
+	"\x06engine\x18\x01 \x01(\x0e2\x13.mirrorme.v1.EngineR\x06engine\x12\x18\n" +
 	"\acapture\x18\x02 \x01(\tR\acapture\x12\x16\n" +
-	"\x06family\x18\x03 \x01(\tR\x06family\x122\n" +
-	"\x06colour\x18\x05 \x01(\x0e2\x1a.screenshare.v1.PathColourR\x06colour\x12,\n" +
-	"\x06import\x18\a \x01(\v2\x14.screenshare.v1.TextR\x06import\x12(\n" +
-	"\x04cost\x18\b \x01(\v2\x14.screenshare.v1.TextR\x04costJ\x04\b\x04\x10\x05J\x04\b\x06\x10\a\"\xaa\x01\n" +
+	"\x06family\x18\x03 \x01(\tR\x06family\x12/\n" +
+	"\x06colour\x18\x05 \x01(\x0e2\x17.mirrorme.v1.PathColourR\x06colour\x12)\n" +
+	"\x06import\x18\a \x01(\v2\x11.mirrorme.v1.TextR\x06import\x12%\n" +
+	"\x04cost\x18\b \x01(\v2\x11.mirrorme.v1.TextR\x04costJ\x04\b\x04\x10\x05J\x04\b\x06\x10\a\"\xa4\x01\n" +
 	"\x11TransportCarriage\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12%\n" +
-	"\x03leg\x18\x02 \x01(\x0e2\x13.screenshare.v1.LegR\x03leg\x12.\n" +
-	"\x06engine\x18\x03 \x01(\x0e2\x16.screenshare.v1.EngineR\x06engine\x12\x14\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\"\n" +
+	"\x03leg\x18\x02 \x01(\x0e2\x10.mirrorme.v1.LegR\x03leg\x12+\n" +
+	"\x06engine\x18\x03 \x01(\x0e2\x13.mirrorme.v1.EngineR\x06engine\x12\x14\n" +
 	"\x05video\x18\x04 \x03(\tR\x05video\x12\x14\n" +
-	"\x05audio\x18\x05 \x03(\tR\x05audio\"\xf2\x01\n" +
+	"\x05audio\x18\x05 \x03(\tR\x05audio\"\xe9\x01\n" +
 	"\x0eCaptureBackend\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12.\n" +
-	"\x06engine\x18\x02 \x01(\x0e2\x16.screenshare.v1.EngineR\x06engine\x12\x1e\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12+\n" +
+	"\x06engine\x18\x02 \x01(\x0e2\x13.mirrorme.v1.EngineR\x06engine\x12\x1e\n" +
 	"\n" +
 	"transports\x18\x03 \x03(\tR\n" +
 	"transports\x12\x1c\n" +
-	"\tavailable\x18\x04 \x01(\bR\tavailable\x12,\n" +
-	"\x06reason\x18\x06 \x01(\v2\x14.screenshare.v1.TextR\x06reason\x12*\n" +
-	"\x05grant\x18\a \x01(\v2\x14.screenshare.v1.TextR\x05grantJ\x04\b\x05\x10\x06\"\xd0\x01\n" +
+	"\tavailable\x18\x04 \x01(\bR\tavailable\x12)\n" +
+	"\x06reason\x18\x06 \x01(\v2\x11.mirrorme.v1.TextR\x06reason\x12'\n" +
+	"\x05grant\x18\a \x01(\v2\x11.mirrorme.v1.TextR\x05grantJ\x04\b\x05\x10\x06\"\xd0\x01\n" +
 	"\aMonitor\x12\x14\n" +
 	"\x05index\x18\x01 \x01(\x05R\x05index\x12\x14\n" +
 	"\x05width\x18\x02 \x01(\x05R\x05width\x12\x16\n" +
@@ -1879,32 +1879,31 @@ const file_screenshare_v1_catalog_proto_rawDesc = "" +
 	"\rTransportList\x12\x1e\n" +
 	"\n" +
 	"transports\x18\x01 \x03(\tR\n" +
-	"transports\"\x88\n" +
-	"\n" +
-	"\aCatalog\x124\n" +
-	"\bplatform\x18\x01 \x01(\v2\x18.screenshare.v1.PlatformR\bplatform\x123\n" +
-	"\bmonitors\x18\x02 \x03(\v2\x17.screenshare.v1.MonitorR\bmonitors\x122\n" +
-	"\x06codecs\x18\x03 \x03(\v2\x1a.screenshare.v1.VideoCodecR\x06codecs\x123\n" +
-	"\bdecoders\x18\x04 \x03(\v2\x17.screenshare.v1.DecoderR\bdecoders\x12=\n" +
-	"\faudio_codecs\x18\x05 \x03(\v2\x1a.screenshare.v1.AudioCodecR\vaudioCodecs\x12?\n" +
-	"\bencoders\x18\x06 \x01(\v2#.screenshare.v1.EncoderAvailabilityR\bencoders\x124\n" +
-	"\tgpu_paths\x18\a \x03(\v2\x17.screenshare.v1.GpuPathR\bgpuPaths\x12:\n" +
-	"\bcaptures\x18\b \x03(\v2\x1e.screenshare.v1.CaptureBackendR\bcaptures\x12=\n" +
-	"\bcarriage\x18\t \x03(\v2!.screenshare.v1.TransportCarriageR\bcarriage\x12\x1a\n" +
+	"transports\"\xde\t\n" +
+	"\aCatalog\x121\n" +
+	"\bplatform\x18\x01 \x01(\v2\x15.mirrorme.v1.PlatformR\bplatform\x120\n" +
+	"\bmonitors\x18\x02 \x03(\v2\x14.mirrorme.v1.MonitorR\bmonitors\x12/\n" +
+	"\x06codecs\x18\x03 \x03(\v2\x17.mirrorme.v1.VideoCodecR\x06codecs\x120\n" +
+	"\bdecoders\x18\x04 \x03(\v2\x14.mirrorme.v1.DecoderR\bdecoders\x12:\n" +
+	"\faudio_codecs\x18\x05 \x03(\v2\x17.mirrorme.v1.AudioCodecR\vaudioCodecs\x12<\n" +
+	"\bencoders\x18\x06 \x01(\v2 .mirrorme.v1.EncoderAvailabilityR\bencoders\x121\n" +
+	"\tgpu_paths\x18\a \x03(\v2\x14.mirrorme.v1.GpuPathR\bgpuPaths\x127\n" +
+	"\bcaptures\x18\b \x03(\v2\x1b.mirrorme.v1.CaptureBackendR\bcaptures\x12:\n" +
+	"\bcarriage\x18\t \x03(\v2\x1e.mirrorme.v1.TransportCarriageR\bcarriage\x12\x1a\n" +
 	"\bfamilies\x18\v \x03(\tR\bfamilies\x12\x14\n" +
 	"\x05modes\x18\f \x03(\tR\x05modes\x12%\n" +
 	"\x0eframe_memories\x18\r \x03(\tR\rframeMemories\x12-\n" +
 	"\x12capability_options\x18\x0e \x03(\tR\x11capabilityOptions\x12)\n" +
-	"\x10watch_transports\x18\x0f \x03(\tR\x0fwatchTransports\x12q\n" +
-	"\x1awatch_transports_by_format\x18\x11 \x03(\v24.screenshare.v1.Catalog.WatchTransportsByFormatEntryR\x17watchTransportsByFormat\x128\n" +
+	"\x10watch_transports\x18\x0f \x03(\tR\x0fwatchTransports\x12n\n" +
+	"\x1awatch_transports_by_format\x18\x11 \x03(\v21.mirrorme.v1.Catalog.WatchTransportsByFormatEntryR\x17watchTransportsByFormat\x128\n" +
 	"\x18browser_watch_transports\x18\x14 \x03(\tR\x16browserWatchTransports\x12#\n" +
-	"\raudio_sources\x18\x12 \x03(\tR\faudioSources\x12@\n" +
-	"\raudio_devices\x18\x16 \x03(\v2\x1b.screenshare.v1.AudioDeviceR\faudioDevices\x12B\n" +
-	"\x12no_monitor_preview\x18\x15 \x01(\v2\x14.screenshare.v1.TextR\x10noMonitorPreview\x12H\n" +
-	"\x15no_window_enumeration\x18\x17 \x01(\v2\x14.screenshare.v1.TextR\x13noWindowEnumeration\x1ai\n" +
+	"\raudio_sources\x18\x12 \x03(\tR\faudioSources\x12=\n" +
+	"\raudio_devices\x18\x16 \x03(\v2\x18.mirrorme.v1.AudioDeviceR\faudioDevices\x12?\n" +
+	"\x12no_monitor_preview\x18\x15 \x01(\v2\x11.mirrorme.v1.TextR\x10noMonitorPreview\x12E\n" +
+	"\x15no_window_enumeration\x18\x17 \x01(\v2\x11.mirrorme.v1.TextR\x13noWindowEnumeration\x1af\n" +
 	"\x1cWatchTransportsByFormatEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x123\n" +
-	"\x05value\x18\x02 \x01(\v2\x1d.screenshare.v1.TransportListR\x05value:\x028\x01J\x04\b\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x120\n" +
+	"\x05value\x18\x02 \x01(\v2\x1a.mirrorme.v1.TransportListR\x05value:\x028\x01J\x04\b\n" +
 	"\x10\vJ\x04\b\x10\x10\x11J\x04\b\x13\x10\x14R\aenginesR\x0fgrid_transportsR\fstore_notice\"E\n" +
 	"\vAudioDevice\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x0e\n" +
@@ -1925,85 +1924,85 @@ const file_screenshare_v1_catalog_proto_rawDesc = "" +
 	"PathColour\x12\x1b\n" +
 	"\x17PATH_COLOUR_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11PATH_COLOUR_EXACT\x10\x01\x12\x17\n" +
-	"\x13PATH_COLOUR_ENCODER\x10\x02B[ZDbjoernblessin.de/screenshare/api/gen/go/screenshare/v1;screensharev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
+	"\x13PATH_COLOUR_ENCODER\x10\x02BRZ;bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
 
 var (
-	file_screenshare_v1_catalog_proto_rawDescOnce sync.Once
-	file_screenshare_v1_catalog_proto_rawDescData []byte
+	file_mirrorme_v1_catalog_proto_rawDescOnce sync.Once
+	file_mirrorme_v1_catalog_proto_rawDescData []byte
 )
 
-func file_screenshare_v1_catalog_proto_rawDescGZIP() []byte {
-	file_screenshare_v1_catalog_proto_rawDescOnce.Do(func() {
-		file_screenshare_v1_catalog_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_screenshare_v1_catalog_proto_rawDesc), len(file_screenshare_v1_catalog_proto_rawDesc)))
+func file_mirrorme_v1_catalog_proto_rawDescGZIP() []byte {
+	file_mirrorme_v1_catalog_proto_rawDescOnce.Do(func() {
+		file_mirrorme_v1_catalog_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_mirrorme_v1_catalog_proto_rawDesc), len(file_mirrorme_v1_catalog_proto_rawDesc)))
 	})
-	return file_screenshare_v1_catalog_proto_rawDescData
+	return file_mirrorme_v1_catalog_proto_rawDescData
 }
 
-var file_screenshare_v1_catalog_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_screenshare_v1_catalog_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
-var file_screenshare_v1_catalog_proto_goTypes = []any{
-	(Engine)(0),                 // 0: screenshare.v1.Engine
-	(Leg)(0),                    // 1: screenshare.v1.Leg
-	(PathColour)(0),             // 2: screenshare.v1.PathColour
-	(*Gap)(nil),                 // 3: screenshare.v1.Gap
-	(*EngineLimit)(nil),         // 4: screenshare.v1.EngineLimit
-	(*VideoCodec)(nil),          // 5: screenshare.v1.VideoCodec
-	(*Decoder)(nil),             // 6: screenshare.v1.Decoder
-	(*AudioEncoder)(nil),        // 7: screenshare.v1.AudioEncoder
-	(*AudioCodec)(nil),          // 8: screenshare.v1.AudioCodec
-	(*EngineCodecs)(nil),        // 9: screenshare.v1.EngineCodecs
-	(*EngineProbe)(nil),         // 10: screenshare.v1.EngineProbe
-	(*EncoderAvailability)(nil), // 11: screenshare.v1.EncoderAvailability
-	(*GpuPath)(nil),             // 12: screenshare.v1.GpuPath
-	(*TransportCarriage)(nil),   // 13: screenshare.v1.TransportCarriage
-	(*CaptureBackend)(nil),      // 14: screenshare.v1.CaptureBackend
-	(*Monitor)(nil),             // 15: screenshare.v1.Monitor
-	(*ShareWindow)(nil),         // 16: screenshare.v1.ShareWindow
-	(*Platform)(nil),            // 17: screenshare.v1.Platform
-	(*TransportList)(nil),       // 18: screenshare.v1.TransportList
-	(*Catalog)(nil),             // 19: screenshare.v1.Catalog
-	(*AudioDevice)(nil),         // 20: screenshare.v1.AudioDevice
-	nil,                         // 21: screenshare.v1.EngineCodecs.UsableEntry
-	nil,                         // 22: screenshare.v1.Catalog.WatchTransportsByFormatEntry
-	(*Text)(nil),                // 23: screenshare.v1.Text
+var file_mirrorme_v1_catalog_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_mirrorme_v1_catalog_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
+var file_mirrorme_v1_catalog_proto_goTypes = []any{
+	(Engine)(0),                 // 0: mirrorme.v1.Engine
+	(Leg)(0),                    // 1: mirrorme.v1.Leg
+	(PathColour)(0),             // 2: mirrorme.v1.PathColour
+	(*Gap)(nil),                 // 3: mirrorme.v1.Gap
+	(*EngineLimit)(nil),         // 4: mirrorme.v1.EngineLimit
+	(*VideoCodec)(nil),          // 5: mirrorme.v1.VideoCodec
+	(*Decoder)(nil),             // 6: mirrorme.v1.Decoder
+	(*AudioEncoder)(nil),        // 7: mirrorme.v1.AudioEncoder
+	(*AudioCodec)(nil),          // 8: mirrorme.v1.AudioCodec
+	(*EngineCodecs)(nil),        // 9: mirrorme.v1.EngineCodecs
+	(*EngineProbe)(nil),         // 10: mirrorme.v1.EngineProbe
+	(*EncoderAvailability)(nil), // 11: mirrorme.v1.EncoderAvailability
+	(*GpuPath)(nil),             // 12: mirrorme.v1.GpuPath
+	(*TransportCarriage)(nil),   // 13: mirrorme.v1.TransportCarriage
+	(*CaptureBackend)(nil),      // 14: mirrorme.v1.CaptureBackend
+	(*Monitor)(nil),             // 15: mirrorme.v1.Monitor
+	(*ShareWindow)(nil),         // 16: mirrorme.v1.ShareWindow
+	(*Platform)(nil),            // 17: mirrorme.v1.Platform
+	(*TransportList)(nil),       // 18: mirrorme.v1.TransportList
+	(*Catalog)(nil),             // 19: mirrorme.v1.Catalog
+	(*AudioDevice)(nil),         // 20: mirrorme.v1.AudioDevice
+	nil,                         // 21: mirrorme.v1.EngineCodecs.UsableEntry
+	nil,                         // 22: mirrorme.v1.Catalog.WatchTransportsByFormatEntry
+	(*Text)(nil),                // 23: mirrorme.v1.Text
 }
-var file_screenshare_v1_catalog_proto_depIdxs = []int32{
-	0,  // 0: screenshare.v1.Gap.engine:type_name -> screenshare.v1.Engine
-	23, // 1: screenshare.v1.Gap.reason:type_name -> screenshare.v1.Text
-	0,  // 2: screenshare.v1.EngineLimit.engine:type_name -> screenshare.v1.Engine
-	4,  // 3: screenshare.v1.VideoCodec.limits:type_name -> screenshare.v1.EngineLimit
-	3,  // 4: screenshare.v1.VideoCodec.gaps:type_name -> screenshare.v1.Gap
-	0,  // 5: screenshare.v1.AudioEncoder.engine:type_name -> screenshare.v1.Engine
-	7,  // 6: screenshare.v1.AudioCodec.encoders:type_name -> screenshare.v1.AudioEncoder
-	3,  // 7: screenshare.v1.AudioCodec.gaps:type_name -> screenshare.v1.Gap
-	21, // 8: screenshare.v1.EngineCodecs.usable:type_name -> screenshare.v1.EngineCodecs.UsableEntry
-	0,  // 9: screenshare.v1.EngineProbe.engine:type_name -> screenshare.v1.Engine
-	9,  // 10: screenshare.v1.EngineProbe.probed:type_name -> screenshare.v1.EngineCodecs
-	23, // 11: screenshare.v1.EngineProbe.unprobed:type_name -> screenshare.v1.Text
-	10, // 12: screenshare.v1.EncoderAvailability.engines:type_name -> screenshare.v1.EngineProbe
-	0,  // 13: screenshare.v1.GpuPath.engine:type_name -> screenshare.v1.Engine
-	2,  // 14: screenshare.v1.GpuPath.colour:type_name -> screenshare.v1.PathColour
-	23, // 15: screenshare.v1.GpuPath.import:type_name -> screenshare.v1.Text
-	23, // 16: screenshare.v1.GpuPath.cost:type_name -> screenshare.v1.Text
-	1,  // 17: screenshare.v1.TransportCarriage.leg:type_name -> screenshare.v1.Leg
-	0,  // 18: screenshare.v1.TransportCarriage.engine:type_name -> screenshare.v1.Engine
-	0,  // 19: screenshare.v1.CaptureBackend.engine:type_name -> screenshare.v1.Engine
-	23, // 20: screenshare.v1.CaptureBackend.reason:type_name -> screenshare.v1.Text
-	23, // 21: screenshare.v1.CaptureBackend.grant:type_name -> screenshare.v1.Text
-	17, // 22: screenshare.v1.Catalog.platform:type_name -> screenshare.v1.Platform
-	15, // 23: screenshare.v1.Catalog.monitors:type_name -> screenshare.v1.Monitor
-	5,  // 24: screenshare.v1.Catalog.codecs:type_name -> screenshare.v1.VideoCodec
-	6,  // 25: screenshare.v1.Catalog.decoders:type_name -> screenshare.v1.Decoder
-	8,  // 26: screenshare.v1.Catalog.audio_codecs:type_name -> screenshare.v1.AudioCodec
-	11, // 27: screenshare.v1.Catalog.encoders:type_name -> screenshare.v1.EncoderAvailability
-	12, // 28: screenshare.v1.Catalog.gpu_paths:type_name -> screenshare.v1.GpuPath
-	14, // 29: screenshare.v1.Catalog.captures:type_name -> screenshare.v1.CaptureBackend
-	13, // 30: screenshare.v1.Catalog.carriage:type_name -> screenshare.v1.TransportCarriage
-	22, // 31: screenshare.v1.Catalog.watch_transports_by_format:type_name -> screenshare.v1.Catalog.WatchTransportsByFormatEntry
-	20, // 32: screenshare.v1.Catalog.audio_devices:type_name -> screenshare.v1.AudioDevice
-	23, // 33: screenshare.v1.Catalog.no_monitor_preview:type_name -> screenshare.v1.Text
-	23, // 34: screenshare.v1.Catalog.no_window_enumeration:type_name -> screenshare.v1.Text
-	18, // 35: screenshare.v1.Catalog.WatchTransportsByFormatEntry.value:type_name -> screenshare.v1.TransportList
+var file_mirrorme_v1_catalog_proto_depIdxs = []int32{
+	0,  // 0: mirrorme.v1.Gap.engine:type_name -> mirrorme.v1.Engine
+	23, // 1: mirrorme.v1.Gap.reason:type_name -> mirrorme.v1.Text
+	0,  // 2: mirrorme.v1.EngineLimit.engine:type_name -> mirrorme.v1.Engine
+	4,  // 3: mirrorme.v1.VideoCodec.limits:type_name -> mirrorme.v1.EngineLimit
+	3,  // 4: mirrorme.v1.VideoCodec.gaps:type_name -> mirrorme.v1.Gap
+	0,  // 5: mirrorme.v1.AudioEncoder.engine:type_name -> mirrorme.v1.Engine
+	7,  // 6: mirrorme.v1.AudioCodec.encoders:type_name -> mirrorme.v1.AudioEncoder
+	3,  // 7: mirrorme.v1.AudioCodec.gaps:type_name -> mirrorme.v1.Gap
+	21, // 8: mirrorme.v1.EngineCodecs.usable:type_name -> mirrorme.v1.EngineCodecs.UsableEntry
+	0,  // 9: mirrorme.v1.EngineProbe.engine:type_name -> mirrorme.v1.Engine
+	9,  // 10: mirrorme.v1.EngineProbe.probed:type_name -> mirrorme.v1.EngineCodecs
+	23, // 11: mirrorme.v1.EngineProbe.unprobed:type_name -> mirrorme.v1.Text
+	10, // 12: mirrorme.v1.EncoderAvailability.engines:type_name -> mirrorme.v1.EngineProbe
+	0,  // 13: mirrorme.v1.GpuPath.engine:type_name -> mirrorme.v1.Engine
+	2,  // 14: mirrorme.v1.GpuPath.colour:type_name -> mirrorme.v1.PathColour
+	23, // 15: mirrorme.v1.GpuPath.import:type_name -> mirrorme.v1.Text
+	23, // 16: mirrorme.v1.GpuPath.cost:type_name -> mirrorme.v1.Text
+	1,  // 17: mirrorme.v1.TransportCarriage.leg:type_name -> mirrorme.v1.Leg
+	0,  // 18: mirrorme.v1.TransportCarriage.engine:type_name -> mirrorme.v1.Engine
+	0,  // 19: mirrorme.v1.CaptureBackend.engine:type_name -> mirrorme.v1.Engine
+	23, // 20: mirrorme.v1.CaptureBackend.reason:type_name -> mirrorme.v1.Text
+	23, // 21: mirrorme.v1.CaptureBackend.grant:type_name -> mirrorme.v1.Text
+	17, // 22: mirrorme.v1.Catalog.platform:type_name -> mirrorme.v1.Platform
+	15, // 23: mirrorme.v1.Catalog.monitors:type_name -> mirrorme.v1.Monitor
+	5,  // 24: mirrorme.v1.Catalog.codecs:type_name -> mirrorme.v1.VideoCodec
+	6,  // 25: mirrorme.v1.Catalog.decoders:type_name -> mirrorme.v1.Decoder
+	8,  // 26: mirrorme.v1.Catalog.audio_codecs:type_name -> mirrorme.v1.AudioCodec
+	11, // 27: mirrorme.v1.Catalog.encoders:type_name -> mirrorme.v1.EncoderAvailability
+	12, // 28: mirrorme.v1.Catalog.gpu_paths:type_name -> mirrorme.v1.GpuPath
+	14, // 29: mirrorme.v1.Catalog.captures:type_name -> mirrorme.v1.CaptureBackend
+	13, // 30: mirrorme.v1.Catalog.carriage:type_name -> mirrorme.v1.TransportCarriage
+	22, // 31: mirrorme.v1.Catalog.watch_transports_by_format:type_name -> mirrorme.v1.Catalog.WatchTransportsByFormatEntry
+	20, // 32: mirrorme.v1.Catalog.audio_devices:type_name -> mirrorme.v1.AudioDevice
+	23, // 33: mirrorme.v1.Catalog.no_monitor_preview:type_name -> mirrorme.v1.Text
+	23, // 34: mirrorme.v1.Catalog.no_window_enumeration:type_name -> mirrorme.v1.Text
+	18, // 35: mirrorme.v1.Catalog.WatchTransportsByFormatEntry.value:type_name -> mirrorme.v1.TransportList
 	36, // [36:36] is the sub-list for method output_type
 	36, // [36:36] is the sub-list for method input_type
 	36, // [36:36] is the sub-list for extension type_name
@@ -2011,34 +2010,34 @@ var file_screenshare_v1_catalog_proto_depIdxs = []int32{
 	0,  // [0:36] is the sub-list for field type_name
 }
 
-func init() { file_screenshare_v1_catalog_proto_init() }
-func file_screenshare_v1_catalog_proto_init() {
-	if File_screenshare_v1_catalog_proto != nil {
+func init() { file_mirrorme_v1_catalog_proto_init() }
+func file_mirrorme_v1_catalog_proto_init() {
+	if File_mirrorme_v1_catalog_proto != nil {
 		return
 	}
-	file_screenshare_v1_text_proto_init()
-	file_screenshare_v1_catalog_proto_msgTypes[1].OneofWrappers = []any{}
-	file_screenshare_v1_catalog_proto_msgTypes[7].OneofWrappers = []any{
+	file_mirrorme_v1_text_proto_init()
+	file_mirrorme_v1_catalog_proto_msgTypes[1].OneofWrappers = []any{}
+	file_mirrorme_v1_catalog_proto_msgTypes[7].OneofWrappers = []any{
 		(*EngineProbe_Probed)(nil),
 		(*EngineProbe_Unprobed)(nil),
 	}
-	file_screenshare_v1_catalog_proto_msgTypes[12].OneofWrappers = []any{}
+	file_mirrorme_v1_catalog_proto_msgTypes[12].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_screenshare_v1_catalog_proto_rawDesc), len(file_screenshare_v1_catalog_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mirrorme_v1_catalog_proto_rawDesc), len(file_mirrorme_v1_catalog_proto_rawDesc)),
 			NumEnums:      3,
 			NumMessages:   20,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_screenshare_v1_catalog_proto_goTypes,
-		DependencyIndexes: file_screenshare_v1_catalog_proto_depIdxs,
-		EnumInfos:         file_screenshare_v1_catalog_proto_enumTypes,
-		MessageInfos:      file_screenshare_v1_catalog_proto_msgTypes,
+		GoTypes:           file_mirrorme_v1_catalog_proto_goTypes,
+		DependencyIndexes: file_mirrorme_v1_catalog_proto_depIdxs,
+		EnumInfos:         file_mirrorme_v1_catalog_proto_enumTypes,
+		MessageInfos:      file_mirrorme_v1_catalog_proto_msgTypes,
 	}.Build()
-	File_screenshare_v1_catalog_proto = out.File
-	file_screenshare_v1_catalog_proto_goTypes = nil
-	file_screenshare_v1_catalog_proto_depIdxs = nil
+	File_mirrorme_v1_catalog_proto = out.File
+	file_mirrorme_v1_catalog_proto_goTypes = nil
+	file_mirrorme_v1_catalog_proto_depIdxs = nil
 }

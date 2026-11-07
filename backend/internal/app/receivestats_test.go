@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/receive"
 )
 
 // The rates are what this file computes rather than carries, so they are what there is to test.

@@ -31,7 +31,7 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/padprobe"
+	"bjoernblessin.de/mirrorme/internal/padprobe"
 )
 
 // Probe is one measuring point and what has passed it.

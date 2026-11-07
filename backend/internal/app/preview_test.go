@@ -4,9 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/events"
-	"bjoernblessin.de/screenshare/internal/receive"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/events"
+	"bjoernblessin.de/mirrorme/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // What a test can hold the preview to, now that the pipeline itself runs in the decode host

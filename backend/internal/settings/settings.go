@@ -3,7 +3,7 @@
 // JSON in the user's config directory (os.UserConfigDir: %APPDATA% on Windows, XDG_CONFIG_HOME or
 // ~/.config on Linux).
 //
-// Three groups, split as the wire splits them (api/proto/screenshare/v1/settings.proto):
+// Three groups, split as the wire splits them (api/proto/mirrorme/v1/settings.proto):
 // where the relay is, what this machine publishes, how it watches.
 // A deployment, a publisher and a viewer change at different times,
 // and a machine that publishes nothing still holds the whole of its own group.
@@ -20,18 +20,18 @@ import (
 	"strconv"
 	"strings"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/gpupath"
-	"bjoernblessin.de/screenshare/internal/group"
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/pointermode"
-	"bjoernblessin.de/screenshare/internal/receive"
-	"bjoernblessin.de/screenshare/internal/share"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/gpupath"
+	"bjoernblessin.de/mirrorme/internal/group"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/pointermode"
+	"bjoernblessin.de/mirrorme/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/share"
 )
 
 // audioSourceNone is the Audio value of a stream with no second track.
@@ -516,7 +516,7 @@ type Publish struct {
 	// two fields would be two controls only ever legal in pairs, which no form can say.
 	// A string rather than a struct for the reason Chroma is one:
 	// the legal values are a list the backend generates from the selected monitor,
-	// so the only strings that arrive are ones this side wrote (api/proto/screenshare/v1).
+	// so the only strings that arrive are ones this side wrote (api/proto/mirrorme/v1).
 	OutputResolution string `json:"outputResolution"`
 	// Preset is the key of the built-in preset these settings follow,
 	// "" for settings the user owns.
@@ -824,17 +824,17 @@ func (p Publish) Target() (share.Target, error) {
 	case share.Window:
 		handle, err := strconv.ParseUint(p.ShareWindow, 10, 64)
 		if err != nil || handle == 0 {
-			return share.Target{}, text.Fail(screensharev1.TextCode_TEXT_CODE_NO_WINDOW_PICKED)
+			return share.Target{}, text.Fail(mirrormev1.TextCode_TEXT_CODE_NO_WINDOW_PICKED)
 		}
 		t.Window = handle
 		return t, nil
 	case share.Region:
 		r, ok := share.ParseRect(p.ShareRegion)
 		if !ok {
-			return share.Target{}, text.Fail(screensharev1.TextCode_TEXT_CODE_NO_REGION_PICKED)
+			return share.Target{}, text.Fail(mirrormev1.TextCode_TEXT_CODE_NO_REGION_PICKED)
 		}
 		t.Region = r
 		return t, nil
 	}
-	return share.Target{}, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_SHARE_KIND, p.ShareKind))
+	return share.Target{}, text.Fail(mirrormev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_SHARE_KIND, p.ShareKind))
 }

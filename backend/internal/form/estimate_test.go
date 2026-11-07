@@ -4,8 +4,8 @@ import (
 	"math"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/display"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/display"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // estimateTestTolerance is what two figures may differ by and still be one prediction.

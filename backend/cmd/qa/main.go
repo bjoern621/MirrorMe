@@ -19,7 +19,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"bjoernblessin.de/screenshare/internal/qa"
+	"bjoernblessin.de/mirrorme/internal/qa"
 )
 
 func main() {

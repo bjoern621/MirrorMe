@@ -3,9 +3,9 @@ package rules
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // Verdicts is what every rule said about one configuration.
@@ -18,17 +18,17 @@ import (
 type Verdicts struct {
 	hidden     map[string]bool
 	live       map[string]bool
-	fieldStops map[string][]*screensharev1.Text
-	valueStops map[string]map[string][]*screensharev1.Text
-	fieldNotes map[string][]*screensharev1.Text
-	valueNotes map[string]map[string][]*screensharev1.Text
+	fieldStops map[string][]*mirrormev1.Text
+	valueStops map[string]map[string][]*mirrormev1.Text
+	fieldNotes map[string][]*mirrormev1.Text
+	valueNotes map[string]map[string][]*mirrormev1.Text
 	bands      map[string][]band
 }
 
 // band is one numeric refusal: the numbers taken away, and the fact behind it.
 type band struct {
 	match  Match
-	reason *screensharev1.Text
+	reason *mirrormev1.Text
 }
 
 // Evaluate answers the registry for one configuration.
@@ -132,8 +132,8 @@ func (r Rule) binds(f Facts) bool {
 //
 // Attached in vocabulary order rather than map order, so one rule against one set of facts yields
 // one statement every time.
-func (r Rule) state(f Facts) *screensharev1.Text {
-	args := make([]*screensharev1.TextArg, 0, len(r.When)+len(r.Args)+2)
+func (r Rule) state(f Facts) *mirrormev1.Text {
+	args := make([]*mirrormev1.TextArg, 0, len(r.When)+len(r.Args)+2)
 	for _, axis := range axes {
 		if _, named := r.When[axis.Name]; !named {
 			continue
@@ -150,12 +150,12 @@ func (r Rule) state(f Facts) *screensharev1.Text {
 	// so a statement reads subject first and target last however many figures ride between.
 	args = append(args, r.Args...)
 
-	args = append(args, text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_OPTION, r.Field))
+	args = append(args, text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_OPTION, r.Field))
 	// The value rides along only where the verdict took exactly one:
 	// a refusal of several entries has no single value to name, and which entries went
 	// is the control's own business.
 	if listed := r.Values.listed(); len(listed) == 1 {
-		args = append(args, text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_VALUE, listed[0]))
+		args = append(args, text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_VALUE, listed[0]))
 	}
 	return text.Of(r.Reason, args...)
 }
@@ -178,7 +178,7 @@ func (v Verdicts) Enabled(field string) bool {
 }
 
 // Reasons is why the control takes no edits, empty where it does.
-func (v Verdicts) Reasons(field string) []*screensharev1.Text {
+func (v Verdicts) Reasons(field string) []*mirrormev1.Text {
 	return v.fieldStops[field]
 }
 
@@ -187,17 +187,17 @@ func (v Verdicts) ValueEnabled(field, value string) bool {
 }
 
 // ValueReasons is why one entry is greyed, empty for an entry that is not.
-func (v Verdicts) ValueReasons(field, value string) []*screensharev1.Text {
+func (v Verdicts) ValueReasons(field, value string) []*mirrormev1.Text {
 	return v.valueStops[field][value]
 }
 
 // Notes is what a control that still takes edits means under this combination.
-func (v Verdicts) Notes(field string) []*screensharev1.Text {
+func (v Verdicts) Notes(field string) []*mirrormev1.Text {
 	return v.fieldNotes[field]
 }
 
 // ValueNotes is what one entry costs or means, for entries carrying a note rather than a greying.
-func (v Verdicts) ValueNotes(field, value string) []*screensharev1.Text {
+func (v Verdicts) ValueNotes(field, value string) []*mirrormev1.Text {
 	return v.valueNotes[field][value]
 }
 
@@ -211,8 +211,8 @@ func (v Verdicts) NumberAllowed(field string, n int) bool {
 }
 
 // NumberReasons is why a numeric control refuses this reading, empty for one it takes.
-func (v Verdicts) NumberReasons(field string, n int) []*screensharev1.Text {
-	var out []*screensharev1.Text
+func (v Verdicts) NumberReasons(field string, n int) []*mirrormev1.Text {
+	var out []*mirrormev1.Text
 	for _, b := range v.bands[field] {
 		if b.match.binds(NumberValue(n)) {
 			out = append(out, b.reason)
@@ -236,8 +236,8 @@ func (v Verdicts) Bounds(field string, low, high int) (int, int) {
 
 // BoundReasons is why a control is offered less than the range it was given,
 // empty where nothing narrowed it.
-func (v Verdicts) BoundReasons(field string) []*screensharev1.Text {
-	out := make([]*screensharev1.Text, 0, len(v.bands[field]))
+func (v Verdicts) BoundReasons(field string) []*mirrormev1.Text {
+	out := make([]*mirrormev1.Text, 0, len(v.bands[field]))
 	for _, b := range v.bands[field] {
 		out = append(out, b.reason)
 	}
@@ -247,12 +247,12 @@ func (v Verdicts) BoundReasons(field string) []*screensharev1.Text {
 // appendUnder files one reason under every value it was stated about,
 // creating the inner map so no caller has to.
 func appendUnder(
-	under map[string][]*screensharev1.Text, values []string, reason *screensharev1.Text,
-) map[string][]*screensharev1.Text {
+	under map[string][]*mirrormev1.Text, values []string, reason *mirrormev1.Text,
+) map[string][]*mirrormev1.Text {
 	assert.IsNotNil(reason, "a filed reason is a statement")
 
 	if under == nil {
-		under = map[string][]*screensharev1.Text{}
+		under = map[string][]*mirrormev1.Text{}
 	}
 	for _, value := range values {
 		under[value] = append(under[value], reason)

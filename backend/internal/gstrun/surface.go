@@ -5,8 +5,8 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/colour"
-	"bjoernblessin.de/screenshare/internal/padprobe"
+	"bjoernblessin.de/mirrorme/internal/colour"
+	"bjoernblessin.de/mirrorme/internal/padprobe"
 )
 
 // Narrowing the encoder input.

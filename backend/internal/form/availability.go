@@ -21,13 +21,13 @@ package form
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/gpupath"
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/rules"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/gpupath"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/rules"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // fieldState decides one control's visibility and availability.
@@ -61,13 +61,13 @@ func fieldStateOf(av availability, key string, entry int) state {
 // A field with no option-level rule leaves every entry enabled:
 // whole-control greying is fieldState's,
 // and repeating it per entry would grey a dropdown twice over.
-func optionState(d Deps, s settings.Settings, key, value string, entry int) (enabled bool, reason *screensharev1.Text) {
+func optionState(d Deps, s settings.Settings, key, value string, entry int) (enabled bool, reason *mirrormev1.Text) {
 	return optionStateOf(availabilityOf(d, s), key, value, entry)
 }
 
 // optionStateOf answers the same question against an evaluation the caller already holds,
 // for the reason fieldStateOf takes one.
-func optionStateOf(av availability, key, value string, entry int) (enabled bool, reason *screensharev1.Text) {
+func optionStateOf(av availability, key, value string, entry int) (enabled bool, reason *mirrormev1.Text) {
 	_, declared := availabilityRules[key]
 	assert.Assert(declared, "an option question names a field the form declares", key)
 
@@ -91,13 +91,13 @@ func availabilityLive() state {
 // and means something its label does not describe here.
 // A nil note yields a plain live control,
 // which keeps a caller from branching on whether it has one.
-func availabilityNoted(note *screensharev1.Text) state {
+func availabilityNoted(note *mirrormev1.Text) state {
 	return state{visible: true, enabled: true, note: note}
 }
 
 // availabilityDisabled is a control the combination blocks,
 // with the statement shown in place of the value.
-func availabilityDisabled(reason *screensharev1.Text) state {
+func availabilityDisabled(reason *mirrormev1.Text) state {
 	assert.IsNotNil(reason, "a disabled control says why")
 	return state{visible: true, enabled: false, reason: reason}
 }

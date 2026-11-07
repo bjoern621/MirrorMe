@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/receive"
 )
 
 // The frame channel across the process boundary: what a pool carries, and how a subscription ends.

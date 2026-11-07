@@ -4,14 +4,14 @@ import (
 	"runtime"
 	"strings"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/transport"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/transport"
 )
 
 func watchURL(s settings.Settings, streamName, transportName string) (string, error) {
@@ -20,7 +20,7 @@ func watchURL(s settings.Settings, streamName, transportName string) (string, er
 
 	url, ok := transport.WatchURL(transportName, s, streamName)
 	if !ok {
-		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(capabilities.EngineFfmpeg), text.Transport(transportName))
+		return "", text.Fail(mirrormev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM, text.Engine(capabilities.EngineFfmpeg), text.Transport(transportName))
 	}
 
 	assert.Assert(url != "", "a transport with a watch form yields a URL", transportName, streamName)

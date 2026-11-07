@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	v1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	v1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 )
 
 func dial(sock string) (*grpc.ClientConn, v1.ControlServiceClient, error) {

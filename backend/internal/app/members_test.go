@@ -9,16 +9,16 @@ import (
 	"testing"
 	"time"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/events"
-	"bjoernblessin.de/screenshare/internal/group"
-	"bjoernblessin.de/screenshare/internal/groupclient"
-	"bjoernblessin.de/screenshare/internal/member"
-	"bjoernblessin.de/screenshare/internal/relay"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/text"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/events"
+	"bjoernblessin.de/mirrorme/internal/group"
+	"bjoernblessin.de/mirrorme/internal/groupclient"
+	"bjoernblessin.de/mirrorme/internal/member"
+	"bjoernblessin.de/mirrorme/internal/relay"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/text"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // The relay closes a connection without stating a reason,
@@ -224,7 +224,7 @@ func TestAMachineInNoGroupNamesNoCauseForAStoppedStream(t *testing.T) {
 func TestAGroupNoPresenceIsStatedInReadsAStoppedStreamAsALapsedMembership(t *testing.T) {
 	m := membership{Group: aGroupID}
 
-	if got := m.failure().GetCode(); got != screensharev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED {
+	if got := m.failure().GetCode(); got != mirrormev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED {
 		t.Errorf("a group nothing is stated in reads a stopped stream as %v, want a lapsed membership", got)
 	}
 }
@@ -235,10 +235,10 @@ func TestARefusedNameReadsAStoppedStreamAsALapsedMembership(t *testing.T) {
 	m := membership{
 		Group:   aGroupID,
 		Joined:  true,
-		Refusal: text.Of(screensharev1.TextCode_TEXT_CODE_GROUP_NAME_TAKEN),
+		Refusal: text.Of(mirrormev1.TextCode_TEXT_CODE_GROUP_NAME_TAKEN),
 	}
 
-	if got := m.failure().GetCode(); got != screensharev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED {
+	if got := m.failure().GetCode(); got != mirrormev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED {
 		t.Errorf("a refused name reads a stopped stream as %v, want a lapsed membership", got)
 	}
 }
@@ -251,7 +251,7 @@ func TestPresenceOlderThanItsLeaseReadsAStoppedStreamAsALapsedMembership(t *test
 	if !m.lapsed() {
 		t.Fatalf("presence taken a minute ago on a %s lease reports standing, want it lapsed", m.Lease)
 	}
-	if got := m.failure().GetCode(); got != screensharev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED {
+	if got := m.failure().GetCode(); got != mirrormev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED {
 		t.Errorf("a lapsed lease reads a stopped stream as %v, want a lapsed membership", got)
 	}
 }
@@ -271,10 +271,10 @@ func TestAServiceThatRefusedReadsAStoppedStreamAsItsOwnRefusal(t *testing.T) {
 	m := membership{
 		Group:   aGroupID,
 		Joined:  true,
-		Refusal: text.Of(screensharev1.TextCode_TEXT_CODE_GROUP_SERVICE_REFUSED),
+		Refusal: text.Of(mirrormev1.TextCode_TEXT_CODE_GROUP_SERVICE_REFUSED),
 	}
 
-	if got := m.failure().GetCode(); got != screensharev1.TextCode_TEXT_CODE_GROUP_SERVICE_REFUSED {
+	if got := m.failure().GetCode(); got != mirrormev1.TextCode_TEXT_CODE_GROUP_SERVICE_REFUSED {
 		t.Errorf("a refusing service reads a stopped stream as %v, want the service's own refusal", got)
 	}
 }
@@ -284,12 +284,12 @@ func TestAServiceThatRefusedReadsAStoppedStreamAsItsOwnRefusal(t *testing.T) {
 // every other stated ground is the service saying no in words this app cannot name,
 // and a service that could not be reached refused nothing at all.
 func TestOnlyARefusalTheServiceStatedIsOne(t *testing.T) {
-	if got := membershipRefusal(nameTaken()).GetCode(); got != screensharev1.TextCode_TEXT_CODE_GROUP_NAME_TAKEN {
+	if got := membershipRefusal(nameTaken()).GetCode(); got != mirrormev1.TextCode_TEXT_CODE_GROUP_NAME_TAKEN {
 		t.Errorf("a 409 states %v, want the name being taken", got)
 	}
 
 	other := &groupclient.Refusal{Status: 400, Reason: "this group states its members, and this request names none"}
-	if got := membershipRefusal(other).GetCode(); got != screensharev1.TextCode_TEXT_CODE_GROUP_SERVICE_REFUSED {
+	if got := membershipRefusal(other).GetCode(); got != mirrormev1.TextCode_TEXT_CODE_GROUP_SERVICE_REFUSED {
 		t.Errorf("a refusal on another ground states %v, want the service refusing", got)
 	}
 
@@ -352,7 +352,7 @@ func TestALeaseNoPassRestatedLapses(t *testing.T) {
 	if !held.lapsed() {
 		t.Fatalf("presence taken 25s ago on a %s lease reports standing, want it lapsed", held.Lease)
 	}
-	if got := held.failure().GetCode(); got != screensharev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED {
+	if got := held.failure().GetCode(); got != mirrormev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED {
 		t.Errorf("a lease no pass restated reads a stopped stream as %v, want a lapsed membership", got)
 	}
 }
@@ -368,7 +368,7 @@ func TestAPassThatReadANameDropsTheRefusalForWantOfOne(t *testing.T) {
 	a.setMembership(membership{
 		Group:   aGroupID,
 		Joined:  true,
-		Refusal: text.Of(screensharev1.TextCode_TEXT_CODE_GROUP_NAME_MISSING),
+		Refusal: text.Of(mirrormev1.TextCode_TEXT_CODE_GROUP_NAME_MISSING),
 	})
 
 	a.statePresence()
@@ -389,10 +389,10 @@ func TestARefusalTheServiceStatedIsLanded(t *testing.T) {
 	a.statePresence()
 
 	held := a.membership()
-	if got := held.Refusal.GetCode(); got != screensharev1.TextCode_TEXT_CODE_GROUP_NAME_TAKEN {
+	if got := held.Refusal.GetCode(); got != mirrormev1.TextCode_TEXT_CODE_GROUP_NAME_TAKEN {
 		t.Errorf("a name another member holds lands %v, want the name being taken", got)
 	}
-	if got := held.failure().GetCode(); got != screensharev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED {
+	if got := held.failure().GetCode(); got != mirrormev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED {
 		t.Errorf("a refused name reads a stopped stream as %v, want a lapsed membership", got)
 	}
 }
@@ -453,7 +453,7 @@ func TestAPassWithNoNameStatesNothing(t *testing.T) {
 	if held.Joined {
 		t.Error("a machine with no name reports being in the group")
 	}
-	if got := held.Refusal.GetCode(); got != screensharev1.TextCode_TEXT_CODE_GROUP_NAME_MISSING {
+	if got := held.Refusal.GetCode(); got != mirrormev1.TextCode_TEXT_CODE_GROUP_NAME_MISSING {
 		t.Errorf("a machine with no name lands %v, want the name being missing", got)
 	}
 	if _, drawn, err := member.Load(aGroupID); drawn || err != nil {
@@ -471,7 +471,7 @@ func TestATileSaysTheStreamLeftTheRelay(t *testing.T) {
 	a := &App{}
 	a.relayLast.Store(&relay.Status{Reachable: true, Paths: []relay.Path{{Name: "alice"}}})
 
-	if got := a.receiveFailure("bob", false).GetCode(); got != screensharev1.TextCode_TEXT_CODE_STREAM_LEFT_THE_RELAY {
+	if got := a.receiveFailure("bob", false).GetCode(); got != mirrormev1.TextCode_TEXT_CODE_STREAM_LEFT_THE_RELAY {
 		t.Errorf("a stream the relay does not carry says %v, want that it left the relay", got)
 	}
 	if failure := a.receiveFailure("alice", false); failure != nil {
@@ -517,10 +517,10 @@ func TestATileSaysMembershipLapsedBeforeItSaysTheStreamLeft(t *testing.T) {
 	a.setMembership(membership{
 		Group:   aGroupID,
 		Joined:  true,
-		Refusal: text.Of(screensharev1.TextCode_TEXT_CODE_GROUP_NAME_TAKEN),
+		Refusal: text.Of(mirrormev1.TextCode_TEXT_CODE_GROUP_NAME_TAKEN),
 	})
 
-	if got := a.receiveFailure("bob", false).GetCode(); got != screensharev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED {
+	if got := a.receiveFailure("bob", false).GetCode(); got != mirrormev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED {
 		t.Errorf("a tile on a machine whose membership lapsed says %v, want the lapse", got)
 	}
 }
@@ -631,7 +631,7 @@ func TestAPassRefusedForItsNameKeepsTheSecretItDrew(t *testing.T) {
 	if err != nil || !held {
 		t.Fatalf("a refused pass left no identity behind: %+v, %v, %v", drawn, held, err)
 	}
-	if got := a.membership().Refusal.GetCode(); got != screensharev1.TextCode_TEXT_CODE_GROUP_NAME_TAKEN {
+	if got := a.membership().Refusal.GetCode(); got != mirrormev1.TextCode_TEXT_CODE_GROUP_NAME_TAKEN {
 		t.Errorf("a name another member holds lands %v, want the name being taken", got)
 	}
 

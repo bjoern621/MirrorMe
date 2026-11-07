@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/group"
-	"bjoernblessin.de/screenshare/internal/relay"
+	"bjoernblessin.de/mirrorme/internal/group"
+	"bjoernblessin.de/mirrorme/internal/relay"
 )
 
 // Membership is a presence lease a member's own app holds,

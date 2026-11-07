@@ -6,13 +6,13 @@ import (
 	"strconv"
 	"time"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/ffmpeg"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/ffmpeg"
 )
 
 // The local preview leg: a publish child serves a copy of its encoded stream on a loopback port,
@@ -85,7 +85,7 @@ func PreviewCarried(codec string) (format string, carried bool) {
 func AllocatePreviewPort() (int, error) {
 	listener, err := net.ListenTCP("tcp", &net.TCPAddr{IP: net.ParseIP(previewHost), Port: 0})
 	if err != nil {
-		return 0, text.Because(err, screensharev1.TextCode_TEXT_CODE_LOOPBACK_PORT_UNAVAILABLE)
+		return 0, text.Because(err, mirrormev1.TextCode_TEXT_CODE_LOOPBACK_PORT_UNAVAILABLE)
 	}
 	defer listener.Close()
 
@@ -115,11 +115,11 @@ func gstPreviewTap(codec string, preview PreviewLeg) ([]string, error) {
 
 	c, ok := capabilities.Get(codec)
 	if !ok {
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(codec))
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(codec))
 	}
 	parser, ok := previewCarriages[c.Format]
 	if !ok {
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_PREVIEW_HAS_NO_LEG, text.Codec(codec), text.Format(c.Format))
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_PREVIEW_HAS_NO_LEG, text.Codec(codec), text.Format(c.Format))
 	}
 
 	tap := []string{"queue", "max-size-buffers=8", "leaky=downstream", "!"}

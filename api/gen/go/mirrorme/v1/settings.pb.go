@@ -2,16 +2,16 @@
 // versions:
 // 	protoc-gen-go v1.36.12
 // 	protoc        (unknown)
-// source: screenshare/v1/settings.proto
+// source: mirrorme/v1/settings.proto
 
-// The screen-sharing control plane, version 1.
+// The MirrorMe control plane, version 1.
 //
 // Everything a shell needs to draw the product and to act on it crosses this package.
 // A shell holds no domain knowledge of its own:
 // it draws what these messages describe and calls the methods control.proto declares
 // (docs/ipc-api.md).
 
-package screensharev1
+package mirrormev1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -60,7 +60,7 @@ type Settings struct {
 
 func (x *Settings) Reset() {
 	*x = Settings{}
-	mi := &file_screenshare_v1_settings_proto_msgTypes[0]
+	mi := &file_mirrorme_v1_settings_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -72,7 +72,7 @@ func (x *Settings) String() string {
 func (*Settings) ProtoMessage() {}
 
 func (x *Settings) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_settings_proto_msgTypes[0]
+	mi := &file_mirrorme_v1_settings_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -85,7 +85,7 @@ func (x *Settings) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Settings.ProtoReflect.Descriptor instead.
 func (*Settings) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_settings_proto_rawDescGZIP(), []int{0}
+	return file_mirrorme_v1_settings_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Settings) GetRelay() *RelaySettings {
@@ -170,7 +170,7 @@ type AppSettings struct {
 
 func (x *AppSettings) Reset() {
 	*x = AppSettings{}
-	mi := &file_screenshare_v1_settings_proto_msgTypes[1]
+	mi := &file_mirrorme_v1_settings_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -182,7 +182,7 @@ func (x *AppSettings) String() string {
 func (*AppSettings) ProtoMessage() {}
 
 func (x *AppSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_settings_proto_msgTypes[1]
+	mi := &file_mirrorme_v1_settings_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -195,7 +195,7 @@ func (x *AppSettings) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AppSettings.ProtoReflect.Descriptor instead.
 func (*AppSettings) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_settings_proto_rawDescGZIP(), []int{1}
+	return file_mirrorme_v1_settings_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *AppSettings) GetSendCrashReports() bool {
@@ -323,7 +323,7 @@ type RelaySettings struct {
 
 func (x *RelaySettings) Reset() {
 	*x = RelaySettings{}
-	mi := &file_screenshare_v1_settings_proto_msgTypes[2]
+	mi := &file_mirrorme_v1_settings_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -335,7 +335,7 @@ func (x *RelaySettings) String() string {
 func (*RelaySettings) ProtoMessage() {}
 
 func (x *RelaySettings) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_settings_proto_msgTypes[2]
+	mi := &file_mirrorme_v1_settings_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -348,7 +348,7 @@ func (x *RelaySettings) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RelaySettings.ProtoReflect.Descriptor instead.
 func (*RelaySettings) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_settings_proto_rawDescGZIP(), []int{2}
+	return file_mirrorme_v1_settings_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *RelaySettings) GetHost() string {
@@ -596,7 +596,7 @@ type PublishSettings struct {
 
 func (x *PublishSettings) Reset() {
 	*x = PublishSettings{}
-	mi := &file_screenshare_v1_settings_proto_msgTypes[3]
+	mi := &file_mirrorme_v1_settings_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -608,7 +608,7 @@ func (x *PublishSettings) String() string {
 func (*PublishSettings) ProtoMessage() {}
 
 func (x *PublishSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_settings_proto_msgTypes[3]
+	mi := &file_mirrorme_v1_settings_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -621,7 +621,7 @@ func (x *PublishSettings) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublishSettings.ProtoReflect.Descriptor instead.
 func (*PublishSettings) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_settings_proto_rawDescGZIP(), []int{3}
+	return file_mirrorme_v1_settings_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *PublishSettings) GetPublishTransport() string {
@@ -901,7 +901,7 @@ type ViewerSettings struct {
 
 func (x *ViewerSettings) Reset() {
 	*x = ViewerSettings{}
-	mi := &file_screenshare_v1_settings_proto_msgTypes[4]
+	mi := &file_mirrorme_v1_settings_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -913,7 +913,7 @@ func (x *ViewerSettings) String() string {
 func (*ViewerSettings) ProtoMessage() {}
 
 func (x *ViewerSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_settings_proto_msgTypes[4]
+	mi := &file_mirrorme_v1_settings_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -926,7 +926,7 @@ func (x *ViewerSettings) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ViewerSettings.ProtoReflect.Descriptor instead.
 func (*ViewerSettings) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_settings_proto_rawDescGZIP(), []int{4}
+	return file_mirrorme_v1_settings_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ViewerSettings) GetTileWatchTransport() string {
@@ -1014,7 +1014,7 @@ type AudioSource struct {
 
 func (x *AudioSource) Reset() {
 	*x = AudioSource{}
-	mi := &file_screenshare_v1_settings_proto_msgTypes[5]
+	mi := &file_mirrorme_v1_settings_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1026,7 +1026,7 @@ func (x *AudioSource) String() string {
 func (*AudioSource) ProtoMessage() {}
 
 func (x *AudioSource) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_settings_proto_msgTypes[5]
+	mi := &file_mirrorme_v1_settings_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1039,7 +1039,7 @@ func (x *AudioSource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AudioSource.ProtoReflect.Descriptor instead.
 func (*AudioSource) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_settings_proto_rawDescGZIP(), []int{5}
+	return file_mirrorme_v1_settings_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *AudioSource) GetSource() string {
@@ -1083,7 +1083,7 @@ type Preset struct {
 
 func (x *Preset) Reset() {
 	*x = Preset{}
-	mi := &file_screenshare_v1_settings_proto_msgTypes[6]
+	mi := &file_mirrorme_v1_settings_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1095,7 +1095,7 @@ func (x *Preset) String() string {
 func (*Preset) ProtoMessage() {}
 
 func (x *Preset) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_settings_proto_msgTypes[6]
+	mi := &file_mirrorme_v1_settings_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1108,7 +1108,7 @@ func (x *Preset) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Preset.ProtoReflect.Descriptor instead.
 func (*Preset) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_settings_proto_rawDescGZIP(), []int{6}
+	return file_mirrorme_v1_settings_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Preset) GetName() string {
@@ -1125,18 +1125,18 @@ func (x *Preset) GetSettings() *PublishSettings {
 	return nil
 }
 
-var File_screenshare_v1_settings_proto protoreflect.FileDescriptor
+var File_mirrorme_v1_settings_proto protoreflect.FileDescriptor
 
-const file_screenshare_v1_settings_proto_rawDesc = "" +
+const file_mirrorme_v1_settings_proto_rawDesc = "" +
 	"\n" +
-	"\x1dscreenshare/v1/settings.proto\x12\x0escreenshare.v1\"\x82\x02\n" +
-	"\bSettings\x123\n" +
-	"\x05relay\x18\x01 \x01(\v2\x1d.screenshare.v1.RelaySettingsR\x05relay\x129\n" +
-	"\apublish\x18\x02 \x01(\v2\x1f.screenshare.v1.PublishSettingsR\apublish\x126\n" +
-	"\x06viewer\x18\x03 \x01(\v2\x1e.screenshare.v1.ViewerSettingsR\x06viewer\x12\x1f\n" +
+	"\x1amirrorme/v1/settings.proto\x12\vmirrorme.v1\"\xf6\x01\n" +
+	"\bSettings\x120\n" +
+	"\x05relay\x18\x01 \x01(\v2\x1a.mirrorme.v1.RelaySettingsR\x05relay\x126\n" +
+	"\apublish\x18\x02 \x01(\v2\x1c.mirrorme.v1.PublishSettingsR\apublish\x123\n" +
+	"\x06viewer\x18\x03 \x01(\v2\x1b.mirrorme.v1.ViewerSettingsR\x06viewer\x12\x1f\n" +
 	"\vstream_name\x18\x04 \x01(\tR\n" +
-	"streamName\x12-\n" +
-	"\x03app\x18\x05 \x01(\v2\x1b.screenshare.v1.AppSettingsR\x03app\"\x94\x02\n" +
+	"streamName\x12*\n" +
+	"\x03app\x18\x05 \x01(\v2\x18.mirrorme.v1.AppSettingsR\x03app\"\x94\x02\n" +
 	"\vAppSettings\x12,\n" +
 	"\x12send_crash_reports\x18\x01 \x01(\bR\x10sendCrashReports\x12.\n" +
 	"\x13crash_reports_asked\x18\x06 \x01(\bR\x11crashReportsAsked\x123\n" +
@@ -1159,7 +1159,7 @@ const file_screenshare_v1_settings_proto_rawDesc = "" +
 	"\tgroup_key\x18\b \x01(\tR\bgroupKey\x12!\n" +
 	"\fdisplay_name\x18\f \x01(\tR\vdisplayName\x12!\n" +
 	"\fdiscord_link\x18\x0e \x01(\tR\vdiscordLinkJ\x04\b\r\x10\x0eJ\x04\b\x0f\x10\x10J\x04\b\t\x10\n" +
-	"J\x04\b\x03\x10\x04R\fdiscord_modeR\x15discord_rich_presenceR\x0esrt_passphraseR\bapi_port\"\xa2\n" +
+	"J\x04\b\x03\x10\x04R\fdiscord_modeR\x15discord_rich_presenceR\x0esrt_passphraseR\bapi_port\"\x9f\n" +
 	"\n" +
 	"\x0fPublishSettings\x12+\n" +
 	"\x11publish_transport\x18\n" +
@@ -1179,8 +1179,8 @@ const file_screenshare_v1_settings_proto_rawDesc = "" +
 	"\abframes\x18\x15 \x01(\x05R\abframes\x12\x16\n" +
 	"\x06effort\x18\x16 \x01(\tR\x06effort\x12\x12\n" +
 	"\x04tune\x18' \x01(\tR\x04tune\x12\x18\n" +
-	"\acapture\x18\x17 \x01(\tR\acapture\x12@\n" +
-	"\raudio_sources\x18( \x03(\v2\x1b.screenshare.v1.AudioSourceR\faudioSources\x12\x1f\n" +
+	"\acapture\x18\x17 \x01(\tR\acapture\x12=\n" +
+	"\raudio_sources\x18( \x03(\v2\x18.mirrorme.v1.AudioSourceR\faudioSources\x12\x1f\n" +
 	"\vaudio_codec\x18\x19 \x01(\tR\n" +
 	"audioCodec\x12\x17\n" +
 	"\adrm_map\x18\x1a \x01(\tR\x06drmMap\x12\x1d\n" +
@@ -1218,40 +1218,40 @@ const file_screenshare_v1_settings_proto_rawDesc = "" +
 	"\x06device\x18\x02 \x01(\tR\x06device\x12\x17\n" +
 	"\x04gain\x18\x03 \x01(\x05H\x00R\x04gain\x88\x01\x01\x12\x12\n" +
 	"\x04mute\x18\x04 \x01(\bR\x04muteB\a\n" +
-	"\x05_gain\"Y\n" +
+	"\x05_gain\"V\n" +
 	"\x06Preset\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12;\n" +
-	"\bsettings\x18\x02 \x01(\v2\x1f.screenshare.v1.PublishSettingsR\bsettingsB[ZDbjoernblessin.de/screenshare/api/gen/go/screenshare/v1;screensharev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
+	"\x04name\x18\x01 \x01(\tR\x04name\x128\n" +
+	"\bsettings\x18\x02 \x01(\v2\x1c.mirrorme.v1.PublishSettingsR\bsettingsBRZ;bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
 
 var (
-	file_screenshare_v1_settings_proto_rawDescOnce sync.Once
-	file_screenshare_v1_settings_proto_rawDescData []byte
+	file_mirrorme_v1_settings_proto_rawDescOnce sync.Once
+	file_mirrorme_v1_settings_proto_rawDescData []byte
 )
 
-func file_screenshare_v1_settings_proto_rawDescGZIP() []byte {
-	file_screenshare_v1_settings_proto_rawDescOnce.Do(func() {
-		file_screenshare_v1_settings_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_screenshare_v1_settings_proto_rawDesc), len(file_screenshare_v1_settings_proto_rawDesc)))
+func file_mirrorme_v1_settings_proto_rawDescGZIP() []byte {
+	file_mirrorme_v1_settings_proto_rawDescOnce.Do(func() {
+		file_mirrorme_v1_settings_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_mirrorme_v1_settings_proto_rawDesc), len(file_mirrorme_v1_settings_proto_rawDesc)))
 	})
-	return file_screenshare_v1_settings_proto_rawDescData
+	return file_mirrorme_v1_settings_proto_rawDescData
 }
 
-var file_screenshare_v1_settings_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
-var file_screenshare_v1_settings_proto_goTypes = []any{
-	(*Settings)(nil),        // 0: screenshare.v1.Settings
-	(*AppSettings)(nil),     // 1: screenshare.v1.AppSettings
-	(*RelaySettings)(nil),   // 2: screenshare.v1.RelaySettings
-	(*PublishSettings)(nil), // 3: screenshare.v1.PublishSettings
-	(*ViewerSettings)(nil),  // 4: screenshare.v1.ViewerSettings
-	(*AudioSource)(nil),     // 5: screenshare.v1.AudioSource
-	(*Preset)(nil),          // 6: screenshare.v1.Preset
+var file_mirrorme_v1_settings_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_mirrorme_v1_settings_proto_goTypes = []any{
+	(*Settings)(nil),        // 0: mirrorme.v1.Settings
+	(*AppSettings)(nil),     // 1: mirrorme.v1.AppSettings
+	(*RelaySettings)(nil),   // 2: mirrorme.v1.RelaySettings
+	(*PublishSettings)(nil), // 3: mirrorme.v1.PublishSettings
+	(*ViewerSettings)(nil),  // 4: mirrorme.v1.ViewerSettings
+	(*AudioSource)(nil),     // 5: mirrorme.v1.AudioSource
+	(*Preset)(nil),          // 6: mirrorme.v1.Preset
 }
-var file_screenshare_v1_settings_proto_depIdxs = []int32{
-	2, // 0: screenshare.v1.Settings.relay:type_name -> screenshare.v1.RelaySettings
-	3, // 1: screenshare.v1.Settings.publish:type_name -> screenshare.v1.PublishSettings
-	4, // 2: screenshare.v1.Settings.viewer:type_name -> screenshare.v1.ViewerSettings
-	1, // 3: screenshare.v1.Settings.app:type_name -> screenshare.v1.AppSettings
-	5, // 4: screenshare.v1.PublishSettings.audio_sources:type_name -> screenshare.v1.AudioSource
-	3, // 5: screenshare.v1.Preset.settings:type_name -> screenshare.v1.PublishSettings
+var file_mirrorme_v1_settings_proto_depIdxs = []int32{
+	2, // 0: mirrorme.v1.Settings.relay:type_name -> mirrorme.v1.RelaySettings
+	3, // 1: mirrorme.v1.Settings.publish:type_name -> mirrorme.v1.PublishSettings
+	4, // 2: mirrorme.v1.Settings.viewer:type_name -> mirrorme.v1.ViewerSettings
+	1, // 3: mirrorme.v1.Settings.app:type_name -> mirrorme.v1.AppSettings
+	5, // 4: mirrorme.v1.PublishSettings.audio_sources:type_name -> mirrorme.v1.AudioSource
+	3, // 5: mirrorme.v1.Preset.settings:type_name -> mirrorme.v1.PublishSettings
 	6, // [6:6] is the sub-list for method output_type
 	6, // [6:6] is the sub-list for method input_type
 	6, // [6:6] is the sub-list for extension type_name
@@ -1259,27 +1259,27 @@ var file_screenshare_v1_settings_proto_depIdxs = []int32{
 	0, // [0:6] is the sub-list for field type_name
 }
 
-func init() { file_screenshare_v1_settings_proto_init() }
-func file_screenshare_v1_settings_proto_init() {
-	if File_screenshare_v1_settings_proto != nil {
+func init() { file_mirrorme_v1_settings_proto_init() }
+func file_mirrorme_v1_settings_proto_init() {
+	if File_mirrorme_v1_settings_proto != nil {
 		return
 	}
-	file_screenshare_v1_settings_proto_msgTypes[5].OneofWrappers = []any{}
+	file_mirrorme_v1_settings_proto_msgTypes[5].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_screenshare_v1_settings_proto_rawDesc), len(file_screenshare_v1_settings_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mirrorme_v1_settings_proto_rawDesc), len(file_mirrorme_v1_settings_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_screenshare_v1_settings_proto_goTypes,
-		DependencyIndexes: file_screenshare_v1_settings_proto_depIdxs,
-		MessageInfos:      file_screenshare_v1_settings_proto_msgTypes,
+		GoTypes:           file_mirrorme_v1_settings_proto_goTypes,
+		DependencyIndexes: file_mirrorme_v1_settings_proto_depIdxs,
+		MessageInfos:      file_mirrorme_v1_settings_proto_msgTypes,
 	}.Build()
-	File_screenshare_v1_settings_proto = out.File
-	file_screenshare_v1_settings_proto_goTypes = nil
-	file_screenshare_v1_settings_proto_depIdxs = nil
+	File_mirrorme_v1_settings_proto = out.File
+	file_mirrorme_v1_settings_proto_goTypes = nil
+	file_mirrorme_v1_settings_proto_depIdxs = nil
 }

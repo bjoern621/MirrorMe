@@ -4,20 +4,20 @@ import (
 	"slices"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/control"
-	"bjoernblessin.de/screenshare/internal/ffmpeg"
-	"bjoernblessin.de/screenshare/internal/relay"
-	"bjoernblessin.de/screenshare/internal/transport"
-	"bjoernblessin.de/screenshare/internal/watch"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/control"
+	"bjoernblessin.de/mirrorme/internal/ffmpeg"
+	"bjoernblessin.de/mirrorme/internal/relay"
+	"bjoernblessin.de/mirrorme/internal/transport"
+	"bjoernblessin.de/mirrorme/internal/watch"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // relayPollInterval is the cadence the relay is asked at.
@@ -113,7 +113,7 @@ func (a *App) stopRelayPoll() {
 //
 // Shells do not poll for the snapshot:
 // the contract has it pushed at this side's interval, for the same delta reason
-// (api/proto/screenshare/v1/events.proto).
+// (api/proto/mirrorme/v1/events.proto).
 func (a *App) fetchRelay() relay.Status {
 	a.settingsMu.Lock()
 	s := a.settings
@@ -228,7 +228,7 @@ func (a *App) carriesStream(streamName, transportName, engine string) error {
 	if slices.Contains(carried, transportName) {
 		return nil
 	}
-	return text.Fail(screensharev1.TextCode_TEXT_CODE_TRANSPORT_CARRIES_NO_FORMAT, text.Transport(transportName), text.Format(format),
+	return text.Fail(mirrormev1.TextCode_TEXT_CODE_TRANSPORT_CARRIES_NO_FORMAT, text.Transport(transportName), text.Format(format),
 		text.Engine(engine), text.Transports(carried))
 }
 
@@ -305,7 +305,7 @@ func (a *App) StartWatch(streamName, transportName string) error {
 	proc, err := ffmpeg.Start(exe, args, false, false, "watch-"+streamName+"-"+transportName, env, nil, nil,
 		func(err error, stderrTail string, logPath string) {
 			message := ""
-			var cause *screensharev1.Text
+			var cause *mirrormev1.Text
 			if err != nil {
 				// A player states no reason for the connection that went,
 				// so membership stopping it outranks the exit's own statement (members.go).
@@ -370,7 +370,7 @@ func (a *App) OpenInBrowser(streamName, transportName string) error {
 
 	url, ok := transport.BrowserURL(transportName, s, streamName)
 	if !ok {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_NO_VIEWER_RECEIVES_OVER, text.Engine(transport.EngineBrowser), text.Transport(transportName),
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_NO_VIEWER_RECEIVES_OVER, text.Engine(transport.EngineBrowser), text.Transport(transportName),
 			text.Transports(transport.WatchNames(transport.EngineBrowser)))
 	}
 

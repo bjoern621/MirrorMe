@@ -11,10 +11,10 @@ import (
 	"sync"
 	"time"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // recentFor is how long one enumeration answers for the machine.
@@ -109,11 +109,11 @@ func Enumerates(p platform.Info) bool {
 //
 // One statement for the machine rather than one per window:
 // what is missing belongs to the session, and every window open on it is out of reach the same way.
-func Statement(p platform.Info) *screensharev1.Text {
+func Statement(p platform.Info) *mirrormev1.Text {
 	if Enumerates(p) {
 		return nil
 	}
-	return text.Of(screensharev1.TextCode_TEXT_CODE_NO_WINDOW_ENUMERATION,
-		text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_OS, p.OS),
-		text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_DISPLAY, p.Display))
+	return text.Of(mirrormev1.TextCode_TEXT_CODE_NO_WINDOW_ENUMERATION,
+		text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_OS, p.OS),
+		text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_DISPLAY, p.Display))
 }

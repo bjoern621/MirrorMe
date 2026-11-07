@@ -3,9 +3,9 @@ package capabilities
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // Ladder is one encoder knob's steps, and where each rate-control mode starts on it.
@@ -118,13 +118,13 @@ type Steps struct {
 func (c Codec) ResolveSteps(mode, effort, tune string, device Device) (Steps, error) {
 	e, ok := c.Effort.Resolve(mode, effort)
 	if !ok {
-		return Steps{}, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN,
-			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_EFFORT, effort))
+		return Steps{}, text.Fail(mirrormev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN,
+			text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_EFFORT, effort))
 	}
 	t, ok := c.Tune.Resolve(mode, tune)
 	if !ok {
-		return Steps{}, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN,
-			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_TUNE, tune))
+		return Steps{}, text.Fail(mirrormev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN,
+			text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_TUNE, tune))
 	}
 	return Steps{Effort: c.Effort.SpelledFor(device, e), Tune: t}, nil
 }

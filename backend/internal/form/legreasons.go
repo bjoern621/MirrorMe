@@ -6,18 +6,18 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/transport"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/transport"
 )
 
 // transportReason states why the selected capture
 // backend's engine cannot carry a publish transport.
 // The map from backend to carriable transports is publish's, so a transport known to some backend
 // and absent from this one is one whose sink this engine has no serialization for.
-func (av availability) transportReason(name string) *screensharev1.Text {
+func (av availability) transportReason(name string) *mirrormev1.Text {
 	allowed, err := publish.TransportsFor(av.s.Publish.Capture)
 	if err != nil {
 		return nil
@@ -38,7 +38,7 @@ func (av availability) transportReason(name string) *screensharev1.Text {
 // builds passes every codec probe there is and dies at launch on the sink.
 // The GStreamer engine alone, which is the engine whose sink is a named element rather than a muxer
 // inside the ffmpeg build (encoders.Availability.Legs).
-func (av availability) legElementReason(name string) *screensharev1.Text {
+func (av availability) legElementReason(name string) *mirrormev1.Text {
 	if av.engine != capabilities.EngineGst {
 		return nil
 	}
@@ -65,7 +65,7 @@ func (av availability) legElementReason(name string) *screensharev1.Text {
 // Serves both legs, the session being encrypted the same way whichever end negotiates it.
 // The publish leg refuses the same value in transport.RTSP ValidatePublishSettings,
 // so a draft reaching it with "udp" was greyed here first.
-func (av availability) rtspProtocolReason(value string) *screensharev1.Text {
+func (av availability) rtspProtocolReason(value string) *mirrormev1.Text {
 	if value == transport.EncryptedRtspProtocol {
 		return nil
 	}

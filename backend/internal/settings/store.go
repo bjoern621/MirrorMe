@@ -7,8 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 )
@@ -59,7 +59,7 @@ func writeStore(path string, data []byte) error {
 	// a file the mode could not be taken off is a secret readable by every local user,
 	// so it is not renamed into place at all.
 	if err := os.Chmod(tmp.Name(), storeFileMode); err != nil {
-		return text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNWRITABLE, text.Path(path))
+		return text.Because(err, mirrormev1.TextCode_TEXT_CODE_FILE_UNWRITABLE, text.Path(path))
 	}
 	return os.Rename(tmp.Name(), path)
 }
@@ -75,12 +75,12 @@ func writeStore(path string, data []byte) error {
 func configDir() (string, error) {
 	base, err := os.UserConfigDir()
 	if err != nil {
-		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_CONFIG_DIR_UNKNOWN)
+		return "", text.Because(err, mirrormev1.TextCode_TEXT_CODE_CONFIG_DIR_UNKNOWN)
 	}
 
 	dir := filepath.Join(base, configDirName)
 	if err := os.MkdirAll(dir, configDirMode); err != nil {
-		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNWRITABLE, text.Path(dir))
+		return "", text.Because(err, mirrormev1.TextCode_TEXT_CODE_FILE_UNWRITABLE, text.Path(dir))
 	}
 
 	assert.Assert(dir != "", "a resolved config directory is a path", base)
@@ -129,7 +129,7 @@ func setAside(path string, cause error) error {
 // being the one part of this a surface has to show:
 // a surface that read it out of the error string would be parsing prose.
 // What went wrong stays prose, being the operating system's answer or the JSON decoder's,
-// neither of which is this app's vocabulary (api/proto/screenshare/v1/text.proto).
+// neither of which is this app's vocabulary (api/proto/mirrorme/v1/text.proto).
 type StoreUnreadable struct {
 	// Kept is the copy holding the old values, empty where none could be made.
 	Kept  string
@@ -159,12 +159,12 @@ func Load() (Settings, error) {
 		return Defaults(), nil
 	}
 	if err != nil {
-		return Defaults(), setAside(path, text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNREADABLE, text.Path(path)))
+		return Defaults(), setAside(path, text.Because(err, mirrormev1.TextCode_TEXT_CODE_FILE_UNREADABLE, text.Path(path)))
 	}
 
 	s := Defaults()
 	if err := json.Unmarshal(data, &s); err != nil {
-		return Defaults(), setAside(path, text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_CORRUPT, text.Path(path)))
+		return Defaults(), setAside(path, text.Because(err, mirrormev1.TextCode_TEXT_CODE_FILE_CORRUPT, text.Path(path)))
 	}
 	// A file written before the three groups carries none of them,
 	// so the decode above left every group at its default.

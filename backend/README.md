@@ -21,10 +21,10 @@ backend/
   cmd/release/     the CHANGELOG.md steps tools/release.sh runs: next version, cut, notes (docs/releasing.md)
   cmd/soak/        drives the control contract with random legal settings and reports what the backend did
   internal/        what the binaries draw on
-  go.mod           module bjoernblessin.de/screenshare
+  go.mod           module bjoernblessin.de/mirrorme
 ```
 
-Module path drops the directory name: `bjoernblessin.de/screenshare`, so no import line names `backend`.
+Module path drops the directory name: `bjoernblessin.de/mirrorme`, so no import line names `backend`.
 `api` is reached by a filesystem `replace` on `../api`, so the Nix builds read the module cache rather than a vendor directory (`packaging/nix/package.nix`).
 
 ## Separate binaries, one module

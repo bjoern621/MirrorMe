@@ -8,8 +8,8 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/padprobe"
-	"bjoernblessin.de/screenshare/internal/pointer"
+	"bjoernblessin.de/mirrorme/internal/padprobe"
+	"bjoernblessin.de/mirrorme/internal/pointer"
 )
 
 // Where a position comes from, per capture.

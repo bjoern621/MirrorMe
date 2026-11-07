@@ -5,9 +5,9 @@ import (
 	"strconv"
 
 	"bjoernblessin.de/go-utils/util/assert"
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // optionDetailLadder holds the quantizer's detail steps on the anchor scale of 51 points, least detail first.
@@ -27,11 +27,11 @@ var optionDetailLadder = []struct {
 // Each step names itself in its note:
 // off the 51-point scale the number alone does not say which step it is.
 // A scale too short to part two steps offers the first of them.
-func optionCqSteps(_ Deps, s settings.Settings) []*screensharev1.FieldOption {
+func optionCqSteps(_ Deps, s settings.Settings) []*mirrormev1.FieldOption {
 	codec, engine := s.Publish.Codec(), optionEngineOf(s)
 
 	steps := make([]int, 0, len(optionDetailLadder)+1)
-	notes := map[int]*screensharev1.Text{}
+	notes := map[int]*mirrormev1.Text{}
 	for _, d := range optionDetailLadder {
 		cq := presetCq(d.cq51, codec, engine)
 		if _, taken := notes[cq]; taken {
@@ -46,11 +46,11 @@ func optionCqSteps(_ Deps, s settings.Settings) []*screensharev1.FieldOption {
 	// A higher quantizer keeps less detail.
 	slices.SortFunc(steps, func(a, b int) int { return b - a })
 
-	out := make([]*screensharev1.FieldOption, 0, len(steps))
+	out := make([]*mirrormev1.FieldOption, 0, len(steps))
 	for _, cq := range steps {
 		out = append(out, optionEntry(strconv.Itoa(cq), notes[cq], false))
 	}
-	assert.Assert(slices.ContainsFunc(out, func(o *screensharev1.FieldOption) bool {
+	assert.Assert(slices.ContainsFunc(out, func(o *mirrormev1.FieldOption) bool {
 		return o.GetValue() == strconv.Itoa(s.Publish.Cq)
 	}), "the ladder offers the quantizer the settings hold", s.Publish.Cq)
 	return out

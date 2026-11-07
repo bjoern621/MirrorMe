@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/token"
+	"bjoernblessin.de/mirrorme/internal/token"
 )
 
 // fixture is a service whose clock a test moves, with a signer standing in for groupd.

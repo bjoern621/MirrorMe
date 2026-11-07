@@ -12,14 +12,14 @@ import (
 	"strconv"
 	"time"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // linkWindow bounds how long the flow waits for the browser leg to come back.
@@ -45,7 +45,7 @@ const linkNonceBytes = 32
 func (a *App) LinkDiscord(ctx context.Context, relay settings.Relay) error {
 	base, ok := relay.DiscordService()
 	if !ok {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
 	}
 
 	nonce, err := drawLinkNonce()
@@ -55,7 +55,7 @@ func (a *App) LinkDiscord(ctx context.Context, relay settings.Relay) error {
 
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
-		return text.Because(err, screensharev1.TextCode_TEXT_CODE_LOOPBACK_PORT_UNAVAILABLE)
+		return text.Because(err, mirrormev1.TextCode_TEXT_CODE_LOOPBACK_PORT_UNAVAILABLE)
 	}
 	defer listener.Close()
 	port := listener.Addr().(*net.TCPAddr).Port
@@ -69,14 +69,14 @@ func (a *App) LinkDiscord(ctx context.Context, relay settings.Relay) error {
 
 	start := base + "/link?port=" + strconv.Itoa(port) + "&nonce=" + url.QueryEscape(nonce)
 	if err := openInShell(start); err != nil {
-		return text.Because(err, screensharev1.TextCode_TEXT_CODE_BROWSER_UNOPENED)
+		return text.Because(err, mirrormev1.TextCode_TEXT_CODE_BROWSER_UNOPENED)
 	}
 
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
 	case <-time.After(linkWindow):
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_DISCORD_LINK_TIMED_OUT, text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_TIMEOUT_MS, linkWindow.Milliseconds()))
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_DISCORD_LINK_TIMED_OUT, text.Num(mirrormev1.TextArgName_TEXT_ARG_NAME_TIMEOUT_MS, linkWindow.Milliseconds()))
 	case link := <-landed:
 		a.storeDiscordLink(link)
 		logger.Infof("Discord is linked as %s", link.account)
@@ -101,7 +101,7 @@ type landedLink struct {
 func drawLinkNonce() (string, error) {
 	raw := make([]byte, linkNonceBytes)
 	if _, err := rand.Read(raw); err != nil {
-		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_RANDOM_UNAVAILABLE)
+		return "", text.Because(err, mirrormev1.TextCode_TEXT_CODE_RANDOM_UNAVAILABLE)
 	}
 	// URL-safe alphabet, the nonce travelling as a query parameter in both directions.
 	return base64.RawURLEncoding.EncodeToString(raw), nil

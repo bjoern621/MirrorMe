@@ -4,13 +4,13 @@ import (
 	"os"
 	"path/filepath"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/gpupath"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/gpupath"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // DrmMap is one strategy for landing a kmsgrab DRM_PRIME scanout frame in a linear system-memory
@@ -60,7 +60,7 @@ func drmMapFor(name string) (DrmMap, error) {
 			return m, nil
 		}
 	}
-	return DrmMap{}, text.Fail(screensharev1.TextCode_TEXT_CODE_DRM_MAP_UNKNOWN, text.Value(name))
+	return DrmMap{}, text.Fail(mirrormev1.TextCode_TEXT_CODE_DRM_MAP_UNKNOWN, text.Value(name))
 }
 
 // autoDrmMap picks a derive_device off the capture device's kernel driver.
@@ -133,7 +133,7 @@ func drmCaptureDevice() (string, error) {
 	// filepath.Glob returns matches in lexical order, so the lowest-numbered real GPU wins.
 	cards, err := filepath.Glob("/dev/dri/card[0-9]*")
 	if err != nil {
-		return "", text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNREADABLE, text.Path("/dev/dri"))
+		return "", text.Because(err, mirrormev1.TextCode_TEXT_CODE_FILE_UNREADABLE, text.Path("/dev/dri"))
 	}
 	for _, dev := range cards {
 		switch captureDriver(dev) {
@@ -143,7 +143,7 @@ func drmCaptureDevice() (string, error) {
 			return dev, nil
 		}
 	}
-	return "", text.Fail(screensharev1.TextCode_TEXT_CODE_NO_SCANOUT_CARD)
+	return "", text.Fail(mirrormev1.TextCode_TEXT_CODE_NO_SCANOUT_CARD)
 }
 
 // captureDriver is the base name of the kernel driver bound to a /dev/dri card node: i915, amdgpu,

@@ -20,7 +20,7 @@ namespace ScreenShare.App.Features.Setup.RegionPicker.View;
 /// the enumeration counts in.
 ///
 /// <b>The answer is in virtual-desktop pixels</b>, which is what <c>publish.share_region</c> stores:
-/// the screen's own origin plus the offset dragged inside it (<c>api/proto/screenshare/v1/settings.proto</c>).
+/// the screen's own origin plus the offset dragged inside it (<c>api/proto/mirrorme/v1/settings.proto</c>).
 ///
 /// Empty is a reader who dropped the gesture, on Escape, on a right press, or on a drag with no area in it.
 /// </summary>

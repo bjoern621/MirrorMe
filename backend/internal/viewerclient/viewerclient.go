@@ -13,7 +13,7 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/watchsvc"
+	"bjoernblessin.de/mirrorme/internal/watchsvc"
 )
 
 // Timeout bounds one call, well inside the poll interval the calls ride on.

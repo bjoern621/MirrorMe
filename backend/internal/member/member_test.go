@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/text/texttest"
+	"bjoernblessin.de/mirrorme/internal/text/texttest"
 
-	"bjoernblessin.de/screenshare/internal/group"
+	"bjoernblessin.de/mirrorme/internal/group"
 )
 
 // isolateConfig points os.UserConfigDir at a fresh temp directory.

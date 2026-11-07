@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/membership"
-	"bjoernblessin.de/screenshare/internal/token"
+	"bjoernblessin.de/mirrorme/internal/membership"
+	"bjoernblessin.de/mirrorme/internal/token"
 )
 
 // SRT is keyed per group: the app derives the passphrase from the group key,

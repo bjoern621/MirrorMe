@@ -1,11 +1,11 @@
 package app
 
 import (
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
-	"bjoernblessin.de/screenshare/internal/applink"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/applink"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // A link is how a stream of this app is named outside it (internal/applink).
@@ -15,7 +15,7 @@ import (
 // errLinkNotOnRelay refuses a link naming a stream the relay is not carrying.
 // Its own refusal because the reader can act on it:
 // a link outlives the share it names, and what is wrong is the moment rather than the link.
-var errLinkNotOnRelay = text.Fail(screensharev1.TextCode_TEXT_CODE_STREAM_NOT_ON_RELAY)
+var errLinkNotOnRelay = text.Fail(mirrormev1.TextCode_TEXT_CODE_STREAM_NOT_ON_RELAY)
 
 // ResolveLink reads a link and answers the stream it names.
 //
@@ -60,7 +60,7 @@ func (a *App) ResolveLink(raw string) (string, error) {
 // In Discord mode that move is a voice channel, membership following it (docs/discord-mode.md).
 func errOtherGroup(s settings.Settings) error {
 	if s.Relay.FollowsDiscord() {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_LINK_OTHER_VOICE_CHANNEL)
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_LINK_OTHER_VOICE_CHANNEL)
 	}
-	return text.Fail(screensharev1.TextCode_TEXT_CODE_LINK_OTHER_GROUP)
+	return text.Fail(mirrormev1.TextCode_TEXT_CODE_LINK_OTHER_GROUP)
 }

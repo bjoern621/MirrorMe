@@ -1,7 +1,7 @@
 package settings
 
 import (
-	"bjoernblessin.de/screenshare/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/platform"
 )
 
 // The list a stream's second track is mixed from.

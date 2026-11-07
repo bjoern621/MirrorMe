@@ -1,10 +1,10 @@
 package form
 
 import (
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/gpupath"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/gpupath"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // staysOnDevice reports whether this run hands the encoder the frames the capture produced,
@@ -24,7 +24,7 @@ func (av availability) staysOnDevice() bool {
 // and on the path that converts nothing, what that costs.
 // The field that chose the trade states the cost beside the import,
 // rather than leaving it to the two colour fields it overrides.
-func (av availability) frameMemoryNote() *screensharev1.Text {
+func (av availability) frameMemoryNote() *mirrormev1.Text {
 	if !av.staysOnDevice() {
 		return nil
 	}
@@ -44,7 +44,7 @@ func (av availability) frameMemoryNote() *screensharev1.Text {
 //
 // Every statement names both ends, since neither decides on its own and switching either side
 // is a way to reach the path.
-func (av availability) frameMemoryReason(memory string) *screensharev1.Text {
+func (av availability) frameMemoryReason(memory string) *mirrormev1.Text {
 	if av.engine == "" {
 		return nil
 	}
@@ -88,7 +88,7 @@ func (av availability) frameMemoryReason(memory string) *screensharev1.Text {
 //
 // The source size is never greyed: it is what every pair does,
 // and a control with every entry out teaches nothing.
-func (av availability) outputResolutionReason(value string) *screensharev1.Text {
+func (av availability) outputResolutionReason(value string) *mirrormev1.Text {
 	if value == "" || !av.staysOnDevice() || !av.path.Colour.TradesColour() {
 		return nil
 	}
@@ -103,7 +103,7 @@ func (av availability) outputResolutionReason(value string) *screensharev1.Text 
 // by itself: the fix is another capture backend rather than another value of this field.
 // Assembled from the row, so it names whichever pair
 // the table declares rather than a platform written in here.
-func availabilityExactColourReach(family string) *screensharev1.Text {
+func availabilityExactColourReach(family string) *mirrormev1.Text {
 	for _, p := range gpupath.Paths {
 		if p.Family != family || p.Colour.TradesColour() {
 			continue

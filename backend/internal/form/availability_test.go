@@ -6,17 +6,17 @@ import (
 
 	"google.golang.org/protobuf/proto"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/encoders"
-	"bjoernblessin.de/screenshare/internal/gpupath"
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/pointermode"
-	"bjoernblessin.de/screenshare/internal/portal"
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/transport"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/encoders"
+	"bjoernblessin.de/mirrorme/internal/gpupath"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/pointermode"
+	"bjoernblessin.de/mirrorme/internal/portal"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/transport"
 )
 
 // availabilityAllKeys is every field the form declares, spelled out a second time:
@@ -210,7 +210,7 @@ func TestThePointerModeFollowsWhatThePortalServes(t *testing.T) {
 	if enabled {
 		t.Fatal("a portal serving hidden and embedded alone still offers the metadata mode")
 	}
-	if got := reason.GetCode(); got != screensharev1.TextCode_TEXT_CODE_PORTAL_SERVES_NO_CURSOR_MODE {
+	if got := reason.GetCode(); got != mirrormev1.TextCode_TEXT_CODE_PORTAL_SERVES_NO_CURSOR_MODE {
 		t.Errorf("the refusal states %v, want the portal's own list", got)
 	}
 	if enabled, _ := optionState(deps, s, KeyPointer, pointermode.Embedded, noEntry); !enabled {
@@ -338,7 +338,7 @@ func TestAWindowsSourceFollowsTheEngineTheBackendRuns(t *testing.T) {
 	if enabled {
 		t.Error("desktop audio is live under a capture backend whose engine has no WASAPI input")
 	}
-	if codeOf(reason) != screensharev1.TextCode_TEXT_CODE_AUDIO_SOURCE_UNSERVED_BY_ENGINE {
+	if codeOf(reason) != mirrormev1.TextCode_TEXT_CODE_AUDIO_SOURCE_UNSERVED_BY_ENGINE {
 		t.Errorf("desktop audio greys with %v, want the statement naming the engine", codeOf(reason))
 	}
 
@@ -371,7 +371,7 @@ func TestTheEffortStepIsDisabledWhereTheCodecDeclaresNoLadder(t *testing.T) {
 	if codeOf(st.reason) != codecTakesNoEffortLadder {
 		t.Errorf("the effort step greys with %v, want the statement naming the codec", codeOf(st.reason))
 	}
-	if codec := idOf(st.reason, screensharev1.TextArgName_TEXT_ARG_NAME_CODEC); codec != "h264_vulkan" {
+	if codec := idOf(st.reason, mirrormev1.TextArgName_TEXT_ARG_NAME_CODEC); codec != "h264_vulkan" {
 		t.Errorf("the effort step greys naming %q, where the draft is on h264_vulkan", codec)
 	}
 }
@@ -391,7 +391,7 @@ func TestTheEffortStepIsDisabledWhereTheEngineSpendsNone(t *testing.T) {
 	if st.enabled {
 		t.Error("the effort step is live on the engine whose builder spends none of it")
 	}
-	if codeOf(st.reason) != screensharev1.TextCode_TEXT_CODE_FFMPEG_VAAPI_QUALITY_IS_THE_DRIVERS_SCALE {
+	if codeOf(st.reason) != mirrormev1.TextCode_TEXT_CODE_FFMPEG_VAAPI_QUALITY_IS_THE_DRIVERS_SCALE {
 		t.Errorf("the effort step greys with %v, want the departure naming the driver's scale",
 			codeOf(st.reason))
 	}
@@ -483,7 +483,7 @@ func TestTheEffortStepGreysWhereTheModePinsIt(t *testing.T) {
 	if codeOf(st.reason) != effortPinnedByMode {
 		t.Errorf("the pinned step greys with %v, want the statement naming the pin", codeOf(st.reason))
 	}
-	if step := idOf(st.reason, screensharev1.TextArgName_TEXT_ARG_NAME_EFFORT); step != want {
+	if step := idOf(st.reason, mirrormev1.TextArgName_TEXT_ARG_NAME_EFFORT); step != want {
 		t.Errorf("the pinned step greys naming %q, where the row declares %q", step, want)
 	}
 }
@@ -506,7 +506,7 @@ func TestTheBframeCountNamesTheFamilyRatherThanTheMode(t *testing.T) {
 	if codeOf(st.reason) != bframesOnlyOnFamilies {
 		t.Errorf("the B-frame count greys with %v, want the statement naming who takes one", codeOf(st.reason))
 	}
-	if families := idsOf(st.reason, screensharev1.TextArgName_TEXT_ARG_NAME_FAMILIES); !slices.Contains(families, capabilities.FamilyNvenc) {
+	if families := idsOf(st.reason, mirrormev1.TextArgName_TEXT_ARG_NAME_FAMILIES); !slices.Contains(families, capabilities.FamilyNvenc) {
 		t.Errorf("the B-frame count greys naming %v, which leaves out the family that takes one", families)
 	}
 }
@@ -624,7 +624,7 @@ func TestAnEngineWithNoToolingGreysEveryCodecWithItsOwnReason(t *testing.T) {
 		if codeOf(reason) != engineToolingMissing {
 			t.Errorf("%s greys with %v, want the engine's own statement", c.Name, codeOf(reason))
 		}
-		if got := idOf(reason, screensharev1.TextArgName_TEXT_ARG_NAME_ENGINE); got != capabilities.EngineFfmpeg {
+		if got := idOf(reason, mirrormev1.TextArgName_TEXT_ARG_NAME_ENGINE); got != capabilities.EngineFfmpeg {
 			t.Errorf("%s greys naming engine %q, want the one whose tooling is missing", c.Name, got)
 		}
 	}
@@ -647,7 +647,7 @@ func TestAFailedProbeNamesTheHalfTheFamilyIsMissing(t *testing.T) {
 	if codeOf(device) != probeNoDevice {
 		t.Errorf("a missing NVENC encoder greys with %v, want the no-device verdict", codeOf(device))
 	}
-	if got := idOf(device, screensharev1.TextArgName_TEXT_ARG_NAME_FAMILY); got != capabilities.FamilyNvenc {
+	if got := idOf(device, mirrormev1.TextArgName_TEXT_ARG_NAME_FAMILY); got != capabilities.FamilyNvenc {
 		t.Errorf("a missing NVENC encoder greys naming family %q, which is not the hardware", got)
 	}
 
@@ -656,7 +656,7 @@ func TestAFailedProbeNamesTheHalfTheFamilyIsMissing(t *testing.T) {
 	if codeOf(build) != probeNoBuild {
 		t.Errorf("a missing software encoder greys with %v, want the no-build verdict", codeOf(build))
 	}
-	if got := idOf(build, screensharev1.TextArgName_TEXT_ARG_NAME_CODEC); got != "libaom-av1" {
+	if got := idOf(build, mirrormev1.TextArgName_TEXT_ARG_NAME_CODEC); got != "libaom-av1" {
 		t.Errorf("a missing software encoder greys naming codec %q, which is not the encoder", got)
 	}
 }
@@ -718,8 +718,8 @@ func TestTheDirectPathThatTradesColourNamesTheWayToTheExactOne(t *testing.T) {
 	if enabled {
 		t.Fatal("the exact-colour device value is offered on a pair whose path converts nothing")
 	}
-	reach := nestedOf(reason, screensharev1.TextArgName_TEXT_ARG_NAME_REACH)
-	if got := idOf(reach, screensharev1.TextArgName_TEXT_ARG_NAME_CAPTURE); got != "d3d11screencapturesrc" {
+	reach := nestedOf(reason, mirrormev1.TextArgName_TEXT_ARG_NAME_REACH)
+	if got := idOf(reach, mirrormev1.TextArgName_TEXT_ARG_NAME_CAPTURE); got != "d3d11screencapturesrc" {
 		t.Errorf("the greying points at capture %q, not at the pair that reaches the same screen at the colour selected", got)
 	}
 	if trade, _ := optionState(deps, s, KeyCaptureMemory, gpupath.MemoryGpuEncoderColor, noEntry); !trade {
@@ -740,7 +740,7 @@ func TestTheColourFieldsGreyWhereTheEncoderConvertsOnItsOwnTerms(t *testing.T) {
 			t.Errorf("%s is live on a path whose encoder converts the frames itself", key)
 			continue
 		}
-		if codeOf(st.reason) != screensharev1.TextCode_TEXT_CODE_COST_ENCODER_SIGNALS_ITS_OWN_COLOUR {
+		if codeOf(st.reason) != mirrormev1.TextCode_TEXT_CODE_COST_ENCODER_SIGNALS_ITS_OWN_COLOUR {
 			t.Errorf("%s greys with %v, which is not the row's own cost", key, codeOf(st.reason))
 		}
 	}
@@ -777,7 +777,7 @@ func TestAScaledResolutionGreysWhereTheDevicePathHasNoFilter(t *testing.T) {
 	if enabled {
 		t.Error("a scaled picture is offered on a device path with nothing on it that resizes")
 	}
-	if got := idOf(reason, screensharev1.TextArgName_TEXT_ARG_NAME_MEMORY); got != gpupath.MemorySystem {
+	if got := idOf(reason, mirrormev1.TextArgName_TEXT_ARG_NAME_MEMORY); got != gpupath.MemorySystem {
 		t.Errorf("the greying names memory %q, which is not the way across", got)
 	}
 }
@@ -970,9 +970,9 @@ func TestCheckingOnStartGreysWhereTheUpdateChannelIsOff(t *testing.T) {
 
 		// Each code the channel can answer with, so the toggle carries whichever fact turned the
 		// checks off.
-		for _, code := range []screensharev1.TextCode{
-			screensharev1.TextCode_TEXT_CODE_UPDATE_CHECK_OFF,
-			screensharev1.TextCode_TEXT_CODE_UPDATE_BUILD_UNSTAMPED,
+		for _, code := range []mirrormev1.TextCode{
+			mirrormev1.TextCode_TEXT_CODE_UPDATE_CHECK_OFF,
+			mirrormev1.TextCode_TEXT_CODE_UPDATE_BUILD_UNSTAMPED,
 		} {
 			off := tc.deps
 			off.UpdateUnchecked = say(code)
@@ -1004,7 +1004,7 @@ func TestTheTrayToggleGreysWhereTheRunHoldsTheIconOut(t *testing.T) {
 		if !st.visible || st.enabled {
 			t.Errorf("%s: a run holding the icon out draws the toggle visible=%v enabled=%v", tc.name, st.visible, st.enabled)
 		}
-		if got := st.reason.GetCode(); got != screensharev1.TextCode_TEXT_CODE_TRAY_ICON_OFF {
+		if got := st.reason.GetCode(); got != mirrormev1.TextCode_TEXT_CODE_TRAY_ICON_OFF {
 			t.Errorf("%s: the toggle's reason is not the run's own code: %v", tc.name, got)
 		}
 	}
@@ -1015,7 +1015,7 @@ func TestTheTrayToggleGreysWhereTheRunHoldsTheIconOut(t *testing.T) {
 // The draft is pointed at that row's format first, the pair being what a greying is about:
 // asking about an encoder under another format answers whether the two go together,
 // which is a different question from whether this machine runs the row.
-func availabilityRowState(deps Deps, s settings.Settings, c capabilities.Codec) (bool, *screensharev1.Text) {
+func availabilityRowState(deps Deps, s settings.Settings, c capabilities.Codec) (bool, *mirrormev1.Text) {
 	s.Publish.Format = c.Format
 	return optionState(deps, s, KeyEncoder, c.Encoder(), noEntry)
 }
@@ -1096,7 +1096,7 @@ func TestALegGreysWhereItsSinkElementIsMissing(t *testing.T) {
 	if reason == nil {
 		t.Fatal("a leg whose sink element is missing is offered as one this machine publishes over")
 	}
-	if reason.GetCode() != screensharev1.TextCode_TEXT_CODE_PUBLISH_SINK_ELEMENT_MISSING {
+	if reason.GetCode() != mirrormev1.TextCode_TEXT_CODE_PUBLISH_SINK_ELEMENT_MISSING {
 		t.Errorf("the greying reads %v, want it to name the missing element", reason.GetCode())
 	}
 	if av.transportReason("rtsp") != nil {

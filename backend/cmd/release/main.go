@@ -18,9 +18,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"bjoernblessin.de/screenshare/internal/changelog"
-	"bjoernblessin.de/screenshare/internal/qa"
-	"bjoernblessin.de/screenshare/internal/release"
+	"bjoernblessin.de/mirrorme/internal/changelog"
+	"bjoernblessin.de/mirrorme/internal/qa"
+	"bjoernblessin.de/mirrorme/internal/release"
 )
 
 const repoURL = "https://github.com/" + release.Repo

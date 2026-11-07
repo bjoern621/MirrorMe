@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
@@ -63,7 +63,7 @@ func openRunLog(dir, tag string, keep int, spare string) (*os.File, string, erro
 
 	file, err := os.Create(path)
 	if err != nil {
-		return nil, "", text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNWRITABLE, text.Path(path))
+		return nil, "", text.Because(err, mirrormev1.TextCode_TEXT_CODE_FILE_UNWRITABLE, text.Path(path))
 	}
 	return file, path, nil
 }
@@ -81,7 +81,7 @@ func pruneRunLogs(dir string, keep int, spare string) error {
 
 	entries, err := os.ReadDir(dir)
 	if err != nil {
-		return text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNREADABLE, text.Path(dir))
+		return text.Because(err, mirrormev1.TextCode_TEXT_CODE_FILE_UNREADABLE, text.Path(dir))
 	}
 
 	type log struct {
@@ -107,7 +107,7 @@ func pruneRunLogs(dir string, keep int, spare string) error {
 	sort.Slice(logs, func(i, j int) bool { return logs[i].at.After(logs[j].at) })
 	for _, old := range logs[keep:] {
 		if err := os.Remove(filepath.Join(dir, old.name)); err != nil && !os.IsNotExist(err) {
-			return text.Because(err, screensharev1.TextCode_TEXT_CODE_FILE_UNWRITABLE, text.Path(filepath.Join(dir, old.name)))
+			return text.Because(err, mirrormev1.TextCode_TEXT_CODE_FILE_UNWRITABLE, text.Path(filepath.Join(dir, old.name)))
 		}
 	}
 	return nil

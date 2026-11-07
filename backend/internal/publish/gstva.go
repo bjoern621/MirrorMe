@@ -3,13 +3,13 @@ package publish
 import (
 	"strconv"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // vaEncoder maps the rate-control mode onto one va plugin element, the counterpart to vaapiArgs
@@ -102,9 +102,9 @@ func vaLimits(s settings.Settings) error {
 		rateM = s.Publish.BitrateM * vaAbrPeak
 	case "vbr":
 		if s.Publish.MaxrateM > 0 && s.Publish.BitrateM*100/s.Publish.MaxrateM < vaMinTargetPercentage {
-			return text.Fail(screensharev1.TextCode_TEXT_CODE_VA_VBR_TARGET_BELOW_FLOOR, text.CountLimit(vaMinTargetPercentage),
-				text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_BITRATE_MBPS, int64(s.Publish.BitrateM)),
-				text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_MAXRATE_MBPS, int64(s.Publish.MaxrateM)))
+			return text.Fail(mirrormev1.TextCode_TEXT_CODE_VA_VBR_TARGET_BELOW_FLOOR, text.CountLimit(vaMinTargetPercentage),
+				text.Num(mirrormev1.TextArgName_TEXT_ARG_NAME_BITRATE_MBPS, int64(s.Publish.BitrateM)),
+				text.Num(mirrormev1.TextArgName_TEXT_ARG_NAME_MAXRATE_MBPS, int64(s.Publish.MaxrateM)))
 		}
 		rateM = s.Publish.MaxrateM
 	case "crf", "lossless":

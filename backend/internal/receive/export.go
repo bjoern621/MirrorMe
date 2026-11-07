@@ -4,8 +4,8 @@ import (
 	"errors"
 	"sync"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"github.com/go-gst/go-gst/pkg/gst"
 
@@ -257,7 +257,7 @@ func (s *Subscription) poolFor(sample *gst.Sample) error {
 	select {
 	case s.events <- Event{Pool: &pool}:
 	default:
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_FRAMES_CONSUMER_GONE)
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_FRAMES_CONSUMER_GONE)
 	}
 	return nil
 }

@@ -13,7 +13,7 @@ This page is how to work in this directory.
 
 ```
 api/
-  proto/screenshare/v1/     the schema, one file per concern
+  proto/mirrorme/v1/     the schema, one file per concern
     settings.proto            Settings, its groups and Preset
     catalog.proto             the fixed facts: codecs, decoders, monitors, carriage
     form.proto                Form: every field, option, greying and reason, decided
@@ -22,10 +22,10 @@ api/
     control.proto             ControlService: Hello, Read, Watch, Ask, Set, Do
     frame.proto               FrameService: the frame channel's handles and loans
     text.proto                Text: a statement code and the values it names, worded by the shell
-  gen/go/screenshare/v1/    generated Go, committed
+  gen/go/mirrorme/v1/    generated Go, committed
   buf.yaml                  lint and breaking-change configuration
   buf.gen.yaml              what buf generates
-  go.mod                    module bjoernblessin.de/screenshare/api
+  go.mod                    module bjoernblessin.de/mirrorme/api
 ```
 
 Reasoning lives in the `.proto` files: a message comment says why a shape is what it is.
@@ -47,7 +47,7 @@ C# comes out of the Avalonia build, where `Grpc.Tools` compiles the same `.proto
   <PackageReference Include="Grpc.Net.Client" Version="..." />
   <PackageReference Include="Google.Protobuf" Version="..." />
   <PackageReference Include="Grpc.Tools" Version="..." PrivateAssets="all" />
-  <Protobuf Include="../../api/proto/screenshare/v1/*.proto"
+  <Protobuf Include="../../api/proto/mirrorme/v1/*.proto"
             ProtoRoot="../../api/proto"
             GrpcServices="Client" />
 </ItemGroup>

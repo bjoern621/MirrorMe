@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // probeStream is a stream ordinary enough to measure anywhere: the software encoder every install carries,

@@ -7,14 +7,14 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/group"
-	"bjoernblessin.de/screenshare/internal/groupclient"
-	"bjoernblessin.de/screenshare/internal/member"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/text"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/group"
+	"bjoernblessin.de/mirrorme/internal/groupclient"
+	"bjoernblessin.de/mirrorme/internal/member"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/text"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // Membership is a lease this machine holds: stated on every pass of the relay poll,
@@ -45,7 +45,7 @@ type membership struct {
 	PublishingUnread bool
 	// Refusal is why the last statement of presence was not taken.
 	// nil where it was taken, and where nothing reached the service to refuse it.
-	Refusal *screensharev1.Text
+	Refusal *mirrormev1.Text
 	// Taken dates the last presence the service took, zero where none has been.
 	Taken time.Time
 	// Lease is how long that presence stands, as the service stated it.
@@ -74,7 +74,7 @@ func (m membership) lapsed() bool {
 // and a sentence about the group over any of them sends the reader where nothing is wrong.
 // A refusal made on a ground no code here names travels whole rather than being restated,
 // so whatever it carries reaches the reader.
-func (m membership) failure() *screensharev1.Text {
+func (m membership) failure() *mirrormev1.Text {
 	assert.Assert(m.Group != "" || !m.Joined, "a machine in a group names the group it is in")
 
 	switch {
@@ -84,11 +84,11 @@ func (m membership) failure() *screensharev1.Text {
 		// A group key with no identity beside it buys a token as the group itself,
 		// which the relay closes the moment any member states presence.
 		// Joining draws one (docs/membership.md).
-		return text.Of(screensharev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED)
-	case m.Refusal.GetCode() == screensharev1.TextCode_TEXT_CODE_GROUP_SERVICE_REFUSED:
+		return text.Of(mirrormev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED)
+	case m.Refusal.GetCode() == mirrormev1.TextCode_TEXT_CODE_GROUP_SERVICE_REFUSED:
 		return m.Refusal
 	case m.Refusal != nil || m.lapsed():
-		return text.Of(screensharev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED)
+		return text.Of(mirrormev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED)
 	default:
 		return nil
 	}
@@ -112,8 +112,8 @@ func (m membership) snapshot() wire.MembersSnapshot {
 // so the connections this machine holds are closed.
 // Every other stated ground is the service saying no in words no code here names,
 // so its own words stay in the log rather than crossing as vocabulary
-// (api/proto/screenshare/v1/text.proto).
-func membershipRefusal(err error) *screensharev1.Text {
+// (api/proto/mirrorme/v1/text.proto).
+func membershipRefusal(err error) *mirrormev1.Text {
 	assert.IsNotNil(err, "a refusal states what was refused")
 
 	var refusal *groupclient.Refusal
@@ -121,9 +121,9 @@ func membershipRefusal(err error) *screensharev1.Text {
 		return nil
 	}
 	if groupclient.NameTaken(err) {
-		return text.Of(screensharev1.TextCode_TEXT_CODE_GROUP_NAME_TAKEN)
+		return text.Of(mirrormev1.TextCode_TEXT_CODE_GROUP_NAME_TAKEN)
 	}
-	return text.Of(screensharev1.TextCode_TEXT_CODE_GROUP_SERVICE_REFUSED)
+	return text.Of(mirrormev1.TextCode_TEXT_CODE_GROUP_SERVICE_REFUSED)
 }
 
 // membership is what the last pass of the presence loop landed, the zero value before one has run.
@@ -210,7 +210,7 @@ func (a *App) membershipFor(s settings.Settings, held membership) (membership, e
 		// a round trip every two seconds buys nothing over a fact this side already holds.
 		return membership{
 			Group:   id,
-			Refusal: text.Of(screensharev1.TextCode_TEXT_CODE_GROUP_NAME_MISSING),
+			Refusal: text.Of(mirrormev1.TextCode_TEXT_CODE_GROUP_NAME_MISSING),
 		}, errNameMissing
 	}
 
@@ -261,7 +261,7 @@ func standing(held membership, id string) membership {
 	}
 	held.Joined = true
 	held.Stale = true
-	if held.Refusal.GetCode() == screensharev1.TextCode_TEXT_CODE_GROUP_NAME_MISSING {
+	if held.Refusal.GetCode() == mirrormev1.TextCode_TEXT_CODE_GROUP_NAME_MISSING {
 		held.Refusal = nil
 	}
 	return held
@@ -269,7 +269,7 @@ func standing(held membership, id string) membership {
 
 // errNameMissing is the pass over a group key with no name beside it,
 // the one state a pass meets that the settings and not the service decide.
-var errNameMissing = text.Fail(screensharev1.TextCode_TEXT_CODE_GROUP_NAME_MISSING)
+var errNameMissing = text.Fail(mirrormev1.TextCode_TEXT_CODE_GROUP_NAME_MISSING)
 
 // presenceTaken is the group as the service answered it.
 // Self is decided here against the member id the answer names for this machine,

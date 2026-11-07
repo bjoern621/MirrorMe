@@ -10,9 +10,9 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/framestamp"
-	"bjoernblessin.de/screenshare/internal/padprobe"
-	"bjoernblessin.de/screenshare/internal/pipedelay"
+	"bjoernblessin.de/mirrorme/internal/framestamp"
+	"bjoernblessin.de/mirrorme/internal/padprobe"
+	"bjoernblessin.de/mirrorme/internal/pipedelay"
 )
 
 // Writing the wall clock into every encoded frame, so a viewer can time the path between the two

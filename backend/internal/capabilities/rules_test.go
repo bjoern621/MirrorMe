@@ -3,9 +3,9 @@ package capabilities
 import (
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/rules"
+	"bjoernblessin.de/mirrorme/internal/rules"
 )
 
 // The rules and the gaps are one table read two ways,
@@ -186,7 +186,7 @@ func TestACeilingStatesTheLimitItNarrowsTo(t *testing.T) {
 	}
 	var limit int64 = -1
 	for _, a := range reasons[0].GetArgs() {
-		if a.GetName() == screensharev1.TextArgName_TEXT_ARG_NAME_BITRATE_LIMIT_MBPS {
+		if a.GetName() == mirrormev1.TextArgName_TEXT_ARG_NAME_BITRATE_LIMIT_MBPS {
 			limit = a.GetNumber()
 		}
 	}

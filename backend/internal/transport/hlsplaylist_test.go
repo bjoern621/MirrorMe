@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // masterWithAudio is what the relay answers for a stream carrying sound: the audio rendition

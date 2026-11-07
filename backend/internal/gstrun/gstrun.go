@@ -28,7 +28,7 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/pipedelay"
+	"bjoernblessin.de/mirrorme/internal/pipedelay"
 )
 
 // CapsPrefix leads the line the capture's negotiated caps are reported on.

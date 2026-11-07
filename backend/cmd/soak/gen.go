@@ -8,7 +8,7 @@ import (
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	v1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	v1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 )
 
 // A field key is its group and the field name the settings message spells: "publish.encoder".

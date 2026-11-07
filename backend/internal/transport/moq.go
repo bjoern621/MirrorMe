@@ -6,7 +6,7 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // MoQ is Media over QUIC, a watch-only leg here because no reader in this app opens a MoQ track.

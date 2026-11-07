@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.2
 // - protoc             (unknown)
-// source: screenshare/v1/frame.proto
+// source: mirrorme/v1/frame.proto
 
-package screensharev1
+package mirrormev1
 
 import (
 	context "context"
@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	FrameService_Frames_FullMethodName = "/screenshare.v1.FrameService/Frames"
+	FrameService_Frames_FullMethodName = "/mirrorme.v1.FrameService/Frames"
 )
 
 // FrameServiceClient is the client API for FrameService service.
@@ -156,7 +156,7 @@ type FrameService_FramesServer = grpc.BidiStreamingServer[FramesRequest, FrameEv
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var FrameService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "screenshare.v1.FrameService",
+	ServiceName: "mirrorme.v1.FrameService",
 	HandlerType: (*FrameServiceServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
@@ -167,5 +167,5 @@ var FrameService_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "screenshare/v1/frame.proto",
+	Metadata: "mirrorme/v1/frame.proto",
 }

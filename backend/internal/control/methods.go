@@ -10,10 +10,10 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/events"
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/events"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // Read, Watch, Ask, Set and Do: each picks the named function for what the request names,
@@ -24,13 +24,13 @@ import (
 //
 // A kind that happens rather than stands is INVALID_ARGUMENT, and so is an empty list:
 // a request that failed to say what it wanted asked for nothing.
-func (s *Server) Read(ctx context.Context, req *screensharev1.ReadRequest) (*screensharev1.ReadResponse, error) {
+func (s *Server) Read(ctx context.Context, req *mirrormev1.ReadRequest) (*mirrormev1.ReadResponse, error) {
 	kinds := req.GetKinds()
 	if len(kinds) == 0 {
 		return nil, invalidArgument(text.Fail(readNamesNothing))
 	}
 
-	answer := &screensharev1.ReadResponse{States: make([]*screensharev1.Event, 0, len(kinds))}
+	answer := &mirrormev1.ReadResponse{States: make([]*mirrormev1.Event, 0, len(kinds))}
 	for _, kind := range kinds {
 		build, ok := states[kind]
 		if !ok {
@@ -59,7 +59,7 @@ func (s *Server) Read(ctx context.Context, req *screensharev1.ReadRequest) (*scr
 //
 // The broker's events carry the sequence it stamps per subscription.
 // A tick carries none: each is the present, and nothing about the previous one is worth counting.
-func (s *Server) Watch(req *screensharev1.WatchRequest, out grpc.ServerStreamingServer[screensharev1.Event]) error {
+func (s *Server) Watch(req *mirrormev1.WatchRequest, out grpc.ServerStreamingServer[mirrormev1.Event]) error {
 	assert.IsNotNil(out, "a watch writes to the client's stream")
 
 	announced, levels, pointer, err := splitKinds(req.GetKinds())
@@ -67,7 +67,7 @@ func (s *Server) Watch(req *screensharev1.WatchRequest, out grpc.ServerStreaming
 		return err
 	}
 
-	var feed <-chan *screensharev1.Event
+	var feed <-chan *mirrormev1.Event
 	if len(req.GetKinds()) == 0 || len(announced) > 0 {
 		subscribed, cancel, err := s.events.Subscribe(announced)
 		if err != nil {
@@ -99,7 +99,7 @@ func (s *Server) Watch(req *screensharev1.WatchRequest, out grpc.ServerStreaming
 	// so a slow reader receives the present rather than a queue of the past.
 	done := out.Context().Done()
 	for {
-		var event *screensharev1.Event
+		var event *mirrormev1.Event
 		select {
 		case <-done:
 			// A client gone or one that stopped listening: a window closed, a process quit.
@@ -132,14 +132,14 @@ func (s *Server) Watch(req *screensharev1.WatchRequest, out grpc.ServerStreaming
 
 // splitKinds sorts a watch's kinds into the ones the broker announces and the two ticks.
 // Empty asks for every announced kind and no tick.
-func splitKinds(kinds []screensharev1.EventKind) (announced []screensharev1.EventKind, levels, pointer bool, err error) {
+func splitKinds(kinds []mirrormev1.EventKind) (announced []mirrormev1.EventKind, levels, pointer bool, err error) {
 	for _, kind := range kinds {
 		switch {
 		case readAlone[kind]:
 			return nil, false, false, invalidArgument(text.Fail(kindNotWatchable, argKind(kind)))
-		case kind == screensharev1.EventKind_EVENT_KIND_AUDIO_LEVELS:
+		case kind == mirrormev1.EventKind_EVENT_KIND_AUDIO_LEVELS:
 			levels = true
-		case kind == screensharev1.EventKind_EVENT_KIND_POINTER:
+		case kind == mirrormev1.EventKind_EVENT_KIND_POINTER:
 			pointer = true
 		default:
 			announced = append(announced, kind)
@@ -157,20 +157,20 @@ func refusedKind(err error) error {
 		assert.Never("a subscription is refused only for a kind this build has none of", err)
 	}
 	return invalidArgument(text.Fail(kindUnknown, argKind(unknown.Kind),
-		text.IDs(screensharev1.TextArgName_TEXT_ARG_NAME_KINDS, events.KindNames())))
+		text.IDs(mirrormev1.TextArgName_TEXT_ARG_NAME_KINDS, events.KindNames())))
 }
 
 // Ask answers one question about its arguments and changes nothing.
-func (s *Server) Ask(ctx context.Context, req *screensharev1.AskRequest) (*screensharev1.AskResponse, error) {
+func (s *Server) Ask(ctx context.Context, req *mirrormev1.AskRequest) (*mirrormev1.AskResponse, error) {
 	switch question := req.GetQuestion().(type) {
-	case *screensharev1.AskRequest_Form:
-		return &screensharev1.AskResponse{Answer: &screensharev1.AskResponse_Form{Form: s.resolveForm(question.Form)}}, nil
-	case *screensharev1.AskRequest_Link:
+	case *mirrormev1.AskRequest_Form:
+		return &mirrormev1.AskResponse{Answer: &mirrormev1.AskResponse_Form{Form: s.resolveForm(question.Form)}}, nil
+	case *mirrormev1.AskRequest_Link:
 		stream, err := s.resolveLink(question.Link)
 		if err != nil {
 			return nil, err
 		}
-		return &screensharev1.AskResponse{Answer: &screensharev1.AskResponse_StreamName{StreamName: stream}}, nil
+		return &mirrormev1.AskResponse{Answer: &mirrormev1.AskResponse_StreamName{StreamName: stream}}, nil
 	default:
 		// Off the wire, so possibly from a shell built against a later minor: the caller's to fix.
 		return nil, invalidArgument(text.Fail(requestNotInThisBuild))
@@ -178,26 +178,26 @@ func (s *Server) Ask(ctx context.Context, req *screensharev1.AskRequest) (*scree
 }
 
 // Set makes the named state true, and succeeds where it already holds.
-func (s *Server) Set(ctx context.Context, req *screensharev1.SetRequest) (*emptypb.Empty, error) {
+func (s *Server) Set(ctx context.Context, req *mirrormev1.SetRequest) (*emptypb.Empty, error) {
 	var err error
 	switch state := req.GetState().(type) {
-	case *screensharev1.SetRequest_Settings:
+	case *mirrormev1.SetRequest_Settings:
 		err = s.saveSettings(state.Settings)
-	case *screensharev1.SetRequest_Preset:
+	case *mirrormev1.SetRequest_Preset:
 		err = s.setPreset(state.Preset)
-	case *screensharev1.SetRequest_Publish:
+	case *mirrormev1.SetRequest_Publish:
 		err = s.setPublish(state.Publish)
-	case *screensharev1.SetRequest_Viewer:
+	case *mirrormev1.SetRequest_Viewer:
 		err = s.setViewer(state.Viewer)
-	case *screensharev1.SetRequest_Receive:
+	case *mirrormev1.SetRequest_Receive:
 		err = s.setReceive(state.Receive)
-	case *screensharev1.SetRequest_ReceiveAudio:
+	case *mirrormev1.SetRequest_ReceiveAudio:
 		err = s.setReceiveAudio(state.ReceiveAudio)
-	case *screensharev1.SetRequest_MonitorPreview:
+	case *mirrormev1.SetRequest_MonitorPreview:
 		err = s.setMonitorPreview(state.MonitorPreview)
-	case *screensharev1.SetRequest_TestStreams:
+	case *mirrormev1.SetRequest_TestStreams:
 		err = s.setTestStreams(int(state.TestStreams))
-	case *screensharev1.SetRequest_DiscordLink:
+	case *mirrormev1.SetRequest_DiscordLink:
 		err = s.setDiscordLink(ctx, state.DiscordLink)
 	default:
 		err = invalidArgument(text.Fail(requestNotInThisBuild))
@@ -209,62 +209,62 @@ func (s *Server) Set(ctx context.Context, req *screensharev1.SetRequest) (*empty
 }
 
 // Do runs one effect and answers what it leaves with its caller.
-func (s *Server) Do(ctx context.Context, req *screensharev1.DoRequest) (*screensharev1.DoResponse, error) {
+func (s *Server) Do(ctx context.Context, req *mirrormev1.DoRequest) (*mirrormev1.DoResponse, error) {
 	switch action := req.GetAction().(type) {
-	case *screensharev1.DoRequest_OpenInBrowser:
+	case *mirrormev1.DoRequest_OpenInBrowser:
 		return done(s.openInBrowser(action.OpenInBrowser))
-	case *screensharev1.DoRequest_ProbeEncoders:
+	case *mirrormev1.DoRequest_ProbeEncoders:
 		s.probeEncoders(ctx)
-		return &screensharev1.DoResponse{}, nil
-	case *screensharev1.DoRequest_MeasureUplink:
+		return &mirrormev1.DoResponse{}, nil
+	case *mirrormev1.DoRequest_MeasureUplink:
 		mbps, err := s.measureUplink(ctx)
 		if err != nil {
 			return nil, err
 		}
-		return &screensharev1.DoResponse{Outcome: &screensharev1.DoResponse_UplinkMbps{UplinkMbps: mbps}}, nil
-	case *screensharev1.DoRequest_MeasureEncodeRate:
+		return &mirrormev1.DoResponse{Outcome: &mirrormev1.DoResponse_UplinkMbps{UplinkMbps: mbps}}, nil
+	case *mirrormev1.DoRequest_MeasureEncodeRate:
 		rate, err := s.measureEncodeRate(ctx, action.MeasureEncodeRate)
 		if err != nil {
 			return nil, err
 		}
-		return &screensharev1.DoResponse{Outcome: &screensharev1.DoResponse_EncodeRate{EncodeRate: rate}}, nil
-	case *screensharev1.DoRequest_CheckRelay:
+		return &mirrormev1.DoResponse{Outcome: &mirrormev1.DoResponse_EncodeRate{EncodeRate: rate}}, nil
+	case *mirrormev1.DoRequest_CheckRelay:
 		check, err := s.checkRelay(ctx, action.CheckRelay)
 		if err != nil {
 			return nil, err
 		}
-		return &screensharev1.DoResponse{Outcome: &screensharev1.DoResponse_RelayCheck{RelayCheck: check}}, nil
-	case *screensharev1.DoRequest_CheckUpdate:
+		return &mirrormev1.DoResponse{Outcome: &mirrormev1.DoResponse_RelayCheck{RelayCheck: check}}, nil
+	case *mirrormev1.DoRequest_CheckUpdate:
 		return done(s.checkUpdate())
-	case *screensharev1.DoRequest_InstallUpdate:
+	case *mirrormev1.DoRequest_InstallUpdate:
 		return done(s.installUpdate())
-	case *screensharev1.DoRequest_ForgetPortalConsent:
+	case *mirrormev1.DoRequest_ForgetPortalConsent:
 		return done(s.forgetPortalConsent())
-	case *screensharev1.DoRequest_CreateGroup:
+	case *mirrormev1.DoRequest_CreateGroup:
 		group, err := s.createGroup(action.CreateGroup)
 		if err != nil {
 			return nil, err
 		}
-		return &screensharev1.DoResponse{Outcome: &screensharev1.DoResponse_Group{Group: group}}, nil
-	case *screensharev1.DoRequest_OpenLog:
+		return &mirrormev1.DoResponse{Outcome: &mirrormev1.DoResponse_Group{Group: group}}, nil
+	case *mirrormev1.DoRequest_OpenLog:
 		return done(s.openLog(action.OpenLog))
-	case *screensharev1.DoRequest_OpenLogsFolder:
+	case *mirrormev1.DoRequest_OpenLogsFolder:
 		return done(s.openLogsFolder())
-	case *screensharev1.DoRequest_SendReport:
+	case *mirrormev1.DoRequest_SendReport:
 		id, err := s.sendReport()
 		if err != nil {
 			return nil, err
 		}
-		return &screensharev1.DoResponse{Outcome: &screensharev1.DoResponse_ReportId{ReportId: id}}, nil
+		return &mirrormev1.DoResponse{Outcome: &mirrormev1.DoResponse_ReportId{ReportId: id}}, nil
 	default:
 		return nil, invalidArgument(text.Fail(requestNotInThisBuild))
 	}
 }
 
 // done answers an effect that leaves its caller nothing.
-func done(err error) (*screensharev1.DoResponse, error) {
+func done(err error) (*mirrormev1.DoResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &screensharev1.DoResponse{}, nil
+	return &mirrormev1.DoResponse{}, nil
 }

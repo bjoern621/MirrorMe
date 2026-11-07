@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/gstrun"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/gstrun"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 func congestedStream(t *testing.T, congestion string) settings.Settings {

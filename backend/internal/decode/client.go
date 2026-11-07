@@ -3,13 +3,13 @@ package decode
 import (
 	"sync"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/receive"
 )
 
 // The backend's half: what it may ask of the host.
@@ -21,10 +21,10 @@ const Subcommand = "decode-host"
 // errNoHost is every call that names a decode while no host runs.
 // A host that is not running holds no decode, so a stop and a read both answer through it rather
 // than starting one.
-var errNoHost = text.Fail(screensharev1.TextCode_TEXT_CODE_DECODE_HOST_DOWN)
+var errNoHost = text.Fail(mirrormev1.TextCode_TEXT_CODE_DECODE_HOST_DOWN)
 
 // errShutDown is every call after Close, which the process exiting is the ordinary cause of.
-var errShutDown = text.Fail(screensharev1.TextCode_TEXT_CODE_DECODE_HOST_DOWN)
+var errShutDown = text.Fail(mirrormev1.TextCode_TEXT_CODE_DECODE_HOST_DOWN)
 
 // Client runs the decode host and addresses the decodes on it.
 //

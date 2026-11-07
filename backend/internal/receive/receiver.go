@@ -6,8 +6,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"github.com/go-gst/go-glib/pkg/gobject/v2"
 	"github.com/go-gst/go-gst/pkg/gst"
@@ -16,7 +16,7 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/pipedelay"
+	"bjoernblessin.de/mirrorme/internal/pipedelay"
 )
 
 // stopTimeout bounds one attempt at taking a pipeline to NULL, and stopAttempts is how many
@@ -201,7 +201,7 @@ func New(st Stream, open Open, ev Events) (*Receiver, error) {
 
 	el, err := gst.ParseLaunch(desc)
 	if err != nil {
-		return nil, text.Because(err, screensharev1.TextCode_TEXT_CODE_RECEIVE_PIPELINE_UNBUILT, text.Stream(st.Name))
+		return nil, text.Because(err, mirrormev1.TextCode_TEXT_CODE_RECEIVE_PIPELINE_UNBUILT, text.Stream(st.Name))
 	}
 	pipeline, ok := el.(gst.Pipeline)
 	assert.Assert(ok, "a receive description parses to a pipeline", st.Name)

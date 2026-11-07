@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/group"
+	"bjoernblessin.de/mirrorme/internal/group"
 )
 
 // Where a group comes from, as a stored file names it.

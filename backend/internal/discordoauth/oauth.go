@@ -16,7 +16,7 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/discordavatar"
+	"bjoernblessin.de/mirrorme/internal/discordavatar"
 )
 
 // authBase is where a person's browser is sent to consent.

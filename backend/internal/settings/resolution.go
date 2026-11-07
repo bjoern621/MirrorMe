@@ -4,8 +4,8 @@ import (
 	"strconv"
 	"strings"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 )
@@ -48,25 +48,25 @@ func FormatSize(width, height int) string {
 func ParseSize(value string) (Size, error) {
 	width, height, found := strings.Cut(value, resolutionSeparator)
 	if !found {
-		return Size{}, text.Fail(screensharev1.TextCode_TEXT_CODE_OUTPUT_SIZE_UNREADABLE, text.Value(value))
+		return Size{}, text.Fail(mirrormev1.TextCode_TEXT_CODE_OUTPUT_SIZE_UNREADABLE, text.Value(value))
 	}
 
 	w, err := strconv.Atoi(width)
 	if err != nil {
-		return Size{}, text.Because(err, screensharev1.TextCode_TEXT_CODE_OUTPUT_SIZE_UNREADABLE, text.Value(value))
+		return Size{}, text.Because(err, mirrormev1.TextCode_TEXT_CODE_OUTPUT_SIZE_UNREADABLE, text.Value(value))
 	}
 	h, err := strconv.Atoi(height)
 	if err != nil {
-		return Size{}, text.Because(err, screensharev1.TextCode_TEXT_CODE_OUTPUT_SIZE_UNREADABLE, text.Value(value))
+		return Size{}, text.Because(err, mirrormev1.TextCode_TEXT_CODE_OUTPUT_SIZE_UNREADABLE, text.Value(value))
 	}
 
 	if w < minOutputDimension || h < minOutputDimension {
-		return Size{}, text.Fail(screensharev1.TextCode_TEXT_CODE_OUTPUT_SIZE_BELOW_FLOOR,
+		return Size{}, text.Fail(mirrormev1.TextCode_TEXT_CODE_OUTPUT_SIZE_BELOW_FLOOR,
 			text.Value(value), text.CountLimit(minOutputDimension))
 	}
 	// Refused rather than rounded: a size the run changed on its own is one no form can show back.
 	if w%2 != 0 || h%2 != 0 {
-		return Size{}, text.Fail(screensharev1.TextCode_TEXT_CODE_OUTPUT_SIZE_ODD, text.Value(value))
+		return Size{}, text.Fail(mirrormev1.TextCode_TEXT_CODE_OUTPUT_SIZE_ODD, text.Value(value))
 	}
 
 	size := Size{Width: w, Height: h}

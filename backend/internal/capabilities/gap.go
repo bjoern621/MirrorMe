@@ -3,7 +3,7 @@ package capabilities
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 )
 
 // Gap is one thing a codec cannot do, with the reason a surface shows in place of the option.
@@ -24,11 +24,11 @@ type Gap struct {
 	// Value is the option value the engine's encoder will not take, empty exactly when Option is.
 	Value string `json:"value"`
 	// Reason names which library or element lacks the capability,
-	// as a code rather than a sentence about it (api/proto/screenshare/v1/text.proto).
+	// as a code rather than a sentence about it (api/proto/mirrorme/v1/text.proto).
 	// One code per row and no arguments:
 	// the three fields above already say which codec, which engine and which value,
 	// so a surface rendering the code has everything the sentence names.
-	Reason screensharev1.TextCode `json:"reason"`
+	Reason mirrormev1.TextCode `json:"reason"`
 }
 
 func (g Gap) covers(engine string) bool {

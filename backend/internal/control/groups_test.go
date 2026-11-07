@@ -3,10 +3,10 @@ package control
 import (
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/events"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/events"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // The read is the presence loop's last reading and states nothing of its own,
@@ -20,7 +20,7 @@ func TestReadingTheMembersStateAnswersWithTheGroupAsItWasRead(t *testing.T) {
 	}}
 	server := New(backend, events.New(), "test")
 
-	got := readState(t, server, screensharev1.EventKind_EVENT_KIND_MEMBERS_STATE).GetMembersState()
+	got := readState(t, server, mirrormev1.EventKind_EVENT_KIND_MEMBERS_STATE).GetMembersState()
 	if !got.GetJoined() {
 		t.Error("a machine in a group reads as out of it")
 	}

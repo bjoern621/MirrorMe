@@ -8,7 +8,7 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/token"
+	"bjoernblessin.de/mirrorme/internal/token"
 )
 
 // RefetchAfter bounds how often a token under an unknown key fetches the key set again.

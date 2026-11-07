@@ -3,9 +3,9 @@ package capabilities
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/rules"
+	"bjoernblessin.de/mirrorme/internal/rules"
 )
 
 // DriverDefect is one value this codec's encoder declares, other drivers run,
@@ -37,7 +37,7 @@ type DriverDefect struct {
 	// Zero withholds the value on every release, for a defect no version is known to have fixed.
 	FixedIn int `json:"fixedIn"`
 	// Reason names the defect, as Gap.Reason names a gap.
-	Reason screensharev1.TextCode `json:"reason"`
+	Reason mirrormev1.TextCode `json:"reason"`
 }
 
 // Device is the video driver a capability question is asked about.
@@ -81,7 +81,7 @@ func (c Codec) WithheldByDriver(device Device, engine, option, value string) boo
 // a second walk of the DriverDefects rows could refuse under one reading and explain under another.
 func refusedByDriver(v rules.Verdicts, axis, value string) bool {
 	for _, reason := range v.ValueReasons(axis, value) {
-		if reason.GetCode() == screensharev1.TextCode_TEXT_CODE_DRIVER_DEFECT_WITHHOLDS_OPTION {
+		if reason.GetCode() == mirrormev1.TextCode_TEXT_CODE_DRIVER_DEFECT_WITHHOLDS_OPTION {
 			return true
 		}
 	}
@@ -110,5 +110,5 @@ var av1VaapiDriverDefects = []DriverDefect{{
 	Driver: "radeonsi",
 	Option: OptionMode,
 	Value:  ModeCbr,
-	Reason: screensharev1.TextCode_TEXT_CODE_DRIVER_DEFECT_WITHHOLDS_OPTION,
+	Reason: mirrormev1.TextCode_TEXT_CODE_DRIVER_DEFECT_WITHHOLDS_OPTION,
 }}

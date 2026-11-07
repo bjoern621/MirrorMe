@@ -5,8 +5,8 @@ import (
 
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/watchsvc"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/watchsvc"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // viewingInterval spaces this machine's statements to watchd at the relay poll's cadence.

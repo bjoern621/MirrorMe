@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/voiceroster"
+	"bjoernblessin.de/mirrorme/internal/voiceroster"
 )
 
 func TestLeavingReleasesTheMember(t *testing.T) {

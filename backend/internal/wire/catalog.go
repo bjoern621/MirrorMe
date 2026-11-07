@@ -5,18 +5,18 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/display"
-	"bjoernblessin.de/screenshare/internal/encoders"
-	"bjoernblessin.de/screenshare/internal/gpupath"
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/screensrc"
-	"bjoernblessin.de/screenshare/internal/text"
-	"bjoernblessin.de/screenshare/internal/transport"
-	"bjoernblessin.de/screenshare/internal/window"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/display"
+	"bjoernblessin.de/mirrorme/internal/encoders"
+	"bjoernblessin.de/mirrorme/internal/gpupath"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/screensrc"
+	"bjoernblessin.de/mirrorme/internal/text"
+	"bjoernblessin.de/mirrorme/internal/transport"
+	"bjoernblessin.de/mirrorme/internal/window"
 )
 
 // CatalogInput is the part of the catalog that is this machine's rather than the model's.
@@ -48,9 +48,9 @@ type CatalogInput struct {
 // into wire enums, and indexes tables by keys those same tables produced.
 // A value outside a set fails at the conversion, where the offending row is named,
 // rather than reaching a shell as an UNSPECIFIED enum that draws as nothing and explains nothing.
-func Catalog(in CatalogInput) *screensharev1.Catalog {
-	out := &screensharev1.Catalog{
-		Platform: &screensharev1.Platform{Os: in.Platform.OS, Display: in.Platform.Display},
+func Catalog(in CatalogInput) *mirrormev1.Catalog {
+	out := &mirrormev1.Catalog{
+		Platform: &mirrormev1.Platform{Os: in.Platform.OS, Display: in.Platform.Display},
 		Monitors: catalogMonitors(in.Monitors),
 
 		Codecs:      catalogCodecs(),
@@ -95,10 +95,10 @@ func Catalog(in CatalogInput) *screensharev1.Catalog {
 // consumer can read it from there.
 // The contract carries an enum, a shell switching on a string being a shell holding the spelling.
 // The two meet here and nowhere else.
-var engines = map[string]screensharev1.Engine{
-	capabilities.EngineFfmpeg: screensharev1.Engine_ENGINE_FFMPEG,
-	capabilities.EngineGst:    screensharev1.Engine_ENGINE_GSTREAMER,
-	transport.EngineBrowser:   screensharev1.Engine_ENGINE_BROWSER,
+var engines = map[string]mirrormev1.Engine{
+	capabilities.EngineFfmpeg: mirrormev1.Engine_ENGINE_FFMPEG,
+	capabilities.EngineGst:    mirrormev1.Engine_ENGINE_GSTREAMER,
+	transport.EngineBrowser:   mirrormev1.Engine_ENGINE_BROWSER,
 }
 
 // The legs, spelled as transport.Register keys its carriage maps.
@@ -110,23 +110,23 @@ const (
 )
 
 // legs is the same table for the two halves of a stream's path.
-var legs = map[string]screensharev1.Leg{
-	legPublish: screensharev1.Leg_LEG_PUBLISH,
-	legWatch:   screensharev1.Leg_LEG_WATCH,
+var legs = map[string]mirrormev1.Leg{
+	legPublish: mirrormev1.Leg_LEG_PUBLISH,
+	legWatch:   mirrormev1.Leg_LEG_WATCH,
 }
 
 // colours is the same table for what a GPU path does to the colour the settings name.
 // gpupath spells the verdicts exact and encoder (gpupath/colour.go),
 // the contract PATH_COLOUR_EXACT and PATH_COLOUR_ENCODER.
-var colours = map[gpupath.Colour]screensharev1.PathColour{
-	gpupath.ColourExact:   screensharev1.PathColour_PATH_COLOUR_EXACT,
-	gpupath.ColourEncoder: screensharev1.PathColour_PATH_COLOUR_ENCODER,
+var colours = map[gpupath.Colour]mirrormev1.PathColour{
+	gpupath.ColourExact:   mirrormev1.PathColour_PATH_COLOUR_EXACT,
+	gpupath.ColourEncoder: mirrormev1.PathColour_PATH_COLOUR_ENCODER,
 }
 
 // engineEnum converts a named engine, publish or watch.
 // One outside the table is a table that gained a value where this site did not,
 // and it fails here rather than arriving as ENGINE_UNSPECIFIED to draw as an engine nobody named.
-func engineEnum(engine string) screensharev1.Engine {
+func engineEnum(engine string) mirrormev1.Engine {
 	e, ok := engines[engine]
 	if !ok {
 		assert.Never("an engine is one the tables above declare", engine)
@@ -139,14 +139,14 @@ func engineEnum(engine string) screensharev1.Engine {
 // Sharing ENGINE_UNSPECIFIED with it would make a field nobody set and a gap binding everywhere one
 // value, and the dropped field the strongest claim the message can make.
 // Every other value goes through engineEnum and is asserted there.
-func gapEngine(engine string) screensharev1.Engine {
+func gapEngine(engine string) mirrormev1.Engine {
 	if engine == "" {
-		return screensharev1.Engine_ENGINE_ANY
+		return mirrormev1.Engine_ENGINE_ANY
 	}
 	return engineEnum(engine)
 }
 
-func legEnum(leg string) screensharev1.Leg {
+func legEnum(leg string) mirrormev1.Leg {
 	l, ok := legs[leg]
 	if !ok {
 		assert.Never("a carriage names one of the two legs", leg)
@@ -154,7 +154,7 @@ func legEnum(leg string) screensharev1.Leg {
 	return l
 }
 
-func colourEnum(colour gpupath.Colour) screensharev1.PathColour {
+func colourEnum(colour gpupath.Colour) mirrormev1.PathColour {
 	c, ok := colours[colour]
 	if !ok {
 		assert.Never("a GPU path states one of the two colour verdicts", string(colour))
@@ -168,7 +168,7 @@ func colourEnum(colour gpupath.Colour) screensharev1.PathColour {
 // Derived here rather than carried in, like the capture backends' availability beside it:
 // the answer follows from the session and from a table this binary holds,
 // so asking the machine would be reading one fact twice.
-func catalogNoMonitorPreview(p platform.Info) *screensharev1.Text {
+func catalogNoMonitorPreview(p platform.Info) *mirrormev1.Text {
 	_, gap := screensrc.Session(p)
 	return gap
 }
@@ -179,10 +179,10 @@ func catalogNoMonitorPreview(p platform.Info) *screensharev1.Text {
 //
 // A refresh rate of zero is one the enumeration could not read,
 // and it crosses absent rather than as the number nought.
-func catalogMonitors(monitors []display.Monitor) []*screensharev1.Monitor {
-	out := make([]*screensharev1.Monitor, 0, len(monitors))
+func catalogMonitors(monitors []display.Monitor) []*mirrormev1.Monitor {
+	out := make([]*mirrormev1.Monitor, 0, len(monitors))
 	for _, m := range monitors {
-		monitor := &screensharev1.Monitor{
+		monitor := &mirrormev1.Monitor{
 			Index:   int32(m.Index),
 			Width:   int32(m.Width),
 			Height:  int32(m.Height),
@@ -212,8 +212,8 @@ func catalogMonitors(monitors []display.Monitor) []*screensharev1.Monitor {
 // where parallel maps could hold the same engine twice and only an assertion here would catch it.
 // The engines are walked in the capability table's order,
 // so two catalogs built from one availability compare equal.
-func catalogEncoders(a encoders.Availability) *screensharev1.EncoderAvailability {
-	out := &screensharev1.EncoderAvailability{}
+func catalogEncoders(a encoders.Availability) *mirrormev1.EncoderAvailability {
+	out := &mirrormev1.EncoderAvailability{}
 	for _, engine := range capabilities.Engines {
 		perCodec, probed := a.Usable[engine]
 		reason, unprobed := a.Unprobed[engine]
@@ -224,22 +224,22 @@ func catalogEncoders(a encoders.Availability) *screensharev1.EncoderAvailability
 			continue
 		}
 
-		row := &screensharev1.EngineProbe{Engine: engineEnum(engine)}
+		row := &mirrormev1.EngineProbe{Engine: engineEnum(engine)}
 		if unprobed {
 			// The tool's own "not found" is the machine's answer rather than a fact about the domain,
 			// so it stays in the run log and what crosses is that this engine could not be asked at all.
 			assert.Assert(reason != "", "an unprobed engine records why it could not be asked", engine)
-			row.Result = &screensharev1.EngineProbe_Unprobed{
-				Unprobed: text.Of(screensharev1.TextCode_TEXT_CODE_ENGINE_TOOLING_MISSING,
-					text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_ENGINE, engine)),
+			row.Result = &mirrormev1.EngineProbe_Unprobed{
+				Unprobed: text.Of(mirrormev1.TextCode_TEXT_CODE_ENGINE_TOOLING_MISSING,
+					text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_ENGINE, engine)),
 			}
 		} else {
 			usable := make(map[string]bool, len(perCodec))
 			for codec, ok := range perCodec {
 				usable[codec] = ok
 			}
-			row.Result = &screensharev1.EngineProbe_Probed{
-				Probed: &screensharev1.EngineCodecs{Usable: usable},
+			row.Result = &mirrormev1.EngineProbe_Probed{
+				Probed: &mirrormev1.EngineCodecs{Usable: usable},
 			}
 		}
 		out.Engines = append(out.Engines, row)
@@ -254,10 +254,10 @@ func catalogEncoders(a encoders.Availability) *screensharev1.EncoderAvailability
 // The Signalled triple a ColourEncoder row carries has no field of its own.
 // It is what the row's cost statement is about, so it crosses as that statement's arguments,
 // and nothing else on this table needs it.
-func catalogGpuPaths() []*screensharev1.GpuPath {
-	out := make([]*screensharev1.GpuPath, 0, len(gpupath.Paths))
+func catalogGpuPaths() []*mirrormev1.GpuPath {
+	out := make([]*mirrormev1.GpuPath, 0, len(gpupath.Paths))
 	for _, p := range gpupath.Paths {
-		out = append(out, &screensharev1.GpuPath{
+		out = append(out, &mirrormev1.GpuPath{
 			Engine:  engineEnum(p.Engine),
 			Capture: p.Capture,
 			Family:  p.Family,
@@ -270,8 +270,8 @@ func catalogGpuPaths() []*screensharev1.GpuPath {
 }
 
 // gpuPathImport names what carries the frames across one pair's device path.
-func gpuPathImport(p gpupath.Path) *screensharev1.Text {
-	assert.Assert(p.Import != screensharev1.TextCode_TEXT_CODE_UNSPECIFIED,
+func gpuPathImport(p gpupath.Path) *mirrormev1.Text {
+	assert.Assert(p.Import != mirrormev1.TextCode_TEXT_CODE_UNSPECIFIED,
 		"a device path names what carries its frames", p.Capture, p.Family)
 	return text.Of(p.Import)
 }
@@ -284,15 +284,15 @@ func gpuPathImport(p gpupath.Path) *screensharev1.Text {
 // and a statement naming the trade without the values would leave the reader guessing which.
 // Exported because the form makes the same statement on the greyed controls,
 // and one function keeps the reference set and the form from describing one row two ways.
-func GpuPathCost(p gpupath.Path) *screensharev1.Text {
+func GpuPathCost(p gpupath.Path) *mirrormev1.Text {
 	if !p.Colour.TradesColour() {
 		return nil
 	}
-	assert.Assert(p.Cost != screensharev1.TextCode_TEXT_CODE_UNSPECIFIED,
+	assert.Assert(p.Cost != mirrormev1.TextCode_TEXT_CODE_UNSPECIFIED,
 		"a colour-trading device path names what it takes", p.Capture, p.Family)
 	return text.Of(p.Cost,
-		text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_CHROMA, p.Signalled.Chroma),
-		text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_COLOR_RANGE, p.Signalled.Range))
+		text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_CHROMA, p.Signalled.Chroma),
+		text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_COLOR_RANGE, p.Signalled.Range))
 }
 
 // catalogCaptures converts the publish registry: one row per capture backend the app can run,
@@ -304,9 +304,9 @@ func GpuPathCost(p gpupath.Path) *screensharev1.Text {
 // engine are one question asked twice,
 // and the sentence a shell shows has to be the one the form greys the control with,
 // so restating the rule here would be a second copy of it.
-func catalogCaptures(p platform.Info) []*screensharev1.CaptureBackend {
+func catalogCaptures(p platform.Info) []*mirrormev1.CaptureBackend {
 	names := publish.Captures()
-	out := make([]*screensharev1.CaptureBackend, 0, len(names))
+	out := make([]*mirrormev1.CaptureBackend, 0, len(names))
 	for _, name := range names {
 		engine, err := publish.EngineFor(name)
 		// Captures lists the registry's own keys, so every name here resolves.
@@ -319,7 +319,7 @@ func catalogCaptures(p platform.Info) []*screensharev1.CaptureBackend {
 		available, reason := publish.Available(name, p)
 		assert.Assert(available || reason != nil, "an unavailable capture backend says why", name)
 
-		out = append(out, &screensharev1.CaptureBackend{
+		out = append(out, &mirrormev1.CaptureBackend{
 			Name:       name,
 			Engine:     engineEnum(engine),
 			Transports: transports,
@@ -372,8 +372,8 @@ func catalogAudioSources(p platform.Info) []string {
 // keeping the wire shape and the registry's own invariant one statement:
 // Register holds a stated carriage and the matching serialization capability to each other,
 // so a row exists exactly where there is code to build that leg on that engine.
-func catalogCarriage() []*screensharev1.TransportCarriage {
-	var out []*screensharev1.TransportCarriage
+func catalogCarriage() []*mirrormev1.TransportCarriage {
+	var out []*mirrormev1.TransportCarriage
 	for _, name := range transport.Names() {
 		f, ok := transport.FormatsOf(name)
 		assert.Assert(ok, "a listed transport is a registered one", name)
@@ -398,9 +398,9 @@ func catalogCarriage() []*screensharev1.TransportCarriage {
 // Video formats and audio codecs travel together:
 // what a listener carries as a bitstream and what it carries as a second track are one fact about
 // that listener.
-func carriageRow(name, leg, engine string, c transport.Carriage) *screensharev1.TransportCarriage {
+func carriageRow(name, leg, engine string, c transport.Carriage) *mirrormev1.TransportCarriage {
 	assert.Assert(len(c.Video) > 0, "a stated carriage carries a video format", name, leg, engine)
-	return &screensharev1.TransportCarriage{
+	return &mirrormev1.TransportCarriage{
 		Name:   name,
 		Leg:    legEnum(leg),
 		Engine: engineEnum(engine),
@@ -420,11 +420,11 @@ func carriageRow(name, leg, engine string, c transport.Carriage) *screensharev1.
 // The engine is the URL-opening players', this being the list an external viewer is opened from.
 // What a receiving pipeline can take is the GStreamer watch rows of carriage,
 // where a viewer that is not a player reads it.
-func catalogWatchByFormat() map[string]*screensharev1.TransportList {
+func catalogWatchByFormat() map[string]*mirrormev1.TransportList {
 	formats := capabilities.Formats()
-	out := make(map[string]*screensharev1.TransportList, len(formats))
+	out := make(map[string]*mirrormev1.TransportList, len(formats))
 	for _, format := range formats {
-		out[format] = &screensharev1.TransportList{
+		out[format] = &mirrormev1.TransportList{
 			Transports: transport.WatchNamesFor(capabilities.EngineFfmpeg, format),
 		}
 	}
@@ -433,12 +433,12 @@ func catalogWatchByFormat() map[string]*screensharev1.TransportList {
 
 // catalogAudioDevices carries the enumeration across in the order it was taken,
 // the order the sound server reported and the order a control offers.
-func catalogAudioDevices(devices []platform.AudioDevice) []*screensharev1.AudioDevice {
-	out := make([]*screensharev1.AudioDevice, 0, len(devices))
+func catalogAudioDevices(devices []platform.AudioDevice) []*mirrormev1.AudioDevice {
+	out := make([]*mirrormev1.AudioDevice, 0, len(devices))
 	for _, d := range devices {
 		assert.Assert(d.Kind != "", "an enumerated audio device names the kind it is inside", d.ID)
 		assert.Assert(d.ID != "", "an enumerated audio device carries the handle it is opened by", d.Kind)
-		out = append(out, &screensharev1.AudioDevice{Kind: d.Kind, Id: d.ID, Name: d.Name})
+		out = append(out, &mirrormev1.AudioDevice{Kind: d.Kind, Id: d.ID, Name: d.Name})
 	}
 	return out
 }

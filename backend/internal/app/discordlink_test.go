@@ -5,8 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/group"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/group"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // The link secret is the link flow's to write and nothing else on this side reads it back off a shell

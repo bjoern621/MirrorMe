@@ -3,8 +3,8 @@ package encoders
 import (
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/publish"
 )
 
 // Every publish engine answers the probe, or a codec is reported available on an engine nothing

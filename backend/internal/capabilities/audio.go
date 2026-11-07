@@ -1,11 +1,11 @@
 package capabilities
 
 import (
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 )
 
 // The audio half of the codec facts:
@@ -179,7 +179,7 @@ func ValidateAudio(engine, audioCodec string) error {
 	}
 	a, ok := GetAudio(audioCodec)
 	if !ok {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.AudioCodec(audioCodec))
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.AudioCodec(audioCodec))
 	}
 	if _, ok := a.EncoderOn(engine); ok {
 		return nil
@@ -188,7 +188,7 @@ func ValidateAudio(engine, audioCodec string) error {
 	// A row an engine cannot code states why,
 	// so a surface greying it names the missing element rather than reporting a short table.
 	assert.Assert(ok, "an audio codec an engine cannot code states why", audioCodec, engine)
-	assert.Assert(gap.Reason != screensharev1.TextCode_TEXT_CODE_UNSPECIFIED,
+	assert.Assert(gap.Reason != mirrormev1.TextCode_TEXT_CODE_UNSPECIFIED,
 		"an audio codec gap names which fact it is", audioCodec, engine)
-	return text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_AUDIO_ENCODER, text.Engine(engine), text.AudioCodec(audioCodec))
+	return text.Fail(mirrormev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_AUDIO_ENCODER, text.Engine(engine), text.AudioCodec(audioCodec))
 }

@@ -3,12 +3,12 @@ package form
 import (
 	"slices"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/transport"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/transport"
 )
 
 // audioReason states why this capture backend records no such source.
@@ -21,7 +21,7 @@ import (
 //
 // A capture backend no registry carries reaches neither half, so the platform table answers alone:
 // the engine is unknown, and greying on a guess would name a limit the machine may not have.
-func (av availability) audioReason(source string) *screensharev1.Text {
+func (av availability) audioReason(source string) *mirrormev1.Text {
 	if av.engine == "" {
 		_, reason := platform.AudioSourceAvailable(source, av.deps.Platform)
 		return reason
@@ -37,7 +37,7 @@ func (av availability) audioReason(source string) *screensharev1.Text {
 // The first is the audio table's own gap and the second the carriage table's,
 // and the statement names whichever applies, the fix differing:
 // another capture backend against another codec on the same one.
-func (av availability) audioCodecReason(name string) *screensharev1.Text {
+func (av availability) audioCodecReason(name string) *mirrormev1.Text {
 	if av.engine == "" {
 		return nil
 	}
@@ -75,6 +75,6 @@ func (av availability) audioCodecReason(name string) *screensharev1.Text {
 // when the stream starts (audio.go).
 // The row exists because every control that offers entries is answered for here,
 // which makes a later refusal a line in this file rather than a new mechanism.
-func (av availability) audioDeviceReason(string) *screensharev1.Text {
+func (av availability) audioDeviceReason(string) *mirrormev1.Text {
 	return nil
 }

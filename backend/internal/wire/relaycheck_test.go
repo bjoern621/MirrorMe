@@ -4,9 +4,9 @@ import (
 	"testing"
 	"time"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/reach"
+	"bjoernblessin.de/mirrorme/internal/reach"
 )
 
 // A verdict the contract has no value for would cross as the zero it keeps for "not set",
@@ -25,7 +25,7 @@ func TestEveryVerdictCrossesAsOneOfTheContractsOwn(t *testing.T) {
 		if len(legs) != 1 {
 			t.Fatalf("%v crossed as %d legs, want one", verdict, len(legs))
 		}
-		if legs[0].GetVerdict() == screensharev1.RelayLegVerdict_RELAY_LEG_VERDICT_UNSPECIFIED {
+		if legs[0].GetVerdict() == mirrormev1.RelayLegVerdict_RELAY_LEG_VERDICT_UNSPECIFIED {
 			t.Errorf("%v crosses as unspecified", verdict)
 		}
 	}
@@ -37,7 +37,7 @@ func TestEveryReasonCrossesAsAStatement(t *testing.T) {
 	for _, reason := range reach.Reasons {
 		legs := RelayLegs([]reach.Result{{Leg: "groups", Verdict: reach.Unaddressed, Unused: reason}})
 
-		if code := legs[0].GetUnused().GetCode(); code == screensharev1.TextCode_TEXT_CODE_UNSPECIFIED {
+		if code := legs[0].GetUnused().GetCode(); code == mirrormev1.TextCode_TEXT_CODE_UNSPECIFIED {
 			t.Errorf("%v crosses with no statement", reason)
 		}
 	}

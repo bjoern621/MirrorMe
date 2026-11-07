@@ -5,7 +5,7 @@ import (
 	"net"
 	"sync"
 
-	"bjoernblessin.de/screenshare/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/receive"
 )
 
 // What crosses between the backend and the decode host.

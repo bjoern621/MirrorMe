@@ -3,14 +3,14 @@ package publish
 import (
 	"strings"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/ffmpeg"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/transport"
+	"bjoernblessin.de/mirrorme/internal/ffmpeg"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/transport"
 )
 
 // ffmpegEngine runs one ffmpeg process that captures, encodes, muxes and ships.
@@ -37,7 +37,7 @@ type ffmpegEngine struct{}
 func buildArgs(s settings.Settings, preview PreviewLeg, meterPort string) ([]string, error) {
 	for _, a := range s.Publish.Recorded() {
 		if available, _ := AudioAvailable(s.Publish.Capture, a.Source); !available {
-			return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_CAPTURE_RECORDS_NO_AUDIO, text.Capture(s.Publish.Capture), text.Audio(a.Source))
+			return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_CAPTURE_RECORDS_NO_AUDIO, text.Capture(s.Publish.Capture), text.Audio(a.Source))
 		}
 	}
 

@@ -19,13 +19,13 @@
 package gpupath
 
 import (
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
 )
 
 // The memory setting: where a run's frames reach the encoder, in the user's own terms.
@@ -69,10 +69,10 @@ type Path struct {
 	Family string `json:"family"`
 	// Import names what carries the frames from the capture end to the encode end,
 	// so a row states which mechanism has to work rather than only that one does.
-	// A code and not a sentence (api/proto/screenshare/v1/text.proto), one per row:
+	// A code and not a sentence (api/proto/mirrorme/v1/text.proto), one per row:
 	// the mechanism is what differs between the rows,
 	// and a statement general enough to cover all of them describes none.
-	Import screensharev1.TextCode `json:"import"`
+	Import mirrormev1.TextCode `json:"import"`
 	// Colour is what this path does to the colour the settings name,
 	// and so whether a memory setting may resolve to it without asking twice.
 	Colour Colour `json:"colour"`
@@ -80,7 +80,7 @@ type Path struct {
 	// The refusal under MemoryGpu carries it, and so does every field the run overrides,
 	// so a greyed control states why at the control rather than in a log line.
 	// A ColourExact row leaves it unset, having taken nothing.
-	Cost screensharev1.TextCode `json:"cost"`
+	Cost mirrormev1.TextCode `json:"cost"`
 	// Signalled is the colour a ColourEncoder path's stream carries, unset on a ColourExact row.
 	Signalled Signalled `json:"signalled"`
 }
@@ -116,28 +116,28 @@ var Paths = []Path{
 		Engine:  capabilities.EngineGst,
 		Capture: "portal",
 		Family:  capabilities.FamilyVaapi,
-		Import:  screensharev1.TextCode_TEXT_CODE_IMPORT_GST_PORTAL_VAAPI,
+		Import:  mirrormev1.TextCode_TEXT_CODE_IMPORT_GST_PORTAL_VAAPI,
 		Colour:  ColourExact,
 	},
 	{
 		Engine:  capabilities.EngineGst,
 		Capture: "d3d11screencapturesrc",
 		Family:  capabilities.FamilyNvenc,
-		Import:  screensharev1.TextCode_TEXT_CODE_IMPORT_GST_D3D11_NVENC,
+		Import:  mirrormev1.TextCode_TEXT_CODE_IMPORT_GST_D3D11_NVENC,
 		Colour:  ColourExact,
 	},
 	{
 		Engine:  capabilities.EngineFfmpeg,
 		Capture: "kmsgrab",
 		Family:  capabilities.FamilyVaapi,
-		Import:  screensharev1.TextCode_TEXT_CODE_IMPORT_FFMPEG_KMSGRAB_VAAPI,
+		Import:  mirrormev1.TextCode_TEXT_CODE_IMPORT_FFMPEG_KMSGRAB_VAAPI,
 		Colour:  ColourExact,
 	},
 	{
 		Engine:  capabilities.EngineFfmpeg,
 		Capture: "ddagrab",
 		Family:  capabilities.FamilyQsv,
-		Import:  screensharev1.TextCode_TEXT_CODE_IMPORT_FFMPEG_DDAGRAB_QSV,
+		Import:  mirrormev1.TextCode_TEXT_CODE_IMPORT_FFMPEG_DDAGRAB_QSV,
 		Colour:  ColourExact,
 	},
 	// The row whose colour is the encoder's.
@@ -151,9 +151,9 @@ var Paths = []Path{
 		Engine:  capabilities.EngineFfmpeg,
 		Capture: "ddagrab",
 		Family:  capabilities.FamilyNvenc,
-		Import:  screensharev1.TextCode_TEXT_CODE_IMPORT_FFMPEG_DDAGRAB_NVENC,
+		Import:  mirrormev1.TextCode_TEXT_CODE_IMPORT_FFMPEG_DDAGRAB_NVENC,
 		Colour:  ColourEncoder,
-		Cost:    screensharev1.TextCode_TEXT_CODE_COST_ENCODER_SIGNALS_ITS_OWN_COLOUR,
+		Cost:    mirrormev1.TextCode_TEXT_CODE_COST_ENCODER_SIGNALS_ITS_OWN_COLOUR,
 		Signalled: Signalled{
 			Matrix: "bt470bg",
 			Range:  "tv",
@@ -216,7 +216,7 @@ func Resolve(engine, capture, family, memory string) (string, error) {
 		if path.Colour.TradesColour() {
 			// What the path costs is the row's Cost code, which the form states on the greyed control:
 			// an operational error is read once, a greyed control is read where the choice is made.
-			return "", text.Fail(screensharev1.TextCode_TEXT_CODE_FRAME_MEMORY_TRADES_COLOUR,
+			return "", text.Fail(mirrormev1.TextCode_TEXT_CODE_FRAME_MEMORY_TRADES_COLOUR,
 				text.Capture(capture), text.Family(family), text.Engine(engine))
 		}
 		return MemoryGpu, nil
@@ -231,15 +231,15 @@ func Resolve(engine, capture, family, memory string) (string, error) {
 	case MemorySystem:
 		return MemorySystem, nil
 	default:
-		return "", text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN,
-			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_MEMORY, memory))
+		return "", text.Fail(mirrormev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN,
+			text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_MEMORY, memory))
 	}
 }
 
 // noPath is what both device demands answer for a pair the table has no row for:
 // the colour the caller was willing to pay changes nothing for frames with no way onto the device.
 func noPath(engine, capture, family string) error {
-	return text.Fail(screensharev1.TextCode_TEXT_CODE_FRAME_MEMORY_NO_DEVICE_PATH,
+	return text.Fail(mirrormev1.TextCode_TEXT_CODE_FRAME_MEMORY_NO_DEVICE_PATH,
 		text.Capture(capture), text.Family(family), text.Engine(engine))
 }
 
@@ -267,6 +267,6 @@ func OnDevice(memory string) bool {
 // Frames import within one GPU, so a machine offering several is refused with them named.
 func Undetermined(devices []string) error {
 	assert.Assert(len(devices) > 1, "an undetermined GPU leaves several candidates", devices)
-	return text.Fail(screensharev1.TextCode_TEXT_CODE_GPU_UNDETERMINED,
-		text.IDs(screensharev1.TextArgName_TEXT_ARG_NAME_DEVICES, devices))
+	return text.Fail(mirrormev1.TextCode_TEXT_CODE_GPU_UNDETERMINED,
+		text.IDs(mirrormev1.TextArgName_TEXT_ARG_NAME_DEVICES, devices))
 }

@@ -3,9 +3,9 @@ package form
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/publish"
 )
 
 // captureReason states why this machine cannot run a capture backend.
@@ -16,7 +16,7 @@ import (
 // A privilege the backend needs is no greying (publish.Grant).
 // The process either holds it or the capture dies at launch and nothing can tell which in advance,
 // so the entry stays selectable and what it needs granted rides on the option as a note.
-func (av availability) captureReason(capture string) *screensharev1.Text {
+func (av availability) captureReason(capture string) *mirrormev1.Text {
 	available, reason := publish.Available(capture, av.deps.Platform)
 	if available {
 		return nil
@@ -33,7 +33,7 @@ func (av availability) captureReason(capture string) *screensharev1.Text {
 // that a bitstream carries no position, is a rule beside them.
 // The desktop portal's own list is neither: it is the compositor's answer, so no table here holds it
 // and a machine that refuses the mode outright is named ahead of a format a reader could change.
-func (av availability) pointerReason(value string) *screensharev1.Text {
+func (av availability) pointerReason(value string) *mirrormev1.Text {
 	if !publish.PointerServedHere(av.deps.Portal, av.s.Publish.Capture, value) {
 		return say(portalServesNoCursorMode, argCapture(av.s.Publish.Capture), argCursor(value))
 	}

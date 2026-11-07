@@ -4,12 +4,12 @@ import (
 	"strings"
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/gpupath"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/gpupath"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // gpuStream is a draft publishing capture into codec over the device path.
@@ -158,9 +158,9 @@ func TestAPathWithNoConversionRefusesAScaledRun(t *testing.T) {
 	var width, height int64
 	for _, arg := range statement.GetArgs() {
 		switch arg.GetName() {
-		case screensharev1.TextArgName_TEXT_ARG_NAME_WIDTH:
+		case mirrormev1.TextArgName_TEXT_ARG_NAME_WIDTH:
 			width = arg.GetNumber()
-		case screensharev1.TextArgName_TEXT_ARG_NAME_HEIGHT:
+		case mirrormev1.TextArgName_TEXT_ARG_NAME_HEIGHT:
 			height = arg.GetNumber()
 		}
 	}

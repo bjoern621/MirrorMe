@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/group"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/group"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // populatedSettings is a settings.Settings with every field set,

@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/group"
-	"bjoernblessin.de/screenshare/internal/membership"
-	"bjoernblessin.de/screenshare/internal/token"
+	"bjoernblessin.de/mirrorme/internal/group"
+	"bjoernblessin.de/mirrorme/internal/membership"
+	"bjoernblessin.de/mirrorme/internal/token"
 )
 
 // listing is the index request for one group key.

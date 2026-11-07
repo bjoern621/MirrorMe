@@ -26,13 +26,13 @@ import (
 	"slices"
 	"strings"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // Carriage is one engine's set for one leg of one protocol: the video bitstream formats and
@@ -358,11 +358,11 @@ func ReceiveSource(name string, s settings.Settings, streamName string) ([]strin
 	}
 	t, ok := Get(name)
 	if !ok {
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Transport(name))
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Transport(name))
 	}
 	r, ok := t.(GstWatchResolver)
 	if !ok {
-		return nil, text.Fail(screensharev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM,
+		return nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_ENGINE_HAS_NO_FORM,
 			text.Engine(capabilities.EngineGst), text.Transport(name))
 	}
 	src, err := r.ResolveGstSource(s, path)
@@ -558,15 +558,15 @@ func ValidatePublish(name, engine, codec string) error {
 	assert.Assert(knownEngine(engine), "publish validation names an engine", engine)
 
 	if _, ok := Get(name); !ok {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Transport(name))
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Transport(name))
 	}
 	c, ok := capabilities.Get(codec)
 	if !ok {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(codec))
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(codec))
 	}
 	carriage, ok := PublishCarriage(name, engine)
 	if !ok || !slices.Contains(carriage.Video, c.Format) {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_TRANSPORT_CARRIES_NO_FORMAT,
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_TRANSPORT_CARRIES_NO_FORMAT,
 			text.Transport(name), text.Format(c.Format), text.Engine(engine),
 			text.Transports(PublishNamesFor(engine, c.Format)))
 	}
@@ -587,11 +587,11 @@ func ValidatePublishAudio(name, engine, audioCodec string) error {
 	}
 	a, ok := capabilities.GetAudio(audioCodec)
 	if !ok {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.AudioCodec(audioCodec))
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.AudioCodec(audioCodec))
 	}
 	carriage, ok := PublishCarriage(name, engine)
 	if !ok || !slices.Contains(carriage.Audio, a.Format) {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_LEG_CARRIES_NO_AUDIO_CODEC,
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_LEG_CARRIES_NO_AUDIO_CODEC,
 			text.Transport(name), text.AudioCodec(audioCodec), text.Engine(engine),
 			text.AudioCodecs(capabilities.AudioNamesFor(engine, carriage.Audio)))
 	}

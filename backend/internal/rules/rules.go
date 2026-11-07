@@ -23,7 +23,7 @@ package rules
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 )
 
 // Verdict is what a rule does to the control it names.
@@ -71,12 +71,12 @@ type Rule struct {
 	// Reason is the fact being stated, as a code.
 	// The evaluator attaches the identifiers from the axes When named,
 	// so a row states which fact it is and never which words carry it.
-	Reason screensharev1.TextCode
+	Reason mirrormev1.TextCode
 	// Args is what the statement needs and no axis carries: a figure the row knows
 	// and the configuration does not, such as the top of a codec's quantizer scale.
 	// Those alone, everything the rule matched on being attached from the facts,
 	// and an argument written twice can disagree.
-	Args []*screensharev1.TextArg
+	Args []*mirrormev1.TextArg
 }
 
 // registered is every rule this process knows, in registration order.
@@ -102,7 +102,7 @@ func Register(rs ...Rule) {
 		assert.Assert(r.Field != "", "a rule names the control it lands on", int(r.Verdict))
 		// A verdict replacing something on screen names what replaces it.
 		// Live replaces nothing, granting the control a property, so there is no sentence to write.
-		assert.Assert((r.Reason != screensharev1.TextCode_TEXT_CODE_UNSPECIFIED) == (r.Verdict != Live),
+		assert.Assert((r.Reason != mirrormev1.TextCode_TEXT_CODE_UNSPECIFIED) == (r.Verdict != Live),
 			"a rule states the fact behind it, unless it takes nothing away", r.Field, int(r.Verdict))
 		for i, a := range r.Args {
 			// A nil argument is dropped on the way to the statement,

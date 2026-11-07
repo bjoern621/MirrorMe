@@ -8,7 +8,7 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/padprobe"
+	"bjoernblessin.de/mirrorme/internal/padprobe"
 )
 
 // RelayGateFlag names the queue ahead of the relay sink, the name following it.

@@ -3,7 +3,7 @@ package decode
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/receive"
+	"bjoernblessin.de/mirrorme/internal/receive"
 )
 
 // The control connection: what the backend may ask of the host, and the reads it answers.

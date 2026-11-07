@@ -14,12 +14,12 @@ import (
 	"strings"
 	"time"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/groupclient"
+	"bjoernblessin.de/mirrorme/internal/groupclient"
 )
 
 // Timeout bounds every call, as groupclient's does and for the same reason:
@@ -75,7 +75,7 @@ func (c *Client) Presence(base, linkSecret string) (Answer, error) {
 	assert.IsNotNil(c.http, "a client calls through a transport")
 
 	if base == "" {
-		return Answer{}, text.Fail(screensharev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
+		return Answer{}, text.Fail(mirrormev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
 	}
 
 	var answer Answer
@@ -94,7 +94,7 @@ func (c *Client) Token(base, linkSecret string) (token, prefix string, err error
 	assert.IsNotNil(c.http, "a client calls through a transport")
 
 	if base == "" {
-		return "", "", text.Fail(screensharev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
+		return "", "", text.Fail(mirrormev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
 	}
 
 	var answer struct {
@@ -105,7 +105,7 @@ func (c *Client) Token(base, linkSecret string) (token, prefix string, err error
 		return "", "", err
 	}
 	if answer.Token == "" {
-		return "", "", text.Fail(screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(base))
+		return "", "", text.Fail(mirrormev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(base))
 	}
 	return answer.Token, answer.Prefix, nil
 }
@@ -120,13 +120,13 @@ func (c *Client) send(method, address, linkSecret string, into any) error {
 	assert.IsNil(err, "a request body is plain data that always encodes", method, address)
 	request, err := http.NewRequest(method, address, strings.NewReader(string(encoded)))
 	if err != nil {
-		return text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(address))
+		return text.Because(err, mirrormev1.TextCode_TEXT_CODE_ADDRESS_UNREADABLE, text.Address(address))
 	}
 	request.Header.Set("Content-Type", "application/json")
 
 	resp, err := c.http.Do(request)
 	if err != nil {
-		return text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_UNANSWERED, text.Address(address))
+		return text.Because(err, mirrormev1.TextCode_TEXT_CODE_ADDRESS_UNANSWERED, text.Address(address))
 	}
 	defer resp.Body.Close()
 
@@ -139,10 +139,10 @@ func (c *Client) send(method, address, linkSecret string, into any) error {
 			reason = refusal.Error
 		}
 		return text.Because(&groupclient.Refusal{Status: resp.StatusCode, Reason: reason},
-			screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWERED, text.Address(address))
+			mirrormev1.TextCode_TEXT_CODE_ADDRESS_ANSWERED, text.Address(address))
 	}
 	if err := json.NewDecoder(resp.Body).Decode(into); err != nil {
-		return text.Because(err, screensharev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(address))
+		return text.Because(err, mirrormev1.TextCode_TEXT_CODE_ADDRESS_ANSWER_UNREADABLE, text.Address(address))
 	}
 	return nil
 }

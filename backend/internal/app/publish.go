@@ -3,17 +3,17 @@ package app
 import (
 	"time"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/display"
-	"bjoernblessin.de/screenshare/internal/pointer"
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/display"
+	"bjoernblessin.de/mirrorme/internal/pointer"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // publishRun is one publish session: the settings its pipeline was built from,
@@ -140,10 +140,10 @@ func (a *App) startPublishLocked(s settings.Settings) error {
 		// so whether this start is a repeat is unanswerable.
 		// Refusing is the answer that cannot start a second encoder.
 		logger.Warnf("cannot tell whether the running publish carries the settings this start asks for: %v", err)
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_ALREADY_PUBLISHING)
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_ALREADY_PUBLISHING)
 	}
 	if !same {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_ALREADY_PUBLISHING)
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_ALREADY_PUBLISHING)
 	}
 
 	logger.Debugf("'%s' is already publishing on these settings", s.Publish.Name())
@@ -287,7 +287,7 @@ func (a *App) restartPublish(s settings.Settings) error {
 
 	running := a.run != nil && a.run.handle.Running()
 	if !running && a.retry == nil {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_NOTHING_PUBLISHING)
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_NOTHING_PUBLISHING)
 	}
 	if running && a.applyLiveLocked(s) {
 		return nil

@@ -4,13 +4,13 @@ import (
 	"slices"
 	"strconv"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // vpxEncoder maps the rate-control mode onto vp8enc or vp9enc, the counterpart to the ffmpeg libvpx
@@ -63,7 +63,7 @@ func vpxRateLimits(s settings.Settings) error {
 	if s.Publish.Mode != capabilities.ModeCrf || s.Publish.MaxrateM > 0 {
 		return nil
 	}
-	return text.Fail(screensharev1.TextCode_TEXT_CODE_QUALITY_CEILING_REQUIRED, text.Codec(s.Publish.Codec()))
+	return text.Fail(mirrormev1.TextCode_TEXT_CODE_QUALITY_CEILING_REQUIRED, text.Codec(s.Publish.Codec()))
 }
 
 // vpxTuneProperty spells one tune step on vp8enc and vp9enc, which name the knob "tuning", and

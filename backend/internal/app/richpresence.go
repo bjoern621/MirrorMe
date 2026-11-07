@@ -6,9 +6,9 @@ import (
 
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/applink"
-	"bjoernblessin.de/screenshare/internal/discordrpc"
-	"bjoernblessin.de/screenshare/internal/relay"
+	"bjoernblessin.de/mirrorme/internal/applink"
+	"bjoernblessin.de/mirrorme/internal/discordrpc"
+	"bjoernblessin.de/mirrorme/internal/relay"
 )
 
 // What this machine states on the Discord client running beside it (docs/discord-mode.md).

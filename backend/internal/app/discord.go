@@ -5,16 +5,16 @@ import (
 	"net/http"
 	"strings"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/discordclient"
-	"bjoernblessin.de/screenshare/internal/groupclient"
-	"bjoernblessin.de/screenshare/internal/relay"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/discordclient"
+	"bjoernblessin.de/mirrorme/internal/groupclient"
+	"bjoernblessin.de/mirrorme/internal/relay"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // Discord mode replaces the pass the poll runs (docs/discord-mode.md):
@@ -288,14 +288,14 @@ func (a *App) withBrokered(s settings.Settings) settings.Settings {
 }
 
 // errDiscordUnlinked refuses a command while no link secret is set.
-var errDiscordUnlinked = text.Fail(screensharev1.TextCode_TEXT_CODE_DISCORD_NOT_LINKED)
+var errDiscordUnlinked = text.Fail(mirrormev1.TextCode_TEXT_CODE_DISCORD_NOT_LINKED)
 
 // errNoVoiceChannel refuses a command while the linked account stands in no voice channel.
-var errNoVoiceChannel = text.Fail(screensharev1.TextCode_TEXT_CODE_DISCORD_NO_VOICE_CHANNEL)
+var errNoVoiceChannel = text.Fail(mirrormev1.TextCode_TEXT_CODE_DISCORD_NO_VOICE_CHANNEL)
 
 // errLinkRefused refuses a command while the manager declines the link the settings hold.
 // A channel clears nothing here, so the refusal names the link instead.
-var errLinkRefused = text.Fail(screensharev1.TextCode_TEXT_CODE_DISCORD_LINK_REFUSED)
+var errLinkRefused = text.Fail(mirrormev1.TextCode_TEXT_CODE_DISCORD_LINK_REFUSED)
 
 // discordSettingsForCommand is settingsForCommand's Discord half:
 // the token is brokered by the manager, and the brokered facts ride the same copy.
@@ -307,7 +307,7 @@ var errLinkRefused = text.Fail(screensharev1.TextCode_TEXT_CODE_DISCORD_LINK_REF
 func (a *App) discordSettingsForCommand(s settings.Settings) (settings.Settings, error) {
 	base, ok := s.Relay.DiscordService()
 	if !ok {
-		return s, text.Fail(screensharev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
+		return s, text.Fail(mirrormev1.TextCode_TEXT_CODE_RELAY_UNNAMED)
 	}
 	if s.Relay.DiscordLink == "" {
 		return s, errDiscordUnlinked
@@ -322,10 +322,10 @@ func (a *App) discordSettingsForCommand(s settings.Settings) (settings.Settings,
 
 	token, prefix, err := a.discord.Token(base, s.Relay.DiscordLink)
 	if err != nil {
-		return s, text.Because(err, screensharev1.TextCode_TEXT_CODE_RELAY_TOKEN_UNDRAWN)
+		return s, text.Because(err, mirrormev1.TextCode_TEXT_CODE_RELAY_TOKEN_UNDRAWN)
 	}
 	if prefix != d.Prefix {
-		return s, text.Fail(screensharev1.TextCode_TEXT_CODE_GROUP_MOVED)
+		return s, text.Fail(mirrormev1.TextCode_TEXT_CODE_GROUP_MOVED)
 	}
 
 	s.Relay = s.Relay.WithBrokeredGroup(d.Prefix, d.SrtPassphrase, d.DisplayName)

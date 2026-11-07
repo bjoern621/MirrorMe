@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // exit stands in for what a dead child leaves behind.
@@ -108,7 +108,7 @@ func TestASpentLegWalksAFollowedPresetToTheNextTransport(t *testing.T) {
 	if a.retry.attempts != 1 {
 		t.Errorf("the walked relaunch is attempt %d, want a fresh budget", a.retry.attempts)
 	}
-	if got := a.retry.cause.GetCode(); got != screensharev1.TextCode_TEXT_CODE_TRANSPORT_FALLING_BACK {
+	if got := a.retry.cause.GetCode(); got != mirrormev1.TextCode_TEXT_CODE_TRANSPORT_FALLING_BACK {
 		t.Errorf("the cause is %v, want the walk named", got)
 	}
 }

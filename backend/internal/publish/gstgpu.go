@@ -1,14 +1,14 @@
 package publish
 
 import (
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/gpupath"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/gpupath"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // The device half of the GStreamer publish engine: where a run's frames reach the encoder, and what
@@ -127,7 +127,7 @@ type gstFrameMemory struct {
 func gstMemory(s settings.Settings) (gstFrameMemory, error) {
 	c, ok := capabilities.Get(s.Publish.Codec())
 	if !ok {
-		return gstFrameMemory{}, text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(s.Publish.Codec()))
+		return gstFrameMemory{}, text.Fail(mirrormev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(s.Publish.Codec()))
 	}
 	memory, err := gpupath.Resolve(EngineGst, s.Publish.Capture, c.Family, s.Publish.CaptureMemory)
 	if err != nil {

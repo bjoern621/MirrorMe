@@ -32,15 +32,15 @@ import (
 	"strings"
 	"time"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/ffmpeg"
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/ffmpeg"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/settings"
 )
 
 // The two ends of the content range, named so a call site reads as the end it measures
@@ -137,7 +137,7 @@ func Measure(ctx context.Context, s settings.Settings, width, height int) (Rate,
 	assert.IsNotNil(ctx, "a measurement runs under a context")
 
 	if width <= 0 || height <= 0 {
-		return Rate{}, text.Fail(screensharev1.TextCode_TEXT_CODE_MONITOR_NOT_ENUMERATED, text.Monitor(s.Publish.Monitor))
+		return Rate{}, text.Fail(mirrormev1.TextCode_TEXT_CODE_MONITOR_NOT_ENUMERATED, text.Monitor(s.Publish.Monitor))
 	}
 
 	engine, err := publish.EngineFor(s.Publish.Capture)
@@ -287,9 +287,9 @@ func run(ctx context.Context, exe string, env []string, args []string) (time.Dur
 	elapsed := time.Since(start)
 	if err != nil {
 		if ctx.Err() != nil {
-			return 0, text.Fail(screensharev1.TextCode_TEXT_CODE_ENCODE_PROBE_TIMED_OUT, text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_TIMEOUT_MS, measureTimeout.Milliseconds()))
+			return 0, text.Fail(mirrormev1.TextCode_TEXT_CODE_ENCODE_PROBE_TIMED_OUT, text.Num(mirrormev1.TextArgName_TEXT_ARG_NAME_TIMEOUT_MS, measureTimeout.Milliseconds()))
 		}
-		return 0, text.Because(probeWords(err, out), screensharev1.TextCode_TEXT_CODE_PROGRAM_EXITED, text.Program(filepath.Base(cmd.Path)))
+		return 0, text.Because(probeWords(err, out), mirrormev1.TextCode_TEXT_CODE_PROGRAM_EXITED, text.Program(filepath.Base(cmd.Path)))
 	}
 	return elapsed, nil
 }
@@ -303,7 +303,7 @@ func rate(frames int, elapsed time.Duration) (float64, error) {
 	assert.Assert(frames > 0, "a rate counts at least one frame", frames)
 
 	if elapsed <= 0 {
-		return 0, text.Fail(screensharev1.TextCode_TEXT_CODE_MEASURE_HAS_NO_TIME)
+		return 0, text.Fail(mirrormev1.TextCode_TEXT_CODE_MEASURE_HAS_NO_TIME)
 	}
 
 	fps := float64(frames) / elapsed.Seconds()

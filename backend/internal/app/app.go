@@ -7,21 +7,21 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/avatars"
-	"bjoernblessin.de/screenshare/internal/control"
-	"bjoernblessin.de/screenshare/internal/decode"
-	"bjoernblessin.de/screenshare/internal/discordclient"
-	"bjoernblessin.de/screenshare/internal/encoders"
-	"bjoernblessin.de/screenshare/internal/events"
-	"bjoernblessin.de/screenshare/internal/ffmpeg"
-	"bjoernblessin.de/screenshare/internal/groupclient"
-	"bjoernblessin.de/screenshare/internal/relay"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/timeline"
-	"bjoernblessin.de/screenshare/internal/update"
-	"bjoernblessin.de/screenshare/internal/viewerclient"
+	"bjoernblessin.de/mirrorme/internal/avatars"
+	"bjoernblessin.de/mirrorme/internal/control"
+	"bjoernblessin.de/mirrorme/internal/decode"
+	"bjoernblessin.de/mirrorme/internal/discordclient"
+	"bjoernblessin.de/mirrorme/internal/encoders"
+	"bjoernblessin.de/mirrorme/internal/events"
+	"bjoernblessin.de/mirrorme/internal/ffmpeg"
+	"bjoernblessin.de/mirrorme/internal/groupclient"
+	"bjoernblessin.de/mirrorme/internal/relay"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/timeline"
+	"bjoernblessin.de/mirrorme/internal/update"
+	"bjoernblessin.de/mirrorme/internal/viewerclient"
 )
 
 // App is the backend a shell reaches.
@@ -55,7 +55,7 @@ type App struct {
 	// Written once in New, before anything can read it:
 	// a store that failed at startup is the state the form opens in.
 	// The file it names was moved aside rather than replaced.
-	storeNotice *screensharev1.Text
+	storeNotice *mirrormev1.Text
 
 	// This app's side of the group key, token and index service, holding the token last minted
 	// (groups.go).
@@ -194,7 +194,7 @@ func New(version, channel string) *App {
 	assert.Assert(version != "", "a build names the version its shells report")
 
 	s, err := settings.Load()
-	var notice *screensharev1.Text
+	var notice *mirrormev1.Text
 	if err != nil {
 		// An unreadable store is an Umgebungsfehler, so the run goes on, on the defaults.
 		// The form opens on values the user did not choose,
@@ -203,7 +203,7 @@ func New(version, channel string) *App {
 		// and stays in the log where the reader who can act on it is looking.
 		logger.Warnf("settings not restored: %v", err)
 		notice = settings.StoreNotice(
-			screensharev1.TextCode_TEXT_CODE_SETTINGS_STORE_UNREADABLE, err)
+			mirrormev1.TextCode_TEXT_CODE_SETTINGS_STORE_UNREADABLE, err)
 	}
 
 	a := &App{
@@ -251,7 +251,7 @@ func (a *App) fail(err error) {
 
 // StoreNotice states why the persisted settings could not be restored, nil when they were.
 // The form then opens on the defaults, and the statement names where the old values were moved to.
-func (a *App) StoreNotice() *screensharev1.Text {
+func (a *App) StoreNotice() *mirrormev1.Text {
 	return a.storeNotice
 }
 

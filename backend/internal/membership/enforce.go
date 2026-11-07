@@ -6,7 +6,7 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/relay"
+	"bjoernblessin.de/mirrorme/internal/relay"
 )
 
 // Relay is the connection list and the kick, as enforcement needs them.

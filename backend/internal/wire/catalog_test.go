@@ -4,14 +4,14 @@ import (
 	"slices"
 	"testing"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/display"
-	"bjoernblessin.de/screenshare/internal/encoders"
-	"bjoernblessin.de/screenshare/internal/platform"
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/transport"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/display"
+	"bjoernblessin.de/mirrorme/internal/encoders"
+	"bjoernblessin.de/mirrorme/internal/platform"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/transport"
 )
 
 // catalogInput describes a machine: one monitor, a platform,
@@ -36,7 +36,7 @@ func catalogInput() CatalogInput {
 
 // engineSpelling reads a wire engine back to the name the Go tables use,
 // so a test compares a converted row against the table it came from without restating the mapping.
-func engineSpelling(t *testing.T, e screensharev1.Engine) string {
+func engineSpelling(t *testing.T, e mirrormev1.Engine) string {
 	t.Helper()
 	for name, v := range engines {
 		if v == e {
@@ -48,7 +48,7 @@ func engineSpelling(t *testing.T, e screensharev1.Engine) string {
 }
 
 // legSpelling is that again for a carriage row's leg.
-func legSpelling(t *testing.T, l screensharev1.Leg) string {
+func legSpelling(t *testing.T, l mirrormev1.Leg) string {
 	t.Helper()
 	for name, v := range legs {
 		if v == l {
@@ -114,7 +114,7 @@ func TestEveryDeclaredCodecReachesTheMessage(t *testing.T) {
 }
 
 // engineLimitOf is one engine's row of numeric ceilings, nil where nothing bounds the codec there.
-func engineLimitOf(row *screensharev1.VideoCodec, engine screensharev1.Engine) *screensharev1.EngineLimit {
+func engineLimitOf(row *mirrormev1.VideoCodec, engine mirrormev1.Engine) *mirrormev1.EngineLimit {
 	for _, limit := range row.GetLimits() {
 		if limit.GetEngine() == engine {
 			return limit
@@ -260,10 +260,10 @@ func TestAGapOnEveryEngineNamesEveryEngine(t *testing.T) {
 	for _, c := range Catalog(catalogInput()).GetCodecs() {
 		any := 0
 		for _, g := range c.GetGaps() {
-			if g.GetEngine() == screensharev1.Engine_ENGINE_UNSPECIFIED {
+			if g.GetEngine() == mirrormev1.Engine_ENGINE_UNSPECIFIED {
 				t.Errorf("%s carries a gap on ENGINE_UNSPECIFIED, which reads as a field nobody set", c.GetName())
 			}
-			if g.GetEngine() == screensharev1.Engine_ENGINE_ANY {
+			if g.GetEngine() == mirrormev1.Engine_ENGINE_ANY {
 				any++
 			}
 		}
@@ -275,7 +275,7 @@ func TestAGapOnEveryEngineNamesEveryEngine(t *testing.T) {
 }
 
 // engineProbeOf is one engine's probe row, nil where the probe has not reached that engine at all.
-func engineProbeOf(got *screensharev1.EncoderAvailability, engine screensharev1.Engine) *screensharev1.EngineProbe {
+func engineProbeOf(got *mirrormev1.EncoderAvailability, engine mirrormev1.Engine) *mirrormev1.EngineProbe {
 	for _, row := range got.GetEngines() {
 		if row.GetEngine() == engine {
 			return row
@@ -296,7 +296,7 @@ func TestAnUnprobedEngineIsNotAnEmptyOne(t *testing.T) {
 	in := catalogInput()
 	got := Catalog(in).GetEncoders()
 
-	unprobed := engineProbeOf(got, screensharev1.Engine_ENGINE_FFMPEG)
+	unprobed := engineProbeOf(got, mirrormev1.Engine_ENGINE_FFMPEG)
 	if unprobed == nil {
 		t.Fatal("an unprobed engine crosses with no row at all, which reads as an engine nothing has asked about")
 	}
@@ -307,7 +307,7 @@ func TestAnUnprobedEngineIsNotAnEmptyOne(t *testing.T) {
 		t.Error("an unprobed engine crosses with verdicts, which would read as a machine that has no encoders")
 	}
 
-	probed := engineProbeOf(got, screensharev1.Engine_ENGINE_GSTREAMER)
+	probed := engineProbeOf(got, mirrormev1.Engine_ENGINE_GSTREAMER)
 	if probed == nil || probed.GetProbed() == nil {
 		t.Fatal("a probed engine crosses without its verdicts")
 	}

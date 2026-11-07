@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"bjoernblessin.de/screenshare/internal/gpupath"
+	"bjoernblessin.de/mirrorme/internal/gpupath"
 )
 
 // A chain that downloads or uploads has kept the round trip while claiming to have dropped it.

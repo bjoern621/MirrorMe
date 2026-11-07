@@ -19,7 +19,7 @@ public sealed class AudioSourceRowViewModel : Observable
     /// <summary>
     /// Value the absent kind is spelled by, read off the form rather than written down here:
     /// it is what the row past the end of the list holds, and picking it on an entry is what takes that entry off
-    /// (<c>api/proto/screenshare/v1/settings.proto</c>, <c>AudioSource</c>).
+    /// (<c>api/proto/mirrorme/v1/settings.proto</c>, <c>AudioSource</c>).
     /// Empty until a pass has one to read.
     /// </summary>
     private string _absent = "";

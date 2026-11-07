@@ -23,10 +23,10 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	"bjoernblessin.de/screenshare/internal/channelgroup"
-	"bjoernblessin.de/screenshare/internal/discordoauth"
-	"bjoernblessin.de/screenshare/internal/groupclient"
-	"bjoernblessin.de/screenshare/internal/serving"
+	"bjoernblessin.de/mirrorme/internal/channelgroup"
+	"bjoernblessin.de/mirrorme/internal/discordoauth"
+	"bjoernblessin.de/mirrorme/internal/groupclient"
+	"bjoernblessin.de/mirrorme/internal/serving"
 )
 
 // linkWindow is how long a started link waits for its callback.

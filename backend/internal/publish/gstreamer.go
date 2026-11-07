@@ -5,14 +5,14 @@ import (
 	"strings"
 	"sync"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/gpupath"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/transport"
+	"bjoernblessin.de/mirrorme/internal/gpupath"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/transport"
 )
 
 // GstExe is the launcher the measuring pipelines are played by, resolved through FindGstExe.
@@ -117,7 +117,7 @@ func (g gstEngine) Start(s settings.Settings, tag string, preview PreviewLeg, cb
 	if cb.OnStats != nil {
 		meter, err = newGstMeter(cb.OnStats)
 		if err != nil {
-			return nil, text.Because(err, screensharev1.TextCode_TEXT_CODE_LOOPBACK_PORT_UNAVAILABLE)
+			return nil, text.Because(err, mirrormev1.TextCode_TEXT_CODE_LOOPBACK_PORT_UNAVAILABLE)
 		}
 		meterArg = meter.port()
 		opts.RateProbe = gstCaptureProbe

@@ -5,19 +5,19 @@ import (
 	"path/filepath"
 	"strconv"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-	"bjoernblessin.de/screenshare/internal/text"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/text"
 
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/display"
-	"bjoernblessin.de/screenshare/internal/gpupath"
-	"bjoernblessin.de/screenshare/internal/pointermode"
-	"bjoernblessin.de/screenshare/internal/portal"
-	"bjoernblessin.de/screenshare/internal/screensrc"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/share"
+	"bjoernblessin.de/mirrorme/internal/display"
+	"bjoernblessin.de/mirrorme/internal/gpupath"
+	"bjoernblessin.de/mirrorme/internal/pointermode"
+	"bjoernblessin.de/mirrorme/internal/portal"
+	"bjoernblessin.de/mirrorme/internal/screensrc"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/share"
 )
 
 // A GStreamer capture backend is the head of the publish pipeline: the elements producing raw
@@ -141,7 +141,7 @@ func (p portalCapture) Open(s settings.Settings, opts gstCaptureOptions) ([]stri
 		RestoreToken: settings.PortalToken(),
 	})
 	if err != nil {
-		return nil, nil, nil, text.Because(err, screensharev1.TextCode_TEXT_CODE_PORTAL_UNANSWERED)
+		return nil, nil, nil, text.Because(err, mirrormev1.TextCode_TEXT_CODE_PORTAL_UNANSWERED)
 	}
 	// The token is the compositor's receipt for this consent, stored off the session that produced it
 	// and reused by the next stream, which keeps the picker from popping on every publish where
@@ -158,7 +158,7 @@ func (p portalCapture) Open(s settings.Settings, opts gstCaptureOptions) ([]stri
 		// a child.
 		// Dropping it sends the relaunch to a session that can carry one instead of to the same failure.
 		p.hold.Release()
-		return nil, nil, nil, text.Because(err, screensharev1.TextCode_TEXT_CODE_PORTAL_UNANSWERED)
+		return nil, nil, nil, text.Because(err, mirrormev1.TextCode_TEXT_CODE_PORTAL_UNANSWERED)
 	}
 	elements := portalElements(s, strconv.Itoa(childFdBase), strconv.FormatUint(uint64(session.NodeID), 10), opts)
 	// The remote alone, since the session belongs to the stream rather than to this child.
@@ -185,7 +185,7 @@ func (portalCapture) HoldsOneDevice() error {
 		return nil
 	}
 	if len(nodes) == 0 {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_NO_RENDER_NODE)
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_NO_RENDER_NODE)
 	}
 	return gpupath.Undetermined(nodes)
 }
@@ -278,7 +278,7 @@ func (x ximageCapture) Describe(s settings.Settings, opts gstCaptureOptions) ([]
 
 func (x ximageCapture) Open(s settings.Settings, opts gstCaptureOptions) ([]string, []*os.File, func(), error) {
 	if os.Getenv("DISPLAY") == "" {
-		return nil, nil, nil, text.Fail(screensharev1.TextCode_TEXT_CODE_DISPLAY_UNSET, text.Capture(s.Publish.Capture))
+		return nil, nil, nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_DISPLAY_UNSET, text.Capture(s.Publish.Capture))
 	}
 	// An index no output answers to is refused, as x11grab refuses it (internal/ffmpeg, x11grabArgs).
 	// The crop comes off the enumeration, and a head built without one captures the whole X screen:
@@ -289,7 +289,7 @@ func (x ximageCapture) Open(s settings.Settings, opts gstCaptureOptions) ([]stri
 	// (internal/form, optionMonitors).
 	if s.Publish.ShareKind == share.Monitor {
 		if _, ok := display.At(s.Publish.Monitor); !ok {
-			return nil, nil, nil, text.Fail(screensharev1.TextCode_TEXT_CODE_MONITOR_NOT_ENUMERATED, text.Monitor(s.Publish.Monitor))
+			return nil, nil, nil, text.Fail(mirrormev1.TextCode_TEXT_CODE_MONITOR_NOT_ENUMERATED, text.Monitor(s.Publish.Monitor))
 		}
 	}
 	elements, err := x.elements(s, opts)

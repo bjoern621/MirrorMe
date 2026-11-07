@@ -5,12 +5,12 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/publish"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/transport"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/publish"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/transport"
 )
 
 // warningAnchors is every field key a diagnostic may anchor on.
@@ -55,17 +55,17 @@ var warningAnchors = []string{
 func diagnostics(
 	d Deps,
 	s settings.Settings,
-	est *screensharev1.Estimate,
-	groups []*screensharev1.FieldGroup,
-) []*screensharev1.Diagnostic {
-	out := make([]*screensharev1.Diagnostic, 0, 8)
+	est *mirrormev1.Estimate,
+	groups []*mirrormev1.FieldGroup,
+) []*mirrormev1.Diagnostic {
+	out := make([]*mirrormev1.Diagnostic, 0, 8)
 
 	// A refusal that names the control to open, so it leads.
 	out = append(out, diagnosticsAboutStrandedControls(groups)...)
 
 	// The refusal itself rides on Summary.command_refusal; the diagnostic states that there is one.
 	if _, refusal := formCommand(s); refusal != nil {
-		out = append(out, diagnosticFor(screensharev1.Severity_SEVERITY_ERROR, "", say(publishRefused)))
+		out = append(out, diagnosticFor(mirrormev1.Severity_SEVERITY_ERROR, "", say(publishRefused)))
 	}
 	out = append(out, diagnosticsOfTheSettings(d, s, est)...)
 	return ranked(out)
@@ -74,8 +74,8 @@ func diagnostics(
 // diagnosticsOfTheSettings runs every rule that reads the settings and the prediction alone, in gathering order.
 // An entry's impacts run these and no others (picked.go):
 // the stranded controls and the refusal need the whole form and the built command.
-func diagnosticsOfTheSettings(d Deps, s settings.Settings, est *screensharev1.Estimate) []*screensharev1.Diagnostic {
-	var out []*screensharev1.Diagnostic
+func diagnosticsOfTheSettings(d Deps, s settings.Settings, est *mirrormev1.Estimate) []*mirrormev1.Diagnostic {
+	var out []*mirrormev1.Diagnostic
 	out = append(out, diagnosticsAboutTheAudience(d, s)...)
 	out = append(out, diagnosticsAboutTheLine(d, s, est)...)
 	out = append(out, diagnosticsAboutTheCeiling(d, s)...)
@@ -90,13 +90,13 @@ func diagnosticsOfTheSettings(d Deps, s settings.Settings, est *screensharev1.Es
 // ranked orders diagnostics highest rank first, stable, so equal ranks keep the gathering order.
 // An unstable sort would move diagnostics under the reader
 // between two keystrokes that changed neither of them.
-func ranked(out []*screensharev1.Diagnostic) []*screensharev1.Diagnostic {
-	slices.SortStableFunc(out, func(a, b *screensharev1.Diagnostic) int {
+func ranked(out []*mirrormev1.Diagnostic) []*mirrormev1.Diagnostic {
+	slices.SortStableFunc(out, func(a, b *mirrormev1.Diagnostic) int {
 		return int(b.GetSeverity()) - int(a.GetSeverity())
 	})
 
 	for _, w := range out {
-		assert.Assert(w.GetSeverity() != screensharev1.Severity_SEVERITY_UNSPECIFIED,
+		assert.Assert(w.GetSeverity() != mirrormev1.Severity_SEVERITY_UNSPECIFIED,
 			"a diagnostic is ranked by what ignoring it costs", w.GetText().GetCode())
 		assert.IsNotNil(w.GetText(), "a diagnostic says what it is about", w.GetFieldKey())
 		assert.Assert(w.GetFieldKey() == "" || slices.Contains(warningAnchors, w.GetFieldKey()),
@@ -105,8 +105,8 @@ func ranked(out []*screensharev1.Diagnostic) []*screensharev1.Diagnostic {
 	return out
 }
 
-func diagnosticFor(severity screensharev1.Severity, fieldKey string, t *screensharev1.Text) *screensharev1.Diagnostic {
-	return &screensharev1.Diagnostic{Severity: severity, FieldKey: fieldKey, Text: t}
+func diagnosticFor(severity mirrormev1.Severity, fieldKey string, t *mirrormev1.Text) *mirrormev1.Diagnostic {
+	return &mirrormev1.Diagnostic{Severity: severity, FieldKey: fieldKey, Text: t}
 }
 
 // warningPeaks is where a mode's burst diagnostic anchors: the control that moves the burst.
@@ -132,7 +132,7 @@ var warningPeaks = map[string]string{
 // and the two branches under it name the control the reader fills in rather than restating the rule.
 //
 // Only on a relay somebody named, an unnamed one having no service to draw a group from.
-func diagnosticsAboutTheAudience(d Deps, s settings.Settings) []*screensharev1.Diagnostic {
+func diagnosticsAboutTheAudience(d Deps, s settings.Settings) []*mirrormev1.Diagnostic {
 	if _, hasService := s.Relay.GroupService(); !hasService || s.Relay.InGroup() {
 		return nil
 	}
@@ -142,28 +142,28 @@ func diagnosticsAboutTheAudience(d Deps, s settings.Settings) []*screensharev1.D
 	// (internal/app, Brokered), so reaching here is really being outside.
 	if s.Relay.FollowsDiscord() {
 		if s.Relay.DiscordLink == "" {
-			return []*screensharev1.Diagnostic{
-				diagnosticFor(screensharev1.Severity_SEVERITY_ERROR, KeyGroupSource, say(discordNotLinked)),
+			return []*mirrormev1.Diagnostic{
+				diagnosticFor(mirrormev1.Severity_SEVERITY_ERROR, KeyGroupSource, say(discordNotLinked)),
 			}
 		}
 		// A refused link is held and declined, and joining a channel clears neither,
 		// so the move this names is linking again.
 		if d.DiscordRefused {
-			return []*screensharev1.Diagnostic{
-				diagnosticFor(screensharev1.Severity_SEVERITY_ERROR, KeyGroupSource, say(discordLinkRefused)),
+			return []*mirrormev1.Diagnostic{
+				diagnosticFor(mirrormev1.Severity_SEVERITY_ERROR, KeyGroupSource, say(discordLinkRefused)),
 			}
 		}
-		return []*screensharev1.Diagnostic{
-			diagnosticFor(screensharev1.Severity_SEVERITY_ERROR, KeyGroupSource, say(discordNoVoiceChannel)),
+		return []*mirrormev1.Diagnostic{
+			diagnosticFor(mirrormev1.Severity_SEVERITY_ERROR, KeyGroupSource, say(discordNoVoiceChannel)),
 		}
 	}
 	if s.Relay.GroupKey == "" {
-		return []*screensharev1.Diagnostic{
-			diagnosticFor(screensharev1.Severity_SEVERITY_ERROR, KeyGroupKey, say(groupRequired)),
+		return []*mirrormev1.Diagnostic{
+			diagnosticFor(mirrormev1.Severity_SEVERITY_ERROR, KeyGroupKey, say(groupRequired)),
 		}
 	}
-	return []*screensharev1.Diagnostic{
-		diagnosticFor(screensharev1.Severity_SEVERITY_ERROR, KeyDisplayName, say(groupNameMissing)),
+	return []*mirrormev1.Diagnostic{
+		diagnosticFor(mirrormev1.Severity_SEVERITY_ERROR, KeyDisplayName, say(groupNameMissing)),
 	}
 }
 
@@ -172,19 +172,19 @@ func diagnosticsAboutTheAudience(d Deps, s settings.Settings) []*screensharev1.D
 // Neither end of this failure announces itself: a stream the line cannot carry is not encoded
 // smaller, the send queue grows, the transport drops what it cannot ship,
 // and the viewer sees a stall rather than a lower quality.
-func diagnosticsAboutTheLine(d Deps, s settings.Settings, est *screensharev1.Estimate) []*screensharev1.Diagnostic {
+func diagnosticsAboutTheLine(d Deps, s settings.Settings, est *mirrormev1.Estimate) []*mirrormev1.Diagnostic {
 	if s.Publish.UplinkMbps <= 0 {
-		return []*screensharev1.Diagnostic{
-			diagnosticFor(screensharev1.Severity_SEVERITY_INFO, KeyUplinkMbps, say(noUplinkStated)),
+		return []*mirrormev1.Diagnostic{
+			diagnosticFor(mirrormev1.Severity_SEVERITY_INFO, KeyUplinkMbps, say(noUplinkStated)),
 		}
 	}
 	if est == nil {
 		return nil
 	}
 
-	var out []*screensharev1.Diagnostic
+	var out []*mirrormev1.Diagnostic
 	if est.GetHeadroomMbps() < 0 {
-		out = append(out, diagnosticFor(screensharev1.Severity_SEVERITY_WARNING, KeyUplinkMbps,
+		out = append(out, diagnosticFor(mirrormev1.Severity_SEVERITY_WARNING, KeyUplinkMbps,
 			say(uplinkBelowPrediction,
 				argBitrateMbps(est.GetBitrateMbps()), argUplinkMbps(s.Publish.UplinkMbps))))
 		return out
@@ -200,7 +200,7 @@ func diagnosticsAboutTheLine(d Deps, s settings.Settings, est *screensharev1.Est
 	}
 	anchor, declared := warningPeaks[s.Publish.Mode]
 	assert.Assert(declared, "a mode whose rate spreads states where its burst belongs", s.Publish.Mode)
-	out = append(out, diagnosticFor(screensharev1.Severity_SEVERITY_WARNING, anchor,
+	out = append(out, diagnosticFor(mirrormev1.Severity_SEVERITY_WARNING, anchor,
 		say(burstAboveUplink,
 			argLowMbps(low), argHighMbps(high), argUplinkMbps(s.Publish.UplinkMbps), argMode(s.Publish.Mode))))
 	return out
@@ -212,7 +212,7 @@ func diagnosticsAboutTheLine(d Deps, s settings.Settings, est *screensharev1.Est
 //
 // A warning, the stream being one that runs, at a quality the target overstates.
 // The anchor is the ceiling, that being the figure whose move changes the answer.
-func diagnosticsAboutTheCeiling(d Deps, s settings.Settings) []*screensharev1.Diagnostic {
+func diagnosticsAboutTheCeiling(d Deps, s settings.Settings) []*mirrormev1.Diagnostic {
 	ceiling, bounded := estimateQualityCeiling(s)
 	if !bounded {
 		return nil
@@ -221,25 +221,25 @@ func diagnosticsAboutTheCeiling(d Deps, s settings.Settings) []*screensharev1.Di
 	if !priced || price <= ceiling {
 		return nil
 	}
-	return []*screensharev1.Diagnostic{
-		diagnosticFor(screensharev1.Severity_SEVERITY_WARNING, KeyMaxrateM,
+	return []*mirrormev1.Diagnostic{
+		diagnosticFor(mirrormev1.Severity_SEVERITY_WARNING, KeyMaxrateM,
 			say(ceilingHoldsQuality, argBitrateMbps(price), argMaxrateMbps(int(ceiling)))),
 	}
 }
 
 // diagnosticsAboutTheCapture says where this machine gives the pipeline less than the settings ask.
-func diagnosticsAboutTheCapture(d Deps, s settings.Settings) []*screensharev1.Diagnostic {
-	var out []*screensharev1.Diagnostic
+func diagnosticsAboutTheCapture(d Deps, s settings.Settings) []*mirrormev1.Diagnostic {
+	var out []*mirrormev1.Diagnostic
 
 	// Above the panel's own rate the capture has no new picture to hand over,
 	// and the encoder codes at the target anyway: the stream carries the frame count the form promises
 	// and none of the smoothness it implies.
 	// The anchor is the target, that being the end that fixes it.
 	if m, found := estimateMonitor(d, s); found && m.RefreshHz > 0 && s.Publish.Fps > m.RefreshHz {
-		out = append(out, diagnosticFor(screensharev1.Severity_SEVERITY_WARNING, KeyFps,
+		out = append(out, diagnosticFor(mirrormev1.Severity_SEVERITY_WARNING, KeyFps,
 			say(fpsAboveRefresh, argFps(s.Publish.Fps), argRefreshHz(m.RefreshHz))))
 	} else if found && m.RefreshHz > 0 && s.Publish.Fps == m.RefreshHz {
-		out = append(out, diagnosticFor(screensharev1.Severity_SEVERITY_INFO, KeyFps,
+		out = append(out, diagnosticFor(mirrormev1.Severity_SEVERITY_INFO, KeyFps,
 			say(fpsMatchesRefresh, argFps(s.Publish.Fps), argRefreshHz(m.RefreshHz))))
 	}
 
@@ -248,7 +248,7 @@ func diagnosticsAboutTheCapture(d Deps, s settings.Settings) []*screensharev1.Di
 	// The form then looks unrestricted and the failure moves from a greyed option to the launch.
 	if engine, err := publish.EngineFor(s.Publish.Capture); err == nil {
 		if _, unprobed := d.Encoders.Unprobed[engine]; unprobed {
-			out = append(out, diagnosticFor(screensharev1.Severity_SEVERITY_INFO, KeyCapture,
+			out = append(out, diagnosticFor(mirrormev1.Severity_SEVERITY_INFO, KeyCapture,
 				say(engineNotProbed,
 					argEngine(engine), argCause(say(engineToolingMissing, argEngine(engine))))))
 		}
@@ -263,7 +263,7 @@ func diagnosticsAboutTheCapture(d Deps, s settings.Settings) []*screensharev1.Di
 //
 // Every format has a software decoder, so no stream is undecodable,
 // and the only question is whether a viewer spends cores on it (docs/field-availability.md).
-func diagnosticsAboutTheViewer(s settings.Settings) []*screensharev1.Diagnostic {
+func diagnosticsAboutTheViewer(s settings.Settings) []*mirrormev1.Diagnostic {
 	decode, err := capabilities.DecodeOf(s.Publish.Codec(), s.Publish.Chroma)
 	if err != nil {
 		// An unknown codec has no format to decode, and the publish path refuses it with its own reason.
@@ -281,16 +281,16 @@ func diagnosticsAboutTheViewer(s settings.Settings) []*screensharev1.Diagnostic 
 	}
 
 	if len(decode.Hardware) == 0 {
-		return []*screensharev1.Diagnostic{
-			diagnosticFor(screensharev1.Severity_SEVERITY_WARNING, KeyChroma,
+		return []*mirrormev1.Diagnostic{
+			diagnosticFor(mirrormev1.Severity_SEVERITY_WARNING, KeyChroma,
 				say(decodesOnCPU,
 					argFormat(format), argChroma(s.Publish.Chroma),
 					argDecoder(decode.Software.Element), argDecodeFamily(limited))),
 		}
 	}
 	if len(decode.Missing) > 0 {
-		return []*screensharev1.Diagnostic{
-			diagnosticFor(screensharev1.Severity_SEVERITY_INFO, KeyChroma,
+		return []*mirrormev1.Diagnostic{
+			diagnosticFor(mirrormev1.Severity_SEVERITY_INFO, KeyChroma,
 				say(decodesInHardwarePartly,
 					argFormat(format), argChroma(s.Publish.Chroma),
 					argDecodeFamilies(warningFamilies(decode.Hardware)),
@@ -298,8 +298,8 @@ func diagnosticsAboutTheViewer(s settings.Settings) []*screensharev1.Diagnostic 
 					argDecodeFamily(limited), argOtherCount(others))),
 		}
 	}
-	return []*screensharev1.Diagnostic{
-		diagnosticFor(screensharev1.Severity_SEVERITY_INFO, KeyChroma,
+	return []*mirrormev1.Diagnostic{
+		diagnosticFor(mirrormev1.Severity_SEVERITY_INFO, KeyChroma,
 			say(decodesInHardwareEverywhere, argFormat(format), argChroma(s.Publish.Chroma))),
 	}
 }
@@ -307,31 +307,31 @@ func diagnosticsAboutTheViewer(s settings.Settings) []*screensharev1.Diagnostic 
 // diagnosticsAboutTheWatchDelay states how far behind its publisher a stream plays on the watch leg,
 // a note on the leg it is about.
 // Every leg states its own, so each entry of the leg control carries the figure picking it would bring (picked.go).
-func diagnosticsAboutTheWatchDelay(s settings.Settings) []*screensharev1.Diagnostic {
+func diagnosticsAboutTheWatchDelay(s settings.Settings) []*mirrormev1.Diagnostic {
 	delay, ok := transport.PathDelay(s.Viewer.TileWatchTransport)
 	if !ok {
 		return nil
 	}
-	return []*screensharev1.Diagnostic{
-		diagnosticFor(screensharev1.Severity_SEVERITY_INFO, KeyTileWatchTransport,
+	return []*mirrormev1.Diagnostic{
+		diagnosticFor(mirrormev1.Severity_SEVERITY_INFO, KeyTileWatchTransport,
 			say(watchDelay, argDelayMs(delay))),
 	}
 }
 
 // diagnosticsAboutThePrediction says why there is no prediction.
 // A prediction that exists says itself, on Summary.estimate.
-func diagnosticsAboutThePrediction(d Deps, s settings.Settings, est *screensharev1.Estimate) []*screensharev1.Diagnostic {
+func diagnosticsAboutThePrediction(d Deps, s settings.Settings, est *mirrormev1.Estimate) []*mirrormev1.Diagnostic {
 	if est != nil {
 		return nil
 	}
 	if _, found := estimateMonitor(d, s); !found {
-		return []*screensharev1.Diagnostic{
-			diagnosticFor(screensharev1.Severity_SEVERITY_INFO, KeyMonitor,
+		return []*mirrormev1.Diagnostic{
+			diagnosticFor(mirrormev1.Severity_SEVERITY_INFO, KeyMonitor,
 				say(monitorNotPriced, argMonitor(s.Publish.Monitor))),
 		}
 	}
-	return []*screensharev1.Diagnostic{
-		diagnosticFor(screensharev1.Severity_SEVERITY_INFO, "", say(noPictureToPrice)),
+	return []*mirrormev1.Diagnostic{
+		diagnosticFor(mirrormev1.Severity_SEVERITY_INFO, "", say(noPictureToPrice)),
 	}
 }
 

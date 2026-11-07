@@ -4,10 +4,10 @@ import (
 	"testing"
 	"time"
 
-	"bjoernblessin.de/screenshare/internal/discordrpc"
-	"bjoernblessin.de/screenshare/internal/relay"
-	"bjoernblessin.de/screenshare/internal/settings"
-	"bjoernblessin.de/screenshare/internal/wire"
+	"bjoernblessin.de/mirrorme/internal/discordrpc"
+	"bjoernblessin.de/mirrorme/internal/relay"
+	"bjoernblessin.de/mirrorme/internal/settings"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // An activity is what one pass of the poll makes of its own facts,

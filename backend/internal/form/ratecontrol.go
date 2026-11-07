@@ -3,15 +3,15 @@ package form
 import (
 	"slices"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/capabilities"
+	"bjoernblessin.de/mirrorme/internal/capabilities"
 )
 
 // modeReason states why the selected codec cannot be driven in a rate-control mode.
 // The capability table keys its gaps by publish engine where only one builder reaches the mode:
 // libvpx codes lossless VP9 and the vp9enc element has no such property.
-func (av availability) modeReason(mode string) *screensharev1.Text {
+func (av availability) modeReason(mode string) *mirrormev1.Text {
 	if !av.knownCodec || av.engine == "" {
 		return nil
 	}
@@ -28,7 +28,7 @@ func (av availability) modeReason(mode string) *screensharev1.Text {
 // and oneVPL's scenario reaches Intel's runtime through ffmpeg alone.
 // The step stays offered and greys with the engine named, as a chroma one engine codes does,
 // and the untuned step is on no gap so a greyed control always has somewhere to walk to.
-func (av availability) tuneReason(value string) *screensharev1.Text {
+func (av availability) tuneReason(value string) *mirrormev1.Text {
 	if !av.knownCodec || av.engine == "" {
 		return nil
 	}
@@ -49,7 +49,7 @@ func (av availability) tuneReason(value string) *screensharev1.Text {
 // An engine that drops the knob in every mode outranks the mode's own reason:
 // no rate control brings the control back, so naming the mode would send the user hunting
 // for a switch that changes nothing.
-func (av availability) knob(key string, uses bool, reason *screensharev1.Text) state {
+func (av availability) knob(key string, uses bool, reason *mirrormev1.Text) state {
 	rule, ruled := av.engineRule(key)
 	switch {
 	case ruled && rule.forwards:
@@ -111,7 +111,7 @@ func (av availability) ceilingStated() bool {
 // that this encoder cannot code constant quality without one,
 // or what the VAAPI elements derive theirs from.
 // The two cannot both apply, the va rows taking no ceiling in constant quality at all.
-func (av availability) ceilingNote() *screensharev1.Text {
+func (av availability) ceilingNote() *mirrormev1.Text {
 	if capabilities.QualityCeilingRequired(av.s.Publish.Codec(), av.engine) &&
 		av.s.Publish.Mode == capabilities.ModeCrf {
 		return say(qualityCeilingRequired, argCodec(av.s.Publish.Codec()))
@@ -121,7 +121,7 @@ func (av availability) ceilingNote() *screensharev1.Text {
 
 // ceilingReason names which of the two facts withholds the ceiling: the mode bounding nothing,
 // or this encoder having no form of a bounded quality target.
-func (av availability) ceilingReason() *screensharev1.Text {
+func (av availability) ceilingReason() *mirrormev1.Text {
 	if !av.mode().usesMaxrate {
 		return say(maxrateOnlyInConstrained)
 	}
@@ -130,7 +130,7 @@ func (av availability) ceilingReason() *screensharev1.Text {
 
 // windowReason names which of the three facts withholds the buffer, the ceiling's own two first:
 // a window sizes a ceiling, so it has nothing to say where there is none to hold.
-func (av availability) windowReason() *screensharev1.Text {
+func (av availability) windowReason() *mirrormev1.Text {
 	switch {
 	case !av.mode().usesVbv:
 		return say(vbvOnlyInBoundedModes)
@@ -147,7 +147,7 @@ func (av availability) windowReason() *screensharev1.Text {
 // so a ceiling above twice the target has no form there and the GStreamer builder refuses it.
 // A note rather than a greying, since the knob is forwarded:
 // the field stays live and carries the bound.
-func (av availability) vaapiCeilingNote() *screensharev1.Text {
+func (av availability) vaapiCeilingNote() *mirrormev1.Text {
 	if av.engine != capabilities.EngineGst || av.s.Publish.Mode != capabilities.ModeVbr {
 		return nil
 	}

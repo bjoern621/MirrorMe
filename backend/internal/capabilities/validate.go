@@ -3,10 +3,10 @@ package capabilities
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
-	"bjoernblessin.de/screenshare/internal/rules"
-	"bjoernblessin.de/screenshare/internal/text"
+	"bjoernblessin.de/mirrorme/internal/rules"
+	"bjoernblessin.de/mirrorme/internal/text"
 )
 
 // Validate rejects a codec and option-value combination this table forbids,
@@ -39,17 +39,17 @@ func Validate(engine, codec string, options map[string]string, cq, bitrateM, gop
 
 	c, ok := Get(codec)
 	if !ok {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(codec))
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN, text.Codec(codec))
 	}
 	if !c.Implemented {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_CODEC_NOT_IMPLEMENTED, text.Codec(codec))
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_CODEC_NOT_IMPLEMENTED, text.Codec(codec))
 	}
 	// A mode outside the set matches no gap and would reach the builders,
 	// whose rate-control switches end in the cbr branch,
 	// so the encode would run at a rate control the settings never asked for.
 	if !contains(Modes, mode) {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN,
-			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_MODE, mode))
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_IDENTIFIER_UNKNOWN,
+			text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_MODE, mode))
 	}
 	// Every refusal below is the rules' own reason, the statement the form greys the value with,
 	// so a greyed control and a refused publish read one evaluation.
@@ -59,7 +59,7 @@ func Validate(engine, codec string, options map[string]string, cq, bitrateM, gop
 		return refusal(v.ValueReasons(rules.AxisCodec, c.Name))
 	}
 	if !contains(c.Chromas, chroma) {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_CODEC_CANNOT_ENCODE_CHROMA, text.Codec(c.Name), text.Chroma(chroma))
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_CODEC_CANNOT_ENCODE_CHROMA, text.Codec(c.Name), text.Chroma(chroma))
 	}
 	// Every option is read the same way and in table order,
 	// so a codec refused on two of them names the first,
@@ -74,9 +74,9 @@ func Validate(engine, codec string, options map[string]string, cq, bitrateM, gop
 	// A negative target is refused apart from the rules,
 	// no rule stating a floor and a scale starting at zero being one no band below it can express.
 	if cq < 0 {
-		return text.Fail(screensharev1.TextCode_TEXT_CODE_CQ_ABOVE_CODEC_SCALE, text.Codec(c.Name), text.Engine(engine),
-			text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_MODE, mode),
-			text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_CQ_MAX, int64(c.CqMaxOn(engine))))
+		return text.Fail(mirrormev1.TextCode_TEXT_CODE_CQ_ABOVE_CODEC_SCALE, text.Codec(c.Name), text.Engine(engine),
+			text.ID(mirrormev1.TextArgName_TEXT_ARG_NAME_MODE, mode),
+			text.Num(mirrormev1.TextArgName_TEXT_ARG_NAME_CQ_MAX, int64(c.CqMaxOn(engine))))
 	}
 	// The quantizer target reaches the encoder in crf mode alone,
 	// and each encoder's knob has its own scale: 60 is a valid libvpx CQ and an error on x264.
@@ -95,11 +95,11 @@ func Validate(engine, codec string, options map[string]string, cq, bitrateM, gop
 // refusal states a refused value as the first reason the rules give for it, with extra appended.
 // A driver defect leads: the encoder implements the value,
 // so any other reason would name the wrong culprit, and the other engine drives the same driver.
-func refusal(reasons []*screensharev1.Text, extra ...*screensharev1.TextArg) error {
+func refusal(reasons []*mirrormev1.Text, extra ...*mirrormev1.TextArg) error {
 	assert.Assert(len(reasons) > 0, "a refused value carries the reason the rules refused it with")
 
 	for _, reason := range reasons {
-		if reason.GetCode() == screensharev1.TextCode_TEXT_CODE_DRIVER_DEFECT_WITHHOLDS_OPTION {
+		if reason.GetCode() == mirrormev1.TextCode_TEXT_CODE_DRIVER_DEFECT_WITHHOLDS_OPTION {
 			return text.Fail(reason.GetCode(), reason.GetArgs()...)
 		}
 	}
@@ -109,10 +109,10 @@ func refusal(reasons []*screensharev1.Text, extra ...*screensharev1.TextArg) err
 // otherReach names the engine that does reach one value of one option, none where no other does.
 // A refusal naming the attempted engine alone states half the fact,
 // and the half it withholds is the one a settings file that skipped the form can act on.
-func otherReach(codec, engine, option, value string) []*screensharev1.TextArg {
+func otherReach(codec, engine, option, value string) []*mirrormev1.TextArg {
 	for _, e := range Engines {
 		if e != engine && Reaches(codec, e, option, value) {
-			return []*screensharev1.TextArg{text.OtherEngine(e)}
+			return []*mirrormev1.TextArg{text.OtherEngine(e)}
 		}
 	}
 	return nil

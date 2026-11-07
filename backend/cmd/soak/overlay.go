@@ -6,7 +6,7 @@ import (
 	"math"
 	"time"
 
-	v1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
+	v1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 )
 
 // What the insights screen shows while a stream runs, held to what the samples behind it carry.
@@ -70,7 +70,7 @@ func (s *session) checkOverlay(stats []*v1.PublishStats, attempts int32, fields 
 		}
 		// A per-interval figure is measured against the sample before it,
 		// so the first sample of a run states none
-		// (api/proto/screenshare/v1/session.proto, PublishStats).
+		// (api/proto/mirrorme/v1/session.proto, PublishStats).
 		// A run that relaunched is first samples all the way down,
 		// which says the stream kept dying rather than anything about what this engine measures.
 		if measured == 0 && attempts == 0 {

@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.12
 // 	protoc        (unknown)
-// source: screenshare/v1/text.proto
+// source: mirrorme/v1/text.proto
 
-package screensharev1
+package mirrormev1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -394,11 +394,11 @@ func (x TextArgName) String() string {
 }
 
 func (TextArgName) Descriptor() protoreflect.EnumDescriptor {
-	return file_screenshare_v1_text_proto_enumTypes[0].Descriptor()
+	return file_mirrorme_v1_text_proto_enumTypes[0].Descriptor()
 }
 
 func (TextArgName) Type() protoreflect.EnumType {
-	return &file_screenshare_v1_text_proto_enumTypes[0]
+	return &file_mirrorme_v1_text_proto_enumTypes[0]
 }
 
 func (x TextArgName) Number() protoreflect.EnumNumber {
@@ -407,7 +407,7 @@ func (x TextArgName) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use TextArgName.Descriptor instead.
 func (TextArgName) EnumDescriptor() ([]byte, []int) {
-	return file_screenshare_v1_text_proto_rawDescGZIP(), []int{0}
+	return file_mirrorme_v1_text_proto_rawDescGZIP(), []int{0}
 }
 
 // TextCode names one statement.
@@ -1755,11 +1755,11 @@ func (x TextCode) String() string {
 }
 
 func (TextCode) Descriptor() protoreflect.EnumDescriptor {
-	return file_screenshare_v1_text_proto_enumTypes[1].Descriptor()
+	return file_mirrorme_v1_text_proto_enumTypes[1].Descriptor()
 }
 
 func (TextCode) Type() protoreflect.EnumType {
-	return &file_screenshare_v1_text_proto_enumTypes[1]
+	return &file_mirrorme_v1_text_proto_enumTypes[1]
 }
 
 func (x TextCode) Number() protoreflect.EnumNumber {
@@ -1768,7 +1768,7 @@ func (x TextCode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use TextCode.Descriptor instead.
 func (TextCode) EnumDescriptor() ([]byte, []int) {
-	return file_screenshare_v1_text_proto_rawDescGZIP(), []int{1}
+	return file_mirrorme_v1_text_proto_rawDescGZIP(), []int{1}
 }
 
 // IdList is several identifiers of one axis.
@@ -1782,7 +1782,7 @@ type IdList struct {
 
 func (x *IdList) Reset() {
 	*x = IdList{}
-	mi := &file_screenshare_v1_text_proto_msgTypes[0]
+	mi := &file_mirrorme_v1_text_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1794,7 +1794,7 @@ func (x *IdList) String() string {
 func (*IdList) ProtoMessage() {}
 
 func (x *IdList) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_text_proto_msgTypes[0]
+	mi := &file_mirrorme_v1_text_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1807,7 +1807,7 @@ func (x *IdList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IdList.ProtoReflect.Descriptor instead.
 func (*IdList) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_text_proto_rawDescGZIP(), []int{0}
+	return file_mirrorme_v1_text_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *IdList) GetIds() []string {
@@ -1819,7 +1819,7 @@ func (x *IdList) GetIds() []string {
 
 type TextArg struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	Name  TextArgName            `protobuf:"varint,1,opt,name=name,proto3,enum=screenshare.v1.TextArgName" json:"name,omitempty"`
+	Name  TextArgName            `protobuf:"varint,1,opt,name=name,proto3,enum=mirrorme.v1.TextArgName" json:"name,omitempty"`
 	// Types that are valid to be assigned to Value:
 	//
 	//	*TextArg_Id
@@ -1834,7 +1834,7 @@ type TextArg struct {
 
 func (x *TextArg) Reset() {
 	*x = TextArg{}
-	mi := &file_screenshare_v1_text_proto_msgTypes[1]
+	mi := &file_mirrorme_v1_text_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1846,7 +1846,7 @@ func (x *TextArg) String() string {
 func (*TextArg) ProtoMessage() {}
 
 func (x *TextArg) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_text_proto_msgTypes[1]
+	mi := &file_mirrorme_v1_text_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1859,7 +1859,7 @@ func (x *TextArg) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TextArg.ProtoReflect.Descriptor instead.
 func (*TextArg) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_text_proto_rawDescGZIP(), []int{1}
+	return file_mirrorme_v1_text_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *TextArg) GetName() TextArgName {
@@ -1965,7 +1965,7 @@ func (*TextArg_Text) isTextArg_Value() {}
 // since a blank where a reason belongs reads as a control with no reason at all.
 type Text struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          TextCode               `protobuf:"varint,1,opt,name=code,proto3,enum=screenshare.v1.TextCode" json:"code,omitempty"`
+	Code          TextCode               `protobuf:"varint,1,opt,name=code,proto3,enum=mirrorme.v1.TextCode" json:"code,omitempty"`
 	Args          []*TextArg             `protobuf:"bytes,2,rep,name=args,proto3" json:"args,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1973,7 +1973,7 @@ type Text struct {
 
 func (x *Text) Reset() {
 	*x = Text{}
-	mi := &file_screenshare_v1_text_proto_msgTypes[2]
+	mi := &file_mirrorme_v1_text_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1985,7 +1985,7 @@ func (x *Text) String() string {
 func (*Text) ProtoMessage() {}
 
 func (x *Text) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_text_proto_msgTypes[2]
+	mi := &file_mirrorme_v1_text_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1998,7 +1998,7 @@ func (x *Text) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Text.ProtoReflect.Descriptor instead.
 func (*Text) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_text_proto_rawDescGZIP(), []int{2}
+	return file_mirrorme_v1_text_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Text) GetCode() TextCode {
@@ -2032,7 +2032,7 @@ type Refusal struct {
 
 func (x *Refusal) Reset() {
 	*x = Refusal{}
-	mi := &file_screenshare_v1_text_proto_msgTypes[3]
+	mi := &file_mirrorme_v1_text_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2044,7 +2044,7 @@ func (x *Refusal) String() string {
 func (*Refusal) ProtoMessage() {}
 
 func (x *Refusal) ProtoReflect() protoreflect.Message {
-	mi := &file_screenshare_v1_text_proto_msgTypes[3]
+	mi := &file_mirrorme_v1_text_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2057,7 +2057,7 @@ func (x *Refusal) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Refusal.ProtoReflect.Descriptor instead.
 func (*Refusal) Descriptor() ([]byte, []int) {
-	return file_screenshare_v1_text_proto_rawDescGZIP(), []int{3}
+	return file_mirrorme_v1_text_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Refusal) GetText() *Text {
@@ -2074,26 +2074,26 @@ func (x *Refusal) GetMessage() string {
 	return ""
 }
 
-var File_screenshare_v1_text_proto protoreflect.FileDescriptor
+var File_mirrorme_v1_text_proto protoreflect.FileDescriptor
 
-const file_screenshare_v1_text_proto_rawDesc = "" +
+const file_mirrorme_v1_text_proto_rawDesc = "" +
 	"\n" +
-	"\x19screenshare/v1/text.proto\x12\x0escreenshare.v1\"\x1a\n" +
+	"\x16mirrorme/v1/text.proto\x12\vmirrorme.v1\"\x1a\n" +
 	"\x06IdList\x12\x10\n" +
-	"\x03ids\x18\x01 \x03(\tR\x03ids\"\xe3\x01\n" +
-	"\aTextArg\x12/\n" +
-	"\x04name\x18\x01 \x01(\x0e2\x1b.screenshare.v1.TextArgNameR\x04name\x12\x10\n" +
+	"\x03ids\x18\x01 \x03(\tR\x03ids\"\xda\x01\n" +
+	"\aTextArg\x12,\n" +
+	"\x04name\x18\x01 \x01(\x0e2\x18.mirrorme.v1.TextArgNameR\x04name\x12\x10\n" +
 	"\x02id\x18\x02 \x01(\tH\x00R\x02id\x12\x18\n" +
 	"\x06number\x18\x03 \x01(\x03H\x00R\x06number\x12\x1a\n" +
-	"\adecimal\x18\x04 \x01(\x01H\x00R\adecimal\x12*\n" +
-	"\x03ids\x18\x05 \x01(\v2\x16.screenshare.v1.IdListH\x00R\x03ids\x12*\n" +
-	"\x04text\x18\x06 \x01(\v2\x14.screenshare.v1.TextH\x00R\x04textB\a\n" +
-	"\x05value\"a\n" +
-	"\x04Text\x12,\n" +
-	"\x04code\x18\x01 \x01(\x0e2\x18.screenshare.v1.TextCodeR\x04code\x12+\n" +
-	"\x04args\x18\x02 \x03(\v2\x17.screenshare.v1.TextArgR\x04args\"M\n" +
-	"\aRefusal\x12(\n" +
-	"\x04text\x18\x01 \x01(\v2\x14.screenshare.v1.TextR\x04text\x12\x18\n" +
+	"\adecimal\x18\x04 \x01(\x01H\x00R\adecimal\x12'\n" +
+	"\x03ids\x18\x05 \x01(\v2\x13.mirrorme.v1.IdListH\x00R\x03ids\x12'\n" +
+	"\x04text\x18\x06 \x01(\v2\x11.mirrorme.v1.TextH\x00R\x04textB\a\n" +
+	"\x05value\"[\n" +
+	"\x04Text\x12)\n" +
+	"\x04code\x18\x01 \x01(\x0e2\x15.mirrorme.v1.TextCodeR\x04code\x12(\n" +
+	"\x04args\x18\x02 \x03(\v2\x14.mirrorme.v1.TextArgR\x04args\"J\n" +
+	"\aRefusal\x12%\n" +
+	"\x04text\x18\x01 \x01(\v2\x11.mirrorme.v1.TextR\x04text\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage*\xf6\x12\n" +
 	"\vTextArgName\x12\x1d\n" +
 	"\x19TEXT_ARG_NAME_UNSPECIFIED\x10\x00\x12\x19\n" +
@@ -2459,37 +2459,37 @@ const file_screenshare_v1_text_proto_rawDesc = "" +
 	" TEXT_CODE_OUTPUT_SIZE_UNREADABLE\x10\xcd\x02\x12&\n" +
 	"!TEXT_CODE_OUTPUT_SIZE_BELOW_FLOOR\x10\xce\x02\x12\x1e\n" +
 	"\x19TEXT_CODE_OUTPUT_SIZE_ODD\x10\xcf\x02\x12\x1f\n" +
-	"\x1aTEXT_CODE_PORTAL_DISMISSED\x10\xd0\x02\"\x04\bL\x10L\"\x04\bU\x10U\"\x04\bV\x10V\"\x04\b\x7f\x10\x7f\"\x06\b\x89\x01\x10\x89\x01\"\x06\b\x8a\x01\x10\x8a\x01\"\x06\b\x8e\x01\x10\x8e\x01\"\x04\bB\x10B\"\x04\bP\x10P\"\x06\b\xa7\x01\x10\xa7\x01*%TEXT_CODE_CURSOR_METADATA_NOT_CARRIED*&TEXT_CODE_NVENC_CQ_BITRATE_CAPS_BURSTS*#TEXT_CODE_GST_VPX_CQ_BITRATE_IS_CAP*$TEXT_CODE_CURSOR_METADATA_LOCAL_ONLY*\x1bTEXT_CODE_COMPRESSION_RATIO*\x1aTEXT_CODE_STREAM_IS_PUBLIC**TEXT_CODE_SRT_PASSPHRASE_IS_THE_ENCRYPTION*!TEXT_CODE_PRESET_ONLY_ON_FAMILIES*\x1fTEXT_CODE_PRESET_PINNED_BY_MODE*\x1eTEXT_CODE_GST_NO_PRESET_LADDER*!TEXT_CODE_RELAY_LEG_LOOPBACK_ONLYB[ZDbjoernblessin.de/screenshare/api/gen/go/screenshare/v1;screensharev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
+	"\x1aTEXT_CODE_PORTAL_DISMISSED\x10\xd0\x02\"\x04\bL\x10L\"\x04\bU\x10U\"\x04\bV\x10V\"\x04\b\x7f\x10\x7f\"\x06\b\x89\x01\x10\x89\x01\"\x06\b\x8a\x01\x10\x8a\x01\"\x06\b\x8e\x01\x10\x8e\x01\"\x04\bB\x10B\"\x04\bP\x10P\"\x06\b\xa7\x01\x10\xa7\x01*%TEXT_CODE_CURSOR_METADATA_NOT_CARRIED*&TEXT_CODE_NVENC_CQ_BITRATE_CAPS_BURSTS*#TEXT_CODE_GST_VPX_CQ_BITRATE_IS_CAP*$TEXT_CODE_CURSOR_METADATA_LOCAL_ONLY*\x1bTEXT_CODE_COMPRESSION_RATIO*\x1aTEXT_CODE_STREAM_IS_PUBLIC**TEXT_CODE_SRT_PASSPHRASE_IS_THE_ENCRYPTION*!TEXT_CODE_PRESET_ONLY_ON_FAMILIES*\x1fTEXT_CODE_PRESET_PINNED_BY_MODE*\x1eTEXT_CODE_GST_NO_PRESET_LADDER*!TEXT_CODE_RELAY_LEG_LOOPBACK_ONLYBRZ;bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
 
 var (
-	file_screenshare_v1_text_proto_rawDescOnce sync.Once
-	file_screenshare_v1_text_proto_rawDescData []byte
+	file_mirrorme_v1_text_proto_rawDescOnce sync.Once
+	file_mirrorme_v1_text_proto_rawDescData []byte
 )
 
-func file_screenshare_v1_text_proto_rawDescGZIP() []byte {
-	file_screenshare_v1_text_proto_rawDescOnce.Do(func() {
-		file_screenshare_v1_text_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_screenshare_v1_text_proto_rawDesc), len(file_screenshare_v1_text_proto_rawDesc)))
+func file_mirrorme_v1_text_proto_rawDescGZIP() []byte {
+	file_mirrorme_v1_text_proto_rawDescOnce.Do(func() {
+		file_mirrorme_v1_text_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_mirrorme_v1_text_proto_rawDesc), len(file_mirrorme_v1_text_proto_rawDesc)))
 	})
-	return file_screenshare_v1_text_proto_rawDescData
+	return file_mirrorme_v1_text_proto_rawDescData
 }
 
-var file_screenshare_v1_text_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_screenshare_v1_text_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
-var file_screenshare_v1_text_proto_goTypes = []any{
-	(TextArgName)(0), // 0: screenshare.v1.TextArgName
-	(TextCode)(0),    // 1: screenshare.v1.TextCode
-	(*IdList)(nil),   // 2: screenshare.v1.IdList
-	(*TextArg)(nil),  // 3: screenshare.v1.TextArg
-	(*Text)(nil),     // 4: screenshare.v1.Text
-	(*Refusal)(nil),  // 5: screenshare.v1.Refusal
+var file_mirrorme_v1_text_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_mirrorme_v1_text_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_mirrorme_v1_text_proto_goTypes = []any{
+	(TextArgName)(0), // 0: mirrorme.v1.TextArgName
+	(TextCode)(0),    // 1: mirrorme.v1.TextCode
+	(*IdList)(nil),   // 2: mirrorme.v1.IdList
+	(*TextArg)(nil),  // 3: mirrorme.v1.TextArg
+	(*Text)(nil),     // 4: mirrorme.v1.Text
+	(*Refusal)(nil),  // 5: mirrorme.v1.Refusal
 }
-var file_screenshare_v1_text_proto_depIdxs = []int32{
-	0, // 0: screenshare.v1.TextArg.name:type_name -> screenshare.v1.TextArgName
-	2, // 1: screenshare.v1.TextArg.ids:type_name -> screenshare.v1.IdList
-	4, // 2: screenshare.v1.TextArg.text:type_name -> screenshare.v1.Text
-	1, // 3: screenshare.v1.Text.code:type_name -> screenshare.v1.TextCode
-	3, // 4: screenshare.v1.Text.args:type_name -> screenshare.v1.TextArg
-	4, // 5: screenshare.v1.Refusal.text:type_name -> screenshare.v1.Text
+var file_mirrorme_v1_text_proto_depIdxs = []int32{
+	0, // 0: mirrorme.v1.TextArg.name:type_name -> mirrorme.v1.TextArgName
+	2, // 1: mirrorme.v1.TextArg.ids:type_name -> mirrorme.v1.IdList
+	4, // 2: mirrorme.v1.TextArg.text:type_name -> mirrorme.v1.Text
+	1, // 3: mirrorme.v1.Text.code:type_name -> mirrorme.v1.TextCode
+	3, // 4: mirrorme.v1.Text.args:type_name -> mirrorme.v1.TextArg
+	4, // 5: mirrorme.v1.Refusal.text:type_name -> mirrorme.v1.Text
 	6, // [6:6] is the sub-list for method output_type
 	6, // [6:6] is the sub-list for method input_type
 	6, // [6:6] is the sub-list for extension type_name
@@ -2497,12 +2497,12 @@ var file_screenshare_v1_text_proto_depIdxs = []int32{
 	0, // [0:6] is the sub-list for field type_name
 }
 
-func init() { file_screenshare_v1_text_proto_init() }
-func file_screenshare_v1_text_proto_init() {
-	if File_screenshare_v1_text_proto != nil {
+func init() { file_mirrorme_v1_text_proto_init() }
+func file_mirrorme_v1_text_proto_init() {
+	if File_mirrorme_v1_text_proto != nil {
 		return
 	}
-	file_screenshare_v1_text_proto_msgTypes[1].OneofWrappers = []any{
+	file_mirrorme_v1_text_proto_msgTypes[1].OneofWrappers = []any{
 		(*TextArg_Id)(nil),
 		(*TextArg_Number)(nil),
 		(*TextArg_Decimal)(nil),
@@ -2513,18 +2513,18 @@ func file_screenshare_v1_text_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_screenshare_v1_text_proto_rawDesc), len(file_screenshare_v1_text_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mirrorme_v1_text_proto_rawDesc), len(file_mirrorme_v1_text_proto_rawDesc)),
 			NumEnums:      2,
 			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_screenshare_v1_text_proto_goTypes,
-		DependencyIndexes: file_screenshare_v1_text_proto_depIdxs,
-		EnumInfos:         file_screenshare_v1_text_proto_enumTypes,
-		MessageInfos:      file_screenshare_v1_text_proto_msgTypes,
+		GoTypes:           file_mirrorme_v1_text_proto_goTypes,
+		DependencyIndexes: file_mirrorme_v1_text_proto_depIdxs,
+		EnumInfos:         file_mirrorme_v1_text_proto_enumTypes,
+		MessageInfos:      file_mirrorme_v1_text_proto_msgTypes,
 	}.Build()
-	File_screenshare_v1_text_proto = out.File
-	file_screenshare_v1_text_proto_goTypes = nil
-	file_screenshare_v1_text_proto_depIdxs = nil
+	File_mirrorme_v1_text_proto = out.File
+	file_mirrorme_v1_text_proto_goTypes = nil
+	file_mirrorme_v1_text_proto_depIdxs = nil
 }
