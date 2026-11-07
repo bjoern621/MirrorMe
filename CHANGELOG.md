@@ -6,6 +6,8 @@ Releases before v0.11.0 carry no notes, and their commits sit in the [history](h
 
 ## Unreleased
 
+## v0.13.1 (2026-11-07)
+
 ### Fixed
 
 - Linking Discord on Windows completes, where it stopped on "a link start names the nonce its landing carries".
