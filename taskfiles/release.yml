@@ -9,15 +9,19 @@ vars:
   TAG_PREFIX: "{{.TAG_PREFIX}}"
   # github creates a GitHub release on the tag. tag pushes the tag alone, for a forge whose CI publishes from it.
   FORGE: '{{.FORGE | default "github"}}'
+  # push tags and pushes from here. merge-request opens a merge request with the release commit, and CI publishes it.
+  VIA: '{{.VIA | default "push"}}'
   BRANCH: '{{.BRANCH | default "main"}}'
-  # A Keep a Changelog file whose Unreleased entries pick the bump and fill the release text.
+  # A changelog whose pending entries pick the bump and fill the release text.
   CHANGELOG: "{{.CHANGELOG}}"
+  # A directory of changelog fragments, one Markdown file per merge request, that a release gathers into CHANGELOG.
+  FRAGMENTS: "{{.FRAGMENTS}}"
   # A shell command run after the changelog cut, with TAG and VERSION set. The release commit takes what it changes.
   PREPARE: "{{.PREPARE}}"
-  # true waits for CI on the release branch before tagging and follows CI on the tag after.
+  # true waits for CI on the release branch before releasing and follows CI on the tag after a push.
   CI: '{{.CI | default "false"}}'
-  # major, minor or patch, for a project without CHANGELOG.
-  PART: '{{.PART | default "minor"}}'
+  # major, minor or patch in place of the bump that the changelog picks. minor without a changelog.
+  PART: "{{.PART}}"
   VERSION: "{{.VERSION}}"
   NOTES: "{{.NOTES}}"
 
@@ -27,8 +31,10 @@ tasks:
     env: &settings
       TAG_PREFIX: "{{.TAG_PREFIX}}"
       FORGE: "{{.FORGE}}"
+      VIA: "{{.VIA}}"
       BRANCH: "{{.BRANCH}}"
       CHANGELOG: "{{.CHANGELOG}}"
+      FRAGMENTS: "{{.FRAGMENTS}}"
       PREPARE: "{{.PREPARE}}"
       CI: "{{.CI}}"
       PART: "{{.PART}}"
@@ -47,7 +53,7 @@ tasks:
     silent: true
 
   release:
-    desc: Release the next version from the release branch. VERSION=<tag> names it, PART=major, minor or patch without CHANGELOG, NOTES=<file>, --yes skips the question
+    desc: Release the next version from the release branch. VERSION=<tag> names it, PART=major, minor or patch picks the bump, NOTES=<file>, --yes skips the question
     interactive: true
     env: *settings
     cmds:
