@@ -132,8 +132,7 @@ const (
 )
 
 // Options lists every option a Gap may name and Validate is given a value for.
-// Naming one here, a refusal phrase below and a row on the codec that lacks it,
-// is the whole of declaring another kind of gap:
+// Naming one here and a row on the codec that lacks it is the whole of declaring another kind of gap:
 // the lookup, the validator and every surface read this list rather than a field per axis.
 var Options = []string{OptionChroma, OptionMode, OptionColorRange, OptionTune}
 
