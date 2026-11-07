@@ -410,7 +410,8 @@ release() {
   question="Release $tag from \"$(git log -1 --format=%s)\"?"
   [[ $VIA == push ]] || question="Open the merge request releasing $tag from \"$(git log -1 --format=%s)\"?"
   if [[ $YES != true ]]; then
-    read -r -p "$question [y/N] " confirm
+    echo "$question [y/N]"
+    read -r confirm
     [[ $confirm == [yY]* ]] || die "Stopped before anything changed."
   fi
   if [[ $FORGE == github ]] || on_github; then github_token; fi
