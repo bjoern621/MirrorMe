@@ -41,9 +41,9 @@ fi
 echo "Version: $version"
 
 # The check workflow answers for the last commit holding code.
-# A commit touching CHANGELOG.md alone, the cut among them, gets its answer from the one before it.
+# A commit touching nothing but the cut's two files, the cut among them, gets its answer from the one before it.
 checked=HEAD
-while git diff --quiet "$checked^" "$checked" -- . ':!CHANGELOG.md'; do
+while git diff --quiet "$checked^" "$checked" -- . ':!CHANGELOG.md' ':!packaging/nix/release.json'; do
   checked="$checked^"
 done
 sha=$(git rev-parse "$checked")
@@ -57,7 +57,11 @@ read -r -p "Release $version from $(git rev-parse --short HEAD)? [y/N] " confirm
 [[ $confirm == y ]] || die "stopped before the cut"
 
 step cut "$version" "$(date -u +%F)"
-git diff --quiet -- CHANGELOG.md || git commit --quiet -m "Release $version" -- CHANGELOG.md
+# The flake reads this to name the version of a build from this source, the tag being out of its reach.
+source=$(nix eval --raw .#lib.sourceKey) || die "the flake names no source key"
+printf '{\n  "version": "%s",\n  "source": "%s"\n}\n' "${version#v}" "$source" > packaging/nix/release.json
+git diff --quiet -- CHANGELOG.md packaging/nix/release.json ||
+  git commit --quiet -m "Release $version" -- CHANGELOG.md packaging/nix/release.json
 
 if tagged=$(git rev-parse --verify --quiet "refs/tags/$version^{commit}"); then
   [[ $tagged == $(git rev-parse HEAD) ]] || die "$version tags $tagged, but HEAD is $(git rev-parse HEAD)"

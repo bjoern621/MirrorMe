@@ -24,9 +24,9 @@ The kinds pending decide the next number:
 `task release` must run from a clean main with every commit pushed:
 
 1. Takes the suggested version, or the one named after `--`: `task release -- v0.13.0`.
-2. Waits for the check workflow on the last commit that touches more than `CHANGELOG.md`, and stops on red.
+2. Waits for the check workflow on the last commit that touches more than `CHANGELOG.md` and `packaging/nix/release.json`, and stops on red.
 3. Asks before it changes anything.
-4. Moves the Unreleased entries under `## v0.13.0 (date)` and commits `Release v0.13.0`.
+4. Moves the Unreleased entries under `## v0.13.0 (date)`, binds the version to the app's source in `packaging/nix/release.json` and commits both as `Release v0.13.0`.
 5. Tags, pushes main and the tag, and creates the GitHub release with its text.
 6. Follows the release workflow to its end.
 
@@ -40,6 +40,7 @@ A run stopped by a red build or a lost connection runs again with the version na
 A NixOS machine whose system flake takes this repository as an input runs `task nixos:update` to install a release.
 It moves that input to the newest commit and switches the system to it.
 The installed app then runs the released code, as long as main holds no commit past the tag.
+Its window shows the release's version as long as the app's source stays as the release left it, and the commit otherwise.
 `NIXOS_FLAKE` names the flake's directory where it sits outside `/etc/nixos`, as in `NIXOS_FLAKE=~/git/nixos-config/hosts/fractal task nixos:update`.
 
 ## Recording a test run

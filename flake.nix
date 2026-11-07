@@ -22,23 +22,38 @@
       flake-utils,
     }:
     let
+      appSource = import ./packaging/nix/source.nix { inherit (nixpkgs) lib; };
+
+      # The hash part of the app source's store path, which names what the app compiles from.
+      # tools/release.sh reads it through the lib output below when it cuts a release.
+      sourceKey = builtins.substring 0 32 (
+        baseNameOf (builtins.unsafeDiscardStringContext "${appSource}")
+      );
+
+      # The release that tools/release.sh last cut, with the sourceKey it was cut from.
+      published = builtins.fromJSON (builtins.readFile ./packaging/nix/release.json);
+
       # What every package here is stamped with, and what an image built here is tagged.
       #
-      # No file in the tree holds the number.
-      # The release pipeline passes VERSION and builds with --impure,
-      # the tag it publishes under being the one place the number lives
-      # (.github/workflows/version.yml).
-      # A copy in the tree is a second answer, free to disagree with the tag the artifact ships as.
+      # The image pipeline passes VERSION and builds with --impure,
+      # the tag it publishes under being where the number comes from (.github/workflows/version.yml).
       #
-      # getEnv answers "" under pure evaluation, which every build outside that pipeline is,
-      # and the revision is then the only version the tree knows:
-      # a flake fetched at a tag resolves it to a commit, and the tag's name reaches no output.
+      # getEnv answers "" under pure evaluation, which every other build is.
+      # A flake fetched at a tag resolves it to a commit, and the tag's name reaches no output.
+      # The release commit names its own version in packaging/nix/release.json instead,
+      # bound to the source it was cut from: a tree compiling anything else ignores it,
+      # so the file can name no version that the build disagrees with.
+      # A commit after the release that leaves the source alone, a test record for one, is the same build
+      # and keeps the release's number.
+      # Every other commit carries its revision.
       version =
         let
           fromPipeline = builtins.getEnv "VERSION";
         in
         if fromPipeline != "" then
           fromPipeline
+        else if published.source == sourceKey then
+          published.version
         else
           "0-unstable-${self.shortRev or self.dirtyShortRev or "dirty"}";
 
@@ -503,6 +518,9 @@
       # The dev shell applies the same overlay,
       # so `task relay` and a deployed relay are one version.
       overlays.mediamtx = mediamtxOverlay;
+
+      # What packaging/nix/release.json binds a version to: `nix eval --raw .#lib.sourceKey`.
+      lib.sourceKey = sourceKey;
 
       # The group service, for that same host:
       # it runs beside the relay, where the signing key lives and where the relay fetches it from.

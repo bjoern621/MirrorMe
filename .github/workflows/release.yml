@@ -207,7 +207,8 @@ jobs:
   # is that the derivation still evaluates and builds.
   # No VERSION reaches this job.
   # A pure build is the one a Nix user runs and the one the cache below serves,
-  # so a version passed in here would push a derivation nobody else asks for (flake.nix).
+  # so a version passed in here would push a derivation nobody else asks for.
+  # The pure build at the tag names the release all the same, from packaging/nix/release.json (flake.nix).
   nix:
     runs-on: ubuntu-latest
     env:

@@ -67,9 +67,9 @@ A package set that moved can change which codecs probe usable, which elements a 
 
 ### The build stamp
 
-No file in the tree holds the app's own version.
 A release is published under the tag `vX.Y.Z`, and that tag is the number:
-a copy in the tree is a second answer, free to disagree with the tag the artifact ships under.
+a copy in the tree would be a second answer, free to disagree with the tag the artifact ships under.
+The one file naming it, `packaging/nix/release.json`, binds it to a source, as the end of this section explains.
 `.github/workflows/version.yml` reads it off the tag once per run and hands every job the result as `VERSION`.
 A run behind no release computes `0.0.0.dev.<commit>` instead, which the release check reads as a version it cannot compare.
 
@@ -79,8 +79,17 @@ The handshake answers with that string and the window shows it (`backend/cmd/bac
 A recipe skipping the flag ships a binary calling itself `dev`, which the release check reads the same way (`backend/internal/release`).
 The dev tasks leave it at that default.
 
-The flake reads the same variable, under `--impure`, and stamps the revision it was built from where nothing sets it:
-`builtins.getEnv` answers empty under pure evaluation, which every build outside the release pipeline is (`flake.nix`).
+The flake reads the same variable under `--impure`, which the image pipeline passes.
+`builtins.getEnv` answers empty under pure evaluation, which every other Nix build is, and the tag never reaches a flake.
+The release commit names its version in `packaging/nix/release.json` instead, together with the hash of the source that the app compiles from (`packaging/nix/source.nix`).
+`tools/release.sh` writes both while it cuts the release.
+A build from that same source carries the version: the release commit, and a test record or a changelog edit after it.
+A build from any other source carries the revision, `0-unstable-<commit>`.
+The file can name no version that the build disagrees with, since a source it was not cut from ignores it.
+
+The Nix package compiles the backend and the shell without any version, so a commit leaving the source as it was compiles nothing again.
+The version reaches the app through `MIRRORME_VERSION`, which the package's wrappers set and the backend reads in place of its link stamp.
+A release then relabels the build of the commit before it, as a registry tag names an image built once.
 
 ### The channel stamp
 

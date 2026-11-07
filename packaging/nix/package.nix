@@ -62,31 +62,12 @@
 }:
 
 let
-  # The inputs the two builds read, and nothing else.
-  # A working tree also holds the .NET intermediate and output directories,
-  # so a source carrying those would be gigabytes and would change on every local build.
-  src = lib.cleanSourceWith {
-    name = "mirrorme-source";
-    src = ../../.;
-    filter =
-      path: type:
-      let
-        rel = lib.removePrefix "${toString ../../.}/" (toString path);
-        top = lib.head (lib.splitString "/" rel);
-      in
-      lib.elem top [
-        "api"
-        "backend"
-        "avalonia"
-      ]
-      && !(
-        type == "directory"
-        && lib.elem (baseNameOf path) [
-          "obj"
-          "bin"
-        ]
-      );
-  };
+  src = import ./source.nix { inherit lib; };
+
+  # What the two builds call themselves, the same on every commit.
+  # The version reaches the app through the wrapper the join below writes,
+  # so a commit leaving src as it was builds nothing again, the release commit among them.
+  buildVersion = "0";
 
   # One plugin set for both engines:
   # a publish spawns gst-launch-1.0 and a receive pipeline runs in the backend itself,
@@ -169,7 +150,8 @@ let
 
   backend = buildGoModule {
     pname = "mirrorme-backend";
-    inherit version src;
+    version = buildVersion;
+    inherit src;
 
     # The module cache rather than a vendor directory,
     # `api` being a module of this repository reached by a filesystem `replace` (backend/go.mod).
@@ -190,15 +172,12 @@ let
     # The suite runs on every push (.github/workflows/check.yml).
     doCheck = false;
 
-    # Unstamped the binary answers "dev" to the handshake, which is what a window then shows
+    # No version stamp: MIRRORME_VERSION, set by the join's wrapper, names the build
     # (backend/cmd/backend/main.go).
     #
     # The channel is what a copy says about who owns its files.
     # Nix owns these, so nothing here replaces them (docs/updates.md).
-    ldflags = [
-      "-X main.version=${version}"
-      "-X main.channel=nix"
-    ];
+    ldflags = [ "-X main.channel=nix" ];
 
     # backend/internal/receive is cgo throughout:
     # it builds GStreamer pipelines in-process and imports the decoded frames through EGL,
@@ -260,7 +239,8 @@ let
 
   shell = buildDotnetModule {
     pname = "mirrorme";
-    inherit version src;
+    version = buildVersion;
+    inherit src;
 
     projectFile = "avalonia/MirrorMe.App/MirrorMe.App.csproj";
     nugetDeps = ./deps.json;
@@ -303,10 +283,19 @@ symlinkJoin {
     shell
   ];
 
+  nativeBuildInputs = [ makeWrapper ];
+
   # The join puts both binaries in one bin directory, the layout the shell's lookup expects.
   # The desktop entry is what a menu launch goes through, and every Linux channel installs it,
   # so a menu shows the same app whichever built it.
+  #
+  # The version rides on the two entry points alone, the one derivation here that a release relabels.
+  # A backend the shell starts inherits it from the shell.
   postBuild = ''
+    for program in mirrorme mirrorme-backend; do
+      wrapProgram $out/bin/$program --set MIRRORME_VERSION ${lib.escapeShellArg version}
+    done
+
     install -Dm444 ${../linux/mirrorme.desktop} \
       $out/share/applications/mirrorme.desktop
 
