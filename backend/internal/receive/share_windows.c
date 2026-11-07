@@ -69,7 +69,7 @@ static GstD3D11Memory *d3d11_memory_of(GstSample *sample, char *err, int err_len
   return GST_D3D11_MEMORY_CAST(memory);
 }
 
-int screenshare_share_open(void *sample, int slots, screenshare_share_pool *pool,
+int mirrorme_share_open(void *sample, int slots, mirrorme_share_pool *pool,
                            char *err, int err_len) {
   GstD3D11Memory *memory;
   ID3D11Device *device;
@@ -77,7 +77,7 @@ int screenshare_share_open(void *sample, int slots, screenshare_share_pool *pool
   D3D11_TEXTURE2D_DESC desc;
   int i;
 
-  if (pool == NULL || slots <= 0 || slots > SCREENSHARE_MAX_SLOTS) {
+  if (pool == NULL || slots <= 0 || slots > MIRRORME_MAX_SLOTS) {
     return fail(err, err_len, "a pool of %d slots is outside what this build allocates", slots);
   }
   memset(pool, 0, sizeof(*pool));
@@ -127,7 +127,7 @@ int screenshare_share_open(void *sample, int slots, screenshare_share_pool *pool
 
     hr = ID3D11Device_CreateTexture2D(device, &desc, NULL, &texture);
     if (FAILED(hr)) {
-      screenshare_share_close(pool);
+      mirrorme_share_close(pool);
       return fail(err, err_len, "creating a shared %ux%u texture failed with 0x%08lx",
                   desc.Width, desc.Height, (unsigned long)hr);
     }
@@ -135,7 +135,7 @@ int screenshare_share_open(void *sample, int slots, screenshare_share_pool *pool
     hr = ID3D11Texture2D_QueryInterface(texture, &IID_IDXGIResource, (void **)&resource);
     if (FAILED(hr)) {
       ID3D11Texture2D_Release(texture);
-      screenshare_share_close(pool);
+      mirrorme_share_close(pool);
       return fail(err, err_len, "a shared texture answered no DXGI resource: 0x%08lx",
                   (unsigned long)hr);
     }
@@ -143,7 +143,7 @@ int screenshare_share_open(void *sample, int slots, screenshare_share_pool *pool
     IDXGIResource_Release(resource);
     if (FAILED(hr)) {
       ID3D11Texture2D_Release(texture);
-      screenshare_share_close(pool);
+      mirrorme_share_close(pool);
       return fail(err, err_len, "a shared texture yielded no handle: 0x%08lx",
                   (unsigned long)hr);
     }
@@ -151,7 +151,7 @@ int screenshare_share_open(void *sample, int slots, screenshare_share_pool *pool
     hr = ID3D11Texture2D_QueryInterface(texture, &IID_IDXGIKeyedMutex, (void **)&mutex);
     if (FAILED(hr)) {
       ID3D11Texture2D_Release(texture);
-      screenshare_share_close(pool);
+      mirrorme_share_close(pool);
       return fail(err, err_len, "a shared texture answered no keyed mutex: 0x%08lx",
                   (unsigned long)hr);
     }
@@ -168,7 +168,7 @@ int screenshare_share_open(void *sample, int slots, screenshare_share_pool *pool
   return 1;
 }
 
-int screenshare_share_blit(screenshare_share_pool *pool, int slot, void *sample,
+int mirrorme_share_blit(mirrorme_share_pool *pool, int slot, void *sample,
                            char *err, int err_len) {
   GstD3D11Memory *memory;
   GstBuffer *buffer;
@@ -200,12 +200,12 @@ int screenshare_share_blit(screenshare_share_pool *pool, int slot, void *sample,
   /* Acquired outside the device lock. The wait is bounded, and holding GStreamer's
    * device while waiting on a consumer would stall every element on that device
    * behind a window that is busy. */
-  hr = IDXGIKeyedMutex_AcquireSync(mutex, SCREENSHARE_PRODUCER_KEY,
-                                   SCREENSHARE_ACQUIRE_TIMEOUT_MS);
+  hr = IDXGIKeyedMutex_AcquireSync(mutex, MIRRORME_PRODUCER_KEY,
+                                   MIRRORME_ACQUIRE_TIMEOUT_MS);
   if (hr != S_OK) {
     gst_buffer_unmap(buffer, &info);
     return fail(err, err_len, "slot %d was not handed back within %d ms: 0x%08lx", slot,
-                SCREENSHARE_ACQUIRE_TIMEOUT_MS, (unsigned long)hr);
+                MIRRORME_ACQUIRE_TIMEOUT_MS, (unsigned long)hr);
   }
 
   gst_d3d11_device_lock(GST_D3D11_DEVICE(pool->device));
@@ -219,12 +219,12 @@ int screenshare_share_blit(screenshare_share_pool *pool, int slot, void *sample,
   ID3D11DeviceContext_Flush(context);
   gst_d3d11_device_unlock(GST_D3D11_DEVICE(pool->device));
 
-  IDXGIKeyedMutex_ReleaseSync(mutex, SCREENSHARE_CONSUMER_KEY);
+  IDXGIKeyedMutex_ReleaseSync(mutex, MIRRORME_CONSUMER_KEY);
   gst_buffer_unmap(buffer, &info);
   return 1;
 }
 
-void screenshare_share_close(screenshare_share_pool *pool) {
+void mirrorme_share_close(mirrorme_share_pool *pool) {
   int i;
 
   if (pool == NULL) {

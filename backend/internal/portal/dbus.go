@@ -175,5 +175,5 @@ var tokenSeq atomic.Uint64
 // Two concurrent Opens draw from this counter,
 // and a number handed out twice puts both of them on one Request object path.
 func newToken() string {
-	return fmt.Sprintf("screenshare%d", tokenSeq.Add(1))
+	return fmt.Sprintf("mirrorme%d", tokenSeq.Add(1))
 }

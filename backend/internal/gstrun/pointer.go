@@ -28,8 +28,8 @@ import (
 // the fraction of the way across the picture and down it,
 // the moment in Unix nanoseconds,
 // and whether the pointer is over the captured picture at all.
-// A line: "screenshare-pointer 0.5 0.25 1700000000123456789 true".
-const PointerPrefix = "screenshare-pointer "
+// A line: "mirrorme-pointer 0.5 0.25 1700000000123456789 true".
+const PointerPrefix = "mirrorme-pointer "
 
 // PointerFlag asks the runner for positions, as an argument after the subcommand (cmd/backend).
 // A run given none reports none, which is every run whose pointer mode draws the pointer

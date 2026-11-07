@@ -18,10 +18,10 @@ mkdir -p "$SOAK_ROOT/bin"
 # a key drawn here on the first run, kept in the settings file beside every other value,
 # and a name claimed under it. The group service beside the relay issues the token that key buys,
 # and the SRT legs carry the passphrase both ends derive from it.
-if [ ! -f "$XDG_CONFIG_HOME/screenshare/settings.json" ]; then
-  mkdir -p "$XDG_CONFIG_HOME/screenshare"
+if [ ! -f "$XDG_CONFIG_HOME/mirrorme/settings.json" ]; then
+  mkdir -p "$XDG_CONFIG_HOME/mirrorme"
   group_key="$(head -c 32 /dev/urandom | base64)"
-  cat > "$XDG_CONFIG_HOME/screenshare/settings.json" <<JSON
+  cat > "$XDG_CONFIG_HOME/mirrorme/settings.json" <<JSON
 {
   "relay": {
     "host": "127.0.0.1",

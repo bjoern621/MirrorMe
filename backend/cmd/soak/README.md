@@ -13,7 +13,7 @@ scripts/stop.sh      # ends the loops, the probes and that backend, and nothing 
 ```
 
 Findings land as JSONL under `$SOAK_ROOT`, one file per mode, deduplicated by signature, so one defect repeated ten thousand times is five lines.
-`SOAK_ROOT` defaults to `~/.cache/screenshare-soak`.
+`SOAK_ROOT` defaults to `~/.cache/mirrorme-soak`.
 
 One field's shape, without running anything:
 

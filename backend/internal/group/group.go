@@ -63,6 +63,9 @@ var idEncoding = base32.StdEncoding.WithPadding(base32.NoPadding)
 // Each use derives under its own label, so the id, which every URL carries,
 // cannot be replayed as another use's input,
 // and a second use changes nothing about what the first produces.
+//
+// Every label in this file keeps the project's former name: each one feeds every id, member
+// and passphrase a key derives, so a renamed label would break every group key in use.
 const idLabel = "screenshare/group-id/v1"
 
 // separator divides a group's id from a stream's own name.

@@ -89,7 +89,7 @@ func (c *Client) spawn() error {
 		return text.Because(err, mirrormev1.TextCode_TEXT_CODE_PROGRAM_MISSING, text.Program(Subcommand))
 	}
 
-	dir, err := os.MkdirTemp(socketRoot(), "screenshare-decode-")
+	dir, err := os.MkdirTemp(socketRoot(), "mirrorme-decode-")
 	if err != nil {
 		return err
 	}

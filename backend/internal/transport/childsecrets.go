@@ -24,8 +24,8 @@ import (
 
 // The variables a child reads its secrets out of.
 const (
-	TokenVar      = "SCREENSHARE_RELAY_TOKEN"
-	PassphraseVar = "SCREENSHARE_SRT_PASSPHRASE"
+	TokenVar      = "MIRRORME_RELAY_TOKEN"
+	PassphraseVar = "MIRRORME_SRT_PASSPHRASE"
 )
 
 // childSecret is one value a child needs, and the variable it arrives in.

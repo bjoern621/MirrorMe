@@ -11,7 +11,7 @@ package gstrun
 //
 // Iterated rather than fetched by id:
 // the meta is found by what it is named, and its id is whatever the element assigned.
-static gboolean screenshare_cursor_at(GstBuffer *buffer, guint *x, guint *y) {
+static gboolean mirrorme_cursor_at(GstBuffer *buffer, guint *x, guint *y) {
   gpointer state = NULL;
   GstMeta *meta;
   GQuark cursor = g_quark_from_static_string("cursor");
@@ -53,7 +53,7 @@ func cursorAt(buffer *gst.Buffer) (int, int, bool) {
 
 	var x, y C.guint
 	native := (*C.GstBuffer)(unsafe.Pointer(gst.UnsafeBufferToGlibNone(buffer)))
-	if C.screenshare_cursor_at(native, &x, &y) == 0 {
+	if C.mirrorme_cursor_at(native, &x, &y) == 0 {
 		return 0, 0, false
 	}
 	return int(x), int(y), true

@@ -17,15 +17,15 @@
  * the contract is where that socket is.
  */
 
-#ifndef SCREENSHARE_SHARE_LINUX_H
-#define SCREENSHARE_SHARE_LINUX_H
+#ifndef MIRRORME_SHARE_LINUX_H
+#define MIRRORME_SHARE_LINUX_H
 
 #include <gst/gst.h>
 
 /* How many slots a pool may hold. The caller asks for fewer; this is the bound the
  * fixed-size arrays below are written against, and asking for more is a caller that
  * changed slotCount without changing this. */
-#define SCREENSHARE_MAX_SLOTS 8
+#define MIRRORME_MAX_SLOTS 8
 
 /* What a driver answers when it has no name for the layout it just exported.
  *
@@ -33,18 +33,18 @@
  * picked rather than a layout either side can spell. Both halves are the same GPU here,
  * so an import that states no modifier resolves it the same way the export did - which is
  * the descriptor's own convention and not a guess this code makes. */
-#define SCREENSHARE_MODIFIER_IMPLICIT 0x00ffffffffffffffULL
+#define MIRRORME_MODIFIER_IMPLICIT 0x00ffffffffffffffULL
 
-/* screenshare_share_pool is one subscription's lent memory.
+/* mirrorme_share_pool is one subscription's lent memory.
  *
  * The pointers are void* rather than their real types so that the Go side can hold this
  * struct without cgo having to parse the GL headers behind them. */
 typedef struct {
   void *context; /* GstGLContext *, referenced for the pool's lifetime */
-  void *slots[SCREENSHARE_MAX_SLOTS];  /* GstGLMemory *, the textures frames are copied into */
-  int fds[SCREENSHARE_MAX_SLOTS];      /* one dmabuf descriptor per slot */
-  unsigned int strides[SCREENSHARE_MAX_SLOTS];
-  unsigned long long offsets[SCREENSHARE_MAX_SLOTS];
+  void *slots[MIRRORME_MAX_SLOTS];  /* GstGLMemory *, the textures frames are copied into */
+  int fds[MIRRORME_MAX_SLOTS];      /* one dmabuf descriptor per slot */
+  unsigned int strides[MIRRORME_MAX_SLOTS];
+  unsigned long long offsets[MIRRORME_MAX_SLOTS];
   int slot_count;
   unsigned int width;
   unsigned int height;
@@ -52,9 +52,9 @@ typedef struct {
    * import with; modifier is the tiling that goes with it. */
   unsigned int fourcc;
   unsigned long long modifier;
-} screenshare_share_pool;
+} mirrorme_share_pool;
 
-/* screenshare_share_open allocates a pool for frames like the one in sample.
+/* mirrorme_share_open allocates a pool for frames like the one in sample.
  *
  * It fails, with the reason written into err, where the sample's frames are not in GL
  * memory or the GL context is not an EGL one. Both are a render chain or a display server
@@ -62,10 +62,10 @@ typedef struct {
  * fix is a different chain, and not a retry.
  *
  * Returns 1 on success and 0 on failure. */
-int screenshare_share_open(void *sample, int slots, screenshare_share_pool *pool, char *err,
+int mirrorme_share_open(void *sample, int slots, mirrorme_share_pool *pool, char *err,
                            int err_len);
 
-/* screenshare_share_blit copies one frame into one slot.
+/* mirrorme_share_blit copies one frame into one slot.
  *
  * The copy is a GPU-side blit between two textures: no map, no download, no format
  * conversion. It exists because the decoder's own texture is part of a pool this side does
@@ -79,14 +79,14 @@ int screenshare_share_open(void *sample, int slots, screenshare_share_pool *pool
  *
  * Returns 1 on success and 0 on failure, and a failure is one frame rather than the
  * stream: the caller drops it and offers the next one. */
-int screenshare_share_blit(screenshare_share_pool *pool, int slot, void *sample, char *err,
+int mirrorme_share_blit(mirrorme_share_pool *pool, int slot, void *sample, char *err,
                            int err_len);
 
-/* screenshare_share_close frees the pool and closes its descriptors.
+/* mirrorme_share_close frees the pool and closes its descriptors.
  *
  * Every descriptor the consumer received is its own, so what a close ends is this side's
  * reference: the memory goes when the last one does. It is safe on a zeroed pool, which is
  * what makes a failed open safe to close. */
-void screenshare_share_close(screenshare_share_pool *pool);
+void mirrorme_share_close(mirrorme_share_pool *pool);
 
-#endif /* SCREENSHARE_SHARE_LINUX_H */
+#endif /* MIRRORME_SHARE_LINUX_H */

@@ -44,7 +44,7 @@ func lendDescriptors(fds []int) (*descriptorSocket, error) {
 		assert.Assert(fd >= 0, "an exported slot holds a descriptor", i, fd)
 	}
 
-	dir, err := os.MkdirTemp(socketRoot(), "screenshare-frames-")
+	dir, err := os.MkdirTemp(socketRoot(), "mirrorme-frames-")
 	if err != nil {
 		return nil, err
 	}

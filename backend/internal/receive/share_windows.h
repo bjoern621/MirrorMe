@@ -13,48 +13,48 @@
  * is reclaimed rather than one holding the decoder's own pool hostage.
  */
 
-#ifndef SCREENSHARE_SHARE_WINDOWS_H
-#define SCREENSHARE_SHARE_WINDOWS_H
+#ifndef MIRRORME_SHARE_WINDOWS_H
+#define MIRRORME_SHARE_WINDOWS_H
 
 #include <gst/gst.h>
 
 /* How many slots a pool may hold. The caller asks for fewer; this is the bound the
  * fixed-size arrays below are written against, and asking for more is a caller that
  * changed slotCount without changing this. */
-#define SCREENSHARE_MAX_SLOTS 8
+#define MIRRORME_MAX_SLOTS 8
 
 /* How long a keyed-mutex acquire waits before it is treated as a consumer that will
  * never release. A frame is 16 ms at 60 Hz, so a second is three orders of magnitude
  * of slack: reaching it means the other side is gone rather than slow, and the frame
  * is dropped instead of blocking the decode thread for the rest of the run. */
-#define SCREENSHARE_ACQUIRE_TIMEOUT_MS 1000
+#define MIRRORME_ACQUIRE_TIMEOUT_MS 1000
 
 /* The keyed-mutex protocol. Each side acquires with its own key and releases with the
  * other's, so a slot alternates between the two and neither can write while the other
  * reads. Zero is the key a freshly created keyed mutex is unlocked with, which is what
  * makes the producer the side that goes first. */
-#define SCREENSHARE_PRODUCER_KEY 0
-#define SCREENSHARE_CONSUMER_KEY 1
+#define MIRRORME_PRODUCER_KEY 0
+#define MIRRORME_CONSUMER_KEY 1
 
-/* screenshare_share_pool is one subscription's lent memory.
+/* mirrorme_share_pool is one subscription's lent memory.
  *
  * The pointers are void* rather than their real types so that the Go side can hold
  * this struct without cgo having to parse d3d11.h, which it cannot: the header is C++
  * unless COBJMACROS is defined, and cgo compiles the preamble on its own terms. */
 typedef struct {
   void *device;  /* GstD3D11Device *, referenced for the pool's lifetime */
-  void *textures[SCREENSHARE_MAX_SLOTS];
-  void *mutexes[SCREENSHARE_MAX_SLOTS];
-  unsigned long long handles[SCREENSHARE_MAX_SLOTS];
+  void *textures[MIRRORME_MAX_SLOTS];
+  void *mutexes[MIRRORME_MAX_SLOTS];
+  unsigned long long handles[MIRRORME_MAX_SLOTS];
   int slots;
   unsigned int width;
   unsigned int height;
   /* format is the DXGI format the slots carry, which is the one the decoded frames
    * were in: a pool that converted would be a second converter behind the chain's. */
   unsigned int format;
-} screenshare_share_pool;
+} mirrorme_share_pool;
 
-/* screenshare_share_open allocates a pool for frames like the one in sample.
+/* mirrorme_share_open allocates a pool for frames like the one in sample.
  *
  * It fails, with the reason written into err, where the sample's memory is not
  * Direct3D 11 memory. That is a render chain that converted somewhere else rather
@@ -62,10 +62,10 @@ typedef struct {
  * is to pick a different one and not to try again.
  *
  * Returns 1 on success and 0 on failure. */
-int screenshare_share_open(void *sample, int slots, screenshare_share_pool *pool,
+int mirrorme_share_open(void *sample, int slots, mirrorme_share_pool *pool,
                            char *err, int err_len);
 
-/* screenshare_share_blit copies one frame into one slot, between an acquire and a
+/* mirrorme_share_blit copies one frame into one slot, between an acquire and a
  * release of that slot's keyed mutex.
  *
  * The copy is a GPU-side CopySubresourceRegion: no map, no download, no format
@@ -75,13 +75,13 @@ int screenshare_share_open(void *sample, int slots, screenshare_share_pool *pool
  *
  * Returns 1 on success and 0 on failure, and a failure is one frame rather than the
  * stream: the caller drops it and offers the next one. */
-int screenshare_share_blit(screenshare_share_pool *pool, int slot, void *sample,
+int mirrorme_share_blit(mirrorme_share_pool *pool, int slot, void *sample,
                            char *err, int err_len);
 
-/* screenshare_share_close releases everything the pool holds. Every handle handed to
+/* mirrorme_share_close releases everything the pool holds. Every handle handed to
  * a consumer names nothing afterwards, which is why this runs when a subscription
  * ends and never while one lives. Safe to call on a zeroed pool and safe to call
  * twice. */
-void screenshare_share_close(screenshare_share_pool *pool);
+void mirrorme_share_close(mirrorme_share_pool *pool);
 
-#endif /* SCREENSHARE_SHARE_WINDOWS_H */
+#endif /* MIRRORME_SHARE_WINDOWS_H */

@@ -71,7 +71,7 @@ public sealed class FrameDescriptorsTests
 
         public LentFiles(int count, int bytes)
         {
-            _directory = Directory.CreateTempSubdirectory("screenshare-descriptors-").FullName;
+            _directory = Directory.CreateTempSubdirectory("mirrorme-descriptors-").FullName;
             for (var i = 0; i < count; i++)
             {
                 var file = File.Create(Path.Combine(_directory, $"slot-{i}"));
@@ -114,7 +114,7 @@ public sealed class FrameDescriptorsTests
 
         public static Sender Listening(LentFiles lent)
         {
-            var directory = Directory.CreateTempSubdirectory("screenshare-pool-").FullName;
+            var directory = Directory.CreateTempSubdirectory("mirrorme-pool-").FullName;
             var path = Path.Combine(directory, "pool.sock");
 
             var listener = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);

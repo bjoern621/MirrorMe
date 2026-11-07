@@ -57,7 +57,7 @@ func TestARunReportsWhatTheElementSaid(t *testing.T) {
 
 	// A file that is not there: filesrc opens it on the way to PLAYING rather than at parse, so this
 	// run starts and then fails, the path under test.
-	err := Run(t.Context(), "filesrc location=/nonexistent/screenshare-test ! fakesink", &out)
+	err := Run(t.Context(), "filesrc location=/nonexistent/mirrorme-test ! fakesink", &out)
 	if err == nil {
 		t.Fatal("a pipeline whose source cannot open reported no error")
 	}

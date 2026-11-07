@@ -13,7 +13,7 @@
 #
 # SOAK_ROOT is where everything this run writes goes,
 # and defaults beside the repository rather than inside it.
-export SOAK_ROOT="${SOAK_ROOT:-$HOME/.cache/screenshare-soak}"
+export SOAK_ROOT="${SOAK_ROOT:-$HOME/.cache/mirrorme-soak}"
 mkdir -p "$SOAK_ROOT"
 
 export XDG_RUNTIME_DIR="$SOAK_ROOT/run"

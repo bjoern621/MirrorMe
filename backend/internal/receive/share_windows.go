@@ -43,7 +43,7 @@ const (
 
 // d3d11Sharer is a pool of DXGI shared textures on the decoder's own device.
 type d3d11Sharer struct {
-	pool C.screenshare_share_pool
+	pool C.mirrorme_share_pool
 	// opened is whether pool holds textures.
 	// A zeroed pool is safe to close, but a close on one that was never opened would
 	// still unref a device that is not there.
@@ -81,7 +81,7 @@ func (s *d3d11Sharer) open(sample *gst.Sample, slots int) (Pool, error) {
 	s.close()
 
 	err := onSample(sample, func(frame unsafe.Pointer, fault *C.char, size C.int) C.int {
-		return C.screenshare_share_open(frame, C.int(slots), &s.pool, fault, size)
+		return C.mirrorme_share_open(frame, C.int(slots), &s.pool, fault, size)
 	})
 	if err != nil {
 		return Pool{}, err
@@ -105,8 +105,8 @@ func (s *d3d11Sharer) open(sample *gst.Sample, slots int) (Pool, error) {
 		// so the acquire in share_windows.c and the release the consumer makes name one
 		// constant on both sides of the wire.
 		TopLeftOrigin: true,
-		ProducerKey:   C.SCREENSHARE_PRODUCER_KEY,
-		ConsumerKey:   C.SCREENSHARE_CONSUMER_KEY,
+		ProducerKey:   C.MIRRORME_PRODUCER_KEY,
+		ConsumerKey:   C.MIRRORME_CONSUMER_KEY,
 		Slots:         make([]Slot, 0, int(s.pool.slots)),
 	}
 	for i := range int(s.pool.slots) {
@@ -121,7 +121,7 @@ func (s *d3d11Sharer) write(slot int, sample *gst.Sample) error {
 	}
 
 	return onSample(sample, func(frame unsafe.Pointer, fault *C.char, size C.int) C.int {
-		return C.screenshare_share_blit(&s.pool, C.int(slot), frame, fault, size)
+		return C.mirrorme_share_blit(&s.pool, C.int(slot), frame, fault, size)
 	})
 }
 
@@ -129,7 +129,7 @@ func (s *d3d11Sharer) close() {
 	if !s.opened {
 		return
 	}
-	C.screenshare_share_close(&s.pool)
+	C.mirrorme_share_close(&s.pool)
 	s.opened = false
 }
 

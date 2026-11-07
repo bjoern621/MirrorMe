@@ -64,7 +64,7 @@ func init() {
 // dmabufSharer is a pool of GL textures on the decoder's own context, each exported as a dmabuf
 // descriptor.
 type dmabufSharer struct {
-	pool C.screenshare_share_pool
+	pool C.mirrorme_share_pool
 	// opened is whether pool holds textures.
 	// A zeroed pool is safe to close, but a close on one that was never opened would
 	// still unref a context that is not there.
@@ -72,7 +72,7 @@ type dmabufSharer struct {
 	// lent answers the socket the pool announces:
 	// a descriptor does not travel in a message (descriptors_linux.go).
 	// It borrows the pool's descriptors: a send duplicates one into the consumer,
-	// and closing this side's stays screenshare_share_close's job.
+	// and closing this side's stays mirrorme_share_close's job.
 	lent *descriptorSocket
 }
 
@@ -107,7 +107,7 @@ func (s *dmabufSharer) open(sample *gst.Sample, slots int) (Pool, error) {
 	s.close()
 
 	err := onSample(sample, func(frame unsafe.Pointer, fault *C.char, size C.int) C.int {
-		return C.screenshare_share_open(frame, C.int(slots), &s.pool, fault, size)
+		return C.mirrorme_share_open(frame, C.int(slots), &s.pool, fault, size)
 	})
 	if err != nil {
 		return Pool{}, err
@@ -176,7 +176,7 @@ func (s *dmabufSharer) write(slot int, sample *gst.Sample) error {
 	}
 
 	return onSample(sample, func(frame unsafe.Pointer, fault *C.char, size C.int) C.int {
-		return C.screenshare_share_blit(&s.pool, C.int(slot), frame, fault, size)
+		return C.mirrorme_share_blit(&s.pool, C.int(slot), frame, fault, size)
 	})
 }
 
@@ -190,7 +190,7 @@ func (s *dmabufSharer) close() {
 		s.lent.close()
 		s.lent = nil
 	}
-	C.screenshare_share_close(&s.pool)
+	C.mirrorme_share_close(&s.pool)
 	s.opened = false
 }
 

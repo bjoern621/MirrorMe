@@ -6,15 +6,15 @@ package receive
 // The exception code MSVC's debugger protocol reserves for "this thread is now called X".
 // A thread raises it with the name in the parameters and a debugger picks it up.
 // With no debugger attached, nothing is supposed to happen at all.
-#define SCREENSHARE_THREAD_NAME_EXCEPTION 0x406D1388
+#define MIRRORME_THREAD_NAME_EXCEPTION 0x406D1388
 
 // The vectored handler that makes "nothing happens" true in this process.
 //
 // Every other exception is passed on untouched, which keeps the Go runtime's own crash
 // reporting intact: its handlers are next in both chains, and a nil dereference in Go code
 // still panics.
-static LONG CALLBACK screenshare_swallow_thread_name(EXCEPTION_POINTERS *info) {
-  if (info->ExceptionRecord->ExceptionCode == SCREENSHARE_THREAD_NAME_EXCEPTION) {
+static LONG CALLBACK mirrorme_swallow_thread_name(EXCEPTION_POINTERS *info) {
+  if (info->ExceptionRecord->ExceptionCode == MIRRORME_THREAD_NAME_EXCEPTION) {
     return EXCEPTION_CONTINUE_EXECUTION;
   }
   return EXCEPTION_CONTINUE_SEARCH;
@@ -30,9 +30,9 @@ static LONG CALLBACK screenshare_swallow_thread_name(EXCEPTION_POINTERS *info) {
 // which Windows ends the process over.
 // Both go in first, ahead of the runtime's own pair, the shape the runtime uses
 // for the exceptions it handles itself.
-static void screenshare_install_thread_name_handler(void) {
-  AddVectoredExceptionHandler(1, screenshare_swallow_thread_name);
-  AddVectoredContinueHandler(1, screenshare_swallow_thread_name);
+static void mirrorme_install_thread_name_handler(void) {
+  AddVectoredExceptionHandler(1, mirrorme_swallow_thread_name);
+  AddVectoredContinueHandler(1, mirrorme_swallow_thread_name);
 }
 */
 import "C"
@@ -54,5 +54,5 @@ import "C"
 //
 // Called before Init, the threads that raise it starting during the registry scan.
 func ignoreThreadNameExceptions() {
-	C.screenshare_install_thread_name_handler()
+	C.mirrorme_install_thread_name_handler()
 }

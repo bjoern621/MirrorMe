@@ -17,8 +17,8 @@
 
 /* The one texture layout every slot is allocated in. The render chain converts to RGBA
  * before the sink, so a slot matches the frames rather than converting a second time. */
-#define SCREENSHARE_SLOT_TARGET GST_GL_TEXTURE_TARGET_2D
-#define SCREENSHARE_SLOT_FORMAT GST_GL_RGBA
+#define MIRRORME_SLOT_TARGET GST_GL_TEXTURE_TARGET_2D
+#define MIRRORME_SLOT_FORMAT GST_GL_RGBA
 
 /* fail writes one reason into the caller's buffer and reports failure, so every exit from
  * this file says why in the same shape. */
@@ -38,7 +38,7 @@ static int fail(char *err, int err_len, const char *format, ...) {
  * because that is the only thread the textures exist on. gst_gl_context_thread_add is the
  * crossing, and it carries one pointer, so the arguments and the answer travel in this. */
 typedef struct {
-  screenshare_share_pool *pool;
+  mirrorme_share_pool *pool;
   GstGLMemory *source;
   int slots;
   int slot;
@@ -88,7 +88,7 @@ static GstGLMemory *gl_memory_of(GstSample *sample, char *err, int err_len) {
  * The EGLImage is a name for the texture and not a second allocation, and it is dropped as
  * soon as the descriptor exists: what keeps the memory alive afterwards is the descriptor
  * on this side and the one the consumer receives, either of which is enough. */
-static int export_slot(GstGLContext *context, screenshare_share_pool *pool, int slot,
+static int export_slot(GstGLContext *context, mirrorme_share_pool *pool, int slot,
                        char *err, int err_len) {
   PFNEGLEXPORTDMABUFIMAGEQUERYMESAPROC query;
   PFNEGLEXPORTDMABUFIMAGEMESAPROC export;
@@ -164,7 +164,7 @@ static int export_slot(GstGLContext *context, screenshare_share_pool *pool, int 
 
 /* open_on_gl allocates the slots and exports them. */
 static void open_on_gl(GstGLContext *context, job *work) {
-  screenshare_share_pool *pool = work->pool;
+  mirrorme_share_pool *pool = work->pool;
   GstAllocator *allocator;
   GstVideoInfo info;
   int i;
@@ -181,7 +181,7 @@ static void open_on_gl(GstGLContext *context, job *work) {
     GstGLMemory *slot;
 
     params = gst_gl_video_allocation_params_new(context, NULL, &info, 0, NULL,
-                                                SCREENSHARE_SLOT_TARGET, SCREENSHARE_SLOT_FORMAT);
+                                                MIRRORME_SLOT_TARGET, MIRRORME_SLOT_FORMAT);
     slot = (GstGLMemory *)gst_gl_base_memory_alloc(GST_GL_BASE_MEMORY_ALLOCATOR(allocator),
                                                    (GstGLAllocationParams *)params);
     gst_gl_allocation_params_free((GstGLAllocationParams *)params);
@@ -206,11 +206,11 @@ static void open_on_gl(GstGLContext *context, job *work) {
 
 /* blit_on_gl copies one frame into one slot and waits for the device to finish it. */
 static void blit_on_gl(GstGLContext *context, job *work) {
-  screenshare_share_pool *pool = work->pool;
+  mirrorme_share_pool *pool = work->pool;
   GstGLMemory *slot = (GstGLMemory *)pool->slots[work->slot];
 
-  if (!gst_gl_memory_copy_into(work->source, slot->tex_id, SCREENSHARE_SLOT_TARGET,
-                               SCREENSHARE_SLOT_FORMAT, (gint)pool->width,
+  if (!gst_gl_memory_copy_into(work->source, slot->tex_id, MIRRORME_SLOT_TARGET,
+                               MIRRORME_SLOT_FORMAT, (gint)pool->width,
                                (gint)pool->height)) {
     fail(work->err, work->err_len, "the frame could not be copied into slot %d", work->slot);
     return;
@@ -226,7 +226,7 @@ static void blit_on_gl(GstGLContext *context, job *work) {
 /* close_on_gl frees the slot textures. The descriptors are closed by the caller, which can
  * do it from any thread. */
 static void close_on_gl(GstGLContext *context, job *work) {
-  screenshare_share_pool *pool = work->pool;
+  mirrorme_share_pool *pool = work->pool;
   int i;
 
   (void)context;
@@ -239,21 +239,21 @@ static void close_on_gl(GstGLContext *context, job *work) {
   work->ok = 1;
 }
 
-int screenshare_share_open(void *sample, int slots, screenshare_share_pool *pool, char *err,
+int mirrorme_share_open(void *sample, int slots, mirrorme_share_pool *pool, char *err,
                            int err_len) {
   GstGLMemory *memory;
   GstGLContext *context;
   job work;
   int i;
 
-  if (pool == NULL || slots <= 0 || slots > SCREENSHARE_MAX_SLOTS) {
+  if (pool == NULL || slots <= 0 || slots > MIRRORME_MAX_SLOTS) {
     return fail(err, err_len, "a pool of %d slots is outside what this build allocates", slots);
   }
   memset(pool, 0, sizeof(*pool));
   /* A descriptor of zero is standard input rather than an empty slot, so the empty value
    * is written rather than left as the zeroing's. Every exit from a half-built pool runs
    * the same close, and it closes what it holds. */
-  for (i = 0; i < SCREENSHARE_MAX_SLOTS; i++) {
+  for (i = 0; i < MIRRORME_MAX_SLOTS; i++) {
     pool->fds[i] = -1;
   }
 
@@ -288,13 +288,13 @@ int screenshare_share_open(void *sample, int slots, screenshare_share_pool *pool
   work.ok = 0;
   gst_gl_context_thread_add(context, (GstGLContextThreadFunc)open_on_gl, &work);
   if (!work.ok) {
-    screenshare_share_close(pool);
+    mirrorme_share_close(pool);
     return 0;
   }
   return 1;
 }
 
-int screenshare_share_blit(screenshare_share_pool *pool, int slot, void *sample, char *err,
+int mirrorme_share_blit(mirrorme_share_pool *pool, int slot, void *sample, char *err,
                            int err_len) {
   GstGLMemory *memory;
   job work;
@@ -325,7 +325,7 @@ int screenshare_share_blit(screenshare_share_pool *pool, int slot, void *sample,
   return work.ok;
 }
 
-void screenshare_share_close(screenshare_share_pool *pool) {
+void mirrorme_share_close(mirrorme_share_pool *pool) {
   int i;
 
   if (pool == NULL) {

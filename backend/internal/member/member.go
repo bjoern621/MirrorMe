@@ -2,7 +2,7 @@
 //
 // One file per group under the config directory, holding the secret this app drew for itself there:
 //
-//	<config>/screenshare/members/<group id>.json   {"memberSecret": "..."}
+//	<config>/mirrorme/members/<group id>.json   {"memberSecret": "..."}
 //
 // The secret is issued by nobody.
 // Membership is stated over the member id it derives under the group key (internal/group),

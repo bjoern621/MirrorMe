@@ -93,7 +93,7 @@ func gstControlSocket(tag string) string {
 	if runtime := os.Getenv("XDG_RUNTIME_DIR"); runtime != "" {
 		dir = runtime
 	}
-	return filepath.Join(dir, fmt.Sprintf("screenshare-publish-%s-%d.sock", tag, os.Getpid()))
+	return filepath.Join(dir, fmt.Sprintf("mirrorme-publish-%s-%d.sock", tag, os.Getpid()))
 }
 
 // gstLiveArgs give a run its control socket, and nothing to a run that takes no values: the encode

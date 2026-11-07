@@ -33,7 +33,7 @@ import (
 // JSON rather than the whitespace fields a position takes, half of this reading being absent
 // on a leg that measures no link: presence is the message, and a field spelled as a number would
 // report an unmeasured window as a window of nothing.
-const DelayPrefix = "screenshare-delay "
+const DelayPrefix = "mirrorme-delay "
 
 // DelayFlag names the element a frame's delay is measured at, as an argument after the subcommand
 // (cmd/backend).

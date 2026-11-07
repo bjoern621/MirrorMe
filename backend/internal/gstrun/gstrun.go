@@ -37,7 +37,7 @@ import (
 // recognise (publish/gststats.go).
 // One stream carrying several kinds of line keeps the child's contract to a pipe and a prefix,
 // rather than a second socket to open, inherit and close.
-const CapsPrefix = "screenshare-caps "
+const CapsPrefix = "mirrorme-caps "
 
 // Run plays description until it ends, the context is cancelled or the pipeline reports an error,
 // and answers what ended it.

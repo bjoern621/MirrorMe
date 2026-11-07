@@ -47,7 +47,7 @@ type Property struct {
 
 // AppliedPrefix leads the line the child writes once it has converged, carrying how many writes
 // landed, so the parent can tell an applied write from one that named nothing.
-const AppliedPrefix = "screenshare-applied "
+const AppliedPrefix = "mirrorme-applied "
 
 // serveControl accepts one connection at a time and applies what arrives, on its own goroutine
 // until the listener closes.
