@@ -6,6 +6,8 @@ Releases before v0.11.0 carry no notes, and their commits sit in the [history](h
 
 ## Unreleased
 
+## v0.14.1 (2026-11-07)
+
 ### Fixed
 
 - A window switcher on a Wayland desktop shows MirrorMe's name and icon for its windows, where it could show another app's.
