@@ -42,7 +42,7 @@ Two things the X11 backend does that the Wayland one does not.
 
 | X11 does | Wayland instead | Cost |
 | --- | --- | --- |
-| sets `WM_CLASS` | sends no `xdg_toplevel.set_app_id` | a compositor sees an empty application id, and window rules keyed on it do not match |
+| sets `WM_CLASS` | sends no `xdg_toplevel.set_app_id`, so the shell sends it on every open (`Features/Shell/Model/WaylandAppId.cs`) | an edit there with every Avalonia.Wayland upgrade, since the call reaches the toplevel by reflection |
 | draws the client-side decorations a desktop without server-side ones expects | negotiates through `zxdg_toplevel_decoration_v1` (`Features/Shell/Model/WindowChrome.cs`) | a compositor answering "server side" draws whatever it draws, which on a tiling session is nothing |
 
 ### What a capture of this machine sees
@@ -65,7 +65,7 @@ Linux is left as it is, so a tile there goes on nesting for as long as the strea
 X11 serves the root window to any client that asks, so a capture is a read of the whole screen and there is no per-window fact to set.
 No Wayland protocol carries the request.
 The compositors that can black a window out of a screencopy, Hyprland and niri among them, do it from a window rule in their own configuration, which is the user's to write.
-Such a rule is keyed on the application id, and the Wayland backend sends none, so it matches this window in an X11 session alone.
+Such a rule is keyed on the application id, `mirrorme` in both sessions.
 
 ## Layout
 

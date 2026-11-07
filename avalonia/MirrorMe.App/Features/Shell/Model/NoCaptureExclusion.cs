@@ -10,8 +10,7 @@ namespace MirrorMe.App.Features.Shell.Model;
 /// No Wayland protocol carries the request, upstream or per desktop.
 /// The compositors that can black a window out of a screencopy at all, Hyprland and niri among them, do it
 /// from a window rule in their own configuration, the user's to write rather than this app's to ask for.
-/// The Avalonia Wayland backend sends no <c>xdg_toplevel.set_app_id</c>, so such a rule matches this window
-/// in an X11 session alone (avalonia/README.md).
+/// Such a rule matches this window by its application id, <c>mirrorme</c> in both sessions (<see cref="WaylandAppId"/>).
 ///
 /// A tile drawing the screen it is itself drawn on therefore nests for as long as the stream runs, and this
 /// says so by doing nothing rather than by hiding the picture: what a reader sees is what the stream carries.

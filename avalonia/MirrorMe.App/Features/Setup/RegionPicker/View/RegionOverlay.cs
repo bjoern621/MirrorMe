@@ -117,7 +117,11 @@ internal static class RegionOverlay
             Content = new Canvas { Children = { marker } },
         };
 
-        window.Opened += (_, _) => CaptureExclusions.ForThisSystem().Exclude(window);
+        window.Opened += (_, _) =>
+        {
+            WaylandAppId.Name(window);
+            CaptureExclusions.ForThisSystem().Exclude(window);
+        };
         window.KeyDown += (_, key) =>
         {
             if (key.Key == Key.Escape)

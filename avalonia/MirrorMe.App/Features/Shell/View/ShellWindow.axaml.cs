@@ -62,6 +62,7 @@ public sealed partial class ShellWindow : Window
     {
         base.OnOpened(e);
 
+        WaylandAppId.Name(this);
         CaptureExclusions.ForThisSystem().Exclude(this);
     }
 

@@ -55,6 +55,7 @@ public partial class PopOutWindow : Window
     {
         base.OnOpened(e);
 
+        WaylandAppId.Name(this);
         CaptureExclusions.ForThisSystem().Exclude(this);
     }
 
