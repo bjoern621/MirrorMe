@@ -44,6 +44,14 @@ public sealed class FieldGroupViewModel : Observable
     /// <summary>Handed to each control, so a gesture on one reaches whoever holds the draft.</summary>
     private readonly Action<bool>? _sweep;
 
+    /// <summary>Which keys stay visible while the fold is closed. Null keeps every control on the floor.</summary>
+    private readonly Func<string, bool>? _onFloor;
+
+    /// <summary>
+    /// Which keys the surface states the reason for itself. Null leaves every row printing its own.
+    /// </summary>
+    private readonly Func<string, bool>? _reasonStatedAbove;
+
     /// <param name="actionOf">
     /// Effect this screen offers beside one control, null where it offers none.
     /// Asked on every pass rather than once,
@@ -55,14 +63,6 @@ public sealed class FieldGroupViewModel : Observable
     /// Takes the two edges of a gesture on one of these controls, null where the screen has nowhere to report them
     /// (<see cref="FieldViewModel.IsSweeping"/>).
     /// </param>
-    /// <summary>Which keys stay visible while the fold is closed. Null keeps every control on the floor.</summary>
-    private readonly Func<string, bool>? _onFloor;
-
-    /// <summary>
-    /// Which keys the surface states the reason for itself. Null leaves every row printing its own.
-    /// </summary>
-    private readonly Func<string, bool>? _reasonStatedAbove;
-
     /// <param name="onFloor">
     /// The surface's floor, null where it folds nothing.
     /// A table rather than a flag per field: the fold is placement, which is this side's to decide
@@ -161,7 +161,7 @@ public sealed class FieldGroupViewModel : Observable
     /// <param name="group">Null renders the branch that turns everything off,
     /// for a group the form does not carry.</param>
     /// <param name="answered">
-    /// Whether this form answers for the draft as it now stands (<see cref="FormSession.IsAnswered"/>),
+    /// Whether this form answers for the draft as it now stands (<see cref="Backend.FormSession.IsAnswered"/>),
     /// which decides whether a control takes its value off it (<see cref="FieldViewModel.Apply"/>).
     /// </param>
     /// <param name="diagnostics">The form's diagnostics. Each field draws the ones anchored on it.</param>

@@ -52,7 +52,7 @@ public sealed partial class ShellWindow : Window
     /// <summary>
     /// Takes this window out of the captures this machine produces.
     /// Stated on open, which is where the platform has a window handle to state it against
-    /// (<c>Features/Shell/Model/CaptureExclusion.cs</c>).
+    /// (<c>Features/Shell/Model/ICaptureExclusion.cs</c>).
     ///
     /// The whole window rather than the tiles in it: a tile draws a decode of the screen the window stands on, so
     /// a window left in the capture nests one more copy of the screen per round trip.

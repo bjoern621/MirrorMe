@@ -10,7 +10,7 @@
   <!--
     The encode step's first question: a built-in preset sets every control under it at once.
     Each promise is a choice card like the entries of the questions below, priced at what it resolves to here,
-    and an unreachable one states its reason in the price's place (docs/tooltips.md, "An availability note is a line").
+    and an unreachable one states its reason in the price's place (docs/tooltips.md, "Availability notes").
   -->
   <Border Classes="question">
     <StackPanel Spacing="{StaticResource GapControl}">

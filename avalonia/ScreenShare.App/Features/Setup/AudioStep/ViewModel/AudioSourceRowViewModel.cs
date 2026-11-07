@@ -51,7 +51,7 @@ public sealed class AudioSourceRowViewModel : Observable
     /// Why the controls on this row are inert, one line each, in the order the row draws them.
     /// A line under the row rather than a tip on the control: nothing opens over a greyed control,
     /// and the column head above it explains what the control does rather than why this one cannot
-    /// (<c>docs/tooltips.md</c>, "An availability note is a line").
+    /// (<c>docs/tooltips.md</c>, "Availability notes").
     /// </summary>
     public ObservableCollection<string> Reasons { get; }
 

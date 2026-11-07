@@ -30,7 +30,8 @@ Without `task backend`, the window reports the endpoint as unserved and names it
 ### Which windowing backend runs
 
 Wayland where the session has a compositor, X11 where it does not, decided at startup by `UseWaylandWithFallback` (`Program.cs`).
-`Avalonia.Desktop` carries the X11 backend alone, so the Wayland one is a package reference of its own, and the flake's dev shell carries the libraries it resolves by soname.
+The Wayland backend comes as a package reference of its own (`ScreenShare.App/ScreenShare.App.csproj`).
+The flake's dev shell carries the libraries it resolves by soname.
 
 Which one runs decides how the window looks on a scaled desktop.
 An X11 client in a Wayland session goes through XWayland.
@@ -46,7 +47,7 @@ Two things the X11 backend does that the Wayland one does not.
 
 ### What a capture of this machine sees
 
-Every window this shell opens asks to be kept out of the captures this machine takes, and states it for itself when it opens (`Features/Shell/Model/CaptureExclusion.cs`).
+Every window this shell opens asks to be kept out of the captures this machine takes, and states it for itself when it opens (`Features/Shell/Model/ICaptureExclusion.cs`).
 The two are the main window and each popped-out stream.
 
 The reason is a feedback loop closing in the captured pixels, beyond anything this code can reach.
@@ -73,8 +74,8 @@ Four layers, dependency running one way: a feature reads the design system and t
 | Path | Holds |
 | --- | --- |
 | `Contracts/Assert.cs` | always-on assertions, the C# counterpart of the Go `assert` package |
-| `Mvvm/` | `Observable` and `DelegateCommand`: the change notification a compiled binding reads, and nothing else |
-| `Design/` | the design system as tokens and styles: `Palette`, `Typography`, `Metrics`, `Text`, `Surfaces`, `Buttons`, `Inputs`, `Menus`, `Tooltips`, `Icons` |
+| `Mvvm/` | what every view model builds on and nothing about a feature: `Observable`, `DelegateCommand`, `PendingCommand`, `Reconcile` and a few more |
+| `Design/` | the design system as tokens and styles, one dictionary per concern: `Palette`, `Typography`, `Metrics`, `Buttons`, `Menus` and more |
 | `Assets/Fonts/` | the mono family `Design/Typography.axaml` names, as files: Avalonia packages Inter and no mono, so this one is carried rather than resolved off the platform |
 | `Controls/` | the primitives more than one feature needs: `Chip`, `StatusPill`, `CheckItem`, the segmented control, and the switch |
 | `Copy/` | every word on screen: what each identifier is called, the paragraph behind each choice, each control's heading and help, the sentence for each statement the backend makes |
@@ -82,19 +83,20 @@ Four layers, dependency running one way: a feature reads the design system and t
 | `Features/Tray/` | the tray icon: its menu model, the view model pressing the destinations' own commands, and the host drawing the platform icon |
 | `Backend/` | the control-plane boundary: `IBackend`, the gRPC client answering it over the local socket, and the settings write going through the message descriptor |
 | `Features/Fields/` | the generic renderer for one group of the resolved form, and the placement table saying which destination draws which group. Not under a feature because two of them draw form groups |
-| `Features/Setup/` | the publish wizard, one step per sending-related group with the commit at the last one's foot: step strip, the share question with a chooser per kind, the presets card and the encode questions under it, audio source list, raw-property card, the cost bar above every step and the checks card under it. The share question is drawn again in a dialog at the press that starts a stream, one model behind both |
+| `Features/Setup/` | the publish wizard, one step per sending-related group with the commit at the last one's foot: step strip, the share question with a chooser per kind, the presets card and the encode questions under it, audio source list, the cost bar above every step and the checks card under it. The share question is drawn again in a dialog at the press that starts a stream, one model behind both |
 | `Features/Insights/` | the live overview: the verdict, the outgoing preview, the figure cards and the chart under them, the per-viewer table |
-| `Features/Viewer/` | the tile grid and its rail: one entry per stream the relay carries, the arrangement of the ones being watched, and the panel holding how this machine receives |
+| `Features/Viewer/` | the stage and the strip under it: a tile per stream playing, an entry per stream waiting for a press, their arrangement and the panel holding how this machine receives |
 
 ### The two rules the tree encodes
 
 **A slice per component, and MVVM inside it.**
 A feature directory holds `Model/`, `ViewModel/` and `View/` for itself, plus a directory per component substantial enough to have its own three.
 `Features/Setup/QualityStep/ViewModel/QualityStepViewModel.cs` is the shape.
-Namespaces mirror the path exactly, so a file's name says where it sits.
+Namespaces mirror the path, so a file's name says where it sits.
+`Controls/` keeps one flat `ScreenShare.App.Controls` namespace, so a view reaches every control through one `xmlns`.
 
 **Nothing outside `Design/` states a colour, size, font or radius.**
-A component asks for the role it wants (`MutedBrush`, `RadiusPanel`, `FontSizeLabel`) and the palette decides.
+A component asks for the role it wants (`MutedBrush`, `RadiusPanel`, `FontSizeSmall`) and the palette decides.
 That keeps a light variant a second dictionary rather than a sweep through every view.
 
 ### The design language
@@ -114,9 +116,9 @@ What is this module's own is how they are attached.
 A view that writes a bare control gets the design without asking, which stops a surface opting in by name and wearing Fluent when it forgets.
 
 **A named theme is only ever a variant, inheriting the base and stating only its difference.**
-Buttons: `ActionButton`, `FooterButton`, `DangerButton`, `PrimaryButton`, `LinkButton`, `CardButton` and the `OptionCard` built on it.
+Buttons include `ActionButton`, `PrimaryButton`, `DangerButton`, `IconButton` and `CardButton` with the `OptionCard` built on it.
 One input variant: `Controls/NumberSelect`, the number box and the button glued into one control.
-One menu variant: `SelectMenuItem` in `Controls/Select`, adding what picking a row does and whether it can be picked.
+Menu variants: `MenuNote` (a reading nobody presses) and `SelectMenuItem` in `Controls/Select` (what picking a row does and whether it can be picked).
 A variant that restates the template is a second control, and two of them drift.
 
 A flag is the switch in `Controls/Toggle`.
@@ -145,22 +147,18 @@ Placement stays this module's: the commit on the last step, the groups drawn by 
 **The watch group is drawn by the viewer, the same placement rule doing real work.**
 The wizard configures what this machine *sends*.
 The watch group is the legs a stream comes back on, the jitter buffers a receiver holds and the chain a tile converts frames with.
-It sits beside the tiles, in a column with a commit of its own and a button to dismiss it, so a reader who only watches keeps a change from there without opening setup or going live.
+It opens as a panel over the stage with a button to dismiss it, so a reader who only watches keeps a change from there without opening setup or going live.
 
-**The group is staged, so nothing in it reaches a decode until the commit does.**
+**The group is applied, so a control is the write** (`docs/settings-editing.md`, "Staged and applied").
 Every knob a receive pipeline reads is read by the backend out of its own settings as the pipeline is built.
 The one value the shell names in the call is the tile's leg, read out of those same stored settings (`Features/Viewer/Tile/Model/TileLeg.cs`).
-Taking the leg off the draft instead makes half the panel take effect as it is edited and holds the other half back, so a decode could open on an unkept protocol with kept buffers.
 `FormSession.Stored` is what both read.
+A change reaches the next decode: a tile on screen keeps the protocol and the chain it opened with.
 
-The panel says when what it shows is not what is stored.
-A staged group draws the same controls whether or not it has been kept, so without the sentence the button has nothing to mean and a repaired value nobody wrote back is invisible.
-A commit that lands closes the column.
-One the backend refuses leaves it open, the sentence explaining the refusal being on it.
-
-**The commit goes down the same queue an applied field's keystroke does** (`FormSession.SaveAsync`).
-The settings travel whole, so the two are writes of one message.
+**Every write goes down one queue** (`Backend/FormSession.cs`).
+The settings travel whole, so a write from the panel and one from the wizard are writes of one message.
 Sent from two places they are two unary calls with no ordering, the older snapshot landing last being a stored setting the reader had already changed.
+A write the backend could not store leaves one sentence, which the panel and the wizard both read (`FormSession.Unsaved`).
 
 **Both screens read one draft.**
 `Backend/FormSession.cs` owns the settings being edited and the form they resolve to, for the whole window, as `Backend/Session.cs` owns the running state.
@@ -296,9 +294,10 @@ A saved preset is marked while the draft equals it field for field, a snapshot s
 A built-in one is marked while the draft delivers its promise, which the backend states on the form, so a field the promise says nothing about can move without taking the mark off.
 Neither is a stored selection, so there is nothing to reconcile after a restart.
 
-**The viewer is a grid over a roster.**
-The grid draws the streams the reader asked to see, from the GPU memory the backend decoded them into.
-A row's `show` toggle opens a decode through `Set receive` and the tile subscribes to its frames, each frame arriving as a slot of a lent pool that goes back only once the compositor has taken it (`docs/viewer-architecture.md`, "The buffer-ownership protocol").
+**The viewer plays every stream the relay carries.**
+Each ready stream opens a decode through `Set receive` with no press.
+Its tile draws from the GPU memory the backend decoded the stream into and subscribes to the frames, each frame arriving as a slot of a lent pool that goes back only once the compositor has taken it (`docs/viewer-architecture.md`, "The buffer-ownership protocol").
+This machine's own share and a stream the reader stopped wait in the strip until a press plays them.
 Nothing about the arrangement crosses the contract and nothing could: the backend describes decodes, and a decode is not a tile.
 
 **Nothing is measured over the picture.**
@@ -316,27 +315,25 @@ Every row carries a tooltip saying what a reading of it is evidence of, which is
 Rows are keyed on the identifiers the two sides share, the contract's field names and the elements' own names for their counters, and every word is in `Copy/Counters.cs`, where a key with no entry renders as the key (`docs/tooltips.md`).
 The panel is composed only while it is up, so a grid of tiles nobody has opened one on builds nothing.
 
-The `show` toggle is one control, where the roster's is one per leg.
+Every tile opens on the same leg.
 Which protocol a tile receives on is `viewer.tile_watch_transport`, a setting the backend resolves and repairs.
-Offering it per row would be this screen deciding something the settings screen already decides.
+Offering it per stream would be this screen deciding something the settings screen already decides.
 
-**The roster underneath.**
-Every row comes off `Read relay_status` and `Read viewer_state`: which streams the relay carries, whether each is being served, what it says they carry, how many readers each has, what each is ingesting, and which legs this machine already has a viewer open on.
-The legs a row offers are the options of the form's watch-leg field, so this module holds no list of protocols, and each arrives carrying whether it is reachable and the sentence that says why not.
-A leg the availability pass ruled out keeps its place in the menu, greys and draws its reason under its name.
-That treatment is the roster's own: elsewhere a choice control lists what can be picked and folds the refused entries behind a disclosure (`docs/field-availability.md`).
-Which half an entry is in is Go's answer in both, and all a shell decides is whether a refused one is on screen at this moment.
-The reason is in the row rather than in a tip, a disabled control in Avalonia taking no pointer and a tip on it never opening.
+**A waiting stream's menu opens it outside this window.**
+Every entry comes off `Read relay_status` and `Read viewer_state`: which streams the relay carries, whether each is being served, what it says they carry, how many readers each has, what each is ingesting, and which legs this machine already has a viewer open on.
+The legs the menu offers come off the catalog (`Session.PlayerLegs`, `Session.BrowserLegs`), so this module holds no list of protocols.
 
 **An entry prints the name it opens.**
-A group is a path prefix, so every row of a member's list carries the same one and it separates none of them.
+A group shares one path prefix, so every entry in the strip carries the same one.
+The prefix separates none of them.
 A prefix is a group key's digest, which the backend takes off the snapshot and puts back on to reach the relay, so a row carries `name` and nothing beside it.
 
-**Two different facts, and only one of them is greyed.**
-Whether this machine has a player for a protocol at all is the availability pass's answer and it does not go stale, so the row obeys it.
-Whether a *given stream* can travel on a leg is answered against the stream when the viewer is opened, and the relay's snapshot can be older than the stream.
-Greying from that would refuse a viewer that would have worked, so the backend refuses with the format named and the row shows that sentence.
-A leg already open stays pressable either way, the press being what closes it.
+**No leg is greyed.**
+The catalog names the legs a player on this machine opens, so the menu lists none it cannot.
+Whether a *given stream* can travel on a leg is answered against the stream when the viewer is opened.
+The relay's snapshot can be older than the stream.
+Greying from that would refuse a viewer that would have worked, so the backend refuses with the format named and the screen shows that sentence.
+A leg already open stays pressable, the press being what closes it.
 
 The keys are the tile's own rather than the window's, and each names a state the menu names.
 
@@ -404,7 +401,7 @@ The fourth takes a decision, stated at the end of this section.
 
 **State has one owner.**
 `Backend/Session.cs` owns the running state (what is publishing, what the encoder is measuring, what the relay is carrying, which viewers are open) and the screens read it through on every pass and keep no copy.
-The relay is the clearest case: setup's commit gate and the viewer's roster describe one relay and cannot disagree, reading one field.
+The relay is the clearest case: setup's commit gate and the viewer's strip describe one relay and cannot disagree, reading one field.
 
 **One render function.**
 `Apply` is it.
@@ -434,7 +431,7 @@ The answer arrives on whichever thread the transport completed on, so the write 
 `Session` is handed the same one.
 
 **And a round trip a reader started is a state, so it has one owner too.**
-Every control that asks the backend for something is a `Mvvm/PendingCommand.cs`: Start sharing, Stop sharing, Measure, Create group, Look again, Open full log, a stream's grid toggle and each of its watch legs.
+Every control that asks the backend for something is a `Mvvm/PendingCommand.cs`: Start sharing, Stop sharing, Measure, Create group, Look again, Open full log, a waiting stream's play press and each of its watch legs.
 It holds whether the call it started is still out, refuses a second press off that same field, and clears it in a `finally` so a call that failed past whatever the effect handles still gives the control back.
 The view draws the wait from the identical field through `Controls/Pending/Pending.cs`, an attached property setting one pseudo-class, and `Design/Pending.axaml` says what that looks like once for every control rather than per call site.
 So a button that looks busy is a call really in flight, and the shell cannot ask for two streams because a press landed during the round trip.
@@ -468,16 +465,17 @@ Solving against whatever each pass was given solves two different boxes, picks t
 
 **Two streams or more open on the stage.**
 One fills the space and the rest sit in a strip under it.
-A click on a strip tile swaps it onto the stage, and a click on the staged one or the rail's layout button gives every stream an equal cell.
+A click on a strip tile swaps it onto the stage.
+A click on the staged one or on the Grid switch at the strip's end gives every stream an equal cell.
 A single stream fills the window in a grid of one, a strip with nothing in it costing the picture its height.
 
 **Fullscreen and pop-out are window states.**
-`LayoutMode` has two members, Grid and Focus, and says how tiles sit relative to each other.
+`LayoutMode` says how tiles sit relative to each other, Grid and Focus among its members.
 Which window a tile is drawn in is a separate fact, which lets three windows be fullscreen on three monitors at once, a state a single app-wide fullscreen could not express.
 Folding either into the enum gives one field two meanings.
 
 **Fullscreen gives the screen to the stream.**
-The window fills the monitor and everything else comes off it: rail, grid, settings panel, and the shell's three bands, bound to the same fact the viewer holds (`ShellViewModel.HasChrome`).
+The window fills the monitor and everything else comes off it: the strip, the other tiles, the settings panel and the shell's three bands, bound to the same fact the viewer holds (`ShellViewModel.HasChrome`).
 What is left is one picture at its stream's own shape on black, letterboxed by the same solver that arranges a single tile in a cell.
 Escape ends it, and the window returns to the state it was in rather than to a normal one, a maximised window that came back restored having lost a state the reader chose.
 A fullscreen the desktop put the window in is left alone: the pass only gives back what it took.
@@ -543,4 +541,4 @@ The control half is `api/proto/screenshare/v1`, gRPC over a named pipe on Window
 The frame half is a channel of its own: shared GPU handles and a buffer-ownership protocol, with no pixel crossing the control one.
 
 **No DevTools.**
-`Avalonia.Diagnostics` is not part of Avalonia 12, and the replacements on NuGet are third-party, so none is pulled in here.
+The project file states why no inspector is pulled in (`ScreenShare.App/ScreenShare.App.csproj`).

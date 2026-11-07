@@ -24,7 +24,7 @@ namespace ScreenShare.App.Features.Shell.Go.ViewModel;
 /// Stopping is what a reader wants from there while sharing, and the press stays live for it.
 /// The commit keeps its own row in the menu, greyed and beside the words for why.
 ///
-/// Nothing here decides anything: which effect the commit is comes off <see cref="Model.PublishGate.CommitFor"/>
+/// Nothing here decides anything: which effect the commit is comes off <see cref="Setup.Model.PublishGate.CommitFor"/>
 /// through the commit, its word and its mark come off that commit's own row,
 /// and whether the stream runs the draft is that same gate's reading of <c>Form.in_force</c>.
 ///

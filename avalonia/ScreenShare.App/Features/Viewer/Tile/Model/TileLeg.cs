@@ -24,8 +24,7 @@ namespace ScreenShare.App.Features.Viewer.Tile.Model;
 ///
 /// The answer comes out of the settings the backend holds and never out of the draft.
 /// The backend reads every other knob of the watch group out of those same settings as the decode is built
-/// (<c>docs/ipc-api.md</c>), so a leg off the draft would take effect as it is edited while the staged panel
-/// waits for the commit, opening the decode on the edited leg at the committed latency.
+/// (<c>docs/ipc-api.md</c>), so the leg read from there opens a decode on the settings the backend stored as one set.
 ///
 /// An empty answer is settings that have not arrived, leaving a screen saying so rather than guessing a protocol.
 /// </summary>

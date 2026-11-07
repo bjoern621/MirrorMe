@@ -5,7 +5,7 @@
 
   <!--
     One definition for every menu in the product.
-    A tile's right-click menu, a rail entry's, and a dropdown's option list are one object.
+    A tile's right-click menu, a waiting stream's in the strip and a dropdown's option list all take it.
     The themes are keyed on the types, so a menu wears the design by existing,
     and a view that has to opt in is a view that can forget to.
     Rows read the pseudo-classes MenuItem raises (:icon, :checked, :open) and not bindings against the item,

@@ -80,7 +80,7 @@ Weight is where the dark palette is paid for.
 400 on `#141414`–`#262626` reads thin enough that muted grey copy starts to disappear, so body weight is **500** and emphasis **600**.
 Regular is unused.
 
-Sizes are four whole pixels, **12, 13, 14 and 16**, plus a single 26px for the figures a publisher watches while live, sized to read from across a room.
+Sizes are four whole pixels, **12, 13, 14 and 16**.
 **14px is the default**: a control's label, body copy, and any line with no role stated.
 12px is the floor, for text that labels rather than says: a step badge's number, a table's column keys.
 
@@ -89,7 +89,7 @@ Whole pixels, no half steps, no two steps closer than a pixel in the body range.
 Gaps are a pixel or more because a ladder inside a 5px range is not one anyone can hear.
 13 beside 14 beside 15 reads as one size rendered unevenly, so extra steps cost churn and buy no hierarchy.
 
-Prose that wraps states its line height (18px small, 20px body, both ~1.4×).
+Prose that wraps states its line height (18px at the small size, ~1.4×).
 A single line in a row already centred does not: a line box taller than the glyphs only moves the text off the centre it was placed on.
 Bands and rows are sized from the text they hold, so the chrome heights follow the default size.
 

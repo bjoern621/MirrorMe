@@ -23,7 +23,7 @@ namespace ScreenShare.App.Features.Setup.SharePicker.ViewModel;
 ///
 /// <b>The verdict on the whole draft is drawn here.</b>
 /// This dialog is the one way to the question, so the press reaches it on settings that do not publish
-/// (<see cref="Model.PublishGate"/>).
+/// (<see cref="Setup.Model.PublishGate"/>).
 /// <see cref="Blocking"/> is then what stands in the way, in the backend's own words,
 /// beside a confirm that cannot be pressed.
 /// </summary>

@@ -88,7 +88,7 @@ internal static class RegionOverlay
     ///
     /// Sized in device-independent units and placed in physical pixels, which is what each property counts in.
     /// It is kept out of this machine's captures like every other window this shell opens, so a monitor preview
-    /// running beside the picker does not draw the picker (<see cref="CaptureExclusion"/>).
+    /// running beside the picker does not draw the picker (<see cref="ICaptureExclusion"/>).
     /// </summary>
     private static Window Cover(Screen screen, TaskCompletionSource<string> answer)
     {

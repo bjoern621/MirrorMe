@@ -26,7 +26,7 @@ namespace ScreenShare.App.Features.Viewer.ViewModel;
 /// no message, the backend describing decodes and a decode not being a tile (<c>docs/ipc-api.md</c>).
 /// The tile set, the stops, the focus, the pop-outs and the fullscreen states are that arrangement, owned here.
 ///
-/// Legs come from the backend as the options of the form's watch-leg field,
+/// Legs come from the backend's catalog (<see cref="Backend.Session.PlayerLegs"/>, <see cref="Backend.Session.BrowserLegs"/>),
 /// so this module holds no list of protocols.
 /// Whether a leg carries a given stream is settled as the viewer opens (<see cref="WatchLegViewModel"/>).
 ///

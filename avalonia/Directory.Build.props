@@ -1,7 +1,7 @@
 <Project>
 
   <!--
-    Settings shared by every project under avaloniagrid/. Avalonia 12 targets .NET 10,
+    Settings shared by every project under avalonia/. Avalonia 12 targets .NET 10,
     so that is what the projects here build against; its packages keep a net8.0 floor,
     which only means the reference assemblies resolve from lib/net8.0.
 

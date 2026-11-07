@@ -20,7 +20,7 @@
     descendant selector a ControlTheme may not carry.
 
     A refused entry states its reason on the card, so nothing opens over it
-    (docs/tooltips.md, "An availability note is a line").
+    (docs/tooltips.md, "Availability notes").
   -->
 
   <DataTemplate x:Key="OptionEntry" x:DataType="fields:OptionViewModel">

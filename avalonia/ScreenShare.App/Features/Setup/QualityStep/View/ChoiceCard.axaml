@@ -8,7 +8,7 @@
     One entry of a question: its name, under it the price of picking it or what it was derived from,
     and what picking it raises as chips, each naming its sentence on hover.
     A refused card states its reason in the figure's place, so nothing opens over it
-    (docs/tooltips.md, "An availability note is a line").
+    (docs/tooltips.md, "Availability notes").
     The radio dot's treatment is a style of the view, a ControlTheme carrying no descendant selector.
   -->
   <DataTemplate x:Key="ChoiceCard" x:DataType="fields:OptionViewModel">

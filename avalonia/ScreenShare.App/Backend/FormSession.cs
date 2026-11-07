@@ -407,8 +407,7 @@ public sealed class FormSession
     /// <summary>
     /// Stores the draft as it stands, and answers once the write has landed.
     ///
-    /// What a staged group's commit runs: nothing in such a group reaches the backend as it is edited,
-    /// so a screen drawing one needs a way to say "these, now".
+    /// For a write that has to land before the screen goes on, such as the preview route.
     /// The write is the whole settings message either way,
     /// so it goes down the queue an applied field's keystroke uses: two unary calls carry no ordering between them,
     /// and the older snapshot landing last is what <see cref="Persist"/> exists to prevent.

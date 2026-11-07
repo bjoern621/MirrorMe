@@ -26,7 +26,7 @@
 
   <Window.KeyBindings>
     <!--
-      A filled window draws no rail, no band and no menu, so the keyboard is the way out of it.
+      A filled window draws no strip, no band and no menu, so the keyboard leads out of it.
       The command names the state rather than toggling one,
       so the key changes nothing on any other screen (Features/Viewer/Model/TileIntent.cs).
     -->

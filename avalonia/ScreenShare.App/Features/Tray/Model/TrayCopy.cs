@@ -12,7 +12,7 @@ public static class TrayCopy
     /// <summary>What hovering the icon says. The name alone: the icon itself carries the live state.</summary>
     public const string Tip = "MirrorMe";
 
-    /// <summary>Heading of the submenu, the word the rail's card uses for the same list.</summary>
+    /// <summary>The submenu's heading while nothing is shared.</summary>
     public const string Presets = "Presets";
 
     /// <summary>The submenu's heading while sharing, a pick there restarting the stream on the preset.</summary>
