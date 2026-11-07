@@ -52,6 +52,8 @@ public sealed class FieldGroupViewModel : Observable
     /// </summary>
     private readonly Func<string, bool>? _reasonStatedAbove;
 
+    private readonly Func<string, FieldVerdict?> _verdictOf;
+
     /// <param name="actionOf">
     /// Effect this screen offers beside one control, null where it offers none.
     /// Asked on every pass rather than once,
@@ -72,18 +74,24 @@ public sealed class FieldGroupViewModel : Observable
     /// The keys whose reason the surface prints over the section they stand in, null where none does.
     /// Placement like the fold, and read once per control (<see cref="FieldViewModel.ShowsReason"/>).
     /// </param>
+    /// <param name="verdictOf">
+    /// What a service past the form made of one control's value, null where none spoke.
+    /// Asked on every pass, the service answering on its own clock.
+    /// </param>
     public FieldGroupViewModel(
         Action<string, FieldValue> write,
         Func<string, FieldAction?>? actionOf = null,
         Func<FieldGroup, GroupAction?>? groupActionOf = null,
         Action<bool>? sweep = null,
         Func<string, bool>? onFloor = null,
-        Func<string, bool>? reasonStatedAbove = null)
+        Func<string, bool>? reasonStatedAbove = null,
+        Func<string, FieldVerdict?>? verdictOf = null)
     {
         Assert.NotNull(write, "a group needs somewhere to report what the user moved");
 
         _write = write;
         _actionOf = actionOf ?? (_ => null);
+        _verdictOf = verdictOf ?? (_ => null);
         _groupActionOf = groupActionOf ?? (_ => null);
         _sweep = sweep;
         _onFloor = onFloor;
@@ -221,7 +229,7 @@ public sealed class FieldGroupViewModel : Observable
         {
             var model = Of(field.Key);
             model.Apply(field, words, _actionOf(field.Key), answered,
-                diagnostics.Where(diagnostic => diagnostic.FieldKey == field.Key));
+                diagnostics.Where(diagnostic => diagnostic.FieldKey == field.Key), _verdictOf(field.Key));
 
             if (model.IsVisible)
             {

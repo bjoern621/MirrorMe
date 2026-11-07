@@ -22,7 +22,7 @@ Every text step and every hue clears 4.5:1 on each surface it sits on, the hover
 | --- | --- | --- |
 | red `#FF6369` | broken, or on air | a check that blocks, the step chip it names, a failure sentence, the sharing pill and badge, `Stop sharing` |
 | amber `#FFB224` | it runs, and something about it disappoints | a check that warns, a figure out of bounds, an estimate over the measured line, why a control is inert |
-| green `#3CB179` | the way is clear | a check that passed, `Start sharing` |
+| green `#3CB179` | the way is clear | a check that passed, a typed value the backend took, a group joined, `Start sharing` |
 
 Red is the one that has to carry across a room, so it stays scarce.
 A screen with three red things on it says which one broke; a screen with thirty says nothing.
@@ -48,6 +48,11 @@ The design states no text field, number field or slider either.
 The module's choice is recorded with the input roles and again spends nothing new.
 A typed value wears the same raised control a button does, in tabular figures because it is typed digit by digit.
 A number field is that box without a stepper.
+A box writes its value on losing focus, which changes nothing on screen by itself.
+Once the backend answers with the value unchanged and no line against it, the box edges green and shows a tick for a moment.
+A repaired or flagged value gets no mark, since the repair or the line already answers.
+A value that a service past the backend judges carries that verdict as a check line under the box.
+Under the group key it states the group joined, under the name a refusal or that members see it.
 A button that acts on the value a box holds is drawn inside it, at the trailing edge, and the text stops in front of it.
 A slider is a 6px track whose travelled half takes the one light surface.
 A flag is the switch: one domain concept, one control.

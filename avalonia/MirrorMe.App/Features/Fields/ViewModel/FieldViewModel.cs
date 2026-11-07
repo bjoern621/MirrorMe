@@ -4,6 +4,7 @@ using Avalonia.Collections;
 using MirrorMe.Api.V1;
 using MirrorMe.App.Backend;
 using MirrorMe.App.Contracts;
+using MirrorMe.App.Controls;
 using MirrorMe.App.Copy;
 using MirrorMe.App.Features.Fields.Model;
 using MirrorMe.App.Mvvm;
@@ -90,6 +91,12 @@ public sealed class FieldViewModel : Observable
     /// </summary>
     private readonly bool _reasonStatedAbove;
 
+    /// <summary>
+    /// What the reader last typed into the box, until a pass answers for it.
+    /// Null once answered, and for every kind a reader moves rather than types.
+    /// </summary>
+    private FieldValue? _written;
+
     /// <param name="sweep">
     /// Takes the two edges of a gesture on this control, null where the screen has nowhere to report them.
     /// A group given none draws controls that ask about every value the thumb passes over.
@@ -156,7 +163,7 @@ public sealed class FieldViewModel : Observable
             Readback = value;
             if (!_adopting)
             {
-                _write(Key, new FieldValue { Text = value });
+                Typed(new FieldValue { Text = value });
             }
         }
     }
@@ -178,7 +185,7 @@ public sealed class FieldViewModel : Observable
             Readback = Printed((double)number);
             if (!_adopting)
             {
-                _write(Key, new FieldValue { Number = (long)number });
+                Typed(new FieldValue { Number = (long)number });
             }
         }
     }
@@ -314,6 +321,10 @@ public sealed class FieldViewModel : Observable
     private bool _actionNoticeIsFailure;
     private bool _hasRefused;
     private string _refusedCount = "";
+    private string _verdict = "";
+    private CheckState _verdictState = CheckState.Passed;
+    private bool _hasVerdict;
+    private int _acceptedMarks;
 
     /// <summary>
     /// Entries of a select, a radio or a number carrying a ladder.
@@ -449,6 +460,20 @@ public sealed class FieldViewModel : Observable
     }
 
     public bool HasNotes => _notes.Count > 0;
+
+    /// <summary>What a service past the form made of the value, as a line under the control. Empty where none spoke.</summary>
+    public string Verdict { get => _verdict; private set => Set(ref _verdict, value); }
+
+    public CheckState VerdictState { get => _verdictState; private set => Set(ref _verdictState, value); }
+
+    public bool HasVerdict { get => _hasVerdict; private set => Set(ref _hasVerdict, value); }
+
+    /// <summary>
+    /// Counts the moments the box took a value, each one edging it green for a moment (<c>Controls/Accepted</c>).
+    /// A moment comes when a typed value comes back unchanged and unflagged, and when a passing verdict arrives.
+    /// A count and not a flag, so two acceptances in a row each get their moment.
+    /// </summary>
+    public int AcceptedMarks { get => _acceptedMarks; private set => Set(ref _acceptedMarks, value); }
 
     /// <summary>
     /// Whether this combination leaves the control nothing to pick: every entry greyed, the held value with them.
@@ -619,15 +644,19 @@ public sealed class FieldViewModel : Observable
     /// False leaves the control holding what the reader put there and draws everything else.
     /// </param>
     /// <param name="diagnostics">The form's diagnostics anchored on this field, ranked.</param>
+    /// <param name="verdict">What a service past the form made of the value, null where none spoke.</param>
     public void Apply(
         Field field, Vocabulary words, FieldAction? action = null, bool answered = true,
-        IEnumerable<Diagnostic>? diagnostics = null)
+        IEnumerable<Diagnostic>? diagnostics = null, FieldVerdict? verdict = null)
     {
         Assert.NotNull(field, "rendering a field needs the field the form described");
         Assert.NotNull(words, "naming a field's entries needs the vocabulary that names them");
         Assert.That(field.Key == Key, "a field renders the settings field it was made for", Key, field.Key);
         Assert.That(field.Control != ControlKind.Slider || field.Range is not null,
             "a slider states the range it sweeps, there being no thumb to place without both ends", Key);
+
+        var firstPass = _field is null;
+        var passedBefore = HasVerdict && VerdictState == CheckState.Passed;
 
         _field = field;
         _words = words;
@@ -720,6 +749,13 @@ public sealed class FieldViewModel : Observable
         PickedNote = HasNothingLeft ? "" : picked?.Note ?? "";
         HasPickedNote = PickedNote.Length > 0;
 
+        // A greyed control holds nothing the reader typed, so no verdict stands under it.
+        var spoken = IsEnabled ? verdict : null;
+        Verdict = spoken?.Text ?? "";
+        VerdictState = spoken?.State ?? CheckState.Passed;
+        HasVerdict = Verdict.Length > 0;
+        MarkAccepted(field.Value, answered, !firstPass && !passedBefore);
+
         Assert.That(
             Options.Count == 0 || IsSelect || IsRadio || IsNumberSelect,
             "only a control that offers entries carries options", Key, field.Control, Options.Count);
@@ -742,6 +778,37 @@ public sealed class FieldViewModel : Observable
         Assert.That(
             MenuRows.Count == Offered.Count + (HasRefused ? 1 : 0) + (RefusedShown ? Refused.Count : 0),
             "a dropdown lists the disclosure and whatever it is showing", Key, MenuRows.Count, Offered.Count);
+    }
+
+    /// <summary>Reports a typed value and holds it until a pass answers whether it landed.</summary>
+    private void Typed(FieldValue value)
+    {
+        _written = value;
+        _write(Key, value);
+    }
+
+    /// <summary>
+    /// Gives the box its moment where this pass accepted something.
+    /// A typed value counts once a pass answers for it, unchanged and with no line raised against it.
+    /// A repaired or flagged value gets none, the repair or the line saying enough.
+    /// </summary>
+    /// <param name="verdictMayMark">
+    /// False on the first pass and while a passing verdict already stood,
+    /// so a box opening on a group joined long ago stays quiet.
+    /// </param>
+    private void MarkAccepted(FieldValue value, bool answered, bool verdictMayMark)
+    {
+        var landed = false;
+        if (answered && _written is { } written)
+        {
+            landed = IsEnabled && written.Equals(value) && !HasDiagnostics;
+            _written = null;
+        }
+
+        if (landed || (verdictMayMark && HasVerdict && VerdictState == CheckState.Passed))
+        {
+            AcceptedMarks++;
+        }
     }
 
     /// <summary>

@@ -1,6 +1,7 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:controls="using:MirrorMe.App.Controls">
+                    xmlns:controls="using:MirrorMe.App.Controls"
+                    xmlns:ti="using:TablerIcons">
 
   <!--
     The controls a person types into or drags, keyed on the type so a bare TextBox or Slider gets the design.
@@ -49,7 +50,7 @@
             (Controls/CopyButton).
             Stated in the box rather than laid over it, an overlay covering the characters under it.
           -->
-          <Grid ColumnDefinitions="*,Auto">
+          <Grid ColumnDefinitions="*,Auto,Auto">
             <ScrollViewer Name="PART_ScrollViewer"
                           Grid.Column="0"
                           HorizontalScrollBarVisibility="Hidden"
@@ -77,8 +78,17 @@
                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
               </Panel>
             </ScrollViewer>
+            <!-- Drawn while the accepted mark stands, so the text keeps the full width otherwise (Controls/Accepted). -->
+            <ti:TablerIcon Name="AcceptedMark"
+                           Grid.Column="1"
+                           Icon="IconCheck"
+                           Brush="{StaticResource GoBrush}"
+                           Margin="6,0,0,0"
+                           IsVisible="False"
+                           Opacity="0"
+                           RenderTransform="scale(0.4)" />
             <ContentPresenter Name="PART_InnerRightContent"
-                              Grid.Column="1"
+                              Grid.Column="2"
                               Content="{TemplateBinding InnerRightContent}"
                               Margin="{StaticResource InnerContentGap}"
                               VerticalAlignment="Center" />
@@ -95,6 +105,16 @@
     <Style Selector="^:focus /template/ Border#Root">
       <Setter Property="Background" Value="{StaticResource ControlBrush}" />
       <Setter Property="BorderBrush" Value="{StaticResource ForegroundBrush}" />
+    </Style>
+
+    <!-- After the focus edge, which a box holding the caret again would otherwise put back over the mark. -->
+    <Style Selector="^:accepted /template/ Border#Root">
+      <Setter Property="BorderBrush" Value="{StaticResource GoBrush}" />
+    </Style>
+    <Style Selector="^:accepted /template/ ti|TablerIcon#AcceptedMark">
+      <Setter Property="IsVisible" Value="True" />
+      <Setter Property="Opacity" Value="1" />
+      <Setter Property="RenderTransform" Value="none" />
     </Style>
 
     <Style Selector="^:disabled">

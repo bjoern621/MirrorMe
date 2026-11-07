@@ -41,6 +41,17 @@ public static class Fields
     /// </summary>
     public const string NothingLeft = "Nothing available";
 
+    /// <summary>Under the group key once the group service took this machine's presence.</summary>
+    public static string Joined(int others) => others switch
+    {
+        0 => "This computer joined the group.",
+        1 => "This computer joined the group, with 1 other member online.",
+        _ => $"This computer joined the group, with {others} other members online.",
+    };
+
+    /// <summary>Under the name once the group service took this machine's presence under it.</summary>
+    public const string NameClaimed = "Group members see this computer under this name.";
+
     /// <summary>Entries held back, beside a disclosure: the figure says whether opening it is worth the trip.</summary>
     public static string OptionCount(int count) => count == 1 ? "1 option" : $"{count} options";
 
