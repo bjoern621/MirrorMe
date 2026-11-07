@@ -1,9 +1,10 @@
 # direnv / nix dev shell cache
 .direnv/
 
-# local logs / binaries
+# local logs / binaries, and MSBuild output at any depth
 *.log
 bin/
+obj/
 
 # What `go build ./cmd/<name>` leaves in backend/ when run without -o.
 /backend/backend
