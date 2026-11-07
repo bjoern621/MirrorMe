@@ -132,8 +132,8 @@ func TestPublishedColorimetryReachesTheDecoder(t *testing.T) {
 				t.Errorf("%s has a GStreamer mapping and no encoder element to name, so the skip below would read as a missing plugin", codec)
 				continue
 			}
-			if err := exec.Command("gst-inspect-1.0", "--exists", elem).Run(); err != nil {
-				t.Logf("skipping %s in %s memory: %s plugin not installed", codec, chain.memory, elem)
+			if missing := gstMissingElement(gstChainElements(cap.Family, chain.memory, elem)); missing != "" {
+				t.Logf("skipping %s in %s memory: %s plugin not installed", codec, chain.memory, missing)
 				continue
 			}
 
@@ -243,8 +243,8 @@ func TestTheGstDevicePathStoresTheConfiguredRange(t *testing.T) {
 				t.Errorf("%s has a GStreamer mapping and no encoder element to name", c.Name)
 				continue
 			}
-			if err := exec.Command("gst-inspect-1.0", "--exists", elem).Run(); err != nil {
-				t.Logf("skipping %s: %s plugin not installed", c.Name, elem)
+			if missing := gstMissingElement(gstChainElements(p.Family, chain.memory, elem)); missing != "" {
+				t.Logf("skipping %s: %s plugin not installed", c.Name, missing)
 				continue
 			}
 
@@ -343,6 +343,32 @@ type roundTripChain struct {
 	capture string
 	demand  string
 	memory  string
+}
+
+// gstChainElements names the elements a round trip through memory launches beyond the conversion
+// to system frames: the encoder, plus the family's upload and converter on a device path.
+// The nvcodec device path runs on Direct3D 11, so a Linux machine carries its encoder and none of
+// the elements feeding it.
+func gstChainElements(family, memory, encoder string) []string {
+	elements := []string{encoder}
+	if !gpupath.OnDevice(memory) {
+		return elements
+	}
+	gpu := gstGpuMemories[family]
+	if gpu.upload != "" {
+		elements = append(elements, gpu.upload)
+	}
+	return append(elements, gpu.convert)
+}
+
+// gstMissingElement returns the first of elements this install lacks, empty where it carries all.
+func gstMissingElement(elements []string) string {
+	for _, element := range elements {
+		if exec.Command("gst-inspect-1.0", "--exists", element).Run() != nil {
+			return element
+		}
+	}
+	return ""
 }
 
 // gstRoundTripChains returns every chain this engine reaches a family's encoders through: system
