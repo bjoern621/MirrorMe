@@ -53,7 +53,7 @@ tasks:
     silent: true
 
   release:
-    desc: Release the next version from the release branch. VERSION=<tag> names it, PART=major, minor or patch picks the bump, NOTES=<file>, --yes skips the question
+    desc: Release the next version from the release branch. VERSION=<tag> names it. PART=major, minor or patch picks the bump. NOTES=<file> holds the GitHub release text. --yes skips the question.
     interactive: true
     env: *settings
     cmds:
