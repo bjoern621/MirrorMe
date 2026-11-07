@@ -1,0 +1,350 @@
+{
+  "version": "v0.13.1",
+  "date": "2026-11-07",
+  "machine": {
+    "name": "fractal",
+    "os": "NixOS 26.11 (Zokor)",
+    "kernel": "7.2.11-zen1",
+    "arch": "amd64",
+    "cpu": "AMD Ryzen 7 7800X3D 8-Core Processor",
+    "gpus": [
+      {
+        "name": "NVIDIA Corporation GB203 [GeForce RTX 5080] (rev a1)",
+        "driver": "nvidia",
+        "driver_version": "615.78.08"
+      },
+      {
+        "name": "Advanced Micro Devices, Inc. [AMD/ATI] Raphael [Radeon 610M] (rev cb)",
+        "driver": "amdgpu",
+        "driver_version": ""
+      }
+    ],
+    "va_driver": "VA-API NVDEC driver [direct backend]",
+    "gstreamer": "1.28.7",
+    "ffmpeg": "9.0.2"
+  },
+  "tests": {
+    "passed": 1973,
+    "failed": 0,
+    "skipped": 79,
+    "failures": null,
+    "skips": [
+      {
+        "test": "ffmpeg.TestADownloadingCaptureRefusesAStrategyNoRowCarries",
+        "reason": "this machine refuses kmsgrab before the strategy is read: TEXT_CODE_DRM_MAP_UNKNOWN"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/av1_amf/abr",
+        "reason": "av1_amf does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/av1_amf/cbr",
+        "reason": "av1_amf does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/av1_amf/crf",
+        "reason": "av1_amf does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/av1_amf/vbr",
+        "reason": "av1_amf does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/av1_qsv/abr",
+        "reason": "av1_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/av1_qsv/cbr",
+        "reason": "av1_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/av1_qsv/crf",
+        "reason": "av1_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/av1_qsv/vbr",
+        "reason": "av1_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/av1_vaapi/abr",
+        "reason": "av1_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/av1_vaapi/cbr",
+        "reason": "av1_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/av1_vaapi/crf",
+        "reason": "av1_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/av1_vaapi/vbr",
+        "reason": "av1_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/h264_amf/abr",
+        "reason": "h264_amf does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/h264_amf/cbr",
+        "reason": "h264_amf does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/h264_amf/crf",
+        "reason": "h264_amf does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/h264_amf/vbr",
+        "reason": "h264_amf does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/h264_qsv/abr",
+        "reason": "h264_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/h264_qsv/cbr",
+        "reason": "h264_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/h264_qsv/crf",
+        "reason": "h264_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/h264_qsv/vbr",
+        "reason": "h264_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/h264_vaapi/abr",
+        "reason": "h264_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/h264_vaapi/cbr",
+        "reason": "h264_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/h264_vaapi/crf",
+        "reason": "h264_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/h264_vaapi/vbr",
+        "reason": "h264_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/h264_videotoolbox/abr",
+        "reason": "h264_videotoolbox does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/hevc_amf/abr",
+        "reason": "hevc_amf does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/hevc_amf/cbr",
+        "reason": "hevc_amf does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/hevc_amf/crf",
+        "reason": "hevc_amf does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/hevc_amf/vbr",
+        "reason": "hevc_amf does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/hevc_qsv/abr",
+        "reason": "hevc_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/hevc_qsv/cbr",
+        "reason": "hevc_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/hevc_qsv/crf",
+        "reason": "hevc_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/hevc_qsv/vbr",
+        "reason": "hevc_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/hevc_vaapi/abr",
+        "reason": "hevc_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/hevc_vaapi/cbr",
+        "reason": "hevc_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/hevc_vaapi/crf",
+        "reason": "hevc_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/hevc_vaapi/vbr",
+        "reason": "hevc_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/hevc_videotoolbox/abr",
+        "reason": "hevc_videotoolbox does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/vp8_vaapi/abr",
+        "reason": "vp8_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/vp8_vaapi/cbr",
+        "reason": "vp8_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/vp8_vaapi/crf",
+        "reason": "vp8_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/vp8_vaapi/vbr",
+        "reason": "vp8_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/vp9_qsv/abr",
+        "reason": "vp9_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/vp9_qsv/cbr",
+        "reason": "vp9_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/vp9_qsv/crf",
+        "reason": "vp9_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/vp9_qsv/vbr",
+        "reason": "vp9_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/vp9_vaapi/abr",
+        "reason": "vp9_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/vp9_vaapi/cbr",
+        "reason": "vp9_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/vp9_vaapi/crf",
+        "reason": "vp9_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestEncoderArgsAgainstFfmpeg/vp9_vaapi/vbr",
+        "reason": "vp9_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/av1_amf/tv",
+        "reason": "av1_amf does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/av1_qsv/pc",
+        "reason": "av1_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/av1_qsv/tv",
+        "reason": "av1_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/av1_vaapi/pc",
+        "reason": "av1_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/av1_vaapi/tv",
+        "reason": "av1_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/h264_amf/pc",
+        "reason": "h264_amf does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/h264_amf/tv",
+        "reason": "h264_amf does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/h264_qsv/pc",
+        "reason": "h264_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/h264_qsv/tv",
+        "reason": "h264_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/h264_vaapi/pc",
+        "reason": "h264_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/h264_vaapi/tv",
+        "reason": "h264_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/h264_videotoolbox/pc",
+        "reason": "h264_videotoolbox does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/h264_videotoolbox/tv",
+        "reason": "h264_videotoolbox does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/hevc_amf/pc",
+        "reason": "hevc_amf does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/hevc_amf/tv",
+        "reason": "hevc_amf does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/hevc_qsv/pc",
+        "reason": "hevc_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/hevc_qsv/tv",
+        "reason": "hevc_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/hevc_vaapi/pc",
+        "reason": "hevc_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/hevc_vaapi/tv",
+        "reason": "hevc_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/hevc_videotoolbox/pc",
+        "reason": "hevc_videotoolbox does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/hevc_videotoolbox/tv",
+        "reason": "hevc_videotoolbox does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/vp8_vaapi/tv",
+        "reason": "vp8_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/vp9_qsv/pc",
+        "reason": "vp9_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/vp9_qsv/tv",
+        "reason": "vp9_qsv does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/vp9_vaapi/pc",
+        "reason": "vp9_vaapi does not run on this machine"
+      },
+      {
+        "test": "ffmpeg.TestPublishedColorimetryIsSignalledInTheBitstream/vp9_vaapi/tv",
+        "reason": "vp9_vaapi does not run on this machine"
+      },
+      {
+        "test": "form.TestTheTwoLaddersAreAskedAboutSeparately",
+        "reason": "libvpx-vp9 declares no effort ladder, or a tune ladder too"
+      },
+      {
+        "test": "receive.TestGLChainDecodesIntoDeviceMemory",
+        "reason": "this GStreamer registers no vah264enc"
+      }
+    ]
+  }
+}
