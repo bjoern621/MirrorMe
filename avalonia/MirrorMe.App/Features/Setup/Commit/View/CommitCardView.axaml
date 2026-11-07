@@ -1,0 +1,85 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:MirrorMe.App.Controls"
+             xmlns:vm="using:MirrorMe.App.Features.Setup.Commit.ViewModel"
+             xmlns:ti="using:TablerIcons"
+             x:Class="MirrorMe.App.Features.Setup.Commit.View.CommitCardView"
+             x:DataType="vm:CommitViewModel">
+
+  <!--
+    The commit, in the floating foot on the last step, where every other step's Continue sits
+    (Setup/View/SetupView.axaml), which draws the bar around it.
+  -->
+
+  <StackPanel>
+    <!--
+      In the promise's place while the stream runs the draft as it stands, which greys the button.
+      A state the reader is in and no fault, so the plain hint colour (Model/CommitCopy.cs).
+    -->
+    <controls:Reveal IsOpen="{Binding IsInForce}" FollowsOpening="False" LeavesNoGap="True">
+      <TextBlock Classes="hint"
+                 TextWrapping="Wrap"
+                 TextTrimming="None"
+                 LineHeight="{StaticResource LineHeightSmall}"
+                 Margin="0,0,0,11"
+                 Text="{Binding InForce}" />
+    </controls:Reveal>
+
+    <!--
+      Why the button is locked, naming only the backend or the relay.
+      A settings problem stands under its control or on the checks card in the backend's own words,
+      and a stream on the air changes what the commit does, or says above that it runs the draft.
+    -->
+    <controls:Reveal IsOpen="{Binding IsBlocked}" FollowsOpening="False" LeavesNoGap="True">
+      <SelectableTextBlock Classes="hint danger"
+                           TextWrapping="Wrap"
+                           TextTrimming="None"
+                           LineHeight="{StaticResource LineHeightSmall}"
+                           Margin="0,0,0,11"
+                           Text="{Binding Blocked}" />
+    </controls:Reveal>
+
+    <controls:Reveal IsOpen="{Binding HasRefusal}" FollowsOpening="False" LeavesNoGap="True">
+      <SelectableTextBlock Classes="hint danger"
+                           TextWrapping="Wrap"
+                           TextTrimming="None"
+                           LineHeight="{StaticResource LineHeightSmall}"
+                           Margin="0,0,0,11"
+                           Text="{Binding Refusal}" />
+    </controls:Reveal>
+
+    <Grid ColumnDefinitions="Auto,*,Auto">
+      <Button Grid.Column="0"
+              Theme="{StaticResource LinkButton}"
+              Height="{StaticResource FooterButtonHeight}"
+              Command="{Binding BackCommand}">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource GapTight}">
+          <ti:TablerIcon Classes="button" Icon="IconArrowLeft" Brush="{Binding $parent[Button].Foreground, Mode=OneWay}" VerticalAlignment="Center" />
+          <TextBlock Classes="backword" Text="Back" VerticalAlignment="Center" />
+        </StackPanel>
+      </Button>
+
+      <!--
+        The dot takes the button's own Foreground, which the disabled treatment moves:
+        content naming a brush of its own would stay bright on a locked button.
+      -->
+      <!-- What the press promises, stream name included, on hover. -->
+      <Button Grid.Column="2"
+              Theme="{StaticResource GoButton}"
+              Height="{StaticResource FooterButtonHeight}"
+              Padding="20,0"
+              ToolTip.Tip="{Binding PromiseTip}"
+              Command="{Binding StartSharingCommand}"
+              controls:Pending.IsActive="{Binding StartSharingCommand.IsRunning}">
+        <StackPanel Orientation="Horizontal" Spacing="{StaticResource GapTight}" VerticalAlignment="Center">
+          <Ellipse Width="{StaticResource DotSize}"
+                   Height="{StaticResource DotSize}"
+                   Fill="{Binding $parent[Button].Foreground}"
+                   VerticalAlignment="Center" />
+          <TextBlock Text="{Binding CommitLabel}" FontWeight="SemiBold" />
+        </StackPanel>
+      </Button>
+    </Grid>
+  </StackPanel>
+
+</UserControl>

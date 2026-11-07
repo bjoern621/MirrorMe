@@ -1,0 +1,728 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ti="using:TablerIcons"
+             xmlns:controls="using:MirrorMe.App.Controls"
+             xmlns:copy="using:MirrorMe.App.Copy"
+             xmlns:model="using:MirrorMe.App.Features.Viewer.Tile.Model"
+             xmlns:tile="using:MirrorMe.App.Features.Viewer.Tile.ViewModel"
+             xmlns:tiles="using:MirrorMe.App.Features.Viewer.Tile.View"
+             x:Class="MirrorMe.App.Features.Viewer.Tile.View.TileCard"
+             x:DataType="tile:TileViewModel"
+             Classes.filling="{Binding IsFullscreen}"
+             Classes.dark="{Binding HasNotice}">
+
+  <!--
+    One tile for every host that draws one: a grid cell, the focus arrangement's stage, a window of its own,
+    a filled screen.
+    Defined once rather than per host, so the menu, the meter and the badge cannot drift apart between them.
+
+    The plates and the controls wait for the pointer, and go again once the pointer holds still:
+    a pointer parked on a picture is somebody watching it (Features/Viewer/Tile/View/RestingWatch.cs).
+
+    The stage tile carries one figure, the picture's height and rate.
+    Every other reading of a decode sits in the stats overlay.
+    The overlay stays up wherever the pointer goes, and it holds the cursor up with it
+    (Features/Viewer/Tile/View/TileChrome.cs).
+  -->
+
+  <UserControl.Styles>
+    <!-- Hover chrome and plates. Faded in rather than snapped, hit-testable only once up. -->
+    <Style Selector="Border.chrome, Border.nameplate">
+      <Setter Property="Opacity" Value="0" />
+      <Setter Property="IsHitTestVisible" Value="False" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="tiles|TileCard:pointerover Border.chrome, tiles|TileCard:pointerover Border.nameplate">
+      <Setter Property="Opacity" Value="1" />
+      <Setter Property="IsHitTestVisible" Value="True" />
+    </Style>
+
+    <!--
+      A pointer that stopped moving takes them off again, the stats overlay open or not
+      (Features/Viewer/Tile/View/TileChrome.cs).
+      After the hover setter it overrides, styles applying in the order they are written.
+    -->
+    <Style Selector="tiles|TileCard:resting Border.chrome, tiles|TileCard:resting Border.nameplate">
+      <Setter Property="Opacity" Value="0" />
+      <Setter Property="IsHitTestVisible" Value="False" />
+    </Style>
+
+    <!-- Up while the zoom moves, faded like the chrome (Features/Viewer/Tile/View/ZoomMap.cs). -->
+    <Style Selector="tiles|ZoomMap">
+      <Setter Property="Width" Value="{StaticResource ZoomMapWidth}" />
+      <Setter Property="Background" Value="{StaticResource ScrimBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource HairlineBrush}" />
+      <Setter Property="CornerRadius" Value="{StaticResource RadiusSegment}" />
+      <Setter Property="WindowFill" Value="{StaticResource ZoomWindowBrush}" />
+      <Setter Property="WindowStroke" Value="{StaticResource ForegroundBrush}" />
+      <Setter Property="Opacity" Value="0" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="tiles|ZoomMap:shown">
+      <Setter Property="Opacity" Value="1" />
+    </Style>
+
+    <Style Selector="Border.chrome">
+      <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
+      <Setter Property="CornerRadius" Value="{StaticResource RadiusControl}" />
+      <Setter Property="Padding" Value="7,4" />
+    </Style>
+
+    <Style Selector="Border.chrome.stage">
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Margin" Value="{StaticResource InsetTight}" />
+    </Style>
+
+    <!-- The strip chevron turns over as the strip goes or comes back, pointing where a press sends it. -->
+    <Style Selector="ti|TablerIcon.strip">
+      <Setter Property="RenderTransform" Value="none" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <TransformOperationsTransition Property="RenderTransform" Duration="{StaticResource MotionMove}" Easing="{StaticResource MotionEase}" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="ti|TablerIcon.strip.hidden">
+      <Setter Property="RenderTransform" Value="rotate(180deg)" />
+    </Style>
+
+    <Style Selector="Border.nameplate">
+      <Setter Property="Background" Value="{StaticResource ScrimBrush}" />
+      <Setter Property="CornerRadius" Value="5" />
+      <Setter Property="Padding" Value="8,2" />
+    </Style>
+    <Style Selector="Border.nameplate TextBlock">
+      <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+      <Setter Property="FontSize" Value="{StaticResource FontSizeMinor}" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="Border.nameplate TextBlock.figure">
+      <Setter Property="FontWeight" Value="Normal" />
+    </Style>
+    <Style Selector="Border.nameplate ti|TablerIcon.badge">
+      <Setter Property="Brush" Value="{StaticResource ForegroundBrush}" />
+    </Style>
+    <!-- The mark pops in as the stream goes quiet, so a mute pressed by key is seen to land. -->
+    <Style Selector="Border.nameplate ti|TablerIcon.muted[IsVisible=True]">
+      <Style.Animations>
+        <Animation Duration="{StaticResource MotionMark}" Easing="{StaticResource MotionEase}">
+          <KeyFrame Cue="0%">
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="RenderTransform" Value="scale(0.4)" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="RenderTransform" Value="none" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+
+    <!-- A muted stream's meter dims to the grey of a reading, the level still moving under it. -->
+    <Style Selector="Border.level">
+      <Setter Property="Background" Value="{StaticResource ForegroundBrush}" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <controls:BrushFade Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Border.level.muted">
+      <Setter Property="Background" Value="{StaticResource MutedBrush}" />
+    </Style>
+
+    <!-- Tile's shape, and what stands behind a picture that has not arrived. -->
+    <Style Selector="tiles|TileCard Border.frame">
+      <Setter Property="Background" Value="{StaticResource PanelBrush}" />
+      <Setter Property="CornerRadius" Value="{StaticResource RadiusTile}" />
+    </Style>
+
+    <!--
+      On a filled screen the card is picture and nothing besides.
+      The host letterboxes it to the stream's shape, so a rounded corner would bite into the frame
+      instead of shaping a cell in a grid.
+      What surrounds the picture is the black a stream sits on.
+    -->
+    <Style Selector="tiles|TileCard.filling Border.frame">
+      <Setter Property="Background" Value="{StaticResource TileBrush}" />
+      <Setter Property="CornerRadius" Value="0" />
+    </Style>
+
+    <!--
+      Picture or plate, decided here rather than on the elements, the answer belonging to the host:
+      while a stream is popped out its grid slot draws the plate and the window it went to draws the picture,
+      both reading the one tile.
+
+      Clearing the source makes the plate cost nothing.
+      A source that is gone ends the subscription and gives the pool back
+      (Features/Viewer/Tile/View/StreamTile.cs).
+    -->
+    <Style Selector="tiles|TileCard tiles|StreamTile" x:DataType="tile:TileViewModel">
+      <Setter Property="Source" Value="{Binding}" />
+    </Style>
+    <Style Selector="tiles|TileCard[PictureElsewhere=True] tiles|StreamTile">
+      <Setter Property="Source" Value="{x:Null}" />
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+
+    <!--
+      A tile takes its place with a fade and a slight zoom (docs/design-language.md, "Motion").
+      The picture fades in over it once frames arrive, and out again while the tile is dark.
+    -->
+    <Style Selector="tiles|TileCard">
+      <Style.Animations>
+        <Animation Duration="{StaticResource MotionMount}" Easing="{StaticResource MotionEase}">
+          <KeyFrame Cue="0%">
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="RenderTransform" Value="scale(0.97)" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="RenderTransform" Value="none" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+    <!--
+      A stream taking the stage fades in, from a press on the strip or a key alike.
+      The fade sits on the frame because two animations of one property on one control play back to back:
+      on the card, a tile staged as its screen opens would fade in twice.
+      The strip going or coming back settles the stage's frame from a slight zoom,
+      the stage changing size in one layout pass.
+      The grid host sets both classes (Features/Viewer/View/ViewerView.axaml), a window of its own staging nothing.
+    -->
+    <Style Selector="tiles|TileCard.staged Border.frame">
+      <Style.Animations>
+        <Animation Duration="{StaticResource MotionMount}" Easing="{StaticResource MotionEase}">
+          <KeyFrame Cue="0%">
+            <Setter Property="Opacity" Value="0" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="Opacity" Value="1" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+    <Style Selector="tiles|TileCard.staged.alone Border.frame, tiles|TileCard.staged.beside Border.frame">
+      <Setter Property="RenderTransformOrigin" Value="50%,50%" />
+    </Style>
+    <Style Selector="tiles|TileCard.staged.alone Border.frame">
+      <Style.Animations>
+        <Animation Duration="{StaticResource MotionMount}" Easing="{StaticResource MotionEase}">
+          <KeyFrame Cue="0%">
+            <Setter Property="RenderTransform" Value="scale(0.96)" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="RenderTransform" Value="none" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+    <Style Selector="tiles|TileCard.staged.beside Border.frame">
+      <Style.Animations>
+        <Animation Duration="{StaticResource MotionMount}" Easing="{StaticResource MotionEase}">
+          <KeyFrame Cue="0%">
+            <Setter Property="RenderTransform" Value="scale(1.03)" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="RenderTransform" Value="none" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+
+    <Style Selector="tiles|TileCard.dark tiles|StreamTile">
+      <Setter Property="Opacity" Value="0" />
+    </Style>
+
+    <Style Selector="tiles|TileCard Border.plate">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="tiles|TileCard[PictureElsewhere=True] Border.plate">
+      <Setter Property="IsVisible" Value="True" />
+      <Style.Animations>
+        <Animation Duration="{StaticResource MotionMount}" Easing="{StaticResource MotionEase}">
+          <KeyFrame Cue="0%">
+            <Setter Property="Opacity" Value="0" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="Opacity" Value="1" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+
+    <!--
+      The overlay goes with the picture, so the card asked for it is the one drawing the frames it describes:
+      figures over the plate describe a decode this card is not drawing,
+      and asking one tile for them puts the panel on screen twice.
+
+      The card opens the overlay holding it off the tile's state and the host's answer together,
+      the same pair deciding whether a resting pointer clears the cursor
+      (Features/Viewer/Tile/View/TileChrome.cs).
+      The overlay fades it out on close, as it grows in below.
+    -->
+
+    <!-- The panel grows out of the corner it stands in, as a menu grows out of its anchor. -->
+    <Style Selector="Panel.stats[IsVisible=True] > Border">
+      <Setter Property="RenderTransformOrigin" Value="100%,0%" />
+      <Style.Animations>
+        <Animation Duration="{StaticResource MotionMount}" Easing="{StaticResource MotionEase}">
+          <KeyFrame Cue="0%">
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="RenderTransform" Value="scale(0.94)" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="RenderTransform" Value="none" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+
+    <!-- A heading's figure fades as its block opens, the rows unrolling under it taking over. -->
+    <Style Selector="Panel.stats TextBlock.lead">
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="{StaticResource MotionFold}" Easing="{StaticResource MotionEase}" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Panel.stats TextBlock.lead.open">
+      <Setter Property="Opacity" Value="0" />
+    </Style>
+
+    <!--
+      A loss or drop above zero. Weight and full strength carry it, no hue:
+      the panel stands over the picture (docs/design-language.md, "Video surfaces").
+    -->
+    <Style Selector="Panel.stats TextBlock.alarm">
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+    </Style>
+  </UserControl.Styles>
+
+  <!--
+    Right-click carries everything a tile affords, in one menu rather than a row of hover buttons,
+    and defined here rather than per host, what a tile affords not changing with the window it is in.
+    The stage's strip chevron departs from it, with its reason where it stands.
+
+    Grouped by subject, in the order a reader reaches for them: where the stream is drawn, how loud it is,
+    what happens to its range, what is printed over it.
+    The dividers are the grouping.
+    An unbroken run of equal rows makes the reader sort them on every open.
+
+    Each row prints its key at the quiet end, the volume row the pair that moves it, and the tone-map row none.
+    A menu is where a reader learns what a tile affords, so it is also where they learn what to press instead.
+    A key acts on the tile under the pointer (Features/Viewer/Tile/View/TileKeys.cs).
+
+    A row names a state, never a transition, and shows whether that state holds as a tick at its end.
+    Words and glyph hold still, so the menu reads as which of these are on rather than as a list of verbs
+    (docs/design-language.md, "Menus").
+    A row is idempotent: "Focus" is somewhere the tile can be, and pressing it twice is a round trip.
+
+    No row states a ToggleType.
+    A toggling MenuItem writes its own IsChecked on click, putting a second author on the fact
+    and letting the tick move before the thing it describes has: Mute is a call the backend can refuse,
+    so the row would claim what the click asked for and then withdraw it.
+    Bound one way, the tick is a read of the state and nothing besides.
+    It costs the rows their checkable role for a screen reader.
+
+    MenuItem and MenuFlyoutPresenter are themed by type, so nothing here asks for a look (Design/Menus.axaml).
+  -->
+  <UserControl.ContextFlyout>
+    <MenuFlyout>
+      <!-- The one row carrying a note: focus rearranges tiles, and with one tile there is nothing to rearrange. -->
+      <MenuItem Command="{Binding ToggleFocus}"
+                InputGesture="{x:Static tiles:TileKeys.Focus}"
+                IsChecked="{Binding IsFocused, Mode=OneWay}">
+        <MenuItem.Icon>
+          <ti:TablerIcon Icon="IconLayoutDistributeHorizontal" />
+        </MenuItem.Icon>
+        <MenuItem.Header>
+          <StackPanel MaxWidth="260">
+            <TextBlock Text="Focus" />
+            <TextBlock Classes="hint" TextWrapping="Wrap"
+                       Text="One stream fills the space, the rest beneath it. Shows only with two or more streams." />
+          </StackPanel>
+        </MenuItem.Header>
+      </MenuItem>
+
+      <!-- On the staged tile alone, the one with a strip under it to put away. -->
+      <MenuItem Header="{x:Static copy:Cards.HideStrip}" Command="{Binding ToggleStrip}"
+                InputGesture="{x:Static tiles:TileKeys.Strip}"
+                IsChecked="{Binding StripHidden, Mode=OneWay}"
+                IsVisible="{Binding HasStrip}">
+        <MenuItem.Icon>
+          <ti:TablerIcon Icon="IconLayoutBottombarCollapse" />
+        </MenuItem.Icon>
+      </MenuItem>
+
+      <MenuItem Header="Own window" Command="{Binding TogglePopOut}"
+                InputGesture="{x:Static tiles:TileKeys.PopOut}"
+                IsChecked="{Binding IsPoppedOut, Mode=OneWay}">
+        <MenuItem.Icon>
+          <ti:TablerIcon Icon="IconExternalLink" />
+        </MenuItem.Icon>
+      </MenuItem>
+
+      <MenuItem Header="Fullscreen" Command="{Binding ToggleFullscreen}"
+                InputGesture="{x:Static tiles:TileKeys.Fullscreen}"
+                IsChecked="{Binding IsFullscreen, Mode=OneWay}">
+        <MenuItem.Icon>
+          <ti:TablerIcon Icon="IconMaximize" />
+        </MenuItem.Icon>
+      </MenuItem>
+
+      <Separator />
+
+      <!--
+        Mute and the volume are one state and stand together.
+        A stream without an audio track greys both, a different fact from silence: nothing there to be loud.
+      -->
+      <MenuItem Header="Mute" Command="{Binding ToggleMute}" IsEnabled="{Binding HasAudio}"
+                InputGesture="{x:Static tiles:TileKeys.Mute}"
+                IsChecked="{Binding Muted, Mode=OneWay}">
+        <MenuItem.Icon>
+          <ti:TablerIcon Icon="IconVolumeOff" />
+        </MenuItem.Icon>
+      </MenuItem>
+
+      <!--
+        A slider inside a menu is what StaysOpenOnClick is for: without it the first press dismisses the flyout
+        and the drag never starts.
+        The code-behind marks the pointer events handled for the same reason,
+        a drag reaching the menu reading as a click on the row.
+
+        This row holds a control instead of a state, so it holds no tick either,
+        the slider's position being the reading.
+
+        Its keys print inside the row rather than in the key column,
+        which holds one gesture while this row is moved by two.
+        They wear that column's weight and sit at the same quiet end,
+        so scanning down the menu still finds every key in one place (Features/Viewer/Tile/View/TileKeys.cs).
+      -->
+      <MenuItem StaysOpenOnClick="True" IsEnabled="{Binding HasAudio}">
+        <MenuItem.Icon>
+          <ti:TablerIcon Icon="IconVolume" />
+        </MenuItem.Icon>
+        <MenuItem.Header>
+          <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{StaticResource GapControl}" MinWidth="190">
+            <TextBlock Grid.Column="0" Text="Volume" VerticalAlignment="Center" />
+            <Slider Grid.Column="1"
+                    Name="VolumeSlider"
+                    Minimum="0" Maximum="1"
+                    TickFrequency="{Binding VolumeStep}"
+                    IsSnapToTickEnabled="True"
+                    SmallChange="{Binding VolumeStep}"
+                    LargeChange="{Binding VolumeStep}"
+                    Value="{Binding Volume, Mode=TwoWay}"
+                    PointerPressed="OnVolumePressed"
+                    VerticalAlignment="Center" />
+            <TextBlock Grid.Column="2" Classes="hint" Text="+ / -"
+                       Margin="9,0,0,0" VerticalAlignment="Center" />
+          </Grid>
+        </MenuItem.Header>
+      </MenuItem>
+
+      <Separator />
+
+      <!--
+        Tone mapping, the single thing a viewer decides about an HDR stream.
+        It rebuilds the decode instead of writing a value into a running one,
+        so the tick returns through the decode's own state as the mute does.
+        A machine with nothing to convert with greys the row and names what is missing.
+      -->
+      <MenuItem Command="{Binding ToggleToneMap}"
+                IsEnabled="{Binding CanToneMap}"
+                IsChecked="{Binding ToneMapped, Mode=OneWay}">
+        <MenuItem.Icon>
+          <ti:TablerIcon Icon="IconSunLow" />
+        </MenuItem.Icon>
+        <MenuItem.Header>
+          <StackPanel MaxWidth="260">
+            <TextBlock Text="Roll HDR down to this display" />
+            <TextBlock Classes="hint" Text="{Binding ToneMapNote}" TextWrapping="Wrap"
+                       IsVisible="{Binding ToneMapNote, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+          </StackPanel>
+        </MenuItem.Header>
+      </MenuItem>
+
+      <Separator />
+
+      <!--
+        Greyed, tick and all, on a card too narrow for the panel (Features/Viewer/Tile/View/TileChrome.cs).
+        The card's size decides, so its code-behind writes the row.
+      -->
+      <MenuItem Name="StatsRow" Command="{Binding ToggleStats}"
+                InputGesture="{x:Static tiles:TileKeys.Stats}">
+        <MenuItem.Icon>
+          <ti:TablerIcon Icon="IconChartBar" />
+        </MenuItem.Icon>
+        <MenuItem.Header>
+          <StackPanel MaxWidth="260">
+            <TextBlock Text="Stats overlay" />
+            <TextBlock Classes="hint" Text="{x:Static copy:Cards.StatsNoRoom}" TextWrapping="Wrap"
+                       IsVisible="{Binding !$parent[MenuItem].IsEnabled}" />
+          </StackPanel>
+        </MenuItem.Header>
+      </MenuItem>
+
+      <Separator />
+
+      <!--
+        Last and behind its own divider, the one row that ends the decode rather than arranging the tile.
+        No tick: a stopped stream has no tile to open this menu on.
+      -->
+      <MenuItem Header="{x:Static copy:Cards.StopWatching}" Command="{Binding Close}"
+                InputGesture="{x:Static tiles:TileKeys.StopWatching}">
+        <MenuItem.Icon>
+          <ti:TablerIcon Icon="IconPlayerStop" />
+        </MenuItem.Icon>
+      </MenuItem>
+    </MenuFlyout>
+  </UserControl.ContextFlyout>
+
+  <!-- Fill and corner come from the styles, so the filled-screen case can restate them. -->
+  <Border Classes="frame" ClipToBounds="True">
+    <Panel Name="Frame" Background="Transparent">
+
+      <!--
+        The picture and the publisher's pointer over it, zoomed together (Features/Viewer/Tile/View/ZoomGestures.cs).
+        The frame around them stays unzoomed, so a gesture lands in its pixels, and its clear ground catches one anywhere.
+      -->
+      <Panel Name="Zoomed" RenderTransformOrigin="0,0">
+
+        <!--
+          The picture, and where it comes from.
+          The styles above set both, a card drawing the plate carrying no source at all rather than a hidden one.
+        -->
+        <tiles:StreamTile Name="Picture" />
+
+        <!--
+          The publisher's pointer, which the frames of a stream sending its position do not carry
+          (docs/capture-architecture.md, "The pointer").
+          Over the picture and under the chrome: a marker that hid a menu would cost a reader the control.
+          The offsets are in this card's own pixels.
+        -->
+        <Canvas IsVisible="{Binding HasPointer}" ClipToBounds="True">
+          <Path Classes="pointer"
+                Canvas.Left="{Binding PointerLeft}"
+                Canvas.Top="{Binding PointerTop}" />
+        </Canvas>
+      </Panel>
+
+      <!--
+        Why the tile is dark: nothing decoding, connecting, or a handle this renderer cannot open.
+        Red for the two that broke, the other two being a stream on its way
+        (docs/design-language.md, "Palette").
+      -->
+      <StackPanel Classes="fadesin"
+                  IsVisible="{Binding HasNotice}"
+                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                  Spacing="{StaticResource GapTight}"
+                  Margin="{StaticResource InsetSection}">
+
+        <!--
+          The one dark state a picture is still coming in.
+          Centred over the tile rather than beside the line, the sentence under it being centred too,
+          and in the sentence's own grey: a hue over a picture is a hue against an unknown background
+          (docs/design-language.md, "Video surfaces").
+        -->
+        <controls:Waiting Foreground="{StaticResource MutedBrush}"
+                          HorizontalAlignment="Center"
+                          IsVisible="{Binding IsConnecting}" />
+
+        <SelectableTextBlock Classes="hint" Text="{Binding Notice}"
+                             Classes.danger="{Binding NoticeIsFailure}"
+                             Tapped="OnClickTaken"
+                             HorizontalAlignment="Center"
+                             TextAlignment="Center" />
+      </StackPanel>
+
+      <!-- The plate. The slot holds its place at this stream's shape, so nothing reflows. -->
+      <Border Classes="plate" Background="{StaticResource SurfaceBrush}">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Spacing="{StaticResource GapTight}">
+          <ti:TablerIcon Icon="IconExternalLink" Brush="{StaticResource MutedBrush}"
+                         HorizontalAlignment="Center" />
+          <TextBlock Classes="hint" Text="In a window of its own" TextAlignment="Center" />
+        </StackPanel>
+      </Border>
+
+      <!--
+        Off with the picture it names, the plate standing in for both.
+        The Discord mark leads a name taken from a voice channel.
+        The mute mark sits after it, every decode opening muted.
+        A stream without an audio track wears none, having nothing to mute.
+      -->
+      <Border Classes="nameplate" VerticalAlignment="Bottom" HorizontalAlignment="Left"
+              Margin="{StaticResource InsetTight}" IsVisible="{Binding !PictureElsewhere}">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <Ellipse Width="6" Height="6" Fill="{StaticResource GoBrush}" VerticalAlignment="Center"
+                   IsVisible="{Binding !HasNotice}" />
+          <ti:TablerIcon Classes="badge" Icon="IconBrandDiscord" IsVisible="{Binding NamedByDiscord}" />
+          <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+          <ti:TablerIcon Classes="badge muted" Icon="IconVolumeOff">
+            <ti:TablerIcon.IsVisible>
+              <MultiBinding Converter="{x:Static BoolConverters.And}">
+                <Binding Path="HasAudio" />
+                <Binding Path="Muted" />
+              </MultiBinding>
+            </ti:TablerIcon.IsVisible>
+          </ti:TablerIcon>
+        </StackPanel>
+      </Border>
+
+      <!-- On the stage, where the picture is large enough to carry a second plate. -->
+      <Border Classes="nameplate" VerticalAlignment="Bottom" HorizontalAlignment="Right"
+              Margin="{StaticResource InsetTight}">
+        <Border.IsVisible>
+          <MultiBinding Converter="{x:Static BoolConverters.And}">
+            <Binding Path="HasFigure" />
+            <Binding Path="IsFocused" />
+            <Binding Path="!PictureElsewhere" />
+          </MultiBinding>
+        </Border.IsVisible>
+        <TextBlock Classes="figure" Text="{Binding Figure}" FontFeatures="{StaticResource FigureFeatures}" />
+      </Border>
+
+      <!--
+        The stage's own control, the one departure from a menu holding everything: the strip put away or back.
+        It arranges the grid, so a card in a window of its own or on a filled screen draws none.
+        It takes its own click, a tap reaching the card meaning focus.
+      -->
+      <Border Classes="chrome stage" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+        <Border.IsVisible>
+          <MultiBinding Converter="{x:Static BoolConverters.And}">
+            <Binding Path="HasStrip" />
+            <Binding Path="$parent[tiles:TileCard].InGrid" />
+            <Binding Path="!PictureElsewhere" />
+          </MultiBinding>
+        </Border.IsVisible>
+        <Button Theme="{StaticResource IconButton}" Command="{Binding ToggleStrip}" Tapped="OnClickTaken">
+          <ToolTip.Tip>
+            <Panel>
+              <TextBlock Text="{x:Static copy:Cards.HideStripTip}" IsVisible="{Binding !StripHidden}" />
+              <TextBlock Text="{x:Static copy:Cards.ShowStripTip}" IsVisible="{Binding StripHidden}" />
+            </Panel>
+          </ToolTip.Tip>
+          <ti:TablerIcon Classes="button strip" Classes.hidden="{Binding StripHidden}" Icon="IconChevronDown" />
+        </Button>
+      </Border>
+
+      <!-- Where in the picture a zoomed card is, under the stats overlay that opens in the same corner. -->
+      <tiles:ZoomMap Name="Map" VerticalAlignment="Top" HorizontalAlignment="Right"
+                     Margin="{StaticResource InsetTight}" IsHitTestVisible="False" />
+
+      <!--
+        The stats overlay, turned on per tile for the one stream being diagnosed.
+        It stays up when the pointer leaves, and the card keeps its cursor while it is up.
+
+        It shows one stage at a time: every block closed on its heading and one figure,
+        a press opening that block and closing the one open before it (Features/Viewer/Tile/ViewModel/StatsFold.cs).
+        A loss or drop above zero prints at emphasis weight, on its row and on its block's heading.
+
+        Height follows the tile and the panel scrolls, so a small tile keeps most of its picture.
+        The width stays fixed, since a panel resizing as figures land would move the row under the reader's eye.
+        Words and tips live in Copy/Counters.cs (docs/tooltips.md).
+
+        The inset sits on the wrapper: the panel's height binds to the wrapper,
+        and a margin on the panel itself would push its last row past the tile's clip.
+      -->
+      <controls:Overlay Name="Stats">
+        <Panel Classes="stats" Margin="{StaticResource InsetTight}" Tapped="OnClickTaken">
+          <Border VerticalAlignment="Top" HorizontalAlignment="Right"
+                  MaxHeight="{Binding $parent[Panel].Bounds.Height}"
+                  Width="286"
+                  Background="{StaticResource SurfaceBrush}"
+                  BorderBrush="{StaticResource DividerBrush}"
+                  BorderThickness="1"
+                  CornerRadius="{StaticResource RadiusPanel}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                          Padding="{StaticResource InsetControl}">
+              <StackPanel Spacing="{StaticResource GapControl}">
+
+                <TextBlock Classes="ident" Text="{Binding Title}" TextWrapping="Wrap" />
+
+                <!-- Blocks in the order the frames pass through the stages (Features/Viewer/Tile/Model/TileStats.cs). -->
+                <ItemsControl ItemsSource="{Binding Stats}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="model:StatSection">
+                      <StackPanel>
+                        <Button Theme="{StaticResource RowButton}" Command="{Binding Toggle}">
+                          <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{StaticResource GapControl}" Margin="0,4">
+                            <ti:TablerIcon Grid.Column="0" Classes="disclosure" Classes.open="{Binding IsOpen}"
+                                           Icon="IconChevronRight" Brush="{StaticResource MutedBrush}"
+                                           VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Classes="caption" Classes.alarm="{Binding HasAlarm}"
+                                       Text="{Binding Heading}" ToolTip.Tip="{Binding Tip}"
+                                       VerticalAlignment="Center" />
+                            <!-- The open block prints the figure in its own row. -->
+                            <TextBlock Grid.Column="2" Classes="figure lead" Classes.alarm="{Binding Lead.Alarm}"
+                                       Classes.open="{Binding IsOpen}"
+                                       Text="{Binding Lead.Value}"
+                                       TextWrapping="Wrap" TextAlignment="Right" VerticalAlignment="Center" />
+                          </Grid>
+                        </Button>
+
+                        <!--
+                          Label left, figure right.
+                          The label takes the width its text needs and the figure wraps into the rest.
+                          Labels come from a fixed vocabulary and readings do not,
+                          so a long reading sized first would squeeze its label to one letter per line.
+                          The tip sits on the label, the reading being the half that changes under the pointer.
+                        -->
+                        <controls:Reveal IsOpen="{Binding IsOpen}">
+                          <ItemsControl ItemsSource="{Binding Lines}" Margin="7,2,3,8">
+                            <ItemsControl.ItemTemplate>
+                              <DataTemplate x:DataType="model:StatLine">
+                                <Grid ColumnDefinitions="Auto,*"
+                                      ColumnSpacing="{StaticResource GapControl}">
+                                  <TextBlock Grid.Column="0" Classes="hint" Classes.alarm="{Binding Alarm}"
+                                             Text="{Binding Label}" ToolTip.Tip="{Binding Tip}" />
+                                  <TextBlock Grid.Column="1" Classes="figure" Classes.alarm="{Binding Alarm}"
+                                             Text="{Binding Value}" TextWrapping="Wrap" TextAlignment="Right" />
+                                </Grid>
+                              </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                          </ItemsControl>
+                        </controls:Reveal>
+                      </StackPanel>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+              </StackPanel>
+            </ScrollViewer>
+          </Border>
+        </Panel>
+      </controls:Overlay>
+
+      <!--
+        The meter, along the bottom edge.
+        Present whenever the decode carries audio and flat while that audio is silent,
+        gone entirely without an audio track.
+
+        Not chrome, and it does not hide on hover: the one figure worth seeing unasked.
+        Measured ahead of the volume element, so a muted stream still shows itself making noise.
+      -->
+      <Border VerticalAlignment="Bottom" Height="3" IsVisible="{Binding HasAudio}"
+              Background="{StaticResource DividerBrush}">
+        <Border Name="Level" Classes="level" Height="3" HorizontalAlignment="Left"
+                Classes.muted="{Binding Muted}"
+                IsVisible="{Binding HasLevel}" />
+      </Border>
+
+    </Panel>
+  </Border>
+
+</UserControl>

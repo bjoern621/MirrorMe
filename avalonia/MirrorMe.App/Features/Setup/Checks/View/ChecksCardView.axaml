@@ -1,0 +1,51 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:MirrorMe.App.Controls"
+             xmlns:copy="using:MirrorMe.App.Copy"
+             xmlns:model="using:MirrorMe.App.Features.Setup.Model"
+             xmlns:ti="using:TablerIcons"
+             xmlns:vm="using:MirrorMe.App.Features.Setup.Checks.ViewModel"
+             x:Class="MirrorMe.App.Features.Setup.Checks.View.ChecksCardView"
+             x:DataType="vm:ChecksCardViewModel">
+
+  <UserControl.Resources>
+    <DataTemplate x:Key="CheckLine" x:DataType="model:PreflightCheckRow">
+      <controls:CheckItem Margin="0,0,0,9"
+                          Text="{Binding Text}"
+                          State="{Binding State}"
+                          FixedInStep="{Binding Anchor.Label}"
+                          Fix="{Binding Anchor.Fix}" />
+    </DataTemplate>
+  </UserControl.Resources>
+
+  <Border Classes="card" Padding="{StaticResource InsetPanel}" IsVisible="{Binding IsShown}">
+    <StackPanel>
+      <TextBlock Classes="caption" Text="{x:Static copy:Cards.ChecksTitle}" Margin="0,0,0,10" />
+      <ItemsControl ItemsSource="{Binding Lines}" ItemTemplate="{StaticResource CheckLine}" />
+
+      <SelectableTextBlock Classes="hint danger"
+                           TextWrapping="Wrap"
+                           TextTrimming="None"
+                           LineHeight="{StaticResource LineHeightSmall}"
+                           Margin="0,3,0,9"
+                           IsVisible="{Binding HasRefusal}"
+                           Text="{Binding Refusal}" />
+
+      <Button Theme="{StaticResource LinkButton}"
+              HorizontalAlignment="Left"
+              IsVisible="{Binding HasNotes}"
+              Command="{Binding ToggleNotes}">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <ti:TablerIcon Classes="disclosure" Classes.open="{Binding NotesShown}" Icon="IconChevronRight" Brush="{StaticResource MutedBrush}" />
+          <TextBlock Classes="secondary" Text="{x:Static copy:Cards.ChecksNotes}" VerticalAlignment="Center" />
+          <TextBlock Classes="hint" Text="{Binding NotesCount}" VerticalAlignment="Center" />
+        </StackPanel>
+      </Button>
+
+      <controls:Reveal IsOpen="{Binding NotesShown}">
+        <ItemsControl ItemsSource="{Binding Notes}" ItemTemplate="{StaticResource CheckLine}" Margin="0,9,0,0" />
+      </controls:Reveal>
+    </StackPanel>
+  </Border>
+
+</UserControl>

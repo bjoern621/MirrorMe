@@ -24,12 +24,12 @@ The GStreamer bindings (`go-gst`) are MIT; the library they bind is not compiled
 is covered below.
 
 The shell resolves NuGet packages pinned in
-`avalonia/ScreenShare.App/ScreenShare.App.csproj`, under MIT, BSD-3-Clause and
+`avalonia/MirrorMe.App/MirrorMe.App.csproj`, under MIT, BSD-3-Clause and
 Apache-2.0.
 Avalonia, Skia, HarfBuzz, the Inter font package and the Tabler icon set are MIT; gRPC is
 Apache-2.0; Protobuf is BSD-3-Clause.
 The .NET runtime is MIT.
-The JetBrains Mono NL font files in `avalonia/ScreenShare.App/Assets/Fonts` are under OFL-1.1, with the license text beside them.
+The JetBrains Mono NL font files in `avalonia/MirrorMe.App/Assets/Fonts` are under OFL-1.1, with the license text beside them.
 
 None of these require more than their copyright notice and license text, which their
 packages carry and which a build reproduces into the output directory.

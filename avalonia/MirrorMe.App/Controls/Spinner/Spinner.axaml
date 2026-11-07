@@ -1,0 +1,64 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:MirrorMe.App.Controls">
+
+  <!--
+    Three quarters of a circle, because a whole ring turning reads as a ring standing still.
+    The stroke takes the inherited Foreground, so a disabled treatment that moves Foreground moves
+    the arc with it.
+  -->
+  <ControlTheme x:Key="{x:Type controls:Spinner}" TargetType="controls:Spinner">
+    <Setter Property="Width" Value="{StaticResource SpinnerSize}" />
+    <Setter Property="Height" Value="{StaticResource SpinnerSize}" />
+    <Setter Property="HorizontalAlignment" Value="Center" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="IsHitTestVisible" Value="False" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Arc Name="Ring"
+             Stroke="{TemplateBinding Foreground}"
+             StrokeThickness="{StaticResource SpinnerStroke}"
+             StrokeLineCap="Round"
+             StartAngle="0"
+             SweepAngle="270"
+             RenderTransformOrigin="50%,50%">
+          <Arc.RenderTransform>
+            <RotateTransform />
+          </Arc.RenderTransform>
+        </Arc>
+      </ControlTemplate>
+    </Setter>
+
+    <Style Selector="^">
+      <Style.Animations>
+        <Animation Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}">
+          <KeyFrame Cue="0%">
+            <Setter Property="Opacity" Value="0" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="Opacity" Value="1" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+
+    <!--
+      Constant rate and not eased.
+      An eased turn reads as progress towards something, and nothing here knows how far along a
+      control call is.
+    -->
+    <Style Selector="^ /template/ Arc#Ring">
+      <Style.Animations>
+        <Animation Duration="0:0:1" IterationCount="INFINITE">
+          <KeyFrame Cue="0%">
+            <Setter Property="RotateTransform.Angle" Value="0" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="RotateTransform.Angle" Value="360" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+  </ControlTheme>
+
+</ResourceDictionary>

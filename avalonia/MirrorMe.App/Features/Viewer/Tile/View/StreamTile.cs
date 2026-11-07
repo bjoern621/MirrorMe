@@ -1,0 +1,438 @@
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Threading;
+using MirrorMe.Api.V1;
+using MirrorMe.App.Backend;
+using MirrorMe.App.Contracts;
+using MirrorMe.App.Copy;
+using MirrorMe.App.Features.Viewer.Tile.Model;
+
+namespace MirrorMe.App.Features.Viewer.Tile.View;
+
+/// <summary>
+/// One decoded stream, drawn out of the GPU memory it was decoded into.
+///
+/// No pixel read: the decoder writes shared GPU memory, the frame channel carries its name,
+/// and a surface imports that name, nothing landing in a message or in system memory
+/// (<c>docs/viewer-architecture.md</c>, "The frame channel").
+///
+/// The subscription and the loan: opening the channel, asking for a render size, picking the slot to draw,
+/// giving slots back, and reporting.
+/// Turning a slot into a picture is <see cref="ITileSurface"/>'s job, and the pool names which one does it.
+///
+/// Every frame is a loan.
+/// A slot goes back only once the surface reports the draw complete,
+/// so a slow tile pays in frames the backend drops rather than in a torn picture or a stalled pipeline.
+/// </summary>
+public sealed class StreamTile : Decorator
+{
+    /// <summary>
+    /// Frame origin, and sink for what this tile reports.
+    /// Null neither draws nor reports: the grid slot of a popped-out stream, or a row nobody asked for.
+    /// </summary>
+    public static readonly StyledProperty<IFrameSource?> SourceProperty =
+        AvaloniaProperty.Register<StreamTile, IFrameSource?>(nameof(Source));
+
+    /// <summary>
+    /// Magnification the card draws this picture at, 1 unzoomed.
+    /// The ask grows with it, so a zoomed picture is decoded at the size it is seen at rather than stretched.
+    /// </summary>
+    public static readonly StyledProperty<double> ZoomProperty =
+        AvaloniaProperty.Register<StreamTile, double>(nameof(Zoom), 1);
+
+    /// <summary>A source swap restarts only while attached.</summary>
+    private bool _attached;
+
+    /// <summary>Generation of the imported pool, 0 while none is. Frames of any other generation are dropped.</summary>
+    private ulong _generation;
+
+    /// <summary>Non-null exactly while a subscription runs.</summary>
+    private CancellationTokenSource? _cancel;
+
+    /// <summary>Report last handed to the source. <see cref="Report"/> hands a repeat nothing.</summary>
+    private TileReport _reported = TileReport.Nothing;
+
+    /// <summary>Size the backend already has, in device pixels. Repeating it renegotiates nothing.</summary>
+    private PixelSize _asked;
+
+    public IFrameSource? Source
+    {
+        get => GetValue(SourceProperty);
+        set => SetValue(SourceProperty, value);
+    }
+
+    public double Zoom
+    {
+        get => GetValue(ZoomProperty);
+        set => SetValue(ZoomProperty, value);
+    }
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        _attached = true;
+        Start();
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnDetachedFromVisualTree(e);
+        _attached = false;
+        Stop();
+    }
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+
+        if (change.Property == SourceProperty && _attached)
+        {
+            // A pool belongs to the decode that lent it,
+            // so a new row tears the subscription down instead of reusing it.
+            Stop();
+            Start();
+        }
+
+        if (change.Property == ZoomProperty)
+        {
+            Fit(Bounds.Size);
+        }
+    }
+
+    protected override Size ArrangeOverride(Size size)
+    {
+        var arranged = base.ArrangeOverride(size);
+        Fit(arranged);
+        return arranged;
+    }
+
+    /// <summary>
+    /// Heights this control ever asks for.
+    ///
+    /// Rungs instead of exact sizes: the backend allocates its slots at the size it was given,
+    /// so each distinct ask costs an allocation and a renegotiated branch.
+    /// Rearrangement moves every tile's exact size, on a window drag, a focus or a joining stream,
+    /// and rounding up lands most of those moves on the size already in force.
+    ///
+    /// The price is a scaler that stops short of the tile's exact size: between two rungs the frames arrive
+    /// slightly large and are scaled at draw time, a resample the GPU performs regardless.
+    /// </summary>
+    private static readonly int[] Ladder = [360, 540, 720, 900, 1080, 1440, 2160];
+
+    /// <summary>
+    /// Quiet period a size waits out before it is sent.
+    /// A dragged window arranges once per frame, and each rung crossed on the way would re-announce a pool.
+    /// </summary>
+    private static readonly TimeSpan SettleDelay = TimeSpan.FromMilliseconds(250);
+
+    private DispatcherTimer? _settle;
+
+    /// <summary>Size awaiting the settle timer, in device pixels.</summary>
+    private PixelSize _pending;
+
+    /// <summary>
+    /// States how many pixels this tile needs.
+    ///
+    /// Device pixels rather than layout units: the scaler fixates against a pixel count,
+    /// so a 200-unit tile on a 200% display wants 400 of them, and 800 zoomed in twofold.
+    /// Rounded onto a rung, held until the size settles, and skipped where it matches the size in force,
+    /// a repeat renegotiating the pipeline's filter branch and re-announcing its pool.
+    ///
+    /// Nothing here sizes the picture.
+    /// The surface is a child and layout hands it the whole tile,
+    /// so the drawing tracks the arrangement while the ask trails it.
+    /// </summary>
+    private void Fit(Size size)
+    {
+        Assert.That(Zoom >= 1, "a picture is drawn at its own size or larger", Zoom);
+
+        var scaling = (TopLevel.GetTopLevel(this)?.RenderScaling ?? 1) * Zoom;
+        var wanted = new PixelSize(
+            Math.Max(0, (int)Math.Ceiling(size.Width * scaling)),
+            Math.Max(0, (int)Math.Ceiling(size.Height * scaling)));
+        if (wanted.Width == 0 || wanted.Height == 0)
+        {
+            return;
+        }
+
+        // Height picks the rung and width follows the tile's own shape,
+        // so two tiles of equal height and different ratios each ask for what they draw instead of a padded square.
+        var height = Rung(wanted.Height);
+        var pixels = new PixelSize(
+            Math.Max(1, (int)Math.Round(height * ((double)wanted.Width / wanted.Height))),
+            height);
+
+        if (pixels == _asked || pixels == _pending)
+        {
+            return;
+        }
+
+        _pending = pixels;
+        _settle ??= new DispatcherTimer { Interval = SettleDelay };
+        _settle.Tick -= OnSettled;
+        _settle.Tick += OnSettled;
+        _settle.Stop();
+        _settle.Start();
+    }
+
+    private void OnSettled(object? sender, EventArgs e)
+    {
+        _settle?.Stop();
+
+        if (_pending == _asked || _pending.Width == 0)
+        {
+            return;
+        }
+
+        _asked = _pending;
+        _ = _channel?.RenderSizeAsync(_asked.Width, _asked.Height);
+    }
+
+    /// <summary>Lowest rung covering the height, and the topmost rung for anything above the ladder.</summary>
+    private static int Rung(int height)
+    {
+        foreach (var rung in Ladder)
+        {
+            if (height <= rung)
+            {
+                return rung;
+            }
+        }
+
+        return Ladder[^1];
+    }
+
+    /// <summary>Live subscription, kept so an arrange pass has somewhere to send a size.</summary>
+    private FrameChannel? _channel;
+
+    /// <summary>
+    /// Opens the subscription.
+    /// Asynchronous after the first line: a tile paints nothing until frames land,
+    /// so a slow open is a briefly blank tile rather than a stalled window.
+    /// </summary>
+    private void Start()
+    {
+        var source = Source;
+        if (source is null || _cancel is not null)
+        {
+            return;
+        }
+
+        _cancel = new CancellationTokenSource();
+        _ = RunAsync(source, _cancel.Token);
+    }
+
+    /// <summary>
+    /// Ends the subscription.
+    /// The run unwinds its own channel and surface, leaving this the state the control keeps alongside them.
+    /// </summary>
+    private void Stop()
+    {
+        // Timer first: left running it fires at a closing channel,
+        // and a size on a finished subscription reaches a pool the backend has freed.
+        _settle?.Stop();
+        _asked = default;
+        _pending = default;
+
+        _cancel?.Cancel();
+        _cancel?.Dispose();
+        _cancel = null;
+
+        _generation = 0;
+        // TileReport.Nothing, not the struct's default: a replaced row stops and starts this control,
+        // and that default carries the null notice the constant exists to keep out.
+        _reported = TileReport.Nothing;
+    }
+
+    /// <summary>
+    /// Subscription's whole life, from the open to the end of the stream.
+    /// Runs on the UI loop, launched from there with every await resuming there,
+    /// so imports and reports go inline instead of being marshalled.
+    /// </summary>
+    private async Task RunAsync(IFrameSource source, CancellationToken cancellation)
+    {
+        // Owned by the run rather than by the control, so a replaced row is safe:
+        // the ending subscription tears down what it opened while its successor holds its own.
+        FrameChannel? channel = null;
+        ITileSurface? surface = null;
+
+        try
+        {
+            channel = await source.OpenAsync(cancellation).ConfigureAwait(true);
+            _channel = channel;
+
+            // Ahead of the first frame,
+            // so the pipeline converts at this tile's size instead of a whole desktop thrown away at draw time.
+            _asked = default;
+            Fit(Bounds.Size);
+
+            await foreach (var message in channel.ReadAsync(cancellation).ConfigureAwait(true))
+            {
+                switch (message.EventCase)
+                {
+                    case FrameEvent.EventOneofCase.Pool:
+                        surface = await ImportAsync(surface, message.Pool, cancellation).ConfigureAwait(true);
+                        break;
+                    case FrameEvent.EventOneofCase.Ready:
+                        await DrawAsync(surface, channel, message.Ready, cancellation).ConfigureAwait(true);
+                        break;
+                    case FrameEvent.EventOneofCase.End:
+                        Report(_reported with { Notice = Failures.Of(message.End.Cause, message.End.Message) });
+                        return;
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Detached, nothing to say: the control is leaving the screen.
+        }
+        catch (BackendUnavailableException e)
+        {
+            Report(_reported with { Notice = e.Message });
+        }
+        catch (Exception e)
+        {
+            // A failed import is shown as it stands: it names a driver or a handle type,
+            // separating a tile blank for want of a publisher from one this machine cannot open the loan for.
+            Report(_reported with { Notice = e.Message });
+        }
+        finally
+        {
+            _channel = null;
+            // Surface ahead of channel: closing the call frees the pool,
+            // so an import outliving it would name memory that is gone.
+            await ReleaseAsync(surface).ConfigureAwait(true);
+            if (channel is not null)
+            {
+                await channel.DisposeAsync().ConfigureAwait(true);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Takes on one pool, through a surface that opens its kind of handle.
+    /// The surface follows the pool rather than the platform, rebuilt when a pool wants another kind:
+    /// what a machine can open is its renderer's property, and the pool states what the backend allocated.
+    /// </summary>
+    private async Task<ITileSurface?> ImportAsync(
+        ITileSurface? surface,
+        FramePool pool,
+        CancellationToken cancellation)
+    {
+        _generation = 0;
+
+        surface = await SurfaceFor(surface, pool.HandleType).ConfigureAwait(true);
+        if (surface is null)
+        {
+            Report(_reported with
+            {
+                Notice = "This window's renderer cannot open the kind of shared frame this computer decodes into.",
+            });
+            return null;
+        }
+
+        var notice = await surface.ImportAsync(pool, cancellation).ConfigureAwait(true);
+        if (notice is not null)
+        {
+            Report(_reported with { Notice = notice });
+            return surface;
+        }
+
+        _generation = pool.Generation;
+        Report(_reported with
+        {
+            Width = (int)pool.Width,
+            Height = (int)pool.Height,
+            Notice = "",
+        });
+        return surface;
+    }
+
+    /// <summary>
+    /// Surface for a handle type: the one on screen where it already draws that kind, a fresh one otherwise,
+    /// null where nothing imports it.
+    /// Every renegotiation re-announces the pool,
+    /// so reuse stops a resize rebuilding a renderer's context and shaders for the same kind of frame.
+    /// </summary>
+    private async Task<ITileSurface?> SurfaceFor(ITileSurface? surface, FrameHandleType type)
+    {
+        if (surface is not null && surface.Handle == type)
+        {
+            return surface;
+        }
+
+        await ReleaseAsync(surface).ConfigureAwait(true);
+
+        var made = TileSurfaces.For(type);
+        Assert.That(made is null || made.Handle == type,
+            "a surface draws the handle type it was made for", type.ToString());
+
+        Child = made?.View;
+        return made;
+    }
+
+    /// <summary>
+    /// Draws one lent slot and gives it back.
+    ///
+    /// Flow control lives in that await: it resolves once the surface has finished with the slot,
+    /// so the release behind it reports rather than assumes,
+    /// and a tile with a slow renderer stops asking for frames instead of drawing over one it is reading.
+    ///
+    /// A frame from a replaced pool is dropped, its slot released regardless:
+    /// the backend discards a release of a stale generation, and withholding it would keep something undrawable.
+    /// </summary>
+    private async Task DrawAsync(
+        ITileSurface? surface,
+        FrameChannel channel,
+        FrameReady ready,
+        CancellationToken cancellation)
+    {
+        if (ready.Generation == _generation && surface is not null)
+        {
+            await surface.DrawAsync(ready.Slot, cancellation).ConfigureAwait(true);
+            Report(_reported with { Frames = ready.Serial, Dropped = ready.Dropped, Notice = "" });
+        }
+
+        await channel.ReleaseAsync(ready.Generation, ready.Slot, ready.Serial).ConfigureAwait(true);
+    }
+
+    /// <summary>
+    /// Discards the surface and its imports.
+    /// Awaited, not fired off.
+    /// The release runs on the render thread while the backend frees the memory as the call ends,
+    /// so one still in flight would land on memory that is gone.
+    /// </summary>
+    private async Task ReleaseAsync(ITileSurface? surface)
+    {
+        _generation = 0;
+        if (surface is null)
+        {
+            return;
+        }
+
+        // Only while this is still the surface on screen.
+        // A run ending after its successor started would otherwise take the new picture away.
+        if (ReferenceEquals(Child, surface.View))
+        {
+            Child = null;
+        }
+        await surface.DisposeAsync().ConfigureAwait(true);
+    }
+
+    /// <summary>
+    /// Reports what this tile is drawing, and only on a change.
+    /// A report is a record, so a second pass over one state compares equal and raises nothing
+    /// (<c>docs/development-principles.md</c>).
+    /// </summary>
+    private void Report(TileReport report)
+    {
+        if (report == _reported)
+        {
+            return;
+        }
+
+        _reported = report;
+        Dispatcher.UIThread.VerifyAccess();
+        Source?.Report(report);
+    }
+}

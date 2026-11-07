@@ -1151,7 +1151,7 @@ const file_mirrorme_v1_frame_proto_rawDesc = "" +
 	"\x1bFRAME_FORMAT_R8G8B8A8_UNORM\x10\x01\x12\x1f\n" +
 	"\x1bFRAME_FORMAT_B8G8R8A8_UNORM\x10\x022Q\n" +
 	"\fFrameService\x12A\n" +
-	"\x06Frames\x12\x1a.mirrorme.v1.FramesRequest\x1a\x17.mirrorme.v1.FrameEvent(\x010\x01BRZ;bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
+	"\x06Frames\x12\x1a.mirrorme.v1.FramesRequest\x1a\x17.mirrorme.v1.FrameEvent(\x010\x01BOZ;bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1\xaa\x02\x0fMirrorMe.Api.V1b\x06proto3"
 
 var (
 	file_mirrorme_v1_frame_proto_rawDescOnce sync.Once

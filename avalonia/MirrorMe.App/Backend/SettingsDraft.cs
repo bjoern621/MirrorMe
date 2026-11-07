@@ -1,0 +1,151 @@
+using Google.Protobuf;
+using Google.Protobuf.Reflection;
+using MirrorMe.Api.V1;
+using MirrorMe.App.Contracts;
+
+namespace MirrorMe.App.Backend;
+
+/// <summary>
+/// Reads and writes one field of a settings draft, addressed by the key the form sent.
+///
+/// The whole of what this shell knows about <see cref="Settings"/>: a <c>Field.key</c> names a group of that message
+/// and a field in that group, and a <c>FieldValue</c> fits that field.
+/// A write goes through the message descriptors rather than a switch over field names,
+/// so a field added to the contract is a control that appears and works with nothing here to edit (<c>docs/ipc-api.md</c>,
+/// "The rule").
+/// </summary>
+public static class SettingsDraft
+{
+    /// <summary>Between a key's group and its field: "relay.host", "publish.encoder", "viewer.render_chain".</summary>
+    public const char KeySeparator = '.';
+
+    /// <summary>
+    /// Settings group a preset is (<c>docs/presets.md</c>), and the one group this shell has reason to name.
+    /// Read off the descriptor rather than typed out, so it stays one fact with the property a whole-group write
+    /// assigns (<see cref="FormSession.WritePublish"/>).
+    /// A hand-written spelling is a second name for one field, free to disagree with the keys the form sends.
+    /// </summary>
+    public static readonly string PublishGroup =
+        Settings.Descriptor.FindFieldByNumber(Settings.PublishFieldNumber).Name;
+
+    public static void Write(Settings draft, string key, FieldValue value)
+    {
+        Assert.NotNull(draft, "a settings write needs the draft it changes");
+        Assert.NotNull(value, "a settings write needs a value to put in the field");
+
+        var (group, descriptor) = Resolve(draft, key);
+        descriptor.Accessor.SetValue(group, Fitted(descriptor, value, key));
+    }
+
+    /// <summary>
+    /// Inverse of <see cref="Write"/>: a key resolves to a message in one place rather than at every caller
+    /// wanting a value out of a draft.
+    /// </summary>
+    public static FieldValue Read(Settings draft, string key)
+    {
+        Assert.NotNull(draft, "a settings read needs the draft it reads");
+
+        var (group, descriptor) = Resolve(draft, key);
+        var raw = descriptor.Accessor.GetValue(group);
+        return descriptor.FieldType switch
+        {
+            FieldType.String => new FieldValue { Text = (string)raw },
+            FieldType.Int32 => new FieldValue { Number = (int)raw },
+            FieldType.Int64 => new FieldValue { Number = (long)raw },
+            FieldType.Bool => new FieldValue { Flag = (bool)raw },
+            FieldType.Double => new FieldValue { Decimal = (double)raw },
+            _ => Assert.Never<FieldValue>("a form field's settings type is one the contract carries", key, descriptor.FieldType),
+        };
+    }
+
+    /// <summary>
+    /// Group message a key addresses, and the field in it.
+    /// A group the draft arrived without is created rather than refused: the draft is the shell's own, so a group
+    /// it has not been given yet is one nothing has written to.
+    /// A key naming no group, or no field in one, is the two ends disagreeing about the message.
+    /// </summary>
+    private static (IMessage Group, FieldDescriptor Field) Resolve(Settings draft, string key)
+    {
+        var separator = key.IndexOf(KeySeparator);
+        Assert.That(separator > 0 && separator < key.Length - 1,
+            "a form field names a settings group and a field in it", key);
+
+        var groupName = key[..separator];
+        var fieldName = key[(separator + 1)..];
+
+        var groupField = Settings.Descriptor.FindFieldByName(groupName);
+        Assert.That(groupField is not null, "a form field names a settings group", key);
+
+        if (groupField.Accessor.GetValue(draft) is not IMessage group)
+        {
+            group = (IMessage)groupField.MessageType.Parser.ParseFrom(System.Array.Empty<byte>());
+            groupField.Accessor.SetValue(draft, group);
+        }
+
+        if (fieldName.IndexOf(IndexOpen) >= 0)
+        {
+            return Entry(group, fieldName, key);
+        }
+
+        var descriptor = groupField.MessageType.FindFieldByName(fieldName);
+        Assert.That(descriptor is not null, "a form field names a field of the group it belongs to", key);
+        return (group, descriptor);
+    }
+
+    /// <summary>Brackets around a repeated field's index: <c>publish.audio_sources[2].gain</c>.</summary>
+    private const char IndexOpen = '[';
+
+    private const char IndexClose = ']';
+
+    /// <summary>
+    /// Entry of a repeated field a key addresses, and the field inside that entry.
+    /// A missing entry is appended, up to the one past the end and no further: that entry is the row the form
+    /// draws to grow the list by, and a write past it leaves a hole nothing chose.
+    /// The address is the form's, walked here exactly as a plain field's is.
+    /// </summary>
+    private static (IMessage Group, FieldDescriptor Field) Entry(IMessage group, string path, string key)
+    {
+        var open = path.IndexOf(IndexOpen);
+        var close = path.IndexOf(IndexClose);
+        Assert.That(close > open + 1 && close + 1 < path.Length && path[close + 1] == KeySeparator,
+            "an indexed form field names a list, an entry of it and a field in that entry", key);
+
+        var listName = path[..open];
+        var fieldName = path[(close + 2)..];
+        Assert.That(int.TryParse(path[(open + 1)..close], out var index) && index >= 0,
+            "an indexed form field names which entry of the list it edits", key);
+
+        var listField = group.Descriptor.FindFieldByName(listName);
+        Assert.That(listField is not null && listField.IsRepeated && listField.MessageType is not null,
+            "a form field names a repeated message field of the group it belongs to", key);
+
+        var list = (System.Collections.IList)listField.Accessor.GetValue(group);
+        Assert.That(index <= list.Count, "a write reaches an entry the list has, or the one past its end", key, list.Count);
+        if (index == list.Count)
+        {
+            list.Add(listField.MessageType.Parser.ParseFrom(System.Array.Empty<byte>()));
+        }
+
+        var entry = list[index] as IMessage;
+        Assert.That(entry is not null, "an entry of a repeated message field is a message", key);
+
+        var descriptor = listField.MessageType.FindFieldByName(fieldName);
+        Assert.That(descriptor is not null, "a form field names a field of the entry it edits", key);
+        return (entry, descriptor);
+    }
+
+    /// <summary>
+    /// Value in the type the settings field holds.
+    /// A mismatch is a broken contract rather than a condition to survive: the backend chose the control kind off
+    /// the field's own type, so a number for a string field means the two ends disagree about the message.
+    /// </summary>
+    private static object Fitted(FieldDescriptor descriptor, FieldValue value, string key) => descriptor.FieldType switch
+    {
+        FieldType.String => value.Text,
+        FieldType.Int32 => (int)value.Number,
+        FieldType.Int64 => value.Number,
+        FieldType.Bool => value.Flag,
+        FieldType.Double => value.Decimal,
+        _ => Assert.Never<object>("a form field's settings type is one the contract carries", key, descriptor.FieldType),
+    };
+}

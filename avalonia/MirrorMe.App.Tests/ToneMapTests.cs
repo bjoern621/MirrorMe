@@ -1,0 +1,139 @@
+using MirrorMe.App.Backend;
+using MirrorMe.App.Features.Viewer.Tile.Model;
+using MirrorMe.App.Features.Viewer.Tile.ViewModel;
+using Xunit;
+
+namespace MirrorMe.App.Tests;
+
+/// <summary>
+/// A stream carrying more range than the display shows draws at the wrong brightness,
+/// so the tile offers to roll it down.
+/// The tick states what the decode was built with: tone mapping is an element in the pipeline,
+/// so the tick comes back through the decode's own state.
+/// </summary>
+public sealed class ToneMapTests
+{
+    private static TileViewModel Tile(IBackend backend)
+        => new(TileSource.Relay("desk", "rtsp"), backend, static action => action(), static _ => { });
+
+    private static TilePipeline Decode(
+        bool hdr, bool toneMap = false, bool canToneMap = true, string missing = "", string transfer = "smpte2084")
+        => new(
+            Live: true,
+            HasAudio: false, Volume: 1, Muted: false,
+            Transfer: hdr ? transfer : "bt709", Hdr: hdr,
+            ToneMap: toneMap, CanToneMap: canToneMap, ToneMapMissing: missing);
+
+    [Fact]
+    public void AnHdrStreamDrawnAsItArrivesIsOfferedTheConversion()
+    {
+        var tile = Tile(new SeededBackend("linux"));
+
+        tile.Apply(Decode(hdr: true), sample: null);
+
+        Assert.True(tile.IsHdr);
+        Assert.False(tile.ToneMapped);
+        Assert.True(tile.CanToneMap);
+    }
+
+    [Fact]
+    public void ATileThatIsRollingTheRangeDownTicksTheControl()
+    {
+        var tile = Tile(new SeededBackend("linux"));
+
+        tile.Apply(Decode(hdr: true, toneMap: true), sample: null);
+
+        Assert.True(tile.ToneMapped);
+    }
+
+    /// <summary>A control that converts nothing costs a press to learn as much.</summary>
+    [Fact]
+    public void AStandardRangeStreamIsOfferedNoChoice()
+    {
+        var tile = Tile(new SeededBackend("linux"));
+
+        tile.Apply(Decode(hdr: false), sample: null);
+
+        Assert.False(tile.IsHdr);
+        Assert.False(tile.CanToneMap);
+        Assert.False(tile.ToggleToneMap.CanExecute(null));
+        Assert.Contains("range this display shows", tile.ToneMapNote);
+    }
+
+    /// <summary>Missing element is a thing to install, and every refused option in this app names its reason.</summary>
+    [Fact]
+    public void AMachineThatCannotRollTheRangeDownNamesWhatIsMissing()
+    {
+        var tile = Tile(new SeededBackend("linux"));
+
+        tile.Apply(Decode(hdr: true, canToneMap: false, missing: "vapostproc"), sample: null);
+
+        Assert.False(tile.CanToneMap);
+        Assert.False(tile.ToggleToneMap.CanExecute(null));
+        Assert.Contains("vapostproc", tile.ToneMapNote);
+    }
+
+    /// <summary>Nothing is installable here, so naming an element sends the reader after a package that cannot help.</summary>
+    [Fact]
+    public void APlatformWithNoRouteSaysThatRatherThanNamingAnElement()
+    {
+        var tile = Tile(new SeededBackend("linux"));
+
+        tile.Apply(Decode(hdr: true, canToneMap: false), sample: null);
+
+        Assert.False(tile.CanToneMap);
+        Assert.Contains("platform", tile.ToneMapNote);
+    }
+
+    /// <summary>Call names the state the decode should be in, so the backend rebuilds one rather than opening a second.</summary>
+    [Fact]
+    public async Task TheControlAsksForTheOtherAnswerOnTheSameDecode()
+    {
+        var backend = new SeededBackend("linux") { Hdr = true, Transfer = "smpte2084", CanToneMap = true };
+        await backend.StartReceiveAsync("desk", "rtsp");
+
+        var tile = Tile(backend);
+        tile.Apply(Decode(hdr: true), sample: null);
+        tile.ToggleToneMap.Execute(null);
+
+        Assert.Single(backend.Decoded);
+        var decode = Assert.Single(await backend.ReceivingAsync());
+        Assert.True(decode.ToneMap);
+    }
+
+    /// <summary>
+    /// Press is sent, the decode is built without the rung, and the tile goes on saying so.
+    /// Read off the request instead, a viewer shows a conversion that never happened
+    /// and asks for it again on every pass.
+    /// </summary>
+    [Fact]
+    public async Task AskingForAConversionThisMachineCannotMakeLeavesTheTileSayingSo()
+    {
+        var backend = new SeededBackend("linux") { Hdr = true, Transfer = "smpte2084", CanToneMap = false };
+        await backend.StartReceiveAsync("desk", "rtsp");
+
+        var tile = Tile(backend);
+        tile.Apply(Decode(hdr: true, canToneMap: false, missing: "vapostproc"), sample: null);
+
+        var decode = Assert.Single(await backend.ReceivingAsync());
+        tile.Apply(TilePipeline.Of(decode), sample: null);
+
+        Assert.False(tile.ToneMapped);
+    }
+
+    /// <summary>
+    /// Preview belongs to the publish and carries neither half of the stream and leg pair a decode is keyed by.
+    /// </summary>
+    [Fact]
+    public void ThePublishPreviewIsOfferedNoChoice()
+    {
+        var tile = new TileViewModel(
+            TileSource.Preview("desk"), new SeededBackend("linux"), static action => action(), static _ => { });
+
+        tile.Apply(Decode(hdr: true), sample: null);
+
+        Assert.False(tile.CanToneMap);
+        Assert.False(tile.ToggleToneMap.CanExecute(null));
+        Assert.Equal("", tile.ToneMapNote);
+    }
+}

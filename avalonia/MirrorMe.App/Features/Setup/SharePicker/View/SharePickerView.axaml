@@ -1,0 +1,100 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:model="using:MirrorMe.App.Features.Setup.SharePicker.Model"
+             xmlns:controls="using:MirrorMe.App.Controls"
+             xmlns:setup="using:MirrorMe.App.Features.Setup.Model"
+             xmlns:sharequestion="using:MirrorMe.App.Features.Setup.ShareQuestion.View"
+             xmlns:ti="using:TablerIcons"
+             xmlns:vm="using:MirrorMe.App.Features.Setup.SharePicker.ViewModel"
+             x:Class="MirrorMe.App.Features.Setup.SharePicker.View.SharePickerView"
+             x:DataType="vm:SharePickerViewModel"
+             Focusable="True">
+
+  <!--
+    What the stream shares, asked at the press that starts it.
+
+    Drawn over the window rather than in a destination:
+    the question belongs to the press and not to a screen (Features/Fields/Model/GroupPlacement.cs).
+  -->
+
+  <UserControl.KeyBindings>
+    <!--
+      Escape drops the press rather than starting on whatever the draft held,
+      the event starting at the focus that the Overlay takes as the dialog opens.
+    -->
+    <KeyBinding Gesture="Escape" Command="{Binding CancelCommand}" />
+  </UserControl.KeyBindings>
+
+  <!-- Dimmed rather than covered: the window stays readable behind what is being decided over it. -->
+  <controls:Overlay IsOpen="{Binding IsOpen}" TakesFocus="True">
+    <Border Classes="scrim"
+            PointerPressed="ScrimPressed">
+
+      <Border Classes="panel"
+              MaxWidth="560"
+              MaxHeight="700"
+              Margin="{StaticResource InsetSection}"
+              BoxShadow="{StaticResource MenuShadow}"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+
+        <Grid RowDefinitions="Auto,*,Auto,Auto" Margin="{StaticResource InsetSection}">
+
+          <StackPanel Grid.Row="0" Margin="0,0,0,14">
+            <TextBlock Classes="heading" Text="{x:Static model:SharePickerCopy.Title}" />
+            <TextBlock Classes="secondary"
+                       TextWrapping="Wrap"
+                       TextTrimming="None"
+                       Margin="0,3,0,0"
+                       Text="{x:Static model:SharePickerCopy.Help}" />
+          </StackPanel>
+
+          <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
+            <sharequestion:ShareQuestionView DataContext="{Binding Question}" />
+          </ScrollViewer>
+
+          <!--
+            What stands between these settings and the air, over the button that will not press.
+            Anchored nowhere: every screen fixing one of these is behind this dialog
+            (SharePicker/ViewModel/SharePickerViewModel.cs).
+          -->
+          <controls:Reveal Grid.Row="2" IsOpen="{Binding !!Blocking.Count}" FollowsOpening="False">
+            <ItemsControl ItemsSource="{Binding Blocking}" Margin="0,14,0,0">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="setup:PreflightCheckRow">
+                  <controls:CheckItem Margin="0,0,0,9" Text="{Binding Text}" State="{Binding State}" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </controls:Reveal>
+
+          <StackPanel Grid.Row="3"
+                      Orientation="Horizontal"
+                      HorizontalAlignment="Right"
+                      Spacing="{StaticResource GapTight}"
+                      Margin="0,16,0,0">
+
+            <Button Content="{x:Static model:SharePickerCopy.Cancel}"
+                    Command="{Binding CancelCommand}"
+                    ToolTip.Tip="{x:Static model:SharePickerCopy.CancelTip}" />
+
+            <Button Theme="{StaticResource PrimaryButton}"
+                    Command="{Binding ConfirmCommand}"
+                    IsEnabled="{Binding CanConfirm}">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <!--
+                  Brush read off the button rather than left at the icon default,
+                  which is a light grey the near-white fill swallows and the greyed one keeps swallowing.
+                -->
+                <ti:TablerIcon Classes="button"
+                               Icon="IconScreenShare"
+                               Brush="{Binding $parent[Button].Foreground, Mode=OneWay}" />
+                <TextBlock Text="{x:Static model:SharePickerCopy.Confirm}" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
+          </StackPanel>
+        </Grid>
+      </Border>
+    </Border>
+  </controls:Overlay>
+</UserControl>

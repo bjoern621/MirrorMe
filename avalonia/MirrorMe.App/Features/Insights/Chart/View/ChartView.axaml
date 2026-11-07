@@ -1,0 +1,124 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:chart="using:MirrorMe.App.Features.Insights.Chart.View"
+             xmlns:model="using:MirrorMe.App.Features.Insights.Chart.Model"
+             xmlns:vm="using:MirrorMe.App.Features.Insights.Chart.ViewModel"
+             x:Class="MirrorMe.App.Features.Insights.Chart.View.ChartView"
+             x:DataType="vm:ChartViewModel">
+
+  <UserControl.Styles>
+    <Style Selector="ListBox.ranges">
+      <Setter Property="DockPanel.Dock" Value="Right" />
+    </Style>
+    <Style Selector=":is(UserControl).narrow ListBox.ranges">
+      <Setter Property="DockPanel.Dock" Value="Bottom" />
+      <Setter Property="HorizontalAlignment" Value="Left" />
+      <Setter Property="Margin" Value="0,10,0,0" />
+    </Style>
+    <Style Selector="TextBlock.stat">
+      <Setter Property="FontFeatures" Value="{StaticResource FigureFeatures}" />
+      <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+    </Style>
+    <Style Selector="TextBlock.stat.past">
+      <Setter Property="Foreground" Value="{StaticResource CautionBrush}" />
+    </Style>
+    <Style Selector="TextBlock.sizer">
+      <Setter Property="Opacity" Value="0" />
+      <Setter Property="IsHitTestVisible" Value="False" />
+    </Style>
+  </UserControl.Styles>
+
+  <Border Classes="card" Padding="14,12">
+    <StackPanel Spacing="{StaticResource GapControl}">
+
+      <DockPanel>
+        <ListBox Classes="ranges"
+                 Theme="{StaticResource SegmentedControlTheme}"
+                 ItemContainerTheme="{StaticResource SegmentItemTheme}"
+                 Height="{StaticResource ControlHeight}"
+                 ItemsSource="{Binding Ranges}"
+                 SelectedItem="{Binding SelectedRange, Mode=TwoWay}">
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="model:ChartRangeRow">
+              <TextBlock Text="{Binding Label}"
+                         Foreground="{Binding $parent[ListBoxItem].Foreground}"
+                         FontWeight="{Binding $parent[ListBoxItem].FontWeight}" />
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+
+        <WrapPanel ItemSpacing="{StaticResource GapPanel}" VerticalAlignment="Center" IsVisible="{Binding HasPoints}">
+          <StackPanel Orientation="Horizontal" Spacing="5">
+            <TextBlock Classes="hint" Text="avg" />
+            <TextBlock Classes="stat" Text="{Binding Average}" />
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Spacing="5">
+            <TextBlock Classes="hint" Text="{Binding WorstWord}" />
+            <TextBlock Classes="stat" Classes.past="{Binding IsPast}" Text="{Binding Worst}" />
+          </StackPanel>
+        </WrapPanel>
+      </DockPanel>
+
+      <Panel Height="190">
+        <chart:TimeChart IsVisible="{Binding HasPoints}"
+                         Points="{Binding Points}"
+                         Past="{Binding PastAt}"
+                         Extent="{Binding Extent}"
+                         LimitFraction="{Binding LimitFraction}"
+                         LimitLabel="{Binding LimitLabel}"
+                         HoverSeconds="{Binding HoverSeconds, Mode=TwoWay}"
+                         Stroke="{StaticResource ForegroundBrush}"
+                         GridBrush="{StaticResource HairlineBrush}"
+                         LimitBrush="{StaticResource MutedBrush}"
+                         PastBrush="{StaticResource CautionBrush}"
+                         LabelBrush="{StaticResource HintBrush}">
+          <chart:TimeChart.Fill>
+            <SolidColorBrush Color="{StaticResource White}" Opacity="0.07" />
+          </chart:TimeChart.Fill>
+        </chart:TimeChart>
+        <TextBlock Classes="hint"
+                   IsVisible="{Binding !HasPoints}"
+                   Text="{Binding NoReadings}"
+                   TextWrapping="Wrap"
+                   TextAlignment="Center"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center" />
+      </Panel>
+
+      <!--
+        Every card's figure at the moment the pointer rests on, the one place the three meet.
+        A sizer under each figure keeps the slot at its widest print, to keep the strip still as a pointer comes and goes.
+      -->
+      <Border Classes="panel" Padding="12,8">
+        <WrapPanel ItemSpacing="{StaticResource GapSection}" LineSpacing="{StaticResource GapTight}">
+          <Panel>
+            <TextBlock Classes="stat sizer" FontWeight="SemiBold" Text="{Binding WidestReadout.Time}" />
+            <TextBlock Classes="stat" FontWeight="SemiBold" Text="{Binding Readout.Time}" />
+          </Panel>
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Classes="hint" Text="{Binding FrameRateLabel}" />
+            <Panel>
+              <TextBlock Classes="stat sizer" Text="{Binding WidestReadout.FrameRate}" />
+              <TextBlock Classes="stat" Text="{Binding Readout.FrameRate}" />
+            </Panel>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Classes="hint" Text="{Binding EncodeTimeLabel}" />
+            <Panel>
+              <TextBlock Classes="stat sizer" Text="{Binding WidestReadout.EncodeTime}" />
+              <TextBlock Classes="stat" Text="{Binding Readout.EncodeTime}" />
+            </Panel>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Classes="hint" Text="{Binding BitrateLabel}" />
+            <Panel>
+              <TextBlock Classes="stat sizer" Text="{Binding WidestReadout.Bitrate}" />
+              <TextBlock Classes="stat" Text="{Binding Readout.Bitrate}" />
+            </Panel>
+          </StackPanel>
+        </WrapPanel>
+      </Border>
+
+    </StackPanel>
+  </Border>
+</UserControl>

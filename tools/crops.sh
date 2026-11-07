@@ -3,9 +3,9 @@
 # Run from the repository root in the dev shell after editing the manifest: tools/crops.sh
 set -euo pipefail
 
-dir=avalonia/ScreenShare.App/Assets/Crops
+dir=avalonia/MirrorMe.App/Assets/Crops
 manifest=$dir/manifest.json
-font=avalonia/ScreenShare.App/Assets/Fonts/JetBrainsMonoNL-Medium.ttf
+font=avalonia/MirrorMe.App/Assets/Fonts/JetBrainsMonoNL-Medium.ttf
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 

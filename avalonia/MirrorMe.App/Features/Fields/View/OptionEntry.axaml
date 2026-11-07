@@ -1,0 +1,78 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:fields="using:MirrorMe.App.Features.Fields.ViewModel"
+                    xmlns:copy="using:MirrorMe.App.Copy"
+                    xmlns:ti="using:TablerIcons">
+
+  <!--
+    One entry of a choice control the screen draws as a list of cards, written against the form's option type.
+
+    One template rather than one per list: a control draws two lists of these, the entries over the disclosure
+    and the refused ones under it, and both are the same card.
+
+    Merged into the application's resources (App.axaml) rather than included per caller: a template resolves
+    against the scope above the control it is instantiated on, and every caller reaches it from inside a
+    DataTemplate, so the application's is the only scope above them all.
+
+    Nothing is skinned here.
+    The card is the design's OptionCard and the picked treatment travels with it (Design/Buttons.axaml).
+    The text roles inside it sit in Design/Text.axaml, reaching into a button's content needing a
+    descendant selector a ControlTheme may not carry.
+
+    A refused entry states its reason on the card, so nothing opens over it
+    (docs/tooltips.md, "Availability notes").
+  -->
+
+  <DataTemplate x:Key="OptionEntry" x:DataType="fields:OptionViewModel">
+    <Button Theme="{StaticResource OptionCard}"
+            Classes.picked="{Binding IsSelected}"
+            Margin="0,0,0,4"
+            IsEnabled="{Binding IsEnabled}"
+            Command="{Binding Choose}"
+            ToolTip.Tip="{Binding Detail}"
+            ToolTip.ServiceEnabled="{Binding HasDetail}">
+      <StackPanel Spacing="4">
+        <!--
+          A column each, so a long title wraps inside its own and never runs under the note or the tag.
+          The glyph sits beside the title, for the reason a dropdown row carries it there (SelectEntry.axaml).
+        -->
+        <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+          <ti:TablerIcon Grid.Column="0"
+                         Classes="button"
+                         Margin="0,0,8,0"
+                         Icon="{Binding Glyph, FallbackValue=IconPoint}"
+                         IsVisible="{Binding HasGlyph}"
+                         Brush="{Binding $parent[Button].Foreground, Mode=OneWay}"
+                         VerticalAlignment="Center" />
+          <TextBlock Grid.Column="1"
+                     Classes="optiontitle"
+                     TextWrapping="Wrap"
+                     TextTrimming="None"
+                     Text="{Binding Label}"
+                     VerticalAlignment="Center" />
+          <TextBlock Grid.Column="2"
+                     Classes="figure"
+                     Margin="8,0,0,0"
+                     VerticalAlignment="Center"
+                     IsVisible="{Binding HasNote}"
+                     Text="{Binding Note}" />
+          <Border Grid.Column="3"
+                  Classes="tag"
+                  Margin="8,0,0,0"
+                  IsVisible="{Binding IsRecommended}"
+                  VerticalAlignment="Center">
+            <TextBlock Classes="tag" Text="{x:Static copy:Cards.Recommended}" />
+          </Border>
+        </Grid>
+        <SelectableTextBlock Classes="reason"
+                             IsVisible="{Binding HasReason}"
+                             Text="{Binding Reason}" />
+        <ItemsControl IsVisible="{Binding HasImpacts}"
+                      ItemsSource="{Binding Impacts}"
+                      ItemsPanel="{StaticResource ChipPanel}"
+                      ItemTemplate="{StaticResource ImpactChip}" />
+      </StackPanel>
+    </Button>
+  </DataTemplate>
+
+</ResourceDictionary>

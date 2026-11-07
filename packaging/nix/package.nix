@@ -2,7 +2,7 @@
 #
 # One install for two binaries,
 # the shell starting the backend when nothing answers on the control endpoint,
-# beside itself and then on PATH (avalonia/ScreenShare.App/Backend/BackendProcess.cs).
+# beside itself and then on PATH (avalonia/MirrorMe.App/Backend/BackendProcess.cs).
 # Both are wrapped rather than left to the environment:
 # ffmpeg, the GStreamer launcher and the plugin directory live at store paths no login PATH carries.
 #
@@ -255,7 +255,7 @@ let
     pname = "mirrorme";
     inherit version src;
 
-    projectFile = "avalonia/ScreenShare.App/ScreenShare.App.csproj";
+    projectFile = "avalonia/MirrorMe.App/MirrorMe.App.csproj";
     nugetDeps = ./deps.json;
     dotnet-sdk = dotnet-sdk_10;
     executables = [ "mirrorme" ];

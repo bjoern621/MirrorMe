@@ -22,7 +22,7 @@ import (
 // settingsField resolves one against the message by walking those two names,
 // so a repair writes through the key rather than through a per-field setter table,
 // and the shell's own draft writer walks the same two
-// (avalonia/ScreenShare.App/Backend/SettingsDraft.cs).
+// (avalonia/MirrorMe.App/Backend/SettingsDraft.cs).
 const (
 	KeyRelayHost   = "relay.host"
 	KeyRelayTls    = "relay.tls"

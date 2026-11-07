@@ -1221,7 +1221,7 @@ const file_mirrorme_v1_settings_proto_rawDesc = "" +
 	"\x05_gain\"V\n" +
 	"\x06Preset\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x128\n" +
-	"\bsettings\x18\x02 \x01(\v2\x1c.mirrorme.v1.PublishSettingsR\bsettingsBRZ;bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
+	"\bsettings\x18\x02 \x01(\v2\x1c.mirrorme.v1.PublishSettingsR\bsettingsBOZ;bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1\xaa\x02\x0fMirrorMe.Api.V1b\x06proto3"
 
 var (
 	file_mirrorme_v1_settings_proto_rawDescOnce sync.Once

@@ -1,0 +1,67 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:MirrorMe.App.Controls"
+                    xmlns:ti="using:TablerIcons">
+
+  <!--
+    The icon button, at the size that fits inside a text box rather than beside one
+    (Design/Metrics.axaml, InlineButtonSize).
+    The glyph swaps for a tick while the mark stands, and takes no hue:
+    the three hues each answer a question about a stream (docs/design-language.md, "Palette").
+  -->
+  <ControlTheme x:Key="{x:Type controls:CopyButton}"
+                TargetType="controls:CopyButton"
+                BasedOn="{StaticResource IconButton}">
+    <Setter Property="Width" Value="{StaticResource InlineButtonSize}" />
+    <Setter Property="Height" Value="{StaticResource InlineButtonSize}" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Border Name="Root"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="{TemplateBinding CornerRadius}"
+                RenderTransform="none">
+          <Border.Transitions>
+            <Transitions>
+              <controls:BrushFade Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              <TransformOperationsTransition Property="RenderTransform" Duration="{StaticResource MotionPress}" Easing="{StaticResource MotionEase}" />
+            </Transitions>
+          </Border.Transitions>
+          <Panel>
+            <ti:TablerIcon Name="Idle" Icon="IconCopy" HorizontalAlignment="Center" />
+            <ti:TablerIcon Name="Done" Icon="IconCheck" HorizontalAlignment="Center" Opacity="0" RenderTransform="scale(0.4)" />
+          </Panel>
+        </Border>
+      </ControlTemplate>
+    </Setter>
+
+    <!-- Design/Icons.axaml lifts a glyph inside a Button, and this control's style key misses that selector. -->
+    <Style Selector="^:pointerover:not(:disabled) /template/ ti|TablerIcon#Idle">
+      <Setter Property="RenderTransform" Value="scale(1.12)" />
+    </Style>
+    <Style Selector="^:pressed:not(:disabled) /template/ ti|TablerIcon#Idle">
+      <Setter Property="RenderTransform" Value="scale(0.94)" />
+    </Style>
+
+    <Style Selector="^:copied /template/ ti|TablerIcon#Idle">
+      <Setter Property="Opacity" Value="0" />
+      <Setter Property="RenderTransform" Value="scale(0.4)" />
+    </Style>
+    <Style Selector="^:copied /template/ ti|TablerIcon#Done">
+      <Setter Property="Opacity" Value="1" />
+      <Setter Property="RenderTransform" Value="none" />
+    </Style>
+
+    <!--
+      The glyph greys with the box it sits in: a control the reader cannot press says so
+      (docs/design-language.md, "Palette").
+      Stated on the brush, a glyph taking no Foreground to follow the button's own.
+      The box carries the reason in words, so the button states none.
+    -->
+    <Style Selector="^:disabled /template/ ti|TablerIcon">
+      <Setter Property="Brush" Value="{StaticResource DisabledBrush}" />
+    </Style>
+  </ControlTheme>
+
+</ResourceDictionary>

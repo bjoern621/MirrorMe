@@ -1,0 +1,81 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:MirrorMe.App.Controls">
+
+  <ControlTheme x:Key="{x:Type controls:Chip}" TargetType="controls:Chip">
+    <Setter Property="Height" Value="{StaticResource ChipHeight}" />
+    <Setter Property="Padding" Value="10,0" />
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusChip}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="Background" Value="{StaticResource ControlBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource ChipBorderBrush}" />
+    <Setter Property="Foreground" Value="{StaticResource ControlForegroundBrush}" />
+    <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Border Name="Root"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="{TemplateBinding CornerRadius}"
+                Padding="{TemplateBinding Padding}"
+                RenderTransform="none">
+          <Border.Transitions>
+            <Transitions>
+              <controls:BrushFade Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              <controls:BrushFade Property="BorderBrush" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              <TransformOperationsTransition Property="RenderTransform" Duration="{StaticResource MotionPress}" Easing="{StaticResource MotionEase}" />
+            </Transitions>
+          </Border.Transitions>
+          <StackPanel Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
+            <TextBlock Name="LabelText"
+                       Text="{TemplateBinding Label}"
+                       Foreground="{TemplateBinding Foreground}"
+                       FontSize="{TemplateBinding FontSize}"
+                       VerticalAlignment="Center">
+              <TextBlock.Transitions>
+                <Transitions>
+                  <controls:BrushFade Property="Foreground" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+                </Transitions>
+              </TextBlock.Transitions>
+            </TextBlock>
+            <TextBlock Name="DetailText"
+                       Text="{TemplateBinding Detail}"
+                       Classes="figure"
+                       FontSize="{StaticResource FontSizeMinor}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Border>
+      </ControlTemplate>
+    </Setter>
+
+    <!-- Unchecked: the decode is gone, so there is no figure left to print. -->
+    <Style Selector="^:unchecked /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource PanelBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}" />
+    </Style>
+    <Style Selector="^:unchecked /template/ TextBlock#LabelText">
+      <Setter Property="Foreground" Value="{StaticResource DisabledBrush}" />
+      <Setter Property="TextDecorations" Value="Strikethrough" />
+    </Style>
+    <Style Selector="^:unchecked /template/ TextBlock#DetailText">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+
+    <!--
+      No fault skin.
+      A struggling stream says so in words in its detail figure, because recolouring the control
+      would read as the row being broken rather than the stream.
+    -->
+
+    <Style Selector="^:pointerover /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource ControlHoverBrush}" />
+    </Style>
+    <Style Selector="^:pressed /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource ControlPressedBrush}" />
+      <Setter Property="RenderTransform" Value="scale(0.96)" />
+    </Style>
+  </ControlTheme>
+
+</ResourceDictionary>

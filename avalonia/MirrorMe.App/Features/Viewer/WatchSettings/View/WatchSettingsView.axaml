@@ -1,0 +1,101 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:MirrorMe.App.Controls"
+             xmlns:fields="using:MirrorMe.App.Features.Fields.ViewModel"
+             xmlns:model="using:MirrorMe.App.Features.Fields.Model"
+             xmlns:ti="using:TablerIcons"
+             xmlns:vm="using:MirrorMe.App.Features.Viewer.WatchSettings.ViewModel"
+             x:Class="MirrorMe.App.Features.Viewer.WatchSettings.View.WatchSettingsView"
+             x:DataType="vm:WatchSettingsViewModel">
+
+  <!--
+    The question, one card per way a stream can arrive, and every control of the group behind the fold.
+    Nothing to commit: the group is applied, so a choice is kept as it is made.
+  -->
+
+  <UserControl.Resources>
+    <!-- One way a stream can arrive: the protocol's entry under a plain name, with what picking it raises. -->
+    <DataTemplate x:Key="ArrivalCard" x:DataType="fields:OptionViewModel">
+      <Button Theme="{StaticResource OptionCard}"
+              Classes.picked="{Binding IsSelected}"
+              Margin="0,0,0,8"
+              IsEnabled="{Binding IsEnabled}"
+              Command="{Binding Choose}"
+              ToolTip.Tip="{Binding Detail}"
+              ToolTip.ServiceEnabled="{Binding HasDetail}">
+        <StackPanel Spacing="4">
+          <Grid ColumnDefinitions="Auto,*">
+            <Ellipse Grid.Column="0" Classes="radiodot" />
+            <TextBlock Grid.Column="1"
+                       Classes="cardtitle"
+                       Margin="7,0,0,0"
+                       VerticalAlignment="Center"
+                       Text="{Binding Label}" />
+          </Grid>
+          <SelectableTextBlock Classes="reason"
+                               TextWrapping="Wrap"
+                               IsVisible="{Binding HasReason}"
+                               Text="{Binding Reason}" />
+          <ItemsControl ItemsSource="{Binding Impacts}"
+                        IsVisible="{Binding HasImpacts}"
+                        Margin="0,2,0,0"
+                        ItemsPanel="{StaticResource ChipPanel}"
+                        ItemTemplate="{StaticResource ImpactChip}" />
+        </StackPanel>
+      </Button>
+    </DataTemplate>
+  </UserControl.Resources>
+
+  <Grid RowDefinitions="Auto,*">
+
+    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+      <TextBlock Grid.Column="0"
+                 Classes="heading"
+                 VerticalAlignment="Center"
+                 TextWrapping="Wrap"
+                 TextTrimming="None">
+        <Run Text="{Binding Group.Heading}" />
+        <InlineUIContainer BaselineAlignment="TextBottom">
+          <ContentControl IsVisible="{Binding Group.HasHelp}" Content="{Binding Group.Help}" ContentTemplate="{StaticResource HelpGlyph}" />
+        </InlineUIContainer>
+      </TextBlock>
+      <Button Grid.Column="1"
+              Theme="{StaticResource IconButton}"
+              Command="{Binding CloseCommand}"
+              ToolTip.Tip="{Binding CloseTip}">
+        <ti:TablerIcon Classes="button" Icon="IconX" />
+      </Button>
+    </Grid>
+
+    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
+      <StackPanel>
+        <controls:RowList ItemsSource="{Binding Arrivals}" ItemTemplate="{StaticResource ArrivalCard}" />
+
+        <!-- Backend's own sentence about the last write, unrewritten. -->
+        <SelectableTextBlock Classes="reason"
+                             TextWrapping="Wrap"
+                             Margin="0,0,0,8"
+                             IsVisible="{Binding HasNotice}"
+                             Text="{Binding Notice}" />
+
+        <ContentControl IsVisible="{Binding Group.Fold.HasAny}"
+                        Content="{Binding Group.Fold}"
+                        ContentTemplate="{StaticResource FoldDisclosure}" />
+
+        <controls:Reveal IsOpen="{Binding Group.Fold.Shown}">
+          <StackPanel Margin="0,12,0,0">
+            <ItemsControl ItemsSource="{Binding Group.Folded}" ItemTemplate="{StaticResource FieldRow}" />
+            <Button Theme="{StaticResource OutlineButton}"
+                    HorizontalAlignment="Left"
+                    IsVisible="{Binding Group.HasAction}"
+                    Content="{Binding Group.Action.Label}"
+                    Command="{Binding Group.Action.Command}"
+                    ToolTip.Tip="{Binding Group.Action.Tip}" />
+          </StackPanel>
+        </controls:Reveal>
+      </StackPanel>
+    </ScrollViewer>
+
+  </Grid>
+
+</UserControl>

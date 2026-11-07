@@ -1924,7 +1924,7 @@ const file_mirrorme_v1_catalog_proto_rawDesc = "" +
 	"PathColour\x12\x1b\n" +
 	"\x17PATH_COLOUR_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11PATH_COLOUR_EXACT\x10\x01\x12\x17\n" +
-	"\x13PATH_COLOUR_ENCODER\x10\x02BRZ;bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
+	"\x13PATH_COLOUR_ENCODER\x10\x02BOZ;bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1\xaa\x02\x0fMirrorMe.Api.V1b\x06proto3"
 
 var (
 	file_mirrorme_v1_catalog_proto_rawDescOnce sync.Once

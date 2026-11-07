@@ -1,0 +1,50 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="using:System">
+
+  <!--
+    Both families are bundled rather than hoped for: Inter by Program.WithInterFont,
+    the mono by MirrorMe.App.csproj out of Assets/Fonts.
+    A platform face runs only where a registration is gone.
+  -->
+
+  <!-- Everything this product says itself. -->
+  <FontFamily x:Key="UiFont">Inter,Segoe UI,system-ui,sans-serif</FontFamily>
+
+  <!--
+    What another program said, reproduced (Text.axaml, .transcript).
+    NL is the ligature-free cut, so "->" and "//" stay two characters the reader can match
+    against the text the backend printed.
+    Authority is the assembly name, and the two differ here:
+    mirrorme against MirrorMe.App. A URI naming the namespace loads nothing
+    and the role silently draws in the default face.
+  -->
+  <FontFamily x:Key="MonoFont">avares://mirrorme/Assets/Fonts#JetBrains Mono NL</FontFamily>
+
+  <!--
+    For anything read as a column or that ticks: a timer, a table cell, a plot annotation.
+    Prose keeps the proportional default, and mono needs none of it.
+  -->
+  <FontFeatureCollection x:Key="FigureFeatures">+tnum</FontFeatureCollection>
+
+  <!--
+    A closed set: four whole pixels, no two steps closer than a pixel.
+    Whole pixels only, since a half step does not survive rasterisation:
+    13.5px and 13px land on the same pixel grid at 100% scaling.
+  -->
+  <!-- The floor. Nothing in the product is set smaller. -->
+  <sys:Double x:Key="FontSizeMinor">12</sys:Double>
+  <sys:Double x:Key="FontSizeSmall">13</sys:Double>
+  <!-- The default, and what a line with no role stated renders at. -->
+  <sys:Double x:Key="FontSizeBody">14</sys:Double>
+  <sys:Double x:Key="FontSizeHeading">16</sys:Double>
+
+  <!--
+    Line height of wrapping prose, ~1.4x its size.
+    Stated rather than left to Inter's own leading, which is tighter than a paragraph wants.
+    A single line in an already centred row states none, since a line box taller than the glyphs
+    only moves the text off the centre it was placed on.
+  -->
+  <sys:Double x:Key="LineHeightSmall">18</sys:Double>
+
+</ResourceDictionary>

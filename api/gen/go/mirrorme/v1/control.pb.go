@@ -1887,7 +1887,7 @@ const file_mirrorme_v1_control_proto_rawDesc = "" +
 	"\x05Watch\x12\x19.mirrorme.v1.WatchRequest\x1a\x12.mirrorme.v1.Event0\x01\x128\n" +
 	"\x03Ask\x12\x17.mirrorme.v1.AskRequest\x1a\x18.mirrorme.v1.AskResponse\x126\n" +
 	"\x03Set\x12\x17.mirrorme.v1.SetRequest\x1a\x16.google.protobuf.Empty\x125\n" +
-	"\x02Do\x12\x16.mirrorme.v1.DoRequest\x1a\x17.mirrorme.v1.DoResponseBRZ;bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
+	"\x02Do\x12\x16.mirrorme.v1.DoRequest\x1a\x17.mirrorme.v1.DoResponseBOZ;bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1\xaa\x02\x0fMirrorMe.Api.V1b\x06proto3"
 
 var (
 	file_mirrorme_v1_control_proto_rawDescOnce sync.Once

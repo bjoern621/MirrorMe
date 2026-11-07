@@ -3177,7 +3177,7 @@ const file_mirrorme_v1_events_proto_rawDesc = "" +
 	"\x12EVENT_KIND_PRESETS\x10\x15\x12\x1c\n" +
 	"\x18EVENT_KIND_SHARE_WINDOWS\x10\x16\x12\x1b\n" +
 	"\x17EVENT_KIND_AUDIO_LEVELS\x10\x17\x12\x16\n" +
-	"\x12EVENT_KIND_POINTER\x10\x18\"\x04\b\v\x10\v*\x18EVENT_KIND_SHOW_SETTINGSBRZ;bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
+	"\x12EVENT_KIND_POINTER\x10\x18\"\x04\b\v\x10\v*\x18EVENT_KIND_SHOW_SETTINGSBOZ;bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1\xaa\x02\x0fMirrorMe.Api.V1b\x06proto3"
 
 var (
 	file_mirrorme_v1_events_proto_rawDescOnce sync.Once

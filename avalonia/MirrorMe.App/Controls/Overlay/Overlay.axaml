@@ -1,0 +1,14 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:MirrorMe.App.Controls">
+
+  <!-- Every dialog fades in and out on one motion (docs/design-language.md, "Motion"). -->
+  <ControlTheme x:Key="{x:Type controls:Overlay}" TargetType="controls:Overlay">
+    <Setter Property="Transitions">
+      <Transitions>
+        <DoubleTransition Property="Openness" Duration="{StaticResource MotionOpen}" Easing="{StaticResource MotionEase}" />
+      </Transitions>
+    </Setter>
+  </ControlTheme>
+
+</ResourceDictionary>

@@ -7,7 +7,7 @@
 #
 # One directory holds both binaries, the layout the shell's own lookup expects:
 # it starts the backend when nothing answers on the control endpoint,
-# and finds it beside itself (avalonia/ScreenShare.App/Backend/BackendProcess.cs).
+# and finds it beside itself (avalonia/MirrorMe.App/Backend/BackendProcess.cs).
 #
 # The shell is published self-contained, so the machine needs no .NET install.
 # ffmpeg and GStreamer are not bundled:
@@ -37,7 +37,7 @@ CGO_ENABLED=1 go build -C "$root/backend" \
     -ldflags "-X main.version=$version -X main.channel=portable" \
     -o "$stage/mirrorme-backend" ./cmd/backend
 
-dotnet publish "$root/avalonia/ScreenShare.App/ScreenShare.App.csproj" \
+dotnet publish "$root/avalonia/MirrorMe.App/MirrorMe.App.csproj" \
     --configuration Release \
     --runtime linux-x64 \
     --self-contained true \

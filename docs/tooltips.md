@@ -13,7 +13,7 @@ The component that renders one belongs to the shell (`avalonia/README.md`).
 
 ## Where the text lives
 
-One name and one sentence per identifier the backend can send, in `avalonia/ScreenShare.App/Copy`:
+One name and one sentence per identifier the backend can send, in `avalonia/MirrorMe.App/Copy`:
 
 | File | Holds |
 | --- | --- |
@@ -67,7 +67,7 @@ A field whose entries change what the picture looks like carries a picture glyph
 Each crop went through the real encoder at the settings its caption names, then was cut from the same spot and enlarged without smoothing.
 The pictures stand in the tip alone, so a choice card keeps to its name, its figure and its chips.
 
-`avalonia/ScreenShare.App/Assets/Crops/manifest.json` lists every crop: the field it belongs to, its caption, and the encoder arguments that made it.
+`avalonia/MirrorMe.App/Assets/Crops/manifest.json` lists every crop: the field it belongs to, its caption, and the encoder arguments that made it.
 `tools/crops.sh` renders the crops from that list, and the shell reads the same list to draw them.
 A still shows detail, chroma and size; smoothness has no still, so frame rate carries no crops.
 

@@ -30,7 +30,7 @@ Without `task backend`, the window reports the endpoint as unserved and names it
 ### Which windowing backend runs
 
 Wayland where the session has a compositor, X11 where it does not, decided at startup by `UseWaylandWithFallback` (`Program.cs`).
-The Wayland backend comes as a package reference of its own (`ScreenShare.App/ScreenShare.App.csproj`).
+The Wayland backend comes as a package reference of its own (`MirrorMe.App/MirrorMe.App.csproj`).
 The flake's dev shell carries the libraries it resolves by soname.
 
 Which one runs decides how the window looks on a scaled desktop.
@@ -93,7 +93,7 @@ Four layers, dependency running one way: a feature reads the design system and t
 A feature directory holds `Model/`, `ViewModel/` and `View/` for itself, plus a directory per component substantial enough to have its own three.
 `Features/Setup/QualityStep/ViewModel/QualityStepViewModel.cs` is the shape.
 Namespaces mirror the path, so a file's name says where it sits.
-`Controls/` keeps one flat `ScreenShare.App.Controls` namespace, so a view reaches every control through one `xmlns`.
+`Controls/` keeps one flat `MirrorMe.App.Controls` namespace, so a view reaches every control through one `xmlns`.
 
 **Nothing outside `Design/` states a colour, size, font or radius.**
 A component asks for the role it wants (`MutedBrush`, `RadiusPanel`, `FontSizeSmall`) and the palette decides.
@@ -541,4 +541,4 @@ The control half is `api/proto/mirrorme/v1`, gRPC over a named pipe on Windows a
 The frame half is a channel of its own: shared GPU handles and a buffer-ownership protocol, with no pixel crossing the control one.
 
 **No DevTools.**
-The project file states why no inspector is pulled in (`ScreenShare.App/ScreenShare.App.csproj`).
+The project file states why no inspector is pulled in (`MirrorMe.App/MirrorMe.App.csproj`).

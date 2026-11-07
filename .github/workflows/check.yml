@@ -100,7 +100,7 @@ jobs:
           go build -C backend ./...
           go vet -C backend ./...
           xvfb-run -a go test -C backend ./...
-          dotnet test avalonia/ScreenShare.App.sln
+          dotnet test avalonia/MirrorMe.App.sln
 
       # qa/README.md renders the records under qa/runs, and a hand edit to either drifts from the other.
       - name: Tested-hardware page matches its records
@@ -210,4 +210,4 @@ jobs:
           $env:PATH = "$msys2;$env:PATH"
           go test -C backend -ldflags "-extldflags=-fuse-ld=lld" -run '^$' ./internal/receive
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          dotnet test avalonia/ScreenShare.App.sln
+          dotnet test avalonia/MirrorMe.App.sln

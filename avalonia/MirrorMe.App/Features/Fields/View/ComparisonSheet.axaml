@@ -1,0 +1,40 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:MirrorMe.App.Features.Fields.ViewModel"
+             xmlns:copy="using:MirrorMe.App.Copy"
+             x:Class="MirrorMe.App.Features.Fields.View.ComparisonSheet"
+             x:DataType="vm:ComparisonViewModel">
+
+  <UserControl.Transitions>
+    <Transitions>
+      <DoubleTransition Property="Opacity" Duration="{StaticResource MotionOpen}" Easing="{StaticResource MotionEase}" />
+    </Transitions>
+  </UserControl.Transitions>
+
+  <!-- Rises from the foot over a dimmed window (docs/design-language.md, "Narrow windows"). -->
+  <Grid>
+    <Border Classes="scrim mounting" PointerPressed="ScrimPressed" />
+    <Border Classes="risingsheet"
+            VerticalAlignment="Bottom"
+            Padding="{StaticResource InsetPanel}"
+            Background="{StaticResource ChromeBrush}"
+            BorderBrush="{StaticResource ControlBorderBrush}"
+            BorderThickness="1,1,1,0"
+            CornerRadius="8,8,0,0">
+      <StackPanel Spacing="{StaticResource GapControl}">
+        <Border Width="36"
+                Height="4"
+                CornerRadius="2"
+                HorizontalAlignment="Center"
+                Background="{StaticResource DividerBrush}" />
+        <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ComparisonTip}" />
+        <Button Theme="{StaticResource PrimaryButton}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                Content="{x:Static copy:Pictures.Done}"
+                Click="DonePressed" />
+      </StackPanel>
+    </Border>
+  </Grid>
+
+</UserControl>

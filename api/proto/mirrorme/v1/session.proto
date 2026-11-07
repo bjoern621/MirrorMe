@@ -6,7 +6,7 @@ import "mirrorme/v1/settings.proto";
 import "mirrorme/v1/text.proto";
 
 option go_package = "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1";
-option csharp_namespace = "ScreenShare.Api.V1";
+option csharp_namespace = "MirrorMe.Api.V1";
 
 // The running state:
 // what is publishing, what the relay carries, which viewers are open,

@@ -5,7 +5,7 @@ package mirrorme.v1;
 import "mirrorme/v1/text.proto";
 
 option go_package = "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1";
-option csharp_namespace = "ScreenShare.Api.V1";
+option csharp_namespace = "MirrorMe.Api.V1";
 
 // Every fixed fact the backend holds about this machine and about the encoding model:
 // which codecs exist, what each encodes, which of them this machine can run,

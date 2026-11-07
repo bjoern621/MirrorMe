@@ -1,0 +1,366 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:MirrorMe.App.Controls">
+
+  <!--
+    The button family, as one table of variants.
+    A view names the variant and sets nothing else, which is the only way two screens keep one button.
+    ControlThemes rather than Style classes: Fluent paints a button's hover from inside its own template,
+    so a class setter layered on top loses the moment a pointer arrives.
+  -->
+
+  <!--
+    The shared skin, keyed on the type, so a Button naming no variant still wears it.
+    A default nobody has to ask for cannot be forgotten.
+    Every variant below inherits it and states only its difference.
+    A variant that restates the template is a second button, and two buttons drift.
+  -->
+  <ControlTheme x:Key="{x:Type Button}" TargetType="Button">
+    <Setter Property="Background" Value="{StaticResource ControlBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource ControlBorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusControl}" />
+    <Setter Property="Foreground" Value="{StaticResource ControlForegroundBrush}" />
+    <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+    <Setter Property="FontWeight" Value="Medium" />
+    <Setter Property="Height" Value="{StaticResource ControlHeight}" />
+    <Setter Property="Padding" Value="11,0" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Border Name="Root"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="{TemplateBinding CornerRadius}"
+                RenderTransform="none">
+          <Border.Transitions>
+            <Transitions>
+              <controls:BrushFade Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              <controls:BrushFade Property="BorderBrush" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              <DoubleTransition Property="Opacity" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+              <TransformOperationsTransition Property="RenderTransform" Duration="{StaticResource MotionPress}" Easing="{StaticResource MotionEase}" />
+            </Transitions>
+          </Border.Transitions>
+          <ContentPresenter Name="PART_ContentPresenter"
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            Padding="{TemplateBinding Padding}"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+        </Border>
+      </ControlTemplate>
+    </Setter>
+
+    <Style Selector="^:pointerover /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource ControlHoverBrush}" />
+    </Style>
+    <Style Selector="^:pressed /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource ControlPressedBrush}" />
+    </Style>
+    <!-- Every button gives under the press. -->
+    <Style Selector="^:pressed:not(:disabled) /template/ Border#Root">
+      <Setter Property="RenderTransform" Value="scale(0.96)" />
+    </Style>
+    <Style Selector="^:disabled">
+      <Setter Property="Foreground" Value="{StaticResource DisabledBrush}" />
+      <Setter Property="Cursor" Value="Arrow" />
+    </Style>
+    <Style Selector="^:disabled /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource PanelBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}" />
+    </Style>
+  </ControlTheme>
+
+  <ControlTheme x:Key="ActionButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+    <Setter Property="Height" Value="{StaticResource ActionHeight}" />
+    <Setter Property="Padding" Value="13,0" />
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusButton}" />
+    <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+  </ControlTheme>
+
+  <ControlTheme x:Key="FooterButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+    <Setter Property="Height" Value="{StaticResource FooterButtonHeight}" />
+    <Setter Property="Padding" Value="14,0" />
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusButton}" />
+    <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+  </ControlTheme>
+
+  <!--
+    The two controls that change the world wear a hue: green on the way in, red on the way out
+    (docs/design-language.md, "Palette").
+    Both draw from one shape, each stating its fill: hover and press move opacity over that fill,
+    so neither adds a value to the palette and neither variant restates the treatment.
+  -->
+  <ControlTheme x:Key="HueButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusButton}" />
+    <Setter Property="Foreground" Value="{StaticResource OnHueBrush}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Height" Value="{StaticResource ActionHeight}" />
+    <Setter Property="Padding" Value="15,0" />
+
+    <Style Selector="^:pointerover:not(:disabled) /template/ Border#Root">
+      <Setter Property="Background" Value="{TemplateBinding Background}" />
+      <Setter Property="Opacity" Value="0.92" />
+    </Style>
+    <Style Selector="^:pressed:not(:disabled) /template/ Border#Root">
+      <Setter Property="Background" Value="{TemplateBinding Background}" />
+      <Setter Property="Opacity" Value="0.82" />
+    </Style>
+
+    <!--
+      Unpressable, the fill goes and an outline stands in: a hue on screen says a press is there,
+      and one carrying no press competes with the controls that do.
+      Stated here rather than left to the shared skin, whose greyed fill reads as a button that is filled.
+      Excluded from hover and press above, a disabled control keeping the pointer's pseudo-class.
+    -->
+    <Style Selector="^:disabled">
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Foreground" Value="{StaticResource DisabledBrush}" />
+    </Style>
+    <Style Selector="^:disabled /template/ Border#Root">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}" />
+    </Style>
+  </ControlTheme>
+
+  <!--
+    The way in, and the strip's pair where its press is the way out (Features/Shell/Go/View/GoView.axaml).
+    One theme for both halves of that pair, a class moving the fill,
+    so the commit and its menu button cannot wear two hues.
+  -->
+  <ControlTheme x:Key="GoButton" TargetType="Button" BasedOn="{StaticResource HueButton}">
+    <Setter Property="Background" Value="{StaticResource GoBrush}" />
+
+    <Style Selector="^.stop">
+      <Setter Property="Background" Value="{StaticResource AttentionBrush}" />
+    </Style>
+
+    <!-- Menu half beside a locked commit: still pressable, outlined like its locked neighbour. -->
+    <Style Selector="^.off">
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Foreground" Value="{StaticResource DisabledBrush}" />
+    </Style>
+    <Style Selector="^.off /template/ Border#Root">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}" />
+    </Style>
+    <Style Selector="^.off:pointerover:not(:disabled) /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource ControlHoverBrush}" />
+    </Style>
+    <Style Selector="^.off:pressed:not(:disabled) /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource ControlPressedBrush}" />
+    </Style>
+  </ControlTheme>
+
+  <ControlTheme x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource HueButton}">
+    <Setter Property="Background" Value="{StaticResource AttentionBrush}" />
+  </ControlTheme>
+
+  <ControlTheme x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+    <Setter Property="Background" Value="{StaticResource SelectedBrush}" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusButton}" />
+    <Setter Property="Foreground" Value="{StaticResource OnSelectedBrush}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+
+    <Style Selector="^:pointerover /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource ForegroundBrush}" />
+    </Style>
+    <Style Selector="^:pressed /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource SelectedBrush}" />
+      <Setter Property="Opacity" Value="0.85" />
+    </Style>
+  </ControlTheme>
+
+  <!--
+    Drawn as plain text: the design carries no underline and no blue.
+    Flat at rest and filled under the pointer, on the base's own fills, like every other button
+    (docs/design-language.md, "Pressing").
+    A control whose only answer is a brighter label is a label.
+    The padding is the room that fill needs to read as a shape,
+    and the press target the glyphs alone would not give.
+  -->
+  <ControlTheme x:Key="LinkButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Height" Value="NaN" />
+    <Setter Property="Padding" Value="7,4" />
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusControl}" />
+    <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+
+    <Style Selector="^:pointerover">
+      <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+    </Style>
+
+    <Style Selector="^:disabled /template/ Border#Root">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+  </ControlTheme>
+
+  <!--
+    Outlined rather than filled, since the card already carries the controls the reader came for
+    and a filled button beside the heading would read as the one to press.
+    Not the red one either: putting settings back starts no stream and stops none
+    (docs/design-language.md, "Palette").
+  -->
+  <ControlTheme x:Key="OutlineButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Padding" Value="10,0" />
+    <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+  </ControlTheme>
+
+  <!--
+    The box is what makes a glyph a button.
+    A bare glyph is a 16px target with nowhere to draw a hover, a press or a refusal.
+    Everything below states that box, and the fills stay the base's.
+  -->
+  <ControlTheme x:Key="IconButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Width" Value="{StaticResource IconButtonSize}" />
+    <Setter Property="Height" Value="{StaticResource IconButtonSize}" />
+    <Setter Property="Padding" Value="0" />
+
+    <Style Selector="^:disabled /template/ Border#Root">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+  </ControlTheme>
+
+  <!--
+    The row is the control, so the target is the width of the list and every state fills it.
+    A control drawn inside the row still takes its own press, since a button marks a pointer press handled.
+    Hover takes the raised-control fill rather than the base's hover step,
+    leaving that step above for a button drawn inside the row.
+  -->
+  <ControlTheme x:Key="RowButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Height" Value="NaN" />
+    <Setter Property="MinHeight" Value="{StaticResource RowButtonHeight}" />
+    <Setter Property="Padding" Value="7,0,3,0" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+
+    <Style Selector="^:pointerover /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource ControlBrush}" />
+    </Style>
+    <!-- A row as wide as its list gives less under the press, the same squeeze reading larger there. -->
+    <Style Selector="^:pressed:not(:disabled) /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource ControlPressedBrush}" />
+      <Setter Property="RenderTransform" Value="scale(0.985)" />
+    </Style>
+    <Style Selector="^:disabled /template/ Border#Root">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+  </ControlTheme>
+
+  <!--
+    Full title-bar height so a pointer can be thrown at the corner, square so neighbouring fills meet.
+    Filled under the pointer like every other button (docs/design-language.md, "Pressing").
+  -->
+  <ControlTheme x:Key="WindowControlButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="CornerRadius" Value="0" />
+    <Setter Property="Width" Value="40" />
+    <Setter Property="Height" Value="{StaticResource TitleBarHeight}" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Foreground" Value="{StaticResource GlyphBrush}" />
+
+    <Style Selector="^:pointerover /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource ControlBrush}" />
+    </Style>
+    <Style Selector="^:pressed /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource ControlPressedBrush}" />
+    </Style>
+    <!-- Holds still under the press, as the platform's own caption buttons do. -->
+    <Style Selector="^:pressed:not(:disabled) /template/ Border#Root">
+      <Setter Property="RenderTransform" Value="none" />
+    </Style>
+  </ControlTheme>
+
+  <!--
+    Which card is chosen is a class the form sets, not a selection the control owns.
+    The picked fill lives in the theme rather than at the call site.
+    A Background set on the control is lost the moment a pointer arrives, because the base's hover rule
+    writes the same Border from inside the template and a template setter beats a TemplateBinding.
+  -->
+  <ControlTheme x:Key="CardButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+    <Setter Property="Background" Value="{StaticResource PanelBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}" />
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusStrip}" />
+    <Setter Property="Height" Value="NaN" />
+    <Setter Property="Padding" Value="{StaticResource InsetPanel}" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Setter Property="VerticalContentAlignment" Value="Top" />
+
+    <!-- Picked inverts: the light fill marks the answer from across the column. -->
+    <Style Selector="^.picked">
+      <Setter Property="Foreground" Value="{StaticResource OnSelectedBrush}" />
+    </Style>
+    <Style Selector="^.picked /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource SelectedBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource SelectedBrush}" />
+    </Style>
+    <Style Selector="^.picked:pointerover /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource ControlForegroundBrush}" />
+    </Style>
+    <!-- The dark press fill would turn the dark text unreadable, so a picked card dims as PrimaryButton does. -->
+    <Style Selector="^.picked:pressed /template/ Border#Root">
+      <Setter Property="Background" Value="{StaticResource SelectedBrush}" />
+      <Setter Property="Opacity" Value="0.85" />
+    </Style>
+    <Style Selector="^:pressed:not(:disabled) /template/ Border#Root">
+      <Setter Property="RenderTransform" Value="scale(0.985)" />
+    </Style>
+
+    <Style Selector="^:disabled /template/ Border#Root">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="{StaticResource HairlineBrush}" />
+    </Style>
+  </ControlTheme>
+
+  <!--
+    One entry of a choice the form offers: a select, a radio group, the quality step's rate-control row.
+    All three render one view model with one picked class, so a theme of their own would be drift.
+    A button rather than a list item, because picking one sends a settings draft back
+    and the next form decides what it became.
+  -->
+  <ControlTheme x:Key="OptionCard" TargetType="Button" BasedOn="{StaticResource CardButton}" />
+
+  <!--
+    A picture is the target, so the button brings no ground and no outline of its own:
+    the tile inside draws both, and what is picked is marked on the picture
+    (Features/Setup/ScreenPicker/View).
+    Height unset, the shared skin's fixed one standing shorter than a picture and cutting it off.
+    Hover and press keep the shared skin's fills, which land beside the picture on the caption's ground.
+    Greyed, the fill goes: half a card behind a caption reads as a control drawn wrong,
+    and the sentence under the card says why the screen cannot be picked.
+  -->
+  <ControlTheme x:Key="TileButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusTile}" />
+    <Setter Property="Height" Value="NaN" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Setter Property="VerticalContentAlignment" Value="Top" />
+
+    <Style Selector="^:pressed:not(:disabled) /template/ Border#Root">
+      <Setter Property="RenderTransform" Value="scale(0.985)" />
+    </Style>
+    <Style Selector="^:disabled /template/ Border#Root">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+  </ControlTheme>
+
+</ResourceDictionary>

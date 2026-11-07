@@ -1,0 +1,241 @@
+using MirrorMe.Api.V1;
+using MirrorMe.App.Controls;
+using MirrorMe.App.Copy;
+using MirrorMe.App.Features.Setup.Model;
+using MirrorMe.App.Features.Setup.RelayCheck.Model;
+using MirrorMe.App.Features.Setup.ViewModel;
+using Xunit;
+
+namespace MirrorMe.App.Tests;
+
+/// <summary>Relay check: what answers on each leg, drawn beside the settings that address them.</summary>
+public sealed class RelayCheckTests
+{
+    private static async Task<SetupViewModel> FlowAsync()
+    {
+        var flow = Flows.Setup(new SeededBackend("linux"));
+        await flow.Settled;
+        return flow;
+    }
+
+    /// <summary>
+    /// Card belongs to the step holding the relay's address and ports,
+    /// that being where a leg nothing reaches is corrected.
+    /// </summary>
+    [Fact]
+    public async Task TheCheckDrawsOnTheRelayStepAlone()
+    {
+        var flow = await FlowAsync();
+
+        // Keys are taken first: standing on a step renders the strip, converging the collection being walked.
+        foreach (var key in flow.Steps.Select(step => step.Key).ToList())
+        {
+            flow.CurrentStep = key;
+            Assert.Equal(key == RelayLayout.GroupKey, flow.RelayCheck.IsVisible);
+        }
+    }
+
+    /// <summary>
+    /// Nothing is dialled on a render:
+    /// a check costs seconds against a listener that is not there, so it waits for the press.
+    /// </summary>
+    [Fact]
+    public async Task NothingIsDialledUntilTheButtonIsPressed()
+    {
+        var flow = await FlowAsync();
+        flow.CurrentStep = RelayLayout.GroupKey;
+
+        Assert.Empty(flow.RelayCheck.Legs);
+        Assert.False(flow.RelayCheck.HasLegs);
+    }
+
+    /// <summary>One row per leg the backend answered with, in the order it answered.</summary>
+    [Fact]
+    public async Task APressDrawsARowPerLeg()
+    {
+        var flow = await FlowAsync();
+        flow.CurrentStep = RelayLayout.GroupKey;
+
+        flow.RelayCheck.CheckCommand.Execute(null);
+
+        Assert.Equal(SeededBackend.CheckedLegs.Count, flow.RelayCheck.Legs.Count);
+        Assert.True(flow.RelayCheck.HasLegs);
+    }
+
+    /// <summary>
+    /// Three marks over four verdicts: a listener that answered, one that did not, one nothing dialled.
+    /// A listener whose answer nothing here needs wears the mark of one that answered, which is what it did.
+    /// </summary>
+    [Fact]
+    public async Task EachVerdictWearsItsOwnMark()
+    {
+        var flow = await FlowAsync();
+        flow.CurrentStep = RelayLayout.GroupKey;
+
+        flow.RelayCheck.CheckCommand.Execute(null);
+
+        Assert.Equal(
+            [CheckState.Passed, CheckState.Blocking, CheckState.Note, CheckState.Passed],
+            flow.RelayCheck.Legs.Select(leg => leg.State));
+    }
+
+    /// <summary>
+    /// A row carries the address it dialled and the listener's own words, what a reader takes into a bug report.
+    /// </summary>
+    [Fact]
+    public async Task ARowCarriesTheAddressAndWhatAnswered()
+    {
+        var flow = await FlowAsync();
+        flow.CurrentStep = RelayLayout.GroupKey;
+
+        flow.RelayCheck.CheckCommand.Execute(null);
+
+        var rtsp = flow.RelayCheck.Legs[0].Text;
+        Assert.Contains(Words.RelayLeg("rtsp"), rtsp);
+        Assert.Contains("rtsps://relay.test:8322", rtsp);
+        Assert.Contains("RTSP/1.0 200 OK", rtsp);
+        Assert.Contains("41 ms", rtsp);
+    }
+
+    /// <summary>
+    /// A leg nothing dialled says why in words rather than in the code the backend sent,
+    /// and names no address, there being none to dial.
+    /// </summary>
+    [Fact]
+    public async Task AnUndialledLegSaysWhyInWords()
+    {
+        var flow = await FlowAsync();
+        flow.CurrentStep = RelayLayout.GroupKey;
+
+        flow.RelayCheck.CheckCommand.Execute(null);
+
+        var groups = flow.RelayCheck.Legs[2].Text;
+        Assert.Contains(Statements.Of(new Text { Code = TextCode.RelayLegNoRelay }), groups);
+        Assert.DoesNotContain(nameof(TextCode.RelayLegNoRelay), groups);
+    }
+
+    /// <summary>
+    /// Summary counts what did not answer, and counts a leg nothing dialled nowhere:
+    /// nothing was asked of it, so it is neither well nor unwell.
+    /// </summary>
+    [Fact]
+    public void TheSummaryCountsOnlyWhatWasDialledAndDidNotAnswer()
+    {
+        Assert.Equal("1 did not answer", RelayLegRows.SummaryOf(RelayLegRows.Of(SeededBackend.CheckedLegs)));
+
+        var answering = RelayLegRows.Of(SeededBackend.CheckedLegs
+            .Where(leg => leg.Verdict != RelayLegVerdict.Unreachable)
+            .ToList());
+        Assert.Equal("everything answered", RelayLegRows.SummaryOf(answering));
+    }
+
+    /// <summary>
+    /// A relay that answers on nothing is rows and not a refusal,
+    /// so the panel for the backend's own sentence stays down (<c>docs/ipc-api.md</c>, "Errors").
+    /// </summary>
+    [Fact]
+    public async Task ARelayAnsweringNothingIsNoRefusal()
+    {
+        var flow = await FlowAsync();
+        flow.CurrentStep = RelayLayout.GroupKey;
+
+        flow.RelayCheck.CheckCommand.Execute(null);
+
+        Assert.False(flow.RelayCheck.HasRefusal);
+        Assert.Equal("", flow.RelayCheck.Refusal);
+    }
+
+    /// <summary>
+    /// The version a listener named stands in the summary, which is what tells a relay running
+    /// the release beside this app from one left behind.
+    /// </summary>
+    [Fact]
+    public void TheSummaryNamesTheVersionTheRelayAnswered()
+    {
+        var legs = RelayLegRows.Of(
+        [
+            new RelayLeg
+            {
+                Leg = "groups",
+                Address = "https://relay.test",
+                Verdict = RelayLegVerdict.Reachable,
+                Detail = "200 OK",
+                Version = "0.6.1",
+            },
+            new RelayLeg
+            {
+                Leg = "hls",
+                Address = "https://relay.test",
+                Verdict = RelayLegVerdict.Reachable,
+                Detail = "401 Unauthorized",
+            },
+        ]);
+
+        Assert.Equal("everything answered, relay version 0.6.1", RelayLegRows.SummaryOf(legs));
+    }
+
+    /// <summary>
+    /// Two versions are no version of the relay: a deployment answering both is running two,
+    /// and naming one of them would name whichever answered first.
+    /// </summary>
+    [Fact]
+    public void ARelayAnsweringTwoVersionsNamesNeither()
+    {
+        var legs = RelayLegRows.Of(
+        [
+            new RelayLeg { Leg = "groups", Address = "https://relay.test", Verdict = RelayLegVerdict.Reachable, Detail = "200 OK", Version = "0.6.1" },
+            new RelayLeg { Leg = "hls", Address = "https://relay.test", Verdict = RelayLegVerdict.Reachable, Detail = "200 OK", Version = "0.5.0" },
+        ]);
+
+        Assert.Equal("everything answered", RelayLegRows.SummaryOf(legs));
+    }
+
+    /// <summary>
+    /// A manager answering with Discord mode off is the relay behaving and this machine pointing elsewhere,
+    /// which is green: the row carries the answer and the reason beside it.
+    /// </summary>
+    [Fact]
+    public void TheDiscordManagerRowCarriesItsAnswerAndWhyNothingUsesIt()
+    {
+        var legs = RelayLegRows.Of(
+        [
+            new RelayLeg
+            {
+                Leg = "discord",
+                Address = "https://relay.test/discord",
+                Verdict = RelayLegVerdict.Unused,
+                Detail = "200 OK",
+                Unused = new Text { Code = TextCode.RelayLegDiscordOff },
+            },
+        ]);
+
+        Assert.Equal(CheckState.Passed, legs[0].State);
+        Assert.Contains(Words.RelayLeg("discord"), legs[0].Text);
+        Assert.Contains("https://relay.test/discord", legs[0].Text);
+        Assert.Contains("200 OK", legs[0].Text);
+        Assert.Contains(Statements.Of(new Text { Code = TextCode.RelayLegDiscordOff }), legs[0].Text);
+        Assert.DoesNotContain(nameof(TextCode.RelayLegDiscordOff), legs[0].Text);
+    }
+
+    /// <summary>
+    /// A manager that answered nothing is a fault whatever Discord mode says,
+    /// what the check asks being whether the relay is whole.
+    /// </summary>
+    [Fact]
+    public void AManagerThatAnsweredNothingIsAFault()
+    {
+        var legs = RelayLegRows.Of(
+        [
+            new RelayLeg
+            {
+                Leg = "discord",
+                Address = "https://relay.test/discord",
+                Verdict = RelayLegVerdict.Unreachable,
+                Detail = "connection refused",
+            },
+        ]);
+
+        Assert.Equal(CheckState.Blocking, legs[0].State);
+        Assert.Contains("connection refused", legs[0].Text);
+    }
+}

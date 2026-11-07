@@ -1,0 +1,115 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!--
+      WinExe gives the binary the GUI subsystem on Windows. A console-subsystem build opens
+      a console window beside the app whenever it is launched from Explorer.
+    -->
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>MirrorMe.App</RootNamespace>
+    <AssemblyName>mirrorme</AssemblyName>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!--
+      The Windows executable's own icon, which is what Explorer, the taskbar and the
+      installer's Start-menu shortcut all draw (packaging/windows/mirrorme.iss). Drawn from
+      packaging/icons/appicon.png by `task icons`, and inside this project rather than beside the
+      hicolor sizes: packaging/nix/package.nix hands the build api/, backend/ and avalonia/ alone, so a
+      path under build/ is one the Nix build cannot open. A publish for a non-Windows runtime
+      writes an ELF apphost and skips it.
+    -->
+    <ApplicationIcon>Assets/mirrorme.ico</ApplicationIcon>
+    <!--
+      The frame channel's consumer side is the only pointer work in this app, and both
+      halves of it need one: a frame's descriptors arrive in a kernel control message that
+      recvmsg writes into a buffer of this process's own (Backend/FrameDescriptors.cs), and
+      the EGL and OpenGL calls that import and draw them take arrays by address
+      (Features/Viewer/Tile/View/DmaBufSurface.cs). Nothing else here is unsafe, and
+      nothing else should become so.
+    -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="12.1.1" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.1" />
+    <!--
+      The Wayland backend, which Avalonia.Desktop does not carry: its Linux dependency is
+      Avalonia.X11 alone. avalonia/README.md ("Which windowing backend runs") states which
+      backend runs and what XWayland costs.
+    -->
+    <PackageReference Include="Avalonia.Wayland" Version="12.1.1" />
+    <!--
+      The protocol bindings Avalonia.Wayland 12.1.1 is built on, named directly since
+      Controls/WheelScroll/WaylandTouchpad.cs binds a protocol of its own on them.
+      The two versions move together.
+    -->
+    <PackageReference Include="NWayland" Version="0.11.0" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.1" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.1" />
+    <!--
+      The icon set, as a package rather than as vendored artwork. It carries the whole Tabler
+      outline set as geometry and draws it with a settable brush and stroke width, which is
+      what lets Design/Icons.axaml state the 1.2px stroke once instead of every icon arriving
+      at whatever weight it was exported at (docs/design-language.md).
+    -->
+    <PackageReference Include="TablerIcons.Avalonia" Version="3.44.0" />
+    <!--
+      No Avalonia.Diagnostics: the F12 inspector was dropped from the Avalonia repository
+      in 12 and the package stops at 11.3.19. The replacements on NuGet are third-party,
+      so none is pulled in here until one is picked deliberately.
+    -->
+  </ItemGroup>
+
+  <!--
+    The mono family, as files rather than as a package: Avalonia ships one for Inter and none for
+    a mono, and every mono package on NuGet is somebody's re-upload of a font whose upstream is
+    a release tarball. The NL cut is the ligature-free one, which is what a transcript needs:
+    "->" or "//" drawn as one glyph is a string the reader can no longer match against what the
+    backend printed (docs/design-language.md, "Typography"). OFL.txt ships with them, per its terms.
+  -->
+  <ItemGroup>
+    <AvaloniaResource Include="Assets/Fonts/*" />
+    <!-- The tray's two states, drawn from packaging/icons/appicon.png by `task icons`. -->
+    <AvaloniaResource Include="Assets/tray.png" />
+    <AvaloniaResource Include="Assets/tray-live.png" />
+  </ItemGroup>
+
+  <!--
+    Comparison crops, rendered by tools/crops.sh from the manifest beside them.
+    The manifest is embedded as well, so the table reading it loads without an Avalonia platform under it.
+  -->
+  <ItemGroup>
+    <AvaloniaResource Include="Assets/Crops/*.png" />
+    <EmbeddedResource Include="Assets/Crops/manifest.json" LogicalName="MirrorMe.App.Assets.Crops.manifest.json" />
+  </ItemGroup>
+
+  <!--
+    The control contract. Grpc.Tools compiles the same .proto files the Go side generates
+    from, during this build and into obj/, so there is no checked-in C# copy and no step
+    that can be skipped on one side only (api/README.md).
+
+    GrpcServices="Client" because a shell only ever calls: it implements no service of its
+    own, which is the boundary rule stated as a build setting (docs/ipc-api.md).
+  -->
+  <ItemGroup>
+    <PackageReference Include="Google.Api.CommonProtos" Version="2.17.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.33.0" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.76.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.76.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="../../api/proto/mirrorme/v1/*.proto" ProtoRoot="../../api/proto" GrpcServices="Client" />
+  </ItemGroup>
+
+  <!--
+    The tests see internals, for the one thing that cannot be reached through IBackend: how a
+    gRPC failure becomes the sentence a screen shows. Everything else is asserted against the
+    fakes, because everything else is a view model's.
+  -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="MirrorMe.App.Tests" />
+  </ItemGroup>
+
+</Project>

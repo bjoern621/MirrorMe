@@ -6,7 +6,7 @@ import "mirrorme/v1/session.proto";
 import "mirrorme/v1/text.proto";
 
 option go_package = "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1";
-option csharp_namespace = "ScreenShare.Api.V1";
+option csharp_namespace = "MirrorMe.Api.V1";
 
 // FrameService is the second service on the control socket, carrying frame handles.
 //

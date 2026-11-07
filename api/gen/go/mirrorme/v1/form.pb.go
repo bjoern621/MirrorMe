@@ -1395,7 +1395,7 @@ const file_mirrorme_v1_form_proto_rawDesc = "" +
 	"\x14SEVERITY_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rSEVERITY_INFO\x10\x01\x12\x14\n" +
 	"\x10SEVERITY_WARNING\x10\x02\x12\x12\n" +
-	"\x0eSEVERITY_ERROR\x10\x03BRZ;bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
+	"\x0eSEVERITY_ERROR\x10\x03BOZ;bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1\xaa\x02\x0fMirrorMe.Api.V1b\x06proto3"
 
 var (
 	file_mirrorme_v1_form_proto_rawDescOnce sync.Once

@@ -49,7 +49,7 @@ foreach ($file in $required) {
 # Self-contained, so the machine needs no .NET install.
 # Into the same directory as the backend rather than beside it:
 # the loader and every lookup here start in the directory the program was started from.
-dotnet publish (Join-Path $root 'avalonia/ScreenShare.App/ScreenShare.App.csproj') `
+dotnet publish (Join-Path $root 'avalonia/MirrorMe.App/MirrorMe.App.csproj') `
     --configuration Release `
     --runtime win-x64 `
     --self-contained true `

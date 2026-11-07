@@ -1699,7 +1699,7 @@ const file_mirrorme_v1_session_proto_rawDesc = "" +
 	"\x16UPDATE_STAGE_AVAILABLE\x10\x05\x12\x19\n" +
 	"\x15UPDATE_STAGE_FETCHING\x10\x06\x12\x16\n" +
 	"\x12UPDATE_STAGE_READY\x10\a\x12\x17\n" +
-	"\x13UPDATE_STAGE_FAILED\x10\bBRZ;bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1\xaa\x02\x12ScreenShare.Api.V1b\x06proto3"
+	"\x13UPDATE_STAGE_FAILED\x10\bBOZ;bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1\xaa\x02\x0fMirrorMe.Api.V1b\x06proto3"
 
 var (
 	file_mirrorme_v1_session_proto_rawDescOnce sync.Once

@@ -1,0 +1,25 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:MirrorMe.App.Controls"
+                    xmlns:model="using:MirrorMe.App.Features.Fields.Model"
+                    xmlns:ti="using:TablerIcons">
+
+  <!-- One statement as a chip, its sentence on hover. Hued by rank, inverting on a picked card. -->
+  <DataTemplate x:Key="ImpactChip" x:DataType="model:Impact">
+    <Border Classes="impact" Margin="0,2,6,0" ToolTip.Tip="{Binding Text}">
+      <StackPanel Orientation="Horizontal" Spacing="5">
+        <ti:TablerIcon Classes="badge impact"
+                       Classes.warns="{Binding Warns}"
+                       Classes.blocks="{Binding Blocks}"
+                       Icon="{Binding State, Converter={x:Static controls:CheckGlyphConverter.Instance}}"
+                       VerticalAlignment="Center" />
+        <TextBlock Classes="impact" Text="{Binding Chip}" VerticalAlignment="Center" />
+      </StackPanel>
+    </Border>
+  </DataTemplate>
+
+  <ItemsPanelTemplate x:Key="ChipPanel">
+    <WrapPanel />
+  </ItemsPanelTemplate>
+
+</ResourceDictionary>

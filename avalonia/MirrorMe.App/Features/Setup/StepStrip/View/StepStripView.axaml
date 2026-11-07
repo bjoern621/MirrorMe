@@ -1,0 +1,149 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:MirrorMe.App.Controls"
+             xmlns:setup="using:MirrorMe.App.Features.Setup.ViewModel"
+             xmlns:strip="using:MirrorMe.App.Features.Setup.StepStrip.ViewModel"
+             x:Class="MirrorMe.App.Features.Setup.StepStrip.View.StepStripView"
+             x:DataType="setup:SetupViewModel">
+
+  <!--
+    Every chip is pressable in every state and nothing gates reachability, so the flow is non-linear.
+    A chip names its step only where the reader stands; the rest carry their number, and hovering one names
+    the step and what it settled on.
+  -->
+
+  <UserControl.Resources>
+    <ControlTheme x:Key="StepChipTheme" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="{StaticResource ChipBorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="{StaticResource RadiusChip}" />
+      <Setter Property="Height" Value="NaN" />
+      <Setter Property="Padding" Value="4" />
+
+      <Style Selector="^.current">
+        <Setter Property="Padding" Value="4,4,11,4" />
+      </Style>
+      <Style Selector="^.current /template/ Border#Root">
+        <Setter Property="Background" Value="{StaticResource SelectedBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource SelectedBrush}" />
+      </Style>
+      <Style Selector="^.current:pointerover /template/ Border#Root">
+        <Setter Property="Background" Value="{StaticResource SelectedBrush}" />
+      </Style>
+      <Style Selector="^.blocked /template/ Border#Root">
+        <Setter Property="BorderBrush" Value="{StaticResource AttentionBrush}" />
+      </Style>
+    </ControlTheme>
+  </UserControl.Resources>
+
+  <UserControl.Styles>
+    <!-- Base is the upcoming state: it wears no class of its own, and the state classes override it. -->
+    <Style Selector="Border.chipbadge">
+      <Setter Property="Width" Value="18" />
+      <Setter Property="Height" Value="18" />
+      <Setter Property="CornerRadius" Value="9" />
+      <Setter Property="Background" Value="{StaticResource DividerBrush}" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <controls:BrushFade Property="Background" Duration="{StaticResource MotionHover}" Easing="{StaticResource MotionEase}" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Button.done Border.chipbadge">
+      <Setter Property="Background" Value="{StaticResource HintBrush}" />
+    </Style>
+    <Style Selector="Button.current Border.chipbadge">
+      <Setter Property="Background" Value="{StaticResource OnSelectedBrush}" />
+    </Style>
+    <!--
+      A step a blocking line names, red wherever the reader is standing (docs/design-language.md, "Palette").
+      Stated after walked and current, so it outranks both: what the flow got past matters less than
+      what stops the publish.
+    -->
+    <Style Selector="Button.blocked Border.chipbadge">
+      <Setter Property="Background" Value="{StaticResource AttentionBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.chipglyph">
+      <Setter Property="FontSize" Value="{StaticResource FontSizeMinor}" />
+      <Setter Property="FontFeatures" Value="{StaticResource FigureFeatures}" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Foreground" Value="{StaticResource SecondaryBrush}" />
+      <Setter Property="TextTrimming" Value="None" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.done TextBlock.chipglyph">
+      <Setter Property="Foreground" Value="{StaticResource OnSelectedBrush}" />
+    </Style>
+    <Style Selector="Button.current TextBlock.chipglyph">
+      <Setter Property="Foreground" Value="{StaticResource SelectedBrush}" />
+    </Style>
+    <Style Selector="Button.blocked TextBlock.chipglyph">
+      <Setter Property="Foreground" Value="{StaticResource OnHueBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.chiplabel">
+      <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Foreground" Value="{StaticResource OnSelectedBrush}" />
+    </Style>
+    <!-- The step's name slides out of its badge as the reader arrives on it. -->
+    <Style Selector="TextBlock.chiplabel[IsVisible=True]">
+      <Style.Animations>
+        <Animation Duration="{StaticResource MotionMove}" Easing="{StaticResource MotionEase}">
+          <KeyFrame Cue="0%">
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="RenderTransform" Value="translateX(-6px)" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="RenderTransform" Value="none" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+
+    <Style Selector="Border.connector">
+      <Setter Property="Width" Value="12" />
+      <Setter Property="Height" Value="1" />
+      <Setter Property="Margin" Value="7,0" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Background" Value="{StaticResource ChipBorderBrush}" />
+    </Style>
+  </UserControl.Styles>
+
+  <controls:RowList ItemsSource="{Binding Steps}" HorizontalAlignment="Center">
+    <controls:RowList.ItemsPanel>
+      <ItemsPanelTemplate>
+        <StackPanel Orientation="Horizontal" />
+      </ItemsPanelTemplate>
+    </controls:RowList.ItemsPanel>
+    <controls:RowList.ItemTemplate>
+      <DataTemplate x:DataType="strip:StepChipViewModel">
+        <StackPanel Orientation="Horizontal">
+          <Border Classes="connector" IsVisible="{Binding HasConnector}" />
+
+          <Button Theme="{StaticResource StepChipTheme}"
+                  Command="{Binding Select}"
+                  Classes.done="{Binding IsDone}"
+                  Classes.current="{Binding IsCurrent}"
+                  Classes.blocked="{Binding IsBlocked}"
+                  ToolTip.Tip="{Binding Tip}">
+            <StackPanel Orientation="Horizontal" Spacing="{StaticResource GapTight}">
+              <Border Classes="chipbadge">
+                <TextBlock Classes="chipglyph" Text="{Binding Badge}" />
+              </Border>
+              <TextBlock Classes="chiplabel"
+                         VerticalAlignment="Center"
+                         IsVisible="{Binding IsCurrent}"
+                         Text="{Binding Label}" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
+      </DataTemplate>
+    </controls:RowList.ItemTemplate>
+  </controls:RowList>
+
+</UserControl>

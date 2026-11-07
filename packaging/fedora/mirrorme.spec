@@ -142,7 +142,7 @@ go build -C backend -ldflags "-X main.version=%{version} -X main.channel=dnf" \
 # Framework-dependent: the runtime is a dependency of this package,
 # so the build carries no second copy of it.
 # Both binaries land in one directory, the shell starting the backend from beside itself.
-dotnet publish avalonia/ScreenShare.App/ScreenShare.App.csproj \
+dotnet publish avalonia/MirrorMe.App/MirrorMe.App.csproj \
   --configuration Release \
   --runtime linux-x64 \
   --self-contained false \

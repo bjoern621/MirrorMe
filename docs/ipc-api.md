@@ -349,7 +349,7 @@ A greying arriving as prose is a rule and a wording travelling together, and the
 A value with no name renders as the raw identifier, honest and still a defect.
 A statement with no sentence renders as its code, which is worse and is meant to be.
 Both visible rather than swallowed, because that is what gets them written.
-In the Avalonia shell: `ScreenShare.App/Copy`.
+In the Avalonia shell: `MirrorMe.App/Copy`.
 
 It owes the render-function discipline (`development-principles.md`): one function per component, every output set on every pass, nothing cached that the backend owns.
 

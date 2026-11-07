@@ -1,0 +1,60 @@
+using Avalonia;
+using MirrorMe.App.Features.Shell.Model;
+
+namespace MirrorMe.App;
+
+internal static class Program
+{
+    /// <summary>
+    /// STAThread because Windows COM needs the process's first thread to be a single-threaded apartment.
+    /// The clipboard, drag and drop and the file dialogs all go through it.
+    /// </summary>
+    [STAThread]
+    public static void Main(string[] args)
+    {
+        // The window already open takes this launch, and the launch is over: one window per user, and one tray
+        // icon with it (Features/Shell/Model/LinkRelay.cs).
+        // Every launch: one carrying a link,
+        // and one a reader started off the desktop's icon over a window closed to the tray.
+        // Before Avalonia, so the process handed over draws nothing at all.
+        if (LinkRelay.TryHandOver(LaunchLink.In(args)))
+        {
+            return;
+        }
+
+        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+    }
+
+    /// <summary>Entry point for the XAML previewer and any headless test host as well as for Main.</summary>
+    ///
+    /// <remarks>
+    /// UseWaylandWithFallback follows the detection, taking the backend already configured as its fallback, and
+    /// it does nothing at all off Linux.
+    /// Avalonia.Desktop's Linux backend is X11 alone, so without it a Wayland session runs the window through
+    /// XWayland, and a compositor scaling XWayland hands the client the logical size then magnifies what it drew.
+    /// Nothing inside the app can correct that: the buffer was already the small one by the time anything here
+    /// could look at it.
+    /// A Wayland client draws at the output's own scale instead.
+    ///
+    /// EGL before GLX on X11 is the frame channel's requirement.
+    /// A decoded frame reaches a tile as a dmabuf descriptor on this platform and the import for one is EGL's, so
+    /// a window rendering through GLX draws every tile as a notice saying the frames cannot be opened
+    /// (<c>Features/Viewer/Tile/View/DmaBufSurface.cs</c>).
+    /// GLX stays behind it: a machine whose EGL will not come up still draws the rest of the app.
+    ///
+    /// UseOpacitySaveLayer fades a control as one layer.
+    /// Without it each paint carries the opacity itself.
+    /// TablerIcon paints straight through Skia and skips that opacity, so its glyph holds full ink through a fade.
+    /// </remarks>
+    public static AppBuilder BuildAvaloniaApp() => AppBuilder
+        .Configure<App>()
+        .UsePlatformDetect()
+        .With(new X11PlatformOptions
+        {
+            RenderingMode = [X11RenderingMode.Egl, X11RenderingMode.Glx, X11RenderingMode.Software],
+        })
+        .With(new SkiaOptions { UseOpacitySaveLayer = true })
+        .UseWaylandWithFallback()
+        .WithInterFont()
+        .LogToTrace();
+}

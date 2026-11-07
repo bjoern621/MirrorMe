@@ -8,7 +8,7 @@ import "mirrorme/v1/settings.proto";
 import "mirrorme/v1/text.proto";
 
 option go_package = "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1";
-option csharp_namespace = "ScreenShare.Api.V1";
+option csharp_namespace = "MirrorMe.Api.V1";
 
 // Server push for what a shell did not do itself:
 // a stop pressed in another window, a pipeline that failed by itself,

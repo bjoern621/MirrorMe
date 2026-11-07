@@ -9,7 +9,7 @@ syntax = "proto3";
 package mirrorme.v1;
 
 option go_package = "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1;mirrormev1";
-option csharp_namespace = "ScreenShare.Api.V1";
+option csharp_namespace = "MirrorMe.Api.V1";
 
 // Settings is every user-controllable aspect of the product,
 // and the only settings shape on the wire:

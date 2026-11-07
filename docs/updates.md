@@ -93,5 +93,5 @@ The next start sweeps it, along with any staged release no newer than the one ru
 | Applier subcommand | `backend/internal/update/apply.go` |
 | Tree swap and archive extraction | `backend/internal/update/swap.go` |
 | Contract | `UpdateState` in `session.proto`, `Do check_update` and `Do install_update` in `control.proto` |
-| Band and dialog | `avalonia/ScreenShare.App/Features/Shell/Update` |
-| Wording | `avalonia/ScreenShare.App/Copy/Updates.cs` |
+| Band and dialog | `avalonia/MirrorMe.App/Features/Shell/Update` |
+| Wording | `avalonia/MirrorMe.App/Copy/Updates.cs` |

@@ -306,7 +306,7 @@
         # Both windowing backends are carried
         # because which one runs is the session's answer rather than the build's:
         # the app asks for Wayland and takes X11 where there is no compositor to ask
-        # (avalonia/ScreenShare.App/Program.cs).
+        # (avalonia/MirrorMe.App/Program.cs).
         #
         # Unlike the AMF directory, this list does shadow libraries the rest of the shell uses.
         # It comes from the same package set,
