@@ -49,7 +49,10 @@ $ErrorActionPreference = "Stop"
 # Kept in step with backend/internal/control/listen_windows.go, where the name is defined.
 # The version is part of it, so a v2 backend is a different pipe,
 # which this script neither waits for nor reports on.
+# MIRRORME_INSTANCE appends its suffix the way backend/internal/control/instance.go does.
+# Without it, `task backend` would wait on the pipe that an installed app holds.
 $pipe = "mirrorme-control-v1"
+if ($env:MIRRORME_INSTANCE) { $pipe += "-$env:MIRRORME_INSTANCE" }
 $pipePath = "\\.\pipe\$pipe"
 
 # pipeTaken answers whether the name a new backend is about to create already exists.
