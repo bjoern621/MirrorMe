@@ -11,7 +11,7 @@ git archive HEAD avalonia api | tar -x -C "$scratch/tree"
 
 # The test fakes stay internal in the repository.
 echo '[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("probe")]' \
-  >"$scratch/tree/avalonia/ScreenShare.App.Tests/ProbeAccess.cs"
+  >"$scratch/tree/avalonia/MirrorMe.App.Tests/ProbeAccess.cs"
 
 cp "$here/../probe/probe.csproj" "$here/../probe/Program.cs" "$scratch/probe/"
 echo "$scratch/probe"

@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Avalonia.Headless" Version="12.1.1" />
     <PackageReference Include="Avalonia.Skia" Version="12.1.1" />
-    <ProjectReference Include="../tree/avalonia/ScreenShare.App/ScreenShare.App.csproj" />
-    <ProjectReference Include="../tree/avalonia/ScreenShare.App.Tests/ScreenShare.App.Tests.csproj" />
+    <ProjectReference Include="../tree/avalonia/MirrorMe.App/MirrorMe.App.csproj" />
+    <ProjectReference Include="../tree/avalonia/MirrorMe.App.Tests/MirrorMe.App.Tests.csproj" />
   </ItemGroup>
 </Project>

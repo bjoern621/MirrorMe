@@ -4,11 +4,11 @@ using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
-using ScreenShare.App;
-using ScreenShare.App.Features.Viewer.Tile.View;
-using ScreenShare.App.Features.Viewer.Tile.ViewModel;
-using ScreenShare.App.Features.Viewer.View;
-using ScreenShare.App.Tests;
+using MirrorMe.App;
+using MirrorMe.App.Features.Viewer.Tile.View;
+using MirrorMe.App.Features.Viewer.Tile.ViewModel;
+using MirrorMe.App.Features.Viewer.View;
+using MirrorMe.App.Tests;
 
 AppBuilder.Configure<App>().UseSkia()
     .UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false })
