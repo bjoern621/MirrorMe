@@ -10,6 +10,15 @@ Releases before v0.11.0 carry no notes, and their commits sit in the [history](h
 
 - In the publish settings, "When upload falls behind" lets you choose between skipping to the next keyframe (the default) and slowing the encoder.
 
+### Changed
+
+- The project lives at [github.com/bjoern621/MirrorMe](https://github.com/bjoern621/MirrorMe).
+  The old address forwards there.
+  A Nix flake takes it as `github:bjoern621/MirrorMe`.
+- The relay images publish as `ghcr.io/bjoern621/mirrorme-relay`, `-proxy`, `-groupd`, `-discordd` and `-watchd`.
+- The relay proxy reads `MIRRORME_DOMAIN`, `MIRRORME_GROUPD`, `MIRRORME_WATCHD`, `MIRRORME_DISCORDD`, `MIRRORME_RELAY_WEBRTC` and `MIRRORME_RELAY_HLS` in place of the `SCREENSHARE_` names.
+  The relay looks for its certificate under `/var/lib/mirrorme-tls`.
+
 ### Fixed
 
 - A slow upload stalls the local preview no more.
