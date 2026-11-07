@@ -24,7 +24,15 @@ vars:
   # Go hashes the CC string below into every cgo package's cache key,
   # and the check on a push spells it this way (.github/workflows/check.yml).
   MSYS2_ROOT: '{{default "C:/msys64" .MSYS2_ROOT}}'
-  MSYS2_MINGW: '{{.MSYS2_ROOT | toSlash}}/mingw64'
+  # UCRT64 where it holds GStreamer, MINGW64 otherwise.
+  # MSYS2's package database dropped most GStreamer plugins from MINGW64,
+  # so a fresh install gets them from UCRT64 alone.
+  # The check on a push keeps MINGW64 through its pinned installer snapshot.
+  MSYS2_MINGW:
+    sh: >-
+      if [ -f "{{.MSYS2_ROOT | toSlash}}/ucrt64/bin/gst-launch-1.0.exe" ];
+      then echo "{{.MSYS2_ROOT | toSlash}}/ucrt64";
+      else echo "{{.MSYS2_ROOT | toSlash}}/mingw64"; fi
 
 tasks:
   default:
@@ -168,6 +176,7 @@ tasks:
       # so with Git's prefix ahead of MSYS2's the backend dies before main
       # with STATUS_ENTRYPOINT_NOT_FOUND (0xc0000139).
       # Dropped rather than reordered, which keeps the ffmpeg decision above intact.
+      # The template drops it, since a PowerShell PATH carries no sed for Task's shell to call.
       # A packaged build has neither problem:
       # the loader takes the binary's own directory before any PATH entry,
       # and bundle-runtime.sh puts every DLL there.
@@ -189,7 +198,7 @@ tasks:
       # A dev run links the same binary a packaged one does, so it meets the same linker.
       - platforms: [windows]
         cmd: >-
-          PATH="$(echo "$PATH" | sed -E 's#[^;]*[gG]it[\\/]+mingw64[\\/]+bin;?##g');{{.MSYS2_MINGW}}/bin"
+          PATH="{{regexReplaceAll "[^;]*[gG]it[\\\\/]+mingw64[\\\\/]+bin;?" (env "PATH") ""}};{{.MSYS2_MINGW}}/bin"
           CC='{{.MSYS2_MINGW}}/bin/gcc.exe' PKG_CONFIG='{{.MSYS2_MINGW}}/bin/pkg-config.exe'
           go run -ldflags "-extldflags=-fuse-ld=lld" ./cmd/backend
 

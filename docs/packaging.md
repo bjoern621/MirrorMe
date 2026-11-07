@@ -335,7 +335,23 @@ pacman -S mingw-w64-x86_64-{toolchain,pkgconf,lld,gstreamer,glib-networking} \
 Go is not in that list: it comes from a Windows install of Go, MSYS2 shipping a trimmed one that would need `GOROOT` named for it.
 `.github/actions/msys2` installs the same set.
 
-A development run takes the launcher from MSYS2, whose prefix nothing puts on a normal `PATH`, so `task backend` appends `mingw64/bin` for the run.
+A fresh MSYS2 install finds most of the GStreamer plugins missing from MINGW64, since MSYS2 builds them for UCRT64 alone.
+On such a machine, install the same set from the UCRT64 repository:
+
+```bash
+pacman -S mingw-w64-ucrt-x86_64-{toolchain,pkgconf,lld,gstreamer,glib-networking} \
+          mingw-w64-ucrt-x86_64-gst-{plugins-base,plugins-good,plugins-bad,plugins-ugly,plugins-rs,rtsp-server,libav}
+```
+
+`Taskfile.yml` takes `ucrt64` once it holds `gst-launch-1.0.exe` and `mingw64` otherwise.
+
+A development run on Windows also needs Task, Go, the .NET SDK and PowerShell 7, which `task relay` runs `deploy/relay.ps1` with:
+
+```powershell
+winget install Task.Task GoLang.Go Microsoft.DotNet.SDK.10 Microsoft.PowerShell MSYS2.MSYS2
+```
+
+A development run takes the launcher from MSYS2, whose prefix nothing puts on a normal `PATH`, so `task backend` appends the prefix's `bin` for the run.
 Appended rather than prepended, MSYS2 shipping an ffmpeg of its own that a prefix in front would move every capture and encode onto.
 
 Building needs no particular shell.
