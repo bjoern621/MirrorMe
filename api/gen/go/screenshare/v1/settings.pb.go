@@ -582,7 +582,7 @@ type PublishSettings struct {
 	// "metadata" sends its position beside the stream for a viewer to draw itself.
 	// Which values a capture backend serves is the backend's own fact,
 	// so the form greys the rest with what each one is missing.
-	Cursor string `protobuf:"bytes,38,opt,name=cursor,proto3" json:"cursor,omitempty"`
+	Pointer string `protobuf:"bytes,38,opt,name=pointer,proto3" json:"pointer,omitempty"`
 	// Key of the built-in preset these settings follow, "" for settings the user owns.
 	// While set, the backend searches out the preset's configuration for this machine
 	// on every resolve and every start, so a changed machine changes what runs,
@@ -834,9 +834,9 @@ func (x *PublishSettings) GetOutputResolution() string {
 	return ""
 }
 
-func (x *PublishSettings) GetCursor() string {
+func (x *PublishSettings) GetPointer() string {
 	if x != nil {
-		return x.Cursor
+		return x.Pointer
 	}
 	return ""
 }
@@ -875,7 +875,7 @@ type ViewerSettings struct {
 	// One value for every tile rather than one per stream,
 	// because a chain falls back where a driver cannot run it,
 	// and that is a property of the machine
-	// (docs/viewer-architecture.md, "The receive package").
+	// (docs/viewer-architecture.md, "Render chains").
 	RenderChain string `protobuf:"bytes,6,opt,name=render_chain,json=renderChain,proto3" json:"render_chain,omitempty"`
 	// Which picture of this machine's own stream the insights preview draws:
 	// "off", "local" or "end-to-end"
@@ -1159,7 +1159,7 @@ const file_screenshare_v1_settings_proto_rawDesc = "" +
 	"\tgroup_key\x18\b \x01(\tR\bgroupKey\x12!\n" +
 	"\fdisplay_name\x18\f \x01(\tR\vdisplayName\x12!\n" +
 	"\fdiscord_link\x18\x0e \x01(\tR\vdiscordLinkJ\x04\b\r\x10\x0eJ\x04\b\x0f\x10\x10J\x04\b\t\x10\n" +
-	"J\x04\b\x03\x10\x04R\fdiscord_modeR\x15discord_rich_presenceR\x0esrt_passphraseR\bapi_port\"\xa0\n" +
+	"J\x04\b\x03\x10\x04R\fdiscord_modeR\x15discord_rich_presenceR\x0esrt_passphraseR\bapi_port\"\xa2\n" +
 	"\n" +
 	"\x0fPublishSettings\x12+\n" +
 	"\x11publish_transport\x18\n" +
@@ -1198,8 +1198,8 @@ const file_screenshare_v1_settings_proto_rawDesc = "" +
 	"\vuplink_mbps\x18\" \x01(\x05R\n" +
 	"uplinkMbps\x120\n" +
 	"\x14uplink_measured_unix\x18, \x01(\x03R\x12uplinkMeasuredUnix\x12+\n" +
-	"\x11output_resolution\x18% \x01(\tR\x10outputResolution\x12\x16\n" +
-	"\x06cursor\x18& \x01(\tR\x06cursor\x12\x16\n" +
+	"\x11output_resolution\x18% \x01(\tR\x10outputResolution\x12\x18\n" +
+	"\apointer\x18& \x01(\tR\apointer\x12\x16\n" +
 	"\x06preset\x18+ \x01(\tR\x06presetJ\x04\b\x01\x10\n" +
 	"J\x04\b\v\x10\fJ\x04\b\x18\x10\x19J\x04\b\x1e\x10\x1fJ\x04\b \x10!J\x04\b!\x10\"J\x04\b#\x10$J\x04\b$\x10%R\x04nameR\x05audioR\x05codecR\n" +
 	"relay_hostR\n" +

@@ -3,9 +3,9 @@ package app
 import (
 	"sync"
 
-	"bjoernblessin.de/screenshare/internal/cursor"
 	"bjoernblessin.de/screenshare/internal/decode"
 	"bjoernblessin.de/screenshare/internal/pointer"
+	"bjoernblessin.de/screenshare/internal/pointermode"
 )
 
 // The pointer position, held between the child that reads it and the shells that draw it.
@@ -51,7 +51,7 @@ func (p *pointerState) read() (pointer.Spot, bool) {
 // Pointer is where the publishing machine's pointer is, as a fraction of the picture it publishes.
 //
 // False wherever there is nothing honest to say: no publish in force,
-// a cursor mode that draws the pointer into the frames or leaves it out,
+// a pointer mode that draws the pointer into the frames or leaves it out,
 // or a child that has reported no position.
 // A shell draws nothing on false rather than guessing,
 // which separates "not there" from "not being sent".
@@ -64,7 +64,7 @@ func (a *App) Pointer() (pointer.Spot, bool) {
 	a.procMu.Lock()
 	live, _ := a.livePublishLocked()
 	a.procMu.Unlock()
-	if live == nil || live.Publish.Cursor != cursor.Metadata {
+	if live == nil || live.Publish.Pointer != pointermode.Metadata {
 		return pointer.Spot{}, false
 	}
 	return at, true

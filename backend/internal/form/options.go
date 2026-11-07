@@ -10,10 +10,10 @@ import (
 	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
 
 	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/cursor"
 	"bjoernblessin.de/screenshare/internal/display"
 	"bjoernblessin.de/screenshare/internal/ffmpeg"
 	"bjoernblessin.de/screenshare/internal/gpupath"
+	"bjoernblessin.de/screenshare/internal/pointermode"
 	// Aliased: group is this package's own type, the heading a shell draws (form.go).
 	groupdomain "bjoernblessin.de/screenshare/internal/group"
 	"bjoernblessin.de/screenshare/internal/platform"
@@ -129,7 +129,7 @@ func optionCaptureMemories(_ Deps, _ settings.Settings) []*screensharev1.FieldOp
 	return out
 }
 
-// optionCursors offers every pointer mode cursor.Modes declares,
+// optionPointerModes offers every pointer mode pointermode.Modes declares,
 // whatever the selected capture backend serves.
 // One this backend cannot do is greyed with the backend's own reason,
 // an entry that vanished having taken away the sentence naming what to change
@@ -137,10 +137,10 @@ func optionCaptureMemories(_ Deps, _ settings.Settings) []*screensharev1.FieldOp
 //
 // Embedded is marked: it is what a screen share is expected to look like, and what every backend
 // but the scanout one does.
-func optionCursors(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
-	out := make([]*screensharev1.FieldOption, 0, len(cursor.Modes))
-	for _, mode := range cursor.Modes {
-		out = append(out, optionEntry(mode, nil, mode == cursor.Embedded))
+func optionPointerModes(_ Deps, _ settings.Settings) []*screensharev1.FieldOption {
+	out := make([]*screensharev1.FieldOption, 0, len(pointermode.Modes))
+	for _, mode := range pointermode.Modes {
+		out = append(out, optionEntry(mode, nil, mode == pointermode.Embedded))
 	}
 	return out
 }

@@ -344,7 +344,7 @@ message PublishSettings {
   // "metadata" sends its position beside the stream for a viewer to draw itself.
   // Which values a capture backend serves is the backend's own fact,
   // so the form greys the rest with what each one is missing.
-  string cursor = 38;
+  string pointer = 38;
 
   // Key of the built-in preset these settings follow, "" for settings the user owns.
   // While set, the backend searches out the preset's configuration for this machine

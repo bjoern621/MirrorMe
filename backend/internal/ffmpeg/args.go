@@ -18,11 +18,11 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 
 	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/cursor"
 	"bjoernblessin.de/screenshare/internal/display"
 	"bjoernblessin.de/screenshare/internal/gpu"
 	"bjoernblessin.de/screenshare/internal/gpupath"
 	"bjoernblessin.de/screenshare/internal/platform"
+	"bjoernblessin.de/screenshare/internal/pointermode"
 	"bjoernblessin.de/screenshare/internal/settings"
 	"bjoernblessin.de/screenshare/internal/share"
 	"bjoernblessin.de/screenshare/internal/transport"
@@ -516,13 +516,13 @@ func gdigrabArgs(s settings.Settings, fps, _ string) (captureSource, error) {
 
 // drawMouse renders the pointer setting as the "1"
 // or "0" every ffmpeg capture device spells it with.
-// The cursor modes collapse onto those two here: an ffmpeg capture either draws the pointer
+// The pointer modes collapse onto those two here: an ffmpeg capture either draws the pointer
 // into the frames or leaves it out,
 // and nothing on this path reports a position to send beside the picture.
 // A mode a backend does not serve is refused before a command is built
-// (internal/publish/cursor.go), so only a mode the device can run reaches here.
+// (internal/publish/pointermode.go), so only a mode the device can run reaches here.
 func drawMouse(s settings.Settings) string {
-	if s.Publish.Cursor == cursor.Embedded {
+	if s.Publish.Pointer == pointermode.Embedded {
 		return "1"
 	}
 	return "0"

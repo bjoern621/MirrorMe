@@ -11,8 +11,8 @@ import (
 	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
 	"bjoernblessin.de/screenshare/internal/text"
 
-	"bjoernblessin.de/screenshare/internal/cursor"
 	"bjoernblessin.de/screenshare/internal/gstrun"
+	"bjoernblessin.de/screenshare/internal/pointermode"
 	"bjoernblessin.de/screenshare/internal/settings"
 )
 
@@ -133,7 +133,7 @@ func Live(h Handle) (LiveApplier, bool) {
 // times none either and the displayed command still reads as the command that ran.
 func gstChildArgs(s settings.Settings, socket string, metered bool) []string {
 	args := gstLiveArgs(socket)
-	if s.Publish.Cursor == cursor.Metadata {
+	if s.Publish.Pointer == pointermode.Metadata {
 		args = append(args, gstrun.PointerFlag)
 	}
 	if metered {

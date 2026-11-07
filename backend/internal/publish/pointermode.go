@@ -6,8 +6,8 @@ import (
 	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
 
 	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/cursor"
 	"bjoernblessin.de/screenshare/internal/framestamp"
+	"bjoernblessin.de/screenshare/internal/pointermode"
 	"bjoernblessin.de/screenshare/internal/portal"
 	"bjoernblessin.de/screenshare/internal/rules"
 )
@@ -19,76 +19,76 @@ import (
 // The axis is the capture backend rather than the codec, which a Gap cannot express, so these
 // are written as rules rather than converted into them (docs/domain-model.md, "One evaluator").
 
-// cursorServes is the modes each capture backend serves, in Modes order.
+// pointerServes is the modes each capture backend serves, in Modes order.
 //
 // A backend absent from the map is a bug rather than a backend serving nothing, which init asserts
 // against the registry: a backend missing here would otherwise offer every mode and pass a flag
 // nothing reads.
-var cursorServes = map[string][]string{
+var pointerServes = map[string][]string{
 	// draw_mouse on the two ffmpeg grabbers, show-cursor on the GStreamer one.
 	// None of the three reports a pointer position of its own.
-	"ddagrab":               {cursor.Embedded, cursor.Hidden},
-	"gdigrab":               {cursor.Embedded, cursor.Hidden},
-	"d3d11screencapturesrc": {cursor.Embedded, cursor.Hidden},
+	"ddagrab":               {pointermode.Embedded, pointermode.Hidden},
+	"gdigrab":               {pointermode.Embedded, pointermode.Hidden},
+	"d3d11screencapturesrc": {pointermode.Embedded, pointermode.Hidden},
 
 	// draw_mouse on the ffmpeg side, show-pointer on the GStreamer one.
 	// X11 draws the pointer into the image and answers any client asking where it is, what
 	// the metadata mode reads there (internal/pointer).
 	// Only the GStreamer row serves that mode: the publish child reports the position, and the ffmpeg
 	// engine's child is ffmpeg.
-	"x11grab":   {cursor.Embedded, cursor.Hidden},
-	"ximagesrc": {cursor.Embedded, cursor.Hidden, cursor.Metadata},
+	"x11grab":   {pointermode.Embedded, pointermode.Hidden},
+	"ximagesrc": {pointermode.Embedded, pointermode.Hidden, pointermode.Metadata},
 
 	// kmsgrab reads the scanout's primary plane, and the pointer is a hardware plane of its own
 	// that the scanout composes at display time.
 	// Nothing on that path draws it into the frames, so the capture is cursorless whatever it is asked
 	// for, and hidden is the only mode describing what it does.
-	"kmsgrab": {cursor.Hidden},
+	"kmsgrab": {pointermode.Hidden},
 
 	// cursor_mode's metadata value sends the position beside each frame instead of drawing it,
 	// and pipewiresrc hands it on as a region of interest the publish child reads
 	// (internal/portal, gstrun/pointersource.go).
-	"portal": {cursor.Embedded, cursor.Hidden, cursor.Metadata},
+	"portal": {pointermode.Embedded, pointermode.Hidden, pointermode.Metadata},
 
 	// -capture_cursor on the ffmpeg side, capture-screen-cursor on the GStreamer one.
-	"avfoundation": {cursor.Embedded, cursor.Hidden},
-	"avfvideosrc":  {cursor.Embedded, cursor.Hidden},
+	"avfoundation": {pointermode.Embedded, pointermode.Hidden},
+	"avfvideosrc":  {pointermode.Embedded, pointermode.Hidden},
 }
 
 // The table describes the same set of backends the registry does, so a row in one and not the other
 // is a backend whose pointer behaviour nobody stated, or an entry for a backend nobody registered.
 // Both are bugs in this package, so they fail at load.
 func init() {
-	assert.Assert(len(cursorServes) == len(captureBackends),
+	assert.Assert(len(pointerServes) == len(captureBackends),
 		"a capture backend states what it does with the pointer exactly once",
-		len(cursorServes), len(captureBackends))
-	assert.Assert(len(cursorServes[capturePortal]) > 0, "the portal backend has a pointer row", capturePortal)
-	for name, serves := range cursorServes {
+		len(pointerServes), len(captureBackends))
+	assert.Assert(len(pointerServes[capturePortal]) > 0, "the portal backend has a pointer row", capturePortal)
+	for name, serves := range pointerServes {
 		_, ok := captureBackends[name]
 		assert.Assert(ok, "a backend with a pointer row is one the registry carries", name)
 		assert.Assert(len(serves) > 0, "a capture backend serves at least one pointer mode", name)
 		for _, mode := range serves {
-			assert.Assert(cursor.Known(mode), "a served pointer mode is one the settings name", name, mode)
+			assert.Assert(pointermode.Known(mode), "a served pointer mode is one the settings name", name, mode)
 		}
 	}
-	rules.Register(cursorRules()...)
+	rules.Register(pointerRules()...)
 }
 
-// cursorRules is what each backend cannot do with the pointer, plus the limits that are this app's
+// pointerRules is what each backend cannot do with the pointer, plus the limits that are this app's
 // rather than any backend's.
-func cursorRules() []rules.Rule {
+func pointerRules() []rules.Rule {
 	var out []rules.Rule
 	for _, name := range Captures() {
-		for _, mode := range cursor.Modes {
+		for _, mode := range pointermode.Modes {
 			if serves(name, mode) {
 				continue
 			}
 			out = append(out, rules.Rule{
 				When:    map[string]rules.Match{rules.AxisCapture: rules.OneOf(name)},
 				Verdict: rules.Refuse,
-				Field:   rules.AxisCursor,
+				Field:   rules.AxisPointer,
 				Values:  rules.OneOf(mode),
-				Reason:  cursorRefusal(name, mode),
+				Reason:  pointerRefusal(name, mode),
 			})
 		}
 	}
@@ -109,22 +109,22 @@ func cursorRules() []rules.Rule {
 		out = append(out, rules.Rule{
 			When:    map[string]rules.Match{rules.AxisFormat: rules.OneOf(format)},
 			Verdict: rules.Refuse,
-			Field:   rules.AxisCursor,
-			Values:  rules.OneOf(cursor.Metadata),
+			Field:   rules.AxisPointer,
+			Values:  rules.OneOf(pointermode.Metadata),
 			Reason:  screensharev1.TextCode_TEXT_CODE_FORMAT_CARRIES_NO_CURSOR_METADATA,
 		})
 	}
 	return out
 }
 
-// cursorRefusal is why a backend does not serve a mode.
+// pointerRefusal is why a backend does not serve a mode.
 //
 // Two facts rather than one sentence with the backend's name in it, the two sending a reader
 // to different places.
 // A capture that cannot draw the pointer is a property of how it reads the screen, and a capture
 // with no position to report is a property of what it reports beside the picture.
-func cursorRefusal(capture, mode string) screensharev1.TextCode {
-	if mode == cursor.Metadata {
+func pointerRefusal(capture, mode string) screensharev1.TextCode {
+	if mode == pointermode.Metadata {
 		return screensharev1.TextCode_TEXT_CODE_CAPTURE_HAS_NO_CURSOR_METADATA
 	}
 	assert.Assert(capture == "kmsgrab",
@@ -133,7 +133,7 @@ func cursorRefusal(capture, mode string) screensharev1.TextCode {
 }
 
 func serves(capture, mode string) bool {
-	for _, m := range cursorServes[capture] {
+	for _, m := range pointerServes[capture] {
 		if m == mode {
 			return true
 		}
@@ -157,11 +157,11 @@ func gstBool(on bool) string {
 // value sends the position out of band instead of drawing it.
 func portalCursor(mode string) portal.CursorMode {
 	switch mode {
-	case cursor.Embedded:
+	case pointermode.Embedded:
 		return portal.CursorEmbedded
-	case cursor.Hidden:
+	case pointermode.Hidden:
 		return portal.CursorHidden
-	case cursor.Metadata:
+	case pointermode.Metadata:
 		return portal.CursorMetadata
 	default:
 		assert.Never("a portal capture names a pointer mode the settings carry", mode)
@@ -169,13 +169,13 @@ func portalCursor(mode string) portal.CursorMode {
 	}
 }
 
-// CursorServed reports whether the capture backend serves this pointer mode, for a caller choosing
+// PointerServed reports whether the capture backend serves this pointer mode, for a caller choosing
 // a value rather than greying one.
 // A form shows the rules' answer.
 // This is the same table asked directly, for the repair, which has to land on a mode the backend
 // runs.
-func CursorServed(capture, mode string) bool {
-	assert.Assert(cursor.Known(mode), "a pointer question names a mode the settings carry", mode)
+func PointerServed(capture, mode string) bool {
+	assert.Assert(pointermode.Known(mode), "a pointer question names a mode the settings carry", mode)
 	return serves(capture, mode)
 }
 
@@ -183,7 +183,7 @@ func CursorServed(capture, mode string) bool {
 // the table above.
 const capturePortal = "portal"
 
-// CursorServedHere reports whether this machine leaves a pointer mode reachable on a capture
+// PointerServedHere reports whether this machine leaves a pointer mode reachable on a capture
 // backend, given what the desktop portal answered (internal/portal, Capabilities).
 //
 // The rows above state which modes a backend's interface can express,
@@ -192,8 +192,8 @@ const capturePortal = "portal"
 // wlroots serves hidden and embedded where KWin serves all three, on one capture backend and one
 // table row.
 // Every other backend sets a property of its own and needs no asking.
-func CursorServedHere(caps portal.Capabilities, capture, mode string) bool {
-	assert.Assert(cursor.Known(mode), "a pointer question names a mode the settings carry", mode)
+func PointerServedHere(caps portal.Capabilities, capture, mode string) bool {
+	assert.Assert(pointermode.Known(mode), "a pointer question names a mode the settings carry", mode)
 
 	if capture != capturePortal {
 		return true

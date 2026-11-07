@@ -29,7 +29,7 @@ var warningAnchors = []string{
 	KeyBitrateM, KeyMaxrateM, KeyVbvMs, KeyGop, KeyBframes, KeyEffort, KeyTune,
 	KeyCapture, KeyAudioSource, KeyAudioSourceDevice, KeyAudioSourceGain, KeyAudioSourceMute,
 	KeyAudioCodec, KeyDrmMap, KeyMonitor, KeyShareKind, KeyShareWindow, KeyShareRegion, KeyCaptureMemory,
-	KeyCursor, KeyTileWatchTransport, KeyRenderChain,
+	KeyPointer, KeyTileWatchTransport, KeyRenderChain,
 	KeySrtPublishLatencyMs, KeySrtWatchLatencyMs,
 	KeyRtspPublishProtocol, KeyRtspWatchProtocol,
 	KeyCongestion,

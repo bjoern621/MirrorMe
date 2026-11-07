@@ -343,12 +343,18 @@ func migratePublish(p, d Publish) Publish {
 	// so filling it keeps a stored stream publishing as it did:
 	// a pair with no GPU path resolves to the system memory it used, and a pair with one takes it.
 	fillText(&p.CaptureMemory, d.CaptureMemory)
+	// A file written while the key was "cursor" names the mode there, which the ordinary decode never reads.
+	// The old key wins over the field, which holds the default either way.
+	if p.FlatCursor != "" {
+		p.Pointer = p.FlatCursor
+		p.FlatCursor = ""
+	}
 	// A file written before the pointer became a setting names no mode,
 	// and the builders reject a value no table carries.
 	// The default is what those builds did,
 	// every backend but kmsgrab drawing the pointer into the frames,
 	// so filling it keeps a stored stream looking as it did.
-	fillText(&p.Cursor, d.Cursor)
+	fillText(&p.Pointer, d.Pointer)
 	// A file written before the capture could be pointed at a window or a rectangle names no kind,
 	// and every backend refuses a kind no table row carries.
 	// The whole screen is what those builds captured,
@@ -358,6 +364,7 @@ func migratePublish(p, d Publish) Publish {
 
 	assert.Assert(p.FlatCodec == "", "an upgraded publish carries no pre-pair codec key", p.FlatCodec)
 	assert.Assert(p.FlatAudio == "", "an upgraded publish carries no pre-list audio key", p.FlatAudio)
+	assert.Assert(p.FlatCursor == "", "an upgraded publish carries no pre-rename pointer key", p.FlatCursor)
 	assert.Assert(p.Mode != "latency" && p.Mode != "quality",
 		"an upgraded publish names a rate control the tables carry", p.Mode)
 	return p

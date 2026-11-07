@@ -48,7 +48,7 @@ func factsOf(d Deps, s settings.Settings) rules.Facts {
 		rules.AxisMode:       rules.TextValue(s.Publish.Mode),
 		rules.AxisTune:       rules.TextValue(s.Publish.Tune),
 		rules.AxisMemory:     rules.TextValue(s.Publish.CaptureMemory),
-		rules.AxisCursor:     rules.TextValue(s.Publish.Cursor),
+		rules.AxisPointer:    rules.TextValue(s.Publish.Pointer),
 		rules.AxisTransport:  rules.TextValue(s.Publish.Transport),
 		rules.AxisAudioCodec: rules.TextValue(s.Publish.AudioCodec),
 		rules.AxisOS:         rules.TextValue(d.Platform.OS),

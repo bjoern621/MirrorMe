@@ -32,7 +32,7 @@ import (
 const PointerPrefix = "screenshare-pointer "
 
 // PointerFlag asks the runner for positions, as an argument after the subcommand (cmd/backend).
-// A run given none reports none, which is every run whose cursor mode draws the pointer
+// A run given none reports none, which is every run whose pointer mode draws the pointer
 // into the frames or leaves it out.
 const PointerFlag = "--pointer"
 

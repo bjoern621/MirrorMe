@@ -65,7 +65,7 @@ type Options struct {
 	// Control is where the parent writes the live state this pipeline should be holding,
 	// and the empty path takes no socket (control.go).
 	Control string
-	// Pointer reports where the pointer is, for a publish whose cursor mode sends the position instead
+	// Pointer reports where the pointer is, for a publish whose pointer mode sends the position instead
 	// of drawing it (pointer.go).
 	Pointer bool
 	// Delay names the element a frame's delay through this pipeline is measured at, and the empty

@@ -1,6 +1,6 @@
 // Package pointer reads where the mouse is, for the capture backends whose display server answers.
 //
-// The position travels beside the stream rather than being drawn into it, the metadata cursor mode:
+// The position travels beside the stream rather than being drawn into it, the metadata pointer mode:
 // a viewer draws it itself, sharp at any scale and costing the encoder nothing
 // (docs/capture-architecture.md, "The pointer").
 //

@@ -173,7 +173,7 @@ Without the hold a publish walking its backoff would put the picker on screen on
 The hold lasts exactly as long as a publish is in force: a retry and a settings rebuild keep the session, a stop, a spent budget or a launch that never came up give it back.
 Held longer it would leave the compositor sharing a screen nobody receives.
 
-Source kinds and cursor mode are fixed when sources are selected, so a cursor-mode edit pops the picker where a bitrate edit does not.
+Source kinds and cursor mode are fixed when sources are selected, so a pointer-mode edit pops the picker where a bitrate edit does not.
 
 The restore token is stored on its own rather than as part of a stream, being machine- and consent-local, so a preset copied elsewhere would carry a token no compositor there issued.
 Forgetting the consent takes effect on the next stream.

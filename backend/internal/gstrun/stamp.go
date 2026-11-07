@@ -111,7 +111,7 @@ func stampOf(probe *pipedelay.Probe, at *pointerHold) framestamp.Stamp {
 
 // stampPointer is the pointer as one frame carries it, in parts of framestamp.PointerWhole.
 //
-// A run that reports no position stamps none, which is every cursor mode but the one that sends it.
+// A run that reports no position stamps none, which is every pointer mode but the one that sends it.
 // The fraction is rounded to the nearest part, a truncation putting every position half a part
 // short of where it was read.
 func stampPointer(at *pointerHold) (framestamp.PointerState, uint16, uint16) {

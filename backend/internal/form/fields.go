@@ -156,11 +156,11 @@ var fieldTable = []field{
 		// The pointer sits with the capture rather than with the encode,
 		// because what it can do follows from the capture backend alone:
 		// every value is offered everywhere and greyed per backend with what that backend is missing.
-		key:     KeyCursor,
+		key:     KeyPointer,
 		group:   GroupSource,
 		control: screensharev1.ControlKind_CONTROL_KIND_SELECT,
-		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.Cursor) },
-		options: optionCursors,
+		value:   func(s settings.Settings) *screensharev1.FieldValue { return stringValue(s.Publish.Pointer) },
+		options: optionPointerModes,
 	},
 	{
 		// The hidden treatment of docs/field-availability.md: a knob of the kmsgrab scanout path,

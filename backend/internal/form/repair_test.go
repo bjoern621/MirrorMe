@@ -6,10 +6,10 @@ import (
 	"testing"
 
 	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/cursor"
 	"bjoernblessin.de/screenshare/internal/encoders"
 	"bjoernblessin.de/screenshare/internal/gpupath"
 	"bjoernblessin.de/screenshare/internal/platform"
+	"bjoernblessin.de/screenshare/internal/pointermode"
 	"bjoernblessin.de/screenshare/internal/publish"
 	"bjoernblessin.de/screenshare/internal/settings"
 	"bjoernblessin.de/screenshare/internal/wire"
@@ -115,17 +115,17 @@ func TestARepairedDraftRepairsToItself(t *testing.T) {
 func TestThePointerWalksOffABackendThatCannotDrawIt(t *testing.T) {
 	deps := Deps{Platform: platform.Info{OS: "linux", Display: "x11"}}
 	draft := availabilityDraft("kmsgrab", "hevc_nvenc", "yuv420p", "rtsp")
-	draft.Publish.Cursor = cursor.Embedded
+	draft.Publish.Pointer = pointermode.Embedded
 
 	s, repaired := Repair(deps, draft)
 
-	if s.Publish.Cursor == cursor.Embedded {
+	if s.Publish.Pointer == pointermode.Embedded {
 		t.Error("a pointer the capture cannot draw survived the repair")
 	}
-	if enabled, reason := optionState(deps, s, KeyCursor, s.Publish.Cursor, noEntry); !enabled {
-		t.Errorf("the repair landed on pointer mode %q, which the same evaluation greys: %s", s.Publish.Cursor, reason)
+	if enabled, reason := optionState(deps, s, KeyPointer, s.Publish.Pointer, noEntry); !enabled {
+		t.Errorf("the repair landed on pointer mode %q, which the same evaluation greys: %s", s.Publish.Pointer, reason)
 	}
-	if !slices.Contains(repaired, KeyCursor) {
+	if !slices.Contains(repaired, KeyPointer) {
 		t.Errorf("the repaired list is %v, which does not name the field that moved", repaired)
 	}
 }

@@ -28,7 +28,7 @@ const (
 	AxisTransport  = "publish.publish_transport"
 	AxisAudioCodec = "publish.audio_codec"
 	AxisMemory     = "publish.capture_memory"
-	AxisCursor     = "publish.cursor"
+	AxisPointer    = "publish.pointer"
 	AxisBitrateM   = "publish.bitrate_mbps"
 	AxisCq         = "publish.cq"
 	AxisGop        = "publish.gop"
@@ -96,7 +96,7 @@ var axes = []Axis{
 	{Name: AxisMode, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_MODE},
 	{Name: AxisTune, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_TUNE},
 	{Name: AxisMemory, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_MEMORY},
-	{Name: AxisCursor, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_CURSOR},
+	{Name: AxisPointer, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_CURSOR},
 	{Name: AxisTransport, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_TRANSPORT},
 	{Name: AxisAudioCodec, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_AUDIO_CODEC},
 	{Name: AxisOS, Kind: KindText, Arg: screensharev1.TextArgName_TEXT_ARG_NAME_OS},

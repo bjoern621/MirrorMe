@@ -33,7 +33,7 @@ var fieldDeclaredKeys = []string{
 	KeyBitrateM, KeyMaxrateM, KeyVbvMs, KeyGop, KeyBframes, KeyEffort, KeyTune,
 	KeyCapture, KeyAudioSource, KeyAudioSourceDevice, KeyAudioSourceGain, KeyAudioSourceMute,
 	KeyAudioCodec, KeyDrmMap, KeyMonitor, KeyShareKind, KeyShareWindow, KeyShareRegion, KeyCaptureMemory,
-	KeyCursor,
+	KeyPointer,
 	KeySrtPublishLatencyMs, KeySrtWatchLatencyMs,
 	KeyRtspPublishProtocol, KeyRtspWatchProtocol,
 	KeyCongestion,

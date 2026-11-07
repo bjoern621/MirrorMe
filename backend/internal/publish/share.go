@@ -8,7 +8,7 @@ import (
 
 // What each capture backend can be pointed at.
 //
-// A table for the reason cursorServes beside it is one: the same fact is otherwise answered
+// A table for the reason pointerServes beside it is one: the same fact is otherwise answered
 // by whoever asks.
 // It states what the backend's own interface reads.
 // Whether this machine can offer the choice is a second question, asked separately,

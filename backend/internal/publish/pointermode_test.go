@@ -6,8 +6,8 @@ import (
 	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
 
 	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/cursor"
 	"bjoernblessin.de/screenshare/internal/framestamp"
+	"bjoernblessin.de/screenshare/internal/pointermode"
 	"bjoernblessin.de/screenshare/internal/portal"
 	"bjoernblessin.de/screenshare/internal/rules"
 )
@@ -26,10 +26,10 @@ func cursorFacts(capture string) rules.Facts {
 // The rules and the table are one fact read two ways, over every backend and every mode.
 func TestCursorRulesAnswerWhatTheTableServes(t *testing.T) {
 	for _, capture := range Captures() {
-		v := rules.EvaluateRules(cursorFacts(capture), cursorRules())
-		for _, mode := range cursor.Modes {
-			served := CursorServed(capture, mode)
-			refused := !v.ValueEnabled(rules.AxisCursor, mode)
+		v := rules.EvaluateRules(cursorFacts(capture), pointerRules())
+		for _, mode := range pointermode.Modes {
+			served := PointerServed(capture, mode)
+			refused := !v.ValueEnabled(rules.AxisPointer, mode)
 
 			if served == refused {
 				t.Errorf("%s: the table serves %s=%v and the rules refuse=%v", capture, mode, served, refused)
@@ -42,10 +42,10 @@ func TestCursorRulesAnswerWhatTheTableServes(t *testing.T) {
 // so every backend is held to leaving one mode reachable rather than trusted with it.
 func TestEveryBackendServesAPointerMode(t *testing.T) {
 	for _, capture := range Captures() {
-		v := rules.EvaluateRules(cursorFacts(capture), cursorRules())
+		v := rules.EvaluateRules(cursorFacts(capture), pointerRules())
 		reachable := 0
-		for _, mode := range cursor.Modes {
-			if v.ValueEnabled(rules.AxisCursor, mode) {
+		for _, mode := range pointermode.Modes {
+			if v.ValueEnabled(rules.AxisPointer, mode) {
 				reachable++
 			}
 		}
@@ -58,19 +58,19 @@ func TestEveryBackendServesAPointerMode(t *testing.T) {
 // The scanout backend refuses with the fact about its own path rather than with a sentence about
 // backends in general.
 func TestTheScanoutBackendCannotDrawThePointer(t *testing.T) {
-	v := rules.EvaluateRules(cursorFacts("kmsgrab"), cursorRules())
+	v := rules.EvaluateRules(cursorFacts("kmsgrab"), pointerRules())
 
-	if v.ValueEnabled(rules.AxisCursor, cursor.Embedded) {
+	if v.ValueEnabled(rules.AxisPointer, pointermode.Embedded) {
 		t.Fatal("kmsgrab offers to draw a pointer it cannot reach")
 	}
-	reasons := v.ValueReasons(rules.AxisCursor, cursor.Embedded)
+	reasons := v.ValueReasons(rules.AxisPointer, pointermode.Embedded)
 	if len(reasons) != 1 {
 		t.Fatalf("the refusal states one fact, got %d", len(reasons))
 	}
 	if got := reasons[0].GetCode(); got != screensharev1.TextCode_TEXT_CODE_KMSGRAB_HAS_NO_CURSOR_PLANE {
 		t.Errorf("the refusal states %v, want the scanout plane fact", got)
 	}
-	if !v.ValueEnabled(rules.AxisCursor, cursor.Hidden) {
+	if !v.ValueEnabled(rules.AxisPointer, pointermode.Hidden) {
 		t.Error("kmsgrab refuses the mode that describes what it actually does")
 	}
 }
@@ -80,20 +80,20 @@ func TestTheScanoutBackendCannotDrawThePointer(t *testing.T) {
 // neither carries a refusal a reader would go looking for a setting over.
 func TestTheBackendsThatReadAPositionStateNothing(t *testing.T) {
 	for _, capture := range []string{"portal", "ximagesrc"} {
-		v := rules.EvaluateRules(cursorFacts(capture), cursorRules())
+		v := rules.EvaluateRules(cursorFacts(capture), pointerRules())
 
-		if !v.ValueEnabled(rules.AxisCursor, cursor.Metadata) {
+		if !v.ValueEnabled(rules.AxisPointer, pointermode.Metadata) {
 			t.Errorf("%s refuses the mode its capture reads a position for", capture)
 		}
-		if got := len(v.ValueReasons(rules.AxisCursor, cursor.Metadata)); got != 0 {
+		if got := len(v.ValueReasons(rules.AxisPointer, pointermode.Metadata)); got != 0 {
 			t.Errorf("%s states %d facts against the mode, want none", capture, got)
 		}
 	}
 
 	// A backend with no position to report states its own fact, which is a different thing to fix than
 	// a format that cannot carry one.
-	kms := rules.EvaluateRules(cursorFacts("kmsgrab"), cursorRules())
-	if got := len(kms.ValueReasons(rules.AxisCursor, cursor.Metadata)); got != 1 {
+	kms := rules.EvaluateRules(cursorFacts("kmsgrab"), pointerRules())
+	if got := len(kms.ValueReasons(rules.AxisPointer, pointermode.Metadata)); got != 1 {
 		t.Errorf("a backend with no pointer metadata states %d facts, want its own", got)
 	}
 }
@@ -103,18 +103,18 @@ func TestTheBackendsThatReadAPositionStateNothing(t *testing.T) {
 func TestThePortalsPointerModesFollowTheCompositor(t *testing.T) {
 	served := portal.Capabilities{CursorModes: portal.CursorHidden | portal.CursorEmbedded}
 
-	if CursorServedHere(served, "portal", cursor.Metadata) {
+	if PointerServedHere(served, "portal", pointermode.Metadata) {
 		t.Error("a mode this compositor refuses is offered on the portal backend")
 	}
-	for _, mode := range []string{cursor.Embedded, cursor.Hidden} {
-		if !CursorServedHere(served, "portal", mode) {
+	for _, mode := range []string{pointermode.Embedded, pointermode.Hidden} {
+		if !PointerServedHere(served, "portal", mode) {
 			t.Errorf("%s is withheld on a compositor serving it", mode)
 		}
 	}
 
 	// The other backends read their own property and answer for themselves,
 	// so a portal mask says nothing about them.
-	if !CursorServedHere(served, "ximagesrc", cursor.Metadata) {
+	if !PointerServedHere(served, "ximagesrc", pointermode.Metadata) {
 		t.Error("the X11 backend is greyed by what the desktop portal serves")
 	}
 }
@@ -122,8 +122,8 @@ func TestThePortalsPointerModesFollowTheCompositor(t *testing.T) {
 // A machine nothing asked withholds nothing, so the option stays on offer
 // and the portal's own refusal is what the publish meets.
 func TestAnUnreadPortalMaskWithholdsNoPointerMode(t *testing.T) {
-	for _, mode := range cursor.Modes {
-		if !CursorServedHere(portal.Capabilities{}, "portal", mode) {
+	for _, mode := range pointermode.Modes {
+		if !PointerServedHere(portal.Capabilities{}, "portal", mode) {
 			t.Errorf("%s is greyed on a machine nothing asked", mode)
 		}
 	}
@@ -139,16 +139,16 @@ func TestAFormatCarryingNoStampRefusesTheMode(t *testing.T) {
 			rules.AxisCapture: rules.TextValue("ximagesrc"),
 			rules.AxisFormat:  rules.TextValue(format),
 		}
-		v := rules.EvaluateRules(facts, cursorRules())
+		v := rules.EvaluateRules(facts, pointerRules())
 
 		carried := framestamp.Carries(format)
-		if got := v.ValueEnabled(rules.AxisCursor, cursor.Metadata); got != carried {
+		if got := v.ValueEnabled(rules.AxisPointer, pointermode.Metadata); got != carried {
 			t.Errorf("%s carries a stamp=%v and offers the metadata mode=%v", format, carried, got)
 		}
 		if carried {
 			continue
 		}
-		reasons := v.ValueReasons(rules.AxisCursor, cursor.Metadata)
+		reasons := v.ValueReasons(rules.AxisPointer, pointermode.Metadata)
 		if len(reasons) != 1 {
 			t.Fatalf("%s: the refusal states one fact, got %d", format, len(reasons))
 		}

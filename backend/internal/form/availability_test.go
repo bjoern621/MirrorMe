@@ -9,10 +9,10 @@ import (
 	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
 
 	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/cursor"
 	"bjoernblessin.de/screenshare/internal/encoders"
 	"bjoernblessin.de/screenshare/internal/gpupath"
 	"bjoernblessin.de/screenshare/internal/platform"
+	"bjoernblessin.de/screenshare/internal/pointermode"
 	"bjoernblessin.de/screenshare/internal/portal"
 	"bjoernblessin.de/screenshare/internal/publish"
 	"bjoernblessin.de/screenshare/internal/settings"
@@ -30,7 +30,7 @@ var availabilityAllKeys = []string{
 	KeyBitrateM, KeyMaxrateM, KeyVbvMs, KeyGop, KeyBframes, KeyEffort, KeyTune,
 	KeyCapture, KeyAudioSource, KeyAudioSourceDevice, KeyAudioSourceGain, KeyAudioSourceMute,
 	KeyAudioCodec, KeyDrmMap, KeyMonitor, KeyShareKind, KeyShareWindow, KeyShareRegion, KeyCaptureMemory,
-	KeyCursor,
+	KeyPointer,
 	KeySrtPublishLatencyMs, KeySrtWatchLatencyMs,
 	KeyRtspPublishProtocol, KeyRtspWatchProtocol,
 	KeyCongestion,
@@ -174,7 +174,7 @@ func TestAGreyedOptionAlwaysCarriesAReason(t *testing.T) {
 		KeyAudioSource:   platform.AudioSourceIDs(platform.Info{}),
 		KeyAudioCodec:    capabilities.AudioNames(),
 		KeyCaptureMemory: gpupath.Memories,
-		KeyCursor:        cursor.Modes,
+		KeyPointer:       pointermode.Modes,
 		// A watch leg is offered from the roster its receiver can reach,
 		// what the option list is built from and what the reasons are stated against.
 		KeyTileWatchTransport: transport.WatchNames(capabilities.EngineGst),
@@ -201,19 +201,19 @@ func TestThePointerModeFollowsWhatThePortalServes(t *testing.T) {
 	deps := Deps{Platform: platform.Info{OS: "linux", Display: "wayland"}}
 	s := availabilityDraft("portal", "libx264", "yuv420p", "rtsp")
 
-	if enabled, _ := optionState(deps, s, KeyCursor, cursor.Metadata, noEntry); !enabled {
+	if enabled, _ := optionState(deps, s, KeyPointer, pointermode.Metadata, noEntry); !enabled {
 		t.Fatal("a machine nothing asked greys the mode")
 	}
 
 	deps.Portal = portal.Capabilities{CursorModes: portal.CursorHidden | portal.CursorEmbedded}
-	enabled, reason := optionState(deps, s, KeyCursor, cursor.Metadata, noEntry)
+	enabled, reason := optionState(deps, s, KeyPointer, pointermode.Metadata, noEntry)
 	if enabled {
 		t.Fatal("a portal serving hidden and embedded alone still offers the metadata mode")
 	}
 	if got := reason.GetCode(); got != screensharev1.TextCode_TEXT_CODE_PORTAL_SERVES_NO_CURSOR_MODE {
 		t.Errorf("the refusal states %v, want the portal's own list", got)
 	}
-	if enabled, _ := optionState(deps, s, KeyCursor, cursor.Embedded, noEntry); !enabled {
+	if enabled, _ := optionState(deps, s, KeyPointer, pointermode.Embedded, noEntry); !enabled {
 		t.Error("a mode the portal serves is greyed along with the one it does not")
 	}
 
@@ -221,7 +221,7 @@ func TestThePointerModeFollowsWhatThePortalServes(t *testing.T) {
 	// reaches them.
 	x11 := deps
 	if enabled, _ := optionState(x11, availabilityDraft("ximagesrc", "libx264", "yuv420p", "rtsp"),
-		KeyCursor, cursor.Metadata, noEntry); !enabled {
+		KeyPointer, pointermode.Metadata, noEntry); !enabled {
 		t.Error("the X11 backend is greyed by what the desktop portal serves")
 	}
 }

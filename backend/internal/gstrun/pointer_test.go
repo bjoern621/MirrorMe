@@ -65,7 +65,7 @@ func TestARunOverACaptureThatAnswersNothing(t *testing.T) {
 }
 
 // A run that did not ask reports none.
-// The other cursor modes draw the pointer into the frames or leave it out, so a child reporting
+// The other pointer modes draw the pointer into the frames or leave it out, so a child reporting
 // anyway writes to a parent with nowhere to put it.
 func TestARunThatDidNotAskReportsNoPointer(t *testing.T) {
 	var out bytes.Buffer

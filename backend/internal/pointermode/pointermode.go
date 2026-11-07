@@ -1,9 +1,9 @@
-// Package cursor names what the pointer does in the captured frames.
+// Package pointermode names what the pointer does in the captured frames.
 //
 // Settings, capture backends and the form all read these values,
 // so they live in a package depending on nothing.
-// Which backend serves which mode lives with the backend (internal/publish/cursor.go).
-package cursor
+// Which backend serves which mode lives with the backend (internal/publish/pointermode.go).
+package pointermode
 
 // Embedded is drawn into the picture, costing bitrate.
 // Hidden is absent.

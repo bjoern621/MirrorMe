@@ -191,7 +191,7 @@ public static class Words
         ["discord"] = "My Discord voice channel",
     };
 
-    private static readonly Dictionary<string, string> Cursors = new()
+    private static readonly Dictionary<string, string> PointerModes = new()
     {
         ["embedded"] = "Drawn into the picture",
         ["hidden"] = "Not shared",
@@ -462,7 +462,7 @@ public static class Words
 
     public static string Transfer(string id) => Look(Transfers, id);
 
-    public static string Cursor(string id) => Look(Cursors, id);
+    public static string PointerMode(string id) => Look(PointerModes, id);
 
     public static string ShareKind(string id) => Look(ShareKinds, id);
 

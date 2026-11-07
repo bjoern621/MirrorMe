@@ -1164,7 +1164,7 @@ func (x *UpdateState) GetDetail() string {
 //
 // Sending a position rather than drawing it into the picture costs no frame,
 // so it moves at its own rate rather than the stream's.
-// Positions arrive only while a publish whose cursor mode is metadata runs.
+// Positions arrive only while a publish whose pointer mode is metadata runs.
 //
 // The coordinates are fractions of the picture, from its top left,
 // so a viewer places one knowing nothing but the size it is drawing at.

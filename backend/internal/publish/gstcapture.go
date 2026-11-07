@@ -11,9 +11,9 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 	"bjoernblessin.de/go-utils/util/logger"
 
-	"bjoernblessin.de/screenshare/internal/cursor"
 	"bjoernblessin.de/screenshare/internal/display"
 	"bjoernblessin.de/screenshare/internal/gpupath"
+	"bjoernblessin.de/screenshare/internal/pointermode"
 	"bjoernblessin.de/screenshare/internal/portal"
 	"bjoernblessin.de/screenshare/internal/screensrc"
 	"bjoernblessin.de/screenshare/internal/settings"
@@ -137,7 +137,7 @@ func (p portalCapture) Open(s settings.Settings, opts gstCaptureOptions) ([]stri
 		// Both kinds are offered and the picker answers which one is shared, rather than a setting here:
 		// the compositor owns the choice and is the only side that knows which windows exist.
 		Types:        portal.SourceMonitor | portal.SourceWindow,
-		Cursor:       portalCursor(s.Publish.Cursor),
+		Cursor:       portalCursor(s.Publish.Pointer),
 		RestoreToken: settings.PortalToken(),
 	})
 	if err != nil {
@@ -384,7 +384,7 @@ func (avfCapture) HoldsOneDevice() error {
 // so it counts what AVFoundation delivered.
 func (avfCapture) elements(s settings.Settings, opts gstCaptureOptions) []string {
 	src := []string{"avfvideosrc", "capture-screen=true",
-		"capture-screen-cursor=" + gstBool(s.Publish.Cursor == cursor.Embedded),
+		"capture-screen-cursor=" + gstBool(s.Publish.Pointer == pointermode.Embedded),
 		"!", opts.rateCaps(s.Publish.Fps),
 	}
 	src = append(src, opts.convertInto()...)

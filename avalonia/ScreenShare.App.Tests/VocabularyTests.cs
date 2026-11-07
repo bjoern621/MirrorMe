@@ -106,14 +106,14 @@ public sealed class VocabularyTests
         Assert.Equal("X11 screen", Vocabulary.Empty.Name("publish.capture", "x11grab"));
     }
 
-    /// <summary>A cursor mode is named by what happens to the pointer, never by the settings value.</summary>
+    /// <summary>A pointer mode is named by what happens to the pointer, never by the settings value.</summary>
     [Theory]
     [InlineData("embedded")]
     [InlineData("hidden")]
     [InlineData("metadata")]
-    public void ACursorModeIsNamedByWhatHappensToThePointer(string mode)
+    public void APointerModeIsNamedByWhatHappensToThePointer(string mode)
     {
-        Assert.NotEqual(mode, Vocabulary.Empty.Name("publish.cursor", mode));
+        Assert.NotEqual(mode, Vocabulary.Empty.Name("publish.pointer", mode));
     }
 
     /// <summary>Quality group as the backend resolves it, with the ceiling control in the state it stated.</summary>

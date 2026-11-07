@@ -26,10 +26,10 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 
 	"bjoernblessin.de/screenshare/internal/capabilities"
-	"bjoernblessin.de/screenshare/internal/cursor"
 	"bjoernblessin.de/screenshare/internal/gpupath"
 	"bjoernblessin.de/screenshare/internal/group"
 	"bjoernblessin.de/screenshare/internal/platform"
+	"bjoernblessin.de/screenshare/internal/pointermode"
 	"bjoernblessin.de/screenshare/internal/receive"
 	"bjoernblessin.de/screenshare/internal/share"
 )
@@ -482,10 +482,14 @@ type Publish struct {
 	// Whether the capture chain downloads every frame and converts it on the CPU,
 	// or hands the encoder the device memory the capture already produced.
 	CaptureMemory string `json:"captureMemory"`
-	// Cursor is what the pointer does in the captured frames, one of cursor.Modes.
+	// Pointer is what the pointer does in the captured frames, one of pointermode.Modes.
 	// Which of them a capture backend serves is that backend's own fact,
 	// so a stored value the selected backend does not serve is repaired rather than passed on.
-	Cursor string `json:"cursor"`
+	Pointer string `json:"pointer"`
+	// FlatCursor is the pointer mode a file written while the key was "cursor" carried,
+	// read so the migration can move it onto Pointer (migrate.go).
+	// Cleared there and omitted when empty, so a file that has been through one loses the key.
+	FlatCursor string `json:"cursor,omitempty"`
 	// SrtPublishLatencyMs is this hop's SRT retransmit window, in ms.
 	// Glass to glass is it plus the watch hop's (Viewer.SrtWatchLatencyMs) plus encode and decode:
 	// two independent SRT links, each holding packets for its own window.
@@ -728,7 +732,7 @@ func Defaults() Settings {
 			CaptureMemory: gpupath.MemoryAuto,
 			// Embedded is what a viewer expects:
 			// a screen share whose pointer is missing reads as a broken capture rather than as a choice.
-			Cursor:              cursor.Embedded,
+			Pointer:             pointermode.Embedded,
 			SrtPublishLatencyMs: 300, // ms, about the glass-to-glass budget with the watch hop below
 			// Both legs start on TCP,
 			// which asks nothing of the path beyond the connection the session already made.
@@ -812,7 +816,7 @@ func LadderSteps(codec, mode string) (effort, tune string) {
 // The form blocks the start on each of the three before a reader can reach it,
 // so a builder asking here is the second line rather than the first.
 func (p Publish) Target() (share.Target, error) {
-	t := share.Target{Kind: p.ShareKind, Monitor: p.Monitor, Pointer: p.Cursor == cursor.Embedded}
+	t := share.Target{Kind: p.ShareKind, Monitor: p.Monitor, Pointer: p.Pointer == pointermode.Embedded}
 
 	switch p.ShareKind {
 	case share.Monitor:

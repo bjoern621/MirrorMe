@@ -277,7 +277,7 @@ A compositor too slow to take one is invisible from this side: the backend sees 
 
 ### The pointer a tile draws
 
-A publisher whose cursor mode sends the position instead of drawing it publishes frames with no mouse in them, so the decode is what can answer for it.
+A publisher whose pointer mode sends the position instead of drawing it publishes frames with no mouse in them, so the decode is what can answer for it.
 The position reaches the shell on a subscription naming the stream, followed on the token the frame channel is opened on, so a tile that stopped drawing stops asking.
 The read is slower than the capture's own leg, the position changing once a frame however often it is asked for.
 

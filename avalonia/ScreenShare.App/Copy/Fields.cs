@@ -126,7 +126,7 @@ public static class Fields
             "Whether frames stay on the graphics card on the way to the encoder, or pass through main memory. Staying on the card is free, but only works when capture and encoder can share it. Automatic is right for almost everyone.",
             DocDrmPrime),
 
-        ["publish.cursor"] = new(
+        ["publish.pointer"] = new(
             "Mouse pointer",
             "Whether the pointer appears in what viewers see. Drawn into the picture is the usual screen-share look, at a little bandwidth for the area it moves through. Not shared leaves it out. Sent beside the picture costs nothing, but only the local preview draws it. Viewers receive the picture without a pointer."),
 

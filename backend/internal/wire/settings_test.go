@@ -61,7 +61,7 @@ func populatedSettings() settings.Settings {
 			ShareWindow:         "459812",
 			ShareRegion:         "100,200,1280x720",
 			CaptureMemory:       "gpu",
-			Cursor:              "hidden",
+			Pointer:             "hidden",
 			SrtPublishLatencyMs: 555,
 			RtspPublishProtocol: "udp",
 			Congestion:          settings.CongestionHold,
@@ -123,10 +123,10 @@ func eachField(s settings.Settings, visit func(name string, value reflect.Value)
 
 // offContract are the settings fields this conversion does not carry.
 //
-// Two are a migration's working room rather than settings:
-// the old keys a file written before the audio list and before the format and encoder pair carries
-// are read once, turned into what replaced them and cleared,
-// so a draft crossing to a shell and back has nothing to say about either (settings/migrate.go).
+// Three are a migration's working room rather than settings:
+// the old keys a file written before the audio list, the format and encoder pair and the pointer key
+// carries are read once, turned into what replaced them and cleared,
+// so a draft crossing to a shell and back has nothing to say about any of them (settings/migrate.go).
 //
 // The other three are the backend's own, and a contract carrying the two secrets would hand every
 // shell one it has no use for.
@@ -141,6 +141,7 @@ func eachField(s settings.Settings, visit func(name string, value reflect.Value)
 var offContract = map[string]bool{
 	"Publish.FlatAudio":    true,
 	"Publish.FlatCodec":    true,
+	"Publish.FlatCursor":   true,
 	"Relay.Token":          true,
 	"Relay.DiscordLink":    true,
 	"Relay.DiscordAccount": true,

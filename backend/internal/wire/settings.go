@@ -97,7 +97,7 @@ func PublishSettings(p settings.Publish) *screensharev1.PublishSettings {
 		ShareWindow:   p.ShareWindow,
 		ShareRegion:   p.ShareRegion,
 		CaptureMemory: p.CaptureMemory,
-		Cursor:        p.Cursor,
+		Pointer:       p.Pointer,
 
 		SrtPublishLatencyMs: int32(p.SrtPublishLatencyMs),
 		RtspPublishProtocol: p.RtspPublishProtocol,
@@ -215,7 +215,7 @@ func ToPublish(m *screensharev1.PublishSettings) settings.Publish {
 		ShareWindow:   m.GetShareWindow(),
 		ShareRegion:   m.GetShareRegion(),
 		CaptureMemory: m.GetCaptureMemory(),
-		Cursor:        m.GetCursor(),
+		Pointer:       m.GetPointer(),
 
 		SrtPublishLatencyMs: int(m.GetSrtPublishLatencyMs()),
 		RtspPublishProtocol: m.GetRtspPublishProtocol(),

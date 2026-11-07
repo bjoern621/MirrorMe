@@ -73,7 +73,7 @@ const (
 	KeyShareWindow   = "publish.share_window"
 	KeyShareRegion   = "publish.share_region"
 	KeyCaptureMemory = "publish.capture_memory"
-	KeyCursor        = "publish.cursor"
+	KeyPointer       = "publish.pointer"
 
 	KeySrtPublishLatencyMs = "publish.srt_publish_latency_ms"
 	KeyRtspPublishProtocol = "publish.rtsp_publish_protocol"

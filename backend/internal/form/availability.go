@@ -181,7 +181,7 @@ var availabilityRules = map[string]func(availability) state{
 
 	KeyFps: func(availability) state { return availabilityLive() },
 	// The pointer greys per entry, the control itself staying live: every backend serves at least one mode.
-	KeyCursor: func(availability) state { return availabilityLive() },
+	KeyPointer: func(availability) state { return availabilityLive() },
 
 	// The pixel format carries a note about the viewer's machine (decodeNote)
 	// and greys for one fact only: on the device path that converts nothing the encoder picks
@@ -424,7 +424,7 @@ var availabilityOptionRules = map[string]func(availability, string) *screenshare
 	KeyAudioSourceDevice: availability.audioDeviceReason,
 	KeyAudioCodec:        availability.audioCodecReason,
 	KeyCaptureMemory:     availability.frameMemoryReason,
-	KeyCursor:            availability.cursorReason,
+	KeyPointer:           availability.pointerReason,
 	KeyOutputResolution:  availability.outputResolutionReason,
 	// Both legs, one rule: RTSPS covers the control connection
 	// and neither direction's RTP travels inside it over UDP.
@@ -842,19 +842,19 @@ func (av availability) tuneReason(value string) *screensharev1.Text {
 	return nil
 }
 
-// cursorReason states why the selected capture backend does not serve a pointer mode.
+// pointerReason states why the selected capture backend does not serve a pointer mode.
 //
 // Two sources, and the machine's is asked first.
 // What a backend does with the pointer is a per-backend table written as rules
-// (internal/publish/cursor.go), and the one limit that is this app's rather than any backend's,
+// (internal/publish/pointermode.go), and the one limit that is this app's rather than any backend's,
 // that a bitstream carries no position, is a rule beside them.
 // The desktop portal's own list is neither: it is the compositor's answer, so no table here holds it
 // and a machine that refuses the mode outright is named ahead of a format a reader could change.
-func (av availability) cursorReason(value string) *screensharev1.Text {
-	if !publish.CursorServedHere(av.deps.Portal, av.s.Publish.Capture, value) {
+func (av availability) pointerReason(value string) *screensharev1.Text {
+	if !publish.PointerServedHere(av.deps.Portal, av.s.Publish.Capture, value) {
 		return say(portalServesNoCursorMode, argCapture(av.s.Publish.Capture), argCursor(value))
 	}
-	if reasons := av.verdicts.ValueReasons(KeyCursor, value); len(reasons) > 0 {
+	if reasons := av.verdicts.ValueReasons(KeyPointer, value); len(reasons) > 0 {
 		return reasons[0]
 	}
 	return nil
