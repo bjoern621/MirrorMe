@@ -1,4 +1,3 @@
-using System.IO;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Google.Protobuf;

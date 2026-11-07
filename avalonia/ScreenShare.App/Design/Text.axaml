@@ -143,10 +143,6 @@
     <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
   </Style>
 
-  <Style Selector=":is(TextBlock).disabled">
-    <Setter Property="Foreground" Value="{DynamicResource DisabledBrush}" />
-  </Style>
-
   <Style Selector=":is(TextBlock).danger">
     <Setter Property="Foreground" Value="{DynamicResource AttentionBrush}" />
   </Style>
@@ -182,18 +178,6 @@
     <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
     <Setter Property="FontSize" Value="{DynamicResource FontSizeSmall}" />
     <Setter Property="Foreground" Value="{DynamicResource SecondaryBrush}" />
-  </Style>
-
-  <Style Selector=":is(TextBlock).promoted">
-    <Setter Property="FontSize" Value="{DynamicResource FontSizePromoted}" />
-    <Setter Property="FontWeight" Value="SemiBold" />
-    <Setter Property="FontFeatures" Value="{DynamicResource FigureFeatures}" />
-    <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
-  </Style>
-
-  <Style Selector=":is(TextBlock).unit">
-    <Setter Property="FontSize" Value="{DynamicResource FontSizeSmall}" />
-    <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
   </Style>
 
   <!--

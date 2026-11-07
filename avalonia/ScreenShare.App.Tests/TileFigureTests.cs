@@ -1,5 +1,4 @@
 using ScreenShare.Api.V1;
-using ScreenShare.App.Backend;
 using ScreenShare.App.Features.Viewer.Tile.Model;
 using ScreenShare.App.Features.Viewer.Tile.ViewModel;
 using Xunit;

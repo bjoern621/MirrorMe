@@ -1,6 +1,5 @@
 using ScreenShare.App.Controls;
 using ScreenShare.App.Copy;
-using ScreenShare.App.Features.Fields.ViewModel;
 using ScreenShare.App.Features.Setup.Model;
 using ScreenShare.App.Features.Setup.ViewModel;
 using Xunit;

@@ -1,4 +1,3 @@
-using ScreenShare.Api.V1;
 using ScreenShare.App.Backend;
 using ScreenShare.App.Features.Shell.Consent.ViewModel;
 using Xunit;

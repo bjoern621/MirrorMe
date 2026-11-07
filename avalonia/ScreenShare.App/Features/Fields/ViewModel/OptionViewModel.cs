@@ -1,4 +1,3 @@
-using ScreenShare.App.Controls;
 using ScreenShare.App.Features.Fields.Model;
 using ScreenShare.App.Mvvm;
 

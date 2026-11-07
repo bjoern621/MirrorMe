@@ -3,7 +3,6 @@ using ScreenShare.App.Backend;
 using ScreenShare.App.Copy;
 using ScreenShare.App.Features.Setup.Model;
 using ScreenShare.App.Features.Setup.SharePicker.ViewModel;
-using ScreenShare.App.Features.Setup.ViewModel;
 using ScreenShare.App.Features.Viewer.Tile.Model;
 using Xunit;
 

@@ -6,7 +6,6 @@ using ScreenShare.App.Copy;
 using ScreenShare.App.Features.Viewer.Model;
 using ScreenShare.App.Features.Viewer.Tile.Model;
 using ScreenShare.App.Mvvm;
-using TablerIcons;
 
 namespace ScreenShare.App.Features.Viewer.Tile.ViewModel;
 
@@ -127,16 +126,6 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
     /// Moves on the first pool, and again where the source resizes.
     /// </summary>
     public double Aspect { get => _aspect; private set => Set(ref _aspect, value); }
-
-    /// <summary>
-    /// Pixel size of the frames being drawn, zero until a pool announces one.
-    /// The scaler's output rather than the decode's reported size, as <see cref="Aspect"/> is.
-    /// A position in the picture's pixels is not a position in the card's,
-    /// so anything drawn over the picture needs it.
-    /// </summary>
-    public int PictureWidth => _report.Width;
-
-    public int PictureHeight => _report.Height;
 
     /// <summary>
     /// Written by the screen that owns the arrangement, never here.
@@ -393,9 +382,8 @@ public sealed partial class TileViewModel : Observable, IFrameSource, IStripItem
 
     /// <summary>
     /// Takes this stream out of the grid and closes its decode.
-    /// On the tile because the rail's toggle lists what the relay carries:
-    /// a stream the relay dropped keeps its tile and loses its row,
-    /// and this is the way out the reader still has.
+    /// A stream the relay still lists waits in the strip until a press plays it again.
+    /// A stream the relay dropped keeps its tile until this command runs.
     /// </summary>
     public DelegateCommand Close { get; }
 

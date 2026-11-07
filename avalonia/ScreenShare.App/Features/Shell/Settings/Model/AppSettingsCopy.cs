@@ -85,8 +85,6 @@ public static class AppSettingsCopy
 
     public const string AboutLead = "Quote this version in a bug report.";
 
-    public const string VersionLabel = "Version";
-
     /// <summary>
     /// Where this install stands with Discord, in the sentence the relay step states it in as well
     /// (<see cref="Copy.Links.State"/>).

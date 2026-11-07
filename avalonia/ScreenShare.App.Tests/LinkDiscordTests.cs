@@ -1,6 +1,5 @@
 using ScreenShare.Api.V1;
 using ScreenShare.App.Backend;
-using ScreenShare.App.Features.Setup.ViewModel;
 using ScreenShare.App.Features.Shell.Settings.ViewModel;
 using ScreenShare.App.Features.Shell.Update.ViewModel;
 using Xunit;

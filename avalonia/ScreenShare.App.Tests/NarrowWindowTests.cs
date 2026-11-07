@@ -1,4 +1,3 @@
-using Avalonia.Controls;
 using ScreenShare.App.Backend;
 using ScreenShare.App.Features.Insights.ViewModel;
 using ScreenShare.App.Features.Shell.Model;
@@ -16,9 +15,6 @@ namespace ScreenShare.App.Tests;
 public sealed class NarrowWindowTests
 {
     private static readonly Action<Action> Inline = action => action();
-
-    /// <summary>Quarter of a laptop screen, where no surface fits two columns.</summary>
-    private const double Quarter = 640;
 
     private static InsightsViewModel Insights(IBackend backend)
     {

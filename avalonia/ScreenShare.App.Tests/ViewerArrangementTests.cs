@@ -1,4 +1,3 @@
-using ScreenShare.Api.V1;
 using ScreenShare.App.Backend;
 using ScreenShare.App.Features.Viewer.Model;
 using ScreenShare.App.Features.Viewer.Tile.ViewModel;
@@ -458,8 +457,8 @@ public sealed class ViewerArrangementTests
     }
 
     /// <summary>
-    /// The rail lists what the relay carries, so a dropped stream has no row left to close from.
-    /// The tile's own close is the way out the reader still has.
+    /// A stream the relay dropped loses its row and keeps its tile.
+    /// The tile's own close still takes it out of the grid.
     /// </summary>
     [Fact]
     public void ATileOutlivingItsRowStillCloses()

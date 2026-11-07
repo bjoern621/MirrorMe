@@ -261,14 +261,6 @@
     </Style>
   </ControlTheme>
 
-  <ControlTheme x:Key="RoundButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-    <Setter Property="Width" Value="{StaticResource RoundButtonSize}" />
-    <Setter Property="Height" Value="{StaticResource RoundButtonSize}" />
-    <Setter Property="Padding" Value="0" />
-    <Setter Property="CornerRadius" Value="20" />
-    <Setter Property="FontSize" Value="{StaticResource FontSizeHeading}" />
-  </ControlTheme>
-
   <!--
     Full title-bar height so a pointer can be thrown at the corner, square so neighbouring fills meet.
     Filled under the pointer like every other button (docs/design-language.md, "Pressing").

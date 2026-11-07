@@ -374,24 +374,6 @@ public sealed class Vocabulary
         ? ""
         : "Costs sharpness and saves everything at once: encoding, upload, and decoding.";
 
-    private VideoCodec? Row(string name)
-    {
-        if (_catalog is null || name.Length == 0)
-        {
-            return null;
-        }
-
-        foreach (var codec in _catalog.Codecs)
-        {
-            if (codec.Name == name)
-            {
-                return codec;
-            }
-        }
-
-        return null;
-    }
-
     /// <summary>
     /// The captured area of one window, at the width of a second line under its name.
     /// Empty for a handle the last read does not carry, which is a window that closed.

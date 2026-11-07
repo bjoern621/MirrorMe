@@ -21,8 +21,6 @@ public sealed record CheckAnchor
     /// <summary>Move to where the fix is. Null where the line leads nowhere.</summary>
     public required DelegateCommand? Fix { get; init; }
 
-    public bool HasStep => StepKey.Length > 0;
-
     /// <summary>
     /// Anchor for a line about the settings as a whole, and for a field no step of this flow draws.
     /// The list still carries it; the strip has nowhere to mark but the terminal chip.

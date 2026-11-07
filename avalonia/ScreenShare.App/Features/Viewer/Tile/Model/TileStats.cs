@@ -3,7 +3,6 @@ using ScreenShare.Api.V1;
 using ScreenShare.App.Contracts;
 using ScreenShare.App.Copy;
 using ScreenShare.App.Features.Insights.Model;
-using ScreenShare.App.Mvvm;
 
 namespace ScreenShare.App.Features.Viewer.Tile.Model;
 

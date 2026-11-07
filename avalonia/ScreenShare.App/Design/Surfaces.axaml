@@ -185,15 +185,6 @@
   </Style>
 
   <!--
-    A side column drawn over the body rather than beside it, on a window with the width for one column
-    (docs/design-language.md, "Narrow windows").
-    The app's own fill, so what it covers stops showing through it.
-  -->
-  <Style Selector="Border.overbody">
-    <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
-  </Style>
-
-  <!--
     The wizard's action bar, floating over the foot of the step column on every step.
     The one shadow a floating surface casts, so it reads above the cards scrolling under it.
   -->

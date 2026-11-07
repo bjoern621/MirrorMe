@@ -17,7 +17,7 @@ namespace ScreenShare.App.Features.Viewer.PopOut.View;
 /// so one stream fills one monitor while another fills a second.
 /// Hence fullscreen being no member of <c>LayoutMode</c>.
 ///
-/// Closing returns the stream to its slot in the grid and stops no decode: stopping is the rail's toggle.
+/// Closing returns the stream to its slot in the grid and stops no decode: the tile's menu stops it.
 ///
 /// The window carries no caption on any system that has one to stand in for.
 /// A picture is the whole content, and a title bar over it is a band of chrome on the one surface a reader came
@@ -40,17 +40,14 @@ public partial class PopOutWindow : Window
         Assert.NotNull(tile, "a pop-out window draws one tile");
 
         DataContext = tile;
-        _tile = tile;
 
         // Opened at the stream's own shape, so a 21:9 capture does not arrive letterboxed into a 16:9 window.
         Height = Math.Round(Width / tile.Aspect) + 1;
     }
 
-    private readonly TileViewModel? _tile;
-
     /// <summary>
     /// Keeps this window out of the captures this machine takes, on the main window's terms
-    /// (<c>Features/Shell/Model/CaptureExclusion.cs</c>).
+    /// (<c>Features/Shell/Model/ICaptureExclusion.cs</c>).
     /// A window drawing a decode of the screen it sits on otherwise nests one more copy of itself in the picture
     /// on every round trip.
     /// </summary>

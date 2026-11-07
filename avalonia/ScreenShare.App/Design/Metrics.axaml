@@ -63,7 +63,6 @@
   <sys:Double x:Key="MenuItemHeight">32</sys:Double>
   <sys:Double x:Key="ActionHeight">32</sys:Double>
   <sys:Double x:Key="FooterButtonHeight">38</sys:Double>
-  <sys:Double x:Key="RoundButtonSize">40</sys:Double>
   <!-- The control height less the two borders a glyph-only button does not carry. -->
   <sys:Double x:Key="IconButtonSize">28</sys:Double>
   <!-- The same button inside a control rather than beside one: the box's borders, and 3px of air either side. -->
@@ -141,13 +140,6 @@
     14px inside a 28px box reads as a box with something small in the middle.
   -->
   <sys:Double x:Key="IconSizeButton">16</sys:Double>
-
-  <!--
-    A thumbnail in the film strip under a spotlit stream, and a height alone.
-    The width follows from the shape the grid cuts its cells to,
-    and a short window shrinks the band rather than taking the spotlight's room.
-  -->
-  <sys:Double x:Key="StripTileHeight">112</sys:Double>
 
   <!-- The zoom map over a zoomed picture, a width alone: the height follows the picture's shape. -->
   <sys:Double x:Key="ZoomMapWidth">96</sys:Double>

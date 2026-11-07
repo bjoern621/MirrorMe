@@ -1,6 +1,5 @@
 using ScreenShare.App.Backend;
 using ScreenShare.App.Controls;
-using ScreenShare.App.Features.Setup.Model;
 using ScreenShare.App.Features.Setup.ViewModel;
 using ScreenShare.App.Features.Shell.Settings.Model;
 using ScreenShare.App.Features.Shell.Settings.ViewModel;

@@ -2,7 +2,6 @@ using ScreenShare.Api.V1;
 using ScreenShare.App.Backend;
 using ScreenShare.App.Features.Setup.Model;
 using ScreenShare.App.Features.Setup.ShareQuestion.ViewModel;
-using ScreenShare.App.Features.Setup.ViewModel;
 using Xunit;
 
 namespace ScreenShare.App.Tests;

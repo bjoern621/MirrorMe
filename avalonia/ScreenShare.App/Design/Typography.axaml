@@ -28,7 +28,7 @@
   <FontFeatureCollection x:Key="FigureFeatures">+tnum</FontFeatureCollection>
 
   <!--
-    A closed set: four whole pixels, plus one promoted figure, and no two steps closer than a pixel.
+    A closed set: four whole pixels, no two steps closer than a pixel.
     Whole pixels only, since a half step does not survive rasterisation:
     13.5px and 13px land on the same pixel grid at 100% scaling.
   -->
@@ -38,16 +38,13 @@
   <!-- The default, and what a line with no role stated renders at. -->
   <sys:Double x:Key="FontSizeBody">14</sys:Double>
   <sys:Double x:Key="FontSizeHeading">16</sys:Double>
-  <!-- Sized to be read from across a room. -->
-  <sys:Double x:Key="FontSizePromoted">26</sys:Double>
 
   <!--
-    The two roles that wrap, both ~1.4x their size.
+    Line height of wrapping prose, ~1.4x its size.
     Stated rather than left to Inter's own leading, which is tighter than a paragraph wants.
     A single line in an already centred row states none, since a line box taller than the glyphs
     only moves the text off the centre it was placed on.
   -->
   <sys:Double x:Key="LineHeightSmall">18</sys:Double>
-  <sys:Double x:Key="LineHeightBody">20</sys:Double>
 
 </ResourceDictionary>

@@ -1,5 +1,4 @@
 using ScreenShare.Api.V1;
-using ScreenShare.App.Backend;
 using ScreenShare.App.Copy;
 using ScreenShare.App.Features.Shell.Update.ViewModel;
 using Xunit;

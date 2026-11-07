@@ -15,9 +15,7 @@ using ScreenShare.App.Features.Setup.QualityStep.ViewModel;
 using ScreenShare.App.Features.Setup.Commit.ViewModel;
 using ScreenShare.App.Features.Setup.RelayCheck.ViewModel;
 using ScreenShare.App.Features.Setup.StepStrip.ViewModel;
-using ScreenShare.App.Features.Shell.Model;
 using ScreenShare.App.Features.Shell.Settings.Model;
-using ScreenShare.App.Features.Shell.ViewModel;
 using ScreenShare.App.Mvvm;
 
 namespace ScreenShare.App.Features.Setup.ViewModel;
@@ -105,7 +103,7 @@ public sealed class SetupViewModel : Observable
 
     /// <summary>
     /// One select command per step key, made once and reused.
-    /// The reused instance lets a chip row be a record:
+    /// The reused instance lets a step chip be a record (<see cref="StepChipViewModel"/>):
     /// two passes over one step compare equal rather than merely look alike, so the strip is left alone.
     /// </summary>
     private readonly Dictionary<string, DelegateCommand> _select = [];
