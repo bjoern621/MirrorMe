@@ -416,6 +416,9 @@
               buf
               protoc-gen-go
               protoc-gen-go-grpc
+              # `task icons` rasters the SVG masters through magick's librsvg delegate.
+              imagemagick
+              jq # tools/crops.sh reads its manifest
               nil
               nixfmt
             ]
@@ -509,11 +512,26 @@
         screenshare-groupd = final.callPackage ./packaging/nix/groupd.nix { inherit version; };
       };
 
-      # A relay host wants both halves, so the default is the pair:
-      # a host taking the relay alone would serve tokens nobody signs.
+      # The viewer service, for that same host:
+      # it carries each viewer's figures to the stream's publisher (docs/viewer-reports.md).
+      #   nixpkgs.overlays = [ mirrorme.overlays.watchd ];
+      overlays.watchd = final: _: {
+        screenshare-watchd = final.callPackage ./packaging/nix/watchd.nix { inherit version; };
+      };
+
+      # The Discord manager, opt-in per deployment (docs/discord-mode.md).
+      #   nixpkgs.overlays = [ mirrorme.overlays.discordd ];
+      overlays.discordd = final: _: {
+        screenshare-discordd = final.callPackage ./packaging/nix/discordd.nix { inherit version; };
+      };
+
+      # What every relay host runs, so the default composes it:
+      # a host taking the relay alone would serve tokens nobody signs,
+      # and one without watchd would show no publisher what its viewers receive.
       overlays.default = nixpkgs.lib.composeManyExtensions [
         self.overlays.mediamtx
         self.overlays.groupd
+        self.overlays.watchd
       ];
     };
 }

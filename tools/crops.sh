@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Renders the comparison crops listed in the manifest, each through the encoder its entry names.
-# Run from the repository root after editing the manifest: nix shell nixpkgs#ffmpeg-full nixpkgs#jq --command tools/crops.sh
+# Run from the repository root in the dev shell after editing the manifest: tools/crops.sh
 set -euo pipefail
 
 dir=avalonia/ScreenShare.App/Assets/Crops

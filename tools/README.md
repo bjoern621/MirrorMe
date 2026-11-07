@@ -15,4 +15,4 @@ Nothing here gets built or shipped.
 | `crops.sh` | render the comparison crops the settings tooltips show, from their manifest, through the real encoder |
 | `release.sh` | cut, tag and publish a release, and follow its workflow ([releasing](../docs/releasing.md)) |
 
-`crops.sh` wants bash, ffmpeg with libx265, and jq.
+The flake's dev shell carries what `crops.sh` runs on: ffmpeg with libx265 and jq.
