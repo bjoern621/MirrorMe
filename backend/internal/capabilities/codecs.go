@@ -73,6 +73,20 @@ var Codecs = []Codec{
 		Implemented: true,
 		Chromas:     []string{"yuv444p", "yuv420p"},
 		CqMax:       EveryEngine(51),
+		// H.264 codes lossless through the transform bypass, which the High 4:4:4 Predictive profile
+		// alone carries. That profile takes 4:2:0 as well.
+		// NVIDIA 615 refuses the bypass under High.
+		// ffmpeg's h264_nvenc picks High 4:4:4 Predictive for a lossless 4:2:0 encode.
+		// nvh264enc negotiates that profile from Y444 input alone, so 4:2:0 lossless has no form there.
+		ModeGaps: []ModeGap{{
+			Mode: ModeLossless,
+			Gap: Gap{
+				Engine: EngineGst,
+				Option: OptionChroma,
+				Value:  "yuv420p",
+				Reason: mirrormev1.TextCode_TEXT_CODE_GAP_GST_NVH264ENC_LOSSLESS_NEEDS_444,
+			},
+		}},
 	},
 	{
 		// NVENC's lossless tune is an H.264 and HEVC one.
