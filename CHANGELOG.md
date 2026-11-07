@@ -8,7 +8,7 @@ Releases before v0.11.0 carry no notes, and their commits sit in the [history](h
 
 ### Added
 
-- "When upload falls behind" in the publish settings picks what a slow upload costs: skipping to the next keyframe (the default) or slowing the encoder.
+- In the publish settings, "When upload falls behind" lets you choose between skipping to the next keyframe (the default) and slowing the encoder.
 
 ### Fixed
 
