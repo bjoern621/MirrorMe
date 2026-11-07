@@ -123,11 +123,17 @@ public static class AutostartEntry
         var configHome = string.IsNullOrEmpty(flatpakId) ? config : hostConfig;
         if (string.IsNullOrEmpty(configHome) || !Path.IsPathRooted(configHome))
         {
-            configHome = Path.Combine(home, ".config");
+            configHome = PosixJoin(home, ".config");
         }
 
-        return Path.Combine(configHome, "autostart");
+        return PosixJoin(configHome, "autostart");
     }
+
+    /// <summary>
+    /// Joins with <c>/</c> on every host, where <see cref="Path.Combine(string, string)"/> takes <c>\</c> on Windows
+    /// and breaks the Linux path that the Windows test run checks.
+    /// </summary>
+    private static string PosixJoin(string directory, string name) => directory.TrimEnd('/') + "/" + name;
 
     /// <summary>
     /// What the entry starts, and the program whose absence makes the session skip the entry.
