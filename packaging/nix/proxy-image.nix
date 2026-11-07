@@ -8,7 +8,7 @@
 # On a host this proxy is the only client that could hold a certificate, so it issues one;
 # in the cluster cert-manager does,
 # and the proxy is reached over a name another terminator answers for.
-# The deployment sets SCREENSHARE_DOMAIN to a bare port for that,
+# The deployment sets MIRRORME_DOMAIN to a bare port for that,
 # a Caddy site address with no scheme and so no automatic HTTPS.
 
 {
@@ -18,7 +18,7 @@
 }:
 
 dockerTools.buildLayeredImage {
-  name = "screenshare-proxy";
+  name = "mirrorme-proxy";
   tag = version;
 
   contents = [ caddy ];

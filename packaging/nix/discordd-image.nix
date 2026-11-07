@@ -6,17 +6,17 @@
 
 {
   dockerTools,
-  screenshare-discordd,
+  mirrorme-discordd,
   cacert,
   version,
 }:
 
 dockerTools.buildLayeredImage {
-  name = "screenshare-discordd";
+  name = "mirrorme-discordd";
   tag = version;
 
   contents = [
-    screenshare-discordd
+    mirrorme-discordd
     # The gateway open is a TLS dial to discord.com,
     # and a certificate-less image fails it on unknown authority.
     cacert

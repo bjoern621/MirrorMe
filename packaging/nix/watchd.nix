@@ -9,12 +9,12 @@
 }:
 
 buildGoModule {
-  pname = "screenshare-watchd";
+  pname = "mirrorme-watchd";
   inherit version;
 
   # The Go tree alone, groupd.nix's filter verbatim: nothing here builds the shell.
   src = lib.cleanSourceWith {
-    name = "screenshare-watchd-source";
+    name = "mirrorme-watchd-source";
     src = ../../.;
     filter =
       path: _:
@@ -46,7 +46,7 @@ buildGoModule {
   env.CGO_ENABLED = 0;
 
   meta = {
-    description = "Viewer figures for the screen-sharing relay, carried to each stream's publisher";
+    description = "Viewer figures for the MirrorMe relay, carried to each stream's publisher";
     mainProgram = "watchd";
     platforms = lib.platforms.linux;
   };

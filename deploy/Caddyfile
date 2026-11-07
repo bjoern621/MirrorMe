@@ -29,44 +29,44 @@
 	admin off
 }
 
-{$SCREENSHARE_DOMAIN:localhost} {
+{$MIRRORME_DOMAIN:localhost} {
 	# The group service: keys, tokens and the index.
 	# The only thing here a client talks to before it publishes,
 	# and the only one holding a secret of its own.
 	handle /groups* {
-		reverse_proxy {$SCREENSHARE_GROUPD:127.0.0.1:9443}
+		reverse_proxy {$MIRRORME_GROUPD:127.0.0.1:9443}
 	}
 	handle /tokens* {
-		reverse_proxy {$SCREENSHARE_GROUPD:127.0.0.1:9443}
+		reverse_proxy {$MIRRORME_GROUPD:127.0.0.1:9443}
 	}
 	handle /streams* {
-		reverse_proxy {$SCREENSHARE_GROUPD:127.0.0.1:9443}
+		reverse_proxy {$MIRRORME_GROUPD:127.0.0.1:9443}
 	}
 
 	# Presence, stated by every member's own app on the loop that polls the relay.
 	# Fronted like the routes above and for the same reason:
 	# a member reaches this from wherever they are, and a group key rides in the body under TLS.
 	handle /members* {
-		reverse_proxy {$SCREENSHARE_GROUPD:127.0.0.1:9443}
+		reverse_proxy {$MIRRORME_GROUPD:127.0.0.1:9443}
 	}
 
 	# The key every token is verified against, fetched by the relay rather than by a browser.
 	# Public by construction: it verifies a signature and cannot make one.
 	handle /jwks.json {
-		reverse_proxy {$SCREENSHARE_GROUPD:127.0.0.1:9443}
+		reverse_proxy {$MIRRORME_GROUPD:127.0.0.1:9443}
 	}
 
 	# Report bundles members send in, taken without a group key:
 	# a report is most needed where the settings hold no working group.
 	# The service bounds the body and the rate per address (internal/groupsvc, reports.go).
 	handle /reports* {
-		reverse_proxy {$SCREENSHARE_GROUPD:127.0.0.1:9443}
+		reverse_proxy {$MIRRORME_GROUPD:127.0.0.1:9443}
 	}
 
 	# What each viewer measures of a stream, for its publisher (docs/viewer-reports.md).
 	# A relay access token rides in the Authorization header under TLS.
 	handle /viewers* {
-		reverse_proxy {$SCREENSHARE_WATCHD:127.0.0.1:9445}
+		reverse_proxy {$MIRRORME_WATCHD:127.0.0.1:9445}
 	}
 
 	# Discord mode: presence, brokered tokens and the browser link flow (docs/discord-mode.md).
@@ -76,7 +76,7 @@
 	@discord path /discord/*
 	handle @discord {
 		uri strip_prefix /discord
-		reverse_proxy {$SCREENSHARE_DISCORDD:127.0.0.1:9444}
+		reverse_proxy {$MIRRORME_DISCORDD:127.0.0.1:9444}
 	}
 
 	# /reconcile has no route here and falls through to the HLS handler below like any unknown path.
@@ -98,7 +98,7 @@
 	@webrtcpage path /webrtc/*
 	handle @webrtcpage {
 		uri strip_prefix /webrtc
-		reverse_proxy {$SCREENSHARE_RELAY_WEBRTC:127.0.0.1:8889}
+		reverse_proxy {$MIRRORME_RELAY_WEBRTC:127.0.0.1:8889}
 	}
 
 	# WebRTC signalling, HTTP and so the same certificate and the same name.
@@ -112,13 +112,13 @@
 	# answered 404 by a server that carries no such route.
 	@webrtc path */whip */whip/* */whep */whep/*
 	handle @webrtc {
-		reverse_proxy {$SCREENSHARE_RELAY_WEBRTC:127.0.0.1:8889}
+		reverse_proxy {$MIRRORME_RELAY_WEBRTC:127.0.0.1:8889}
 	}
 
 	# HLS, what a browser with no WebRTC support falls back to.
 	# Segments over HTTP, so it needs nothing beyond the proxy either.
 	handle {
-		reverse_proxy {$SCREENSHARE_RELAY_HLS:127.0.0.1:8888}
+		reverse_proxy {$MIRRORME_RELAY_HLS:127.0.0.1:8888}
 	}
 }
 

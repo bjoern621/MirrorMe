@@ -247,7 +247,7 @@ tasks:
       - tools/release.sh {{.CLI_ARGS}}
 
   nixos:update:
-    desc: Update the NixOS system flake's screen-sharing input and switch to it (NIXOS_FLAKE=<dir>, else /etc/nixos)
+    desc: Update the NixOS system flake's MirrorMe input and switch to it (NIXOS_FLAKE=<dir>, else /etc/nixos)
     platforms: [linux]
     interactive: true
     env:

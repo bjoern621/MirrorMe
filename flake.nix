@@ -373,16 +373,16 @@
         packages.proxy-image = pkgs.callPackage ./packaging/nix/proxy-image.nix { inherit version; };
         packages.groupd-image = pkgs.callPackage ./packaging/nix/groupd-image.nix {
           inherit version;
-          screenshare-groupd = self.packages.${system}.groupd;
+          mirrorme-groupd = self.packages.${system}.groupd;
         };
         # discordd is opt-in per deployment.
         packages.discordd-image = pkgs.callPackage ./packaging/nix/discordd-image.nix {
           inherit version;
-          screenshare-discordd = self.packages.${system}.discordd;
+          mirrorme-discordd = self.packages.${system}.discordd;
         };
         packages.watchd-image = pkgs.callPackage ./packaging/nix/watchd-image.nix {
           inherit version;
-          screenshare-watchd = self.packages.${system}.watchd;
+          mirrorme-watchd = self.packages.${system}.watchd;
         };
 
         # The client the release workflow pushes the build closure to the Attic cache with.
@@ -507,22 +507,22 @@
       # The group service, for that same host:
       # it runs beside the relay, where the signing key lives and where the relay fetches it from.
       #   nixpkgs.overlays = [ mirrorme.overlays.groupd ];
-      #   systemd.services.groupd.serviceConfig.ExecStart = lib.getExe pkgs.screenshare-groupd;
+      #   systemd.services.groupd.serviceConfig.ExecStart = lib.getExe pkgs.mirrorme-groupd;
       overlays.groupd = final: _: {
-        screenshare-groupd = final.callPackage ./packaging/nix/groupd.nix { inherit version; };
+        mirrorme-groupd = final.callPackage ./packaging/nix/groupd.nix { inherit version; };
       };
 
       # The viewer service, for that same host:
       # it carries each viewer's figures to the stream's publisher (docs/viewer-reports.md).
       #   nixpkgs.overlays = [ mirrorme.overlays.watchd ];
       overlays.watchd = final: _: {
-        screenshare-watchd = final.callPackage ./packaging/nix/watchd.nix { inherit version; };
+        mirrorme-watchd = final.callPackage ./packaging/nix/watchd.nix { inherit version; };
       };
 
       # The Discord manager, opt-in per deployment (docs/discord-mode.md).
       #   nixpkgs.overlays = [ mirrorme.overlays.discordd ];
       overlays.discordd = final: _: {
-        screenshare-discordd = final.callPackage ./packaging/nix/discordd.nix { inherit version; };
+        mirrorme-discordd = final.callPackage ./packaging/nix/discordd.nix { inherit version; };
       };
 
       # What every relay host runs, so the default composes it:

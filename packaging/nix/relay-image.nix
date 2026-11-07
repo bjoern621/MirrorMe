@@ -25,7 +25,7 @@ let
 in
 
 dockerTools.buildLayeredImage {
-  name = "screenshare-relay";
+  name = "mirrorme-relay";
   tag = version;
 
   contents = [

@@ -9,12 +9,12 @@
 }:
 
 buildGoModule {
-  pname = "screenshare-discordd";
+  pname = "mirrorme-discordd";
   inherit version;
 
   # The Go tree alone, groupd.nix's filter verbatim: nothing here builds the shell.
   src = lib.cleanSourceWith {
-    name = "screenshare-discordd-source";
+    name = "mirrorme-discordd-source";
     src = ../../.;
     filter =
       path: _:
@@ -46,7 +46,7 @@ buildGoModule {
   env.CGO_ENABLED = 0;
 
   meta = {
-    description = "Discord manager for the screen-sharing relay: voice channels as groups";
+    description = "Discord manager for the MirrorMe relay: voice channels as groups";
     mainProgram = "discordd";
     platforms = lib.platforms.linux;
   };

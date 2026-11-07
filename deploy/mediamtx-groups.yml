@@ -126,14 +126,14 @@ rtspEncryption: strict
 # (backend/internal/transport, EncryptedRtspProtocol).
 rtspTransports: [tcp]
 rtspsAddress: :8322
-rtspServerCert: /var/lib/screenshare-tls/cert.pem
-rtspServerKey: /var/lib/screenshare-tls/key.pem
+rtspServerCert: /var/lib/mirrorme-tls/cert.pem
+rtspServerKey: /var/lib/mirrorme-tls/key.pem
 
 rtmp: yes
 rtmpEncryption: strict
 rtmpsAddress: :1936
-rtmpServerCert: /var/lib/screenshare-tls/cert.pem
-rtmpServerKey: /var/lib/screenshare-tls/key.pem
+rtmpServerCert: /var/lib/mirrorme-tls/cert.pem
+rtmpServerKey: /var/lib/mirrorme-tls/key.pem
 
 hls: yes
 hlsAddress: 127.0.0.1:8888

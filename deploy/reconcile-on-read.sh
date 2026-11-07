@@ -26,4 +26,4 @@ exec curl -sS -m 2 -o /dev/null \
 	-X POST \
 	-H 'Content-Type: application/json' \
 	-d "{\"path\":\"${MTX_PATH}\"}" \
-	"${SCREENSHARE_GROUP_SERVICE:-http://127.0.0.1:9443}/reconcile"
+	"${MIRRORME_GROUP_SERVICE:-http://127.0.0.1:9443}/reconcile"

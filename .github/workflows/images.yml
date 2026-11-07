@@ -38,15 +38,15 @@ jobs:
       matrix:
         include:
           - package: relay-image
-            image: screenshare-relay
+            image: mirrorme-relay
           - package: proxy-image
-            image: screenshare-proxy
+            image: mirrorme-proxy
           - package: groupd-image
-            image: screenshare-groupd
+            image: mirrorme-groupd
           - package: discordd-image
-            image: screenshare-discordd
+            image: mirrorme-discordd
           - package: watchd-image
-            image: screenshare-watchd
+            image: mirrorme-watchd
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 

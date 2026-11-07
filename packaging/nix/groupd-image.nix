@@ -6,15 +6,15 @@
 
 {
   dockerTools,
-  screenshare-groupd,
+  mirrorme-groupd,
   version,
 }:
 
 dockerTools.buildLayeredImage {
-  name = "screenshare-groupd";
+  name = "mirrorme-groupd";
   tag = version;
 
-  contents = [ screenshare-groupd ];
+  contents = [ mirrorme-groupd ];
 
   config = {
     Entrypoint = [ "/bin/groupd" ];

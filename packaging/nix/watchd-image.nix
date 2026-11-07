@@ -5,15 +5,15 @@
 
 {
   dockerTools,
-  screenshare-watchd,
+  mirrorme-watchd,
   version,
 }:
 
 dockerTools.buildLayeredImage {
-  name = "screenshare-watchd";
+  name = "mirrorme-watchd";
   tag = version;
 
-  contents = [ screenshare-watchd ];
+  contents = [ mirrorme-watchd ];
 
   config = {
     Entrypoint = [ "/bin/watchd" ];

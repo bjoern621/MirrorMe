@@ -10,12 +10,12 @@
 }:
 
 buildGoModule {
-  pname = "screenshare-groupd";
+  pname = "mirrorme-groupd";
   inherit version;
 
   # The Go tree alone, packaging/nix/package.nix's filter without avalonia/: nothing here builds the shell.
   src = lib.cleanSourceWith {
-    name = "screenshare-groupd-source";
+    name = "mirrorme-groupd-source";
     src = ../../.;
     filter =
       path: _:
@@ -49,7 +49,7 @@ buildGoModule {
   env.CGO_ENABLED = 0;
 
   meta = {
-    description = "Group key, token and index service for the screen-sharing relay";
+    description = "Group key, token and index service for the MirrorMe relay";
     mainProgram = "groupd";
     platforms = lib.platforms.linux;
   };

@@ -24,7 +24,7 @@ Pick an environment first.
 | `Local` | relay and group service on loopback, on the ports `deploy/mediamtx-groups.yml` and `groupd`'s defaults use |
 | `Production` | the deployed relay behind the reverse proxy, one name on the standard port fronting the group service and the HLS listener alike |
 
-That name is the proxy's `SCREENSHARE_DOMAIN`, so another deployment is this environment with its own domain in both fields.
+That name is the proxy's `MIRRORME_DOMAIN`, so another deployment is this environment with its own domain in both fields.
 
 ## What each environment reaches
 

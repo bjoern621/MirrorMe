@@ -19,7 +19,7 @@ A deployment mounts none of this.
 The relay and proxy images carry the files (`packaging/nix/relay-image.nix`, `packaging/nix/proxy-image.nix`),
 so an edit here reaches a running relay through a release and the image tag a cluster pins (`docs/packaging.md`).
 A deployment's environment overrides what differs per host,
-the certificate paths (`MTX_RTSPSERVERCERT` and its siblings), the addresses WebRTC announces, the site address the proxy binds (`SCREENSHARE_DOMAIN`).
+the certificate paths (`MTX_RTSPSERVERCERT` and its siblings), the addresses WebRTC announces, the site address the proxy binds (`MIRRORME_DOMAIN`).
 Permissions come from `mediamtx-groups.yml` alone.
 
 No Kubernetes manifest lives here.
