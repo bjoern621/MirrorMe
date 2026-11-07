@@ -4,26 +4,26 @@
 # local logs / binaries
 *.log
 bin/
-build/bin
-# extracted ffmpeg binary distributions (e.g. ffmpeg-7.x-essentials_build/),
-# NOT the backend/internal/ffmpeg source package
-ffmpeg-*/
 
-# vendored Windows ffmpeg/ffplay payload, copied into build/bin by the bundle task;
-# large and separately licensed, so not committed
-build/windows/redist/*.exe
-# and the license text that arrives with it, which the release workflow downloads
-build/windows/redist/ffmpeg-LICENSE.txt
+# What `go build ./cmd/<name>` leaves in backend/ when run without -o.
+/backend/backend
+/backend/discordd
+/backend/groupd
+/backend/qa
+/backend/release
+/backend/soak
+/backend/watchd
 
-# release artifacts: the tarball and zip the packaging scripts assemble
-build/dist/
+# Core dumps. kernel.core_pattern on the dev machine drops them into the crashed process's directory.
+core.[0-9]*
 
-# What task package:flatpak writes: flatpak-builder's per-module build state, the tree it
-# assembles into, and the repository it exports through before the bundle is written.
-# The state directory is what CI caches so ffmpeg is compiled once (.github/workflows/release.yml).
+# Everything a task writes under build/: the binaries, the vendored Windows ffmpeg and its license,
+# the release tarball and zip, the tree flatpak-builder assembles and the repository it exports through.
+/build/
+
+# flatpak-builder's per-module build state.
+# CI caches it so ffmpeg is compiled once (.github/workflows/release.yml).
 .flatpak-builder/
-build/flatpak-build/
-build/flatpak-repo/
 
 # What `task relay` draws for a relay on this machine: the certificate its TLS listeners hold,
 # the key the group service signs tokens with, and the pair MediaMTX generates for its MoQ
@@ -31,15 +31,6 @@ build/flatpak-repo/
 # drawn again wherever it is absent.
 /dev-relay/
 
-# MediaMTX generates that MoQ pair beside itself, so a relay run by hand from the repository
-# root leaves it here instead.
+# The MoQ pair MediaMTX generates beside itself when started by hand from another directory.
 auto.crt
 auto.key
-
-# The pre-restructure module directory, which the "restructure" commit replaced and
-# left behind untracked. What survives in it is the ffmpeg package as it stood then,
-# kept only because two of its files were never committed anywhere.
-#
-# Anchored to the repository root: an unanchored "app/" matches a directory of that
-# name at any depth, which silently swallowed the app package under internal/.
-/_app/
