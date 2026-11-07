@@ -1,17 +1,14 @@
 {
   description = "MirrorMe: high-quality group screen sharing (MediaMTX relay + Go backend + Avalonia shell)";
 
-  # A revision on both inputs and never a branch,
-  # so which package set a checkout builds against is this file's property
-  # rather than the day someone last ran `nix flake update`.
-  # A branch ref moves ffmpeg and GStreamer under the tree with no commit saying so,
-  # and those two are what every codec verdict in backend/internal/capabilities is measured against.
+  # Both inputs pin a revision.
+  # A checkout then builds against the package set that this file names.
+  # A branch ref would move ffmpeg and GStreamer under the tree with no commit recording it.
+  # Every codec verdict in backend/internal/capabilities gets measured against those two.
   #
-  # The revision tracks nixos-unstable:
-  # a release channel trails GStreamer by a minor series, and the plugin set is the thing under test.
+  # The revision tracks nixos-unstable, since a release channel trails GStreamer by a minor series.
   #
-  # Updating is an edit, not a command.
-  # docs/packaging.md ("Version pinning") states the procedure and what to re-measure.
+  # docs/packaging.md ("Version pinning") states how to move the pins and what to re-measure.
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/e7fe03cce61eebcf570cd294f70cefe3ad76feed";
     flake-utils.url = "github:numtide/flake-utils/11707dc2f618dd54ca8739b309ec4fc024de578b";
