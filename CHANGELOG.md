@@ -13,6 +13,9 @@ Releases before v0.11.0 carry no notes, and their commits sit in the [history](h
 ### Changed
 
 - The settings dialog leaves out the Development section and its test streams, which run in a development build alone.
+- The first start opens without the crash report question.
+  "Send crash reports" in the settings dialog starts off.
+  An install that left the question unanswered keeps it off.
 
 ## v0.13.1 (2026-11-07)
 

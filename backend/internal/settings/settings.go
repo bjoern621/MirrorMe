@@ -762,11 +762,9 @@ func Defaults() Settings {
 			ConstantVolume: true,
 		},
 		App: App{
-			// All on, which is what the app did before any of them was answerable:
-			// a crash from the last run goes out as this one starts,
-			// the published release is read beside it, and the icon sits in the tray.
+			// Both on, which is what the app did before either was answerable:
+			// the published release is read as this one starts, and the icon sits in the tray.
 			// A stored file written before one of them keeps it, Load decoding over these.
-			SendCrashReports:    true,
 			CheckUpdatesOnStart: true,
 			TrayIcon:            true,
 			// A share states itself on the Discord client beside this app,

@@ -147,6 +147,29 @@ func decodeMoved(s Settings, data []byte) Settings {
 	return s
 }
 
+// unasked carries the mark a build that asked about crash reports on first start stored beside the answer.
+type unasked struct {
+	App struct {
+		CrashReportsAsked *bool `json:"crashReportsAsked"`
+	} `json:"app"`
+}
+
+// decodeUnasked turns crash reports off on a file whose question was never answered.
+// Such a file holds the old default of on, which its reader never saw.
+//
+// Idempotent: a file this build wrote carries no mark, so a second pass leaves the stored choice alone.
+func decodeUnasked(s Settings, data []byte) Settings {
+	var u unasked
+	if err := json.Unmarshal(data, &u); err != nil {
+		return s
+	}
+
+	if u.App.CrashReportsAsked != nil && !*u.App.CrashReportsAsked {
+		s.App.SendCrashReports = false
+	}
+	return s
+}
+
 // set writes a stored value over a default, leaving the default where the file carried no such key.
 func set[T any](into *T, stored *T) {
 	assert.IsNotNil(into, "a stored value is written into a field")

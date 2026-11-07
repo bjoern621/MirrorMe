@@ -5,7 +5,6 @@
         xmlns:navstrip="using:MirrorMe.App.Features.Shell.NavStrip.View"
         xmlns:statusbar="using:MirrorMe.App.Features.Shell.StatusBar.View"
         xmlns:settings="using:MirrorMe.App.Features.Shell.Settings.View"
-        xmlns:consent="using:MirrorMe.App.Features.Shell.Consent.View"
         xmlns:setup="using:MirrorMe.App.Features.Setup.View"
         xmlns:sharepicker="using:MirrorMe.App.Features.Setup.SharePicker.View"
         xmlns:setupVm="using:MirrorMe.App.Features.Setup.ViewModel"
@@ -106,14 +105,5 @@
     <sharepicker:SharePickerView Grid.Row="0"
                                  Grid.RowSpan="4"
                                  DataContext="{Binding SharePicker}" />
-
-    <!--
-      The crash report question, which an install answers before it reaches anything else.
-      Last child, so it stands over both dialogs above: the window behind it is readable and inert until the
-      answer is given (Consent/ViewModel/ConsentViewModel.cs).
-    -->
-    <consent:ConsentView Grid.Row="0"
-                         Grid.RowSpan="4"
-                         DataContext="{Binding Consent}" />
   </Grid>
 </Window>

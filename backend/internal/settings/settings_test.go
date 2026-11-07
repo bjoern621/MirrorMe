@@ -923,9 +923,9 @@ func TestADetachedDraftStaysDetachedAcrossAReload(t *testing.T) {
 }
 
 // A file written before the app group names neither flag.
-// Load decodes over the defaults, so an install keeps reporting a crash
-// and reading the published release the way it did before either was answerable.
-func TestAFileFromBeforeTheAppGroupKeepsBothFlags(t *testing.T) {
+// Load decodes over the defaults, so an install keeps reading the published release
+// and sends no crash log it was never asked about.
+func TestAFileFromBeforeTheAppGroupTakesTheDefaults(t *testing.T) {
 	isolateConfig(t)
 
 	path := mustSettingsPath(t)
@@ -937,8 +937,43 @@ func TestAFileFromBeforeTheAppGroupKeepsBothFlags(t *testing.T) {
 	}
 
 	got := mustLoad(t)
-	if !got.App.SendCrashReports || !got.App.CheckUpdatesOnStart {
+	if got.App.SendCrashReports || !got.App.CheckUpdatesOnStart {
 		t.Errorf("app settings = %+v, want what a fresh installation holds", got.App)
+	}
+}
+
+// A build that asked about crash reports on first start stored the old default of on beside an unanswered mark.
+func TestAnUnansweredCrashReportQuestionSendsNothing(t *testing.T) {
+	isolateConfig(t)
+
+	path := mustSettingsPath(t)
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		t.Fatalf("MkdirAll: %v", err)
+	}
+	stored := `{"app":{"sendCrashReports":true,"crashReportsAsked":false}}`
+	if err := os.WriteFile(path, []byte(stored), 0o600); err != nil {
+		t.Fatalf("WriteFile: %v", err)
+	}
+
+	if got := mustLoad(t); got.App.SendCrashReports {
+		t.Errorf("app settings = %+v, want crash reports off", got.App)
+	}
+}
+
+func TestAnAnsweredCrashReportQuestionKeepsTheAnswer(t *testing.T) {
+	isolateConfig(t)
+
+	path := mustSettingsPath(t)
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		t.Fatalf("MkdirAll: %v", err)
+	}
+	stored := `{"app":{"sendCrashReports":true,"crashReportsAsked":true}}`
+	if err := os.WriteFile(path, []byte(stored), 0o600); err != nil {
+		t.Fatalf("WriteFile: %v", err)
+	}
+
+	if got := mustLoad(t); !got.App.SendCrashReports {
+		t.Errorf("app settings = %+v, want crash reports on", got.App)
 	}
 }
 

@@ -37,7 +37,7 @@ func (a *App) sendReport(kind string, include ...string) (string, error) {
 
 // SendReport delivers a report a reader asked for, and answers the name it was stored under.
 //
-// Consent is the press, so App.SendsCrashReport is not read here.
+// Consent is the press, so App.SendCrashReports is not read here.
 // That setting covers the send nobody is standing in front of, which is the crash one.
 //
 // No marker and no gate on a repeat.
@@ -57,10 +57,9 @@ func (a *App) SendReport() (string, error) {
 // among tag's earlier run logs, and nothing where every earlier run ended clean.
 //
 // Refused by the stored settings, which carry the whole of the consent behind an automatic send
-// (settings.App.SendsCrashReport).
-// An unput question refuses too, so nothing leaves before the shell has drawn it.
+// (settings.App.SendCrashReports).
 // The crash keeps its marker unwritten there,
-// so answering and starting again sends what the refused run held back.
+// so turning the setting on and starting again sends what the refused run held back.
 //
 // Called once per start, off the startup path (cmd/backend).
 // The marker keeps a crash to one report,
@@ -70,7 +69,7 @@ func (a *App) SendReport() (string, error) {
 func (a *App) ReportLastCrash(tag string) {
 	assert.Assert(tag != "", "a crash is looked for under the run log tag")
 
-	if !a.GetSettings().App.SendsCrashReport() {
+	if !a.GetSettings().App.SendCrashReports {
 		return
 	}
 

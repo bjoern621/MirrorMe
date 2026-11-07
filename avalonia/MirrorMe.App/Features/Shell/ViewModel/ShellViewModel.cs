@@ -7,7 +7,6 @@ using MirrorMe.App.Features.Setup.RegionPicker.View;
 using MirrorMe.App.Features.Setup.SharePicker.ViewModel;
 using MirrorMe.App.Features.Setup.ShareQuestion.ViewModel;
 using MirrorMe.App.Features.Setup.ViewModel;
-using MirrorMe.App.Features.Shell.Consent.ViewModel;
 using MirrorMe.App.Features.Shell.Go.ViewModel;
 using MirrorMe.App.Features.Shell.Model;
 using MirrorMe.App.Features.Shell.NavStrip.ViewModel;
@@ -143,11 +142,6 @@ public sealed class ShellViewModel : Observable
         // It reads the same draft and the same release answer the rest of the window does.
         AppSettings = new AppSettingsViewModel(backend, _form, _session, Update, dispatch);
 
-        // The question an install answers before anything else, over the window on the same ground.
-        // Whether it stands is the stored answer's to say, so nothing here decides when to draw it
-        // (Features/Shell/Consent/ViewModel/ConsentViewModel.cs).
-        Consent = new ConsentViewModel(_form, _session);
-
         // What the stream shares, drawn on the wizard's own step and again over the window at the press
         // that starts one. One model behind both placements, so the reader meets one question
         // (Features/Setup/ShareQuestion/ViewModel/ShareQuestionViewModel.cs).
@@ -245,12 +239,6 @@ public sealed class ShellViewModel : Observable
     /// as the update dialog does.
     /// </summary>
     public AppSettingsViewModel AppSettings { get; }
-
-    /// <summary>
-    /// The crash report question, drawn over whichever destination is showing until it is answered.
-    /// Held here for the same reason the settings dialog is: it belongs to the window rather than to a screen.
-    /// </summary>
-    public ConsentViewModel Consent { get; }
 
     /// <summary>
     /// What the stream shares, one question drawn on the wizard's step and inside the dialog below.
@@ -443,9 +431,6 @@ public sealed class ShellViewModel : Observable
         // Reads the draft and the session like a destination does, and draws whether or not it is open:
         // a dialog rendered only while open comes back holding what it last drew.
         AppSettings.Apply();
-
-        // After the settings dialog, both reading the same app group off this pass's form.
-        Consent.Apply();
         Autostart = _form.Draft?.App?.Autostart;
 
         // After the bodies, so the band's figures are what the destinations derived on this pass

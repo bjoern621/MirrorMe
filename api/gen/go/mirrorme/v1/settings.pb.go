@@ -139,11 +139,6 @@ type AppSettings struct {
 	// and the run log holding the traceback (internal/report).
 	// Off leaves that log on this machine, where OpenLogsFolder reaches it.
 	SendCrashReports bool `protobuf:"varint,1,opt,name=send_crash_reports,json=sendCrashReports,proto3" json:"send_crash_reports,omitempty"`
-	// Whether the question above has been put to the reader.
-	// A shell draws one dialog over its window while this is false and sets it on the way out,
-	// so the choice is made once and stands.
-	// No form field draws it: it records that a choice was offered, and no control writes it.
-	CrashReportsAsked bool `protobuf:"varint,6,opt,name=crash_reports_asked,json=crashReportsAsked,proto3" json:"crash_reports_asked,omitempty"`
 	// The published release is read once per start, filling the update state a shell draws.
 	// Off leaves the read to the press the status band carries (control.proto, CheckUpdate).
 	CheckUpdatesOnStart bool `protobuf:"varint,2,opt,name=check_updates_on_start,json=checkUpdatesOnStart,proto3" json:"check_updates_on_start,omitempty"`
@@ -205,13 +200,6 @@ func (*AppSettings) Descriptor() ([]byte, []int) {
 func (x *AppSettings) GetSendCrashReports() bool {
 	if x != nil {
 		return x.SendCrashReports
-	}
-	return false
-}
-
-func (x *AppSettings) GetCrashReportsAsked() bool {
-	if x != nil {
-		return x.CrashReportsAsked
 	}
 	return false
 }
@@ -1147,15 +1135,14 @@ const file_mirrorme_v1_settings_proto_rawDesc = "" +
 	"\x06viewer\x18\x03 \x01(\v2\x1b.mirrorme.v1.ViewerSettingsR\x06viewer\x12\x1f\n" +
 	"\vstream_name\x18\x04 \x01(\tR\n" +
 	"streamName\x12*\n" +
-	"\x03app\x18\x05 \x01(\v2\x18.mirrorme.v1.AppSettingsR\x03app\"\xb2\x02\n" +
+	"\x03app\x18\x05 \x01(\v2\x18.mirrorme.v1.AppSettingsR\x03app\"\x9d\x02\n" +
 	"\vAppSettings\x12,\n" +
-	"\x12send_crash_reports\x18\x01 \x01(\bR\x10sendCrashReports\x12.\n" +
-	"\x13crash_reports_asked\x18\x06 \x01(\bR\x11crashReportsAsked\x123\n" +
+	"\x12send_crash_reports\x18\x01 \x01(\bR\x10sendCrashReports\x123\n" +
 	"\x16check_updates_on_start\x18\x02 \x01(\bR\x13checkUpdatesOnStart\x12\x1b\n" +
 	"\ttray_icon\x18\x04 \x01(\bR\btrayIcon\x12\x1c\n" +
 	"\tautostart\x18\a \x01(\bR\tautostart\x122\n" +
 	"\x15discord_rich_presence\x18\x05 \x01(\bR\x13discordRichPresence\x12!\n" +
-	"\ftest_streams\x18\x03 \x01(\bR\vtestStreams\"\xbe\x03\n" +
+	"\ftest_streams\x18\x03 \x01(\bR\vtestStreamsJ\x04\b\x06\x10\aR\x13crash_reports_asked\"\xbe\x03\n" +
 	"\rRelaySettings\x12\x12\n" +
 	"\x04host\x18\x01 \x01(\tR\x04host\x12\x19\n" +
 	"\bsrt_port\x18\x02 \x01(\x05R\asrtPort\x12\x1b\n" +

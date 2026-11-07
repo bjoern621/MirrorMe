@@ -181,6 +181,8 @@ func Load() (Settings, error) {
 	// A key that changed group is in these bytes under the group that used to hold it,
 	// which the decode above found no field for (migrate.go).
 	s = decodeMoved(s, data)
+	// A file stored while the crash report question stood unanswered sends nothing (migrate.go).
+	s = decodeUnasked(s, data)
 
 	return migrate(s), nil
 }

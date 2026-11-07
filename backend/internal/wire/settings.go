@@ -39,7 +39,6 @@ func Settings(s settings.Settings) *mirrormev1.Settings {
 func AppSettings(a settings.App) *mirrormev1.AppSettings {
 	return &mirrormev1.AppSettings{
 		SendCrashReports:    a.SendCrashReports,
-		CrashReportsAsked:   a.CrashReportsAsked,
 		CheckUpdatesOnStart: a.CheckUpdatesOnStart,
 		TrayIcon:            a.TrayIcon,
 		Autostart:           a.Autostart,
@@ -154,7 +153,6 @@ func ToSettings(m *mirrormev1.Settings) settings.Settings {
 func ToApp(m *mirrormev1.AppSettings) settings.App {
 	return settings.App{
 		SendCrashReports:    m.GetSendCrashReports(),
-		CrashReportsAsked:   m.GetCrashReportsAsked(),
 		CheckUpdatesOnStart: m.GetCheckUpdatesOnStart(),
 		TrayIcon:            m.GetTrayIcon(),
 		Autostart:           m.GetAutostart(),
