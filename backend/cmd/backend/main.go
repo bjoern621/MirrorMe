@@ -27,6 +27,11 @@ import (
 // "dev" answers for a build nobody stamped.
 var version = "dev"
 
+// envVersion replaces the build stamp at run time.
+// The Nix package sets it from a wrapper, so a release labels a build compiled for an earlier commit
+// without compiling it again (docs/packaging.md, "The build stamp").
+const envVersion = "MIRRORME_VERSION"
+
 // channel is where this copy of the app came from, written by the recipe that packaged it:
 // -ldflags "-X main.channel=..." (docs/updates.md).
 // Empty for a build nobody packaged, which replaces nothing.
@@ -38,6 +43,9 @@ var channel = ""
 // Nothing here waits for a shell.
 // A backend without one keeps publishing.
 func main() {
+	if v := os.Getenv(envVersion); v != "" {
+		version = v
+	}
 	assert.Assert(version != "", "a build states which build it is")
 
 	// A GStreamer publish spawns this same executable to play the pipeline.
