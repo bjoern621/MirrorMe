@@ -229,6 +229,12 @@ let
     # rtspclientsink reports "Failed to connect. (Generic error)" there,
     # which names neither TLS nor the missing module.
     # A prefix rather than a set, the session's own value carrying the desktop's modules.
+    #
+    # GStreamer keeps one registry cache per user and architecture.
+    # Every GStreamer install on the machine rewrites it for its own plugin set.
+    # Shared, the cache goes cold whenever a desktop app with other plugins runs,
+    # and the next encoder probe sweep pays a full plugin scan (internal/encoders, warmGstRegistry).
+    # A file of the app's own stays warm until the closure changes.
     postInstall = ''
       mv $out/bin/backend $out/bin/mirrorme-backend
 
@@ -243,6 +249,7 @@ let
           )
         } \
         --set-default GST_PLUGIN_SYSTEM_PATH_1_0 "${gstPluginPath}" \
+        --run 'export GST_REGISTRY="''${GST_REGISTRY:-''${XDG_CACHE_HOME:-$HOME/.cache}/mirrorme/gstreamer-registry.bin}"' \
         --prefix GIO_EXTRA_MODULES : "${glib-networking}/lib/gio/modules" \
         --set-default MIRRORME_UPDATE_CHECK 0 \
         ${hardwareRuntimeArgs}
