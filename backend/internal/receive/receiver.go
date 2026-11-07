@@ -159,6 +159,11 @@ type Receiver struct {
 	rmsDB    atomic.Uint64
 	hasLevel atomic.Bool
 
+	// reselected holds the stream IDs selected again after decodebin3 dropped them (reselect.go).
+	// The bus watch and a stream's caps handler both reach it.
+	reselectMu sync.Mutex
+	reselected map[string]bool
+
 	mu           sync.Mutex
 	volume       gst.Element // audio branch's volume element, nil without audio
 	audioConvert gst.Element // audio branch's audioconvert, read for the raw audio caps
@@ -378,6 +383,9 @@ func (r *Receiver) watchBus(ctx context.Context, onEnd func(message string)) {
 			if msg.HasName(levelMessage) {
 				r.onLevelMessage(msg)
 			}
+			continue
+		case gst.MessageStreamsSelected:
+			r.onStreamsSelected(msg)
 			continue
 		default:
 			continue
