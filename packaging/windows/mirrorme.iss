@@ -94,6 +94,9 @@ Root: HKA; Subkey: "Software\Classes\mirrorme"; ValueType: string; ValueName: "U
 Root: HKA; Subkey: "Software\Classes\mirrorme\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\mirrorme.exe,0"
 ; %1 is the whole link, quoted: a stream name carries characters a bare argument would split on.
 Root: HKA; Subkey: "Software\Classes\mirrorme\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\mirrorme.exe"" ""%1"""
+; The app writes its sign-in entry itself, following its setting (avalonia/README.md, "Starting at sign-in").
+; This line writes nothing and removes the entry on uninstall.
+Root: HKA; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: none; ValueName: "MirrorMe"; Flags: uninsdeletevalue
 
 [Run]
 Filename: "{app}\mirrorme.exe"; Description: "{cm:LaunchProgram,MirrorMe}"; Flags: nowait postinstall skipifsilent

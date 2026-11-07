@@ -89,6 +89,14 @@ var availabilityRules = map[string]func(availability) state{
 		}
 		return availabilityLive()
 	},
+	// The entry is the shell's, and greyed for the tray toggle's reason:
+	// a run leaving it alone whatever the setting holds is a toggle nothing follows.
+	KeyAutostart: func(av availability) state {
+		if av.deps.AutostartOff {
+			return availabilityDisabled(say(autostartOff))
+		}
+		return availabilityLive()
+	},
 	// The synthetic set publishes to the relay like any other stream and is refused outside a group
 	// the same way, which the start reports where it happens rather than greying the toggle here.
 	// Hidden in a released build: the set serves development, and a user has no use for the toggle.

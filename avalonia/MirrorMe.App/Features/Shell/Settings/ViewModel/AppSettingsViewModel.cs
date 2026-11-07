@@ -39,6 +39,7 @@ public sealed class AppSettingsViewModel : Observable
     private const string CrashReportsKey = "app.send_crash_reports";
     private const string CheckUpdatesOnStartKey = "app.check_updates_on_start";
     private const string TrayIconKey = "app.tray_icon";
+    private const string AutostartKey = "app.autostart";
     private const string TestStreamsKey = "app.test_streams";
     private const string RichPresenceKey = "app.discord_rich_presence";
 
@@ -281,6 +282,7 @@ public sealed class AppSettingsViewModel : Observable
     private FieldViewModel? _crashReports;
     private FieldViewModel? _checkUpdatesOnStart;
     private FieldViewModel? _trayIcon;
+    private FieldViewModel? _autostart;
     private FieldViewModel? _testStreams;
     private FieldViewModel? _richPresence;
 
@@ -295,12 +297,18 @@ public sealed class AppSettingsViewModel : Observable
     }
 
     /// <summary>
-    /// Placed under the Window heading, the icon deciding what the window's close button does
+    /// Placed in the Window section, the icon deciding what the window's close button does
     /// (<c>avalonia/README.md</c>, "The tray").
     /// The shell converges the icon on this write, so it comes and goes with the toggle
     /// (<c>Features/Tray/View/TrayIconHost.cs</c>).
     /// </summary>
     public FieldViewModel? TrayIcon { get => _trayIcon; private set => Set(ref _trayIcon, value); }
+
+    /// <summary>
+    /// Placed in the Window section above <see cref="TrayIcon"/>.
+    /// The shell converges the sign-in entry on this write (<c>Features/Shell/Model/AutostartEntry.cs</c>).
+    /// </summary>
+    public FieldViewModel? Autostart { get => _autostart; private set => Set(ref _autostart, value); }
 
     /// <summary>
     /// Placed under the Development heading, the synthetic set being a testing aid rather than something
@@ -408,6 +416,7 @@ public sealed class AppSettingsViewModel : Observable
         CrashReports = Group.Visible(CrashReportsKey);
         CheckUpdatesOnStart = Group.Visible(CheckUpdatesOnStartKey);
         TrayIcon = Group.Visible(TrayIconKey);
+        Autostart = Group.Visible(AutostartKey);
         TestStreams = Group.Visible(TestStreamsKey);
         ShowsDevelopment = TestStreams is not null;
         RichPresence = Group.Visible(RichPresenceKey);
@@ -444,6 +453,9 @@ public sealed class AppSettingsViewModel : Observable
         Assert.That(
             !Group.IsResolved || TrayIcon is not null,
             "a resolved app group always carries the tray-icon toggle");
+        Assert.That(
+            !Group.IsResolved || Autostart is not null,
+            "a resolved app group always carries the autostart toggle");
         Assert.That(
             UpdatesRefused == (CheckUpdatesOnStart?.HasReason ?? false),
             "the section states the toggle's reason exactly where the toggle has one", UpdatesRefusal);

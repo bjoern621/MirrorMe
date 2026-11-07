@@ -947,6 +947,10 @@ const (
 	// so the app setting asking for one reaches nothing (avalonia/README.md, "The tray").
 	// No arguments.
 	TextCode_TEXT_CODE_TRAY_ICON_OFF TextCode = 198
+	// MIRRORME_AUTOSTART leaves the shell's sign-in entry alone for this run,
+	// so the app setting asking for one reaches nothing (avalonia/README.md, "Starting at sign-in").
+	// No arguments.
+	TextCode_TEXT_CODE_AUTOSTART_OFF TextCode = 341
 	// Request shape: the request names something absent, or nothing at all.
 	// A question, state or action arm this build has no case for. No arguments.
 	TextCode_TEXT_CODE_REQUEST_NOT_IN_THIS_BUILD TextCode = 210
@@ -1347,6 +1351,7 @@ var (
 		187: "TEXT_CODE_UPDATE_INSTALL_FAILED",
 		188: "TEXT_CODE_UPDATE_DOWNLOAD_UNVERIFIABLE",
 		198: "TEXT_CODE_TRAY_ICON_OFF",
+		341: "TEXT_CODE_AUTOSTART_OFF",
 		210: "TEXT_CODE_REQUEST_NOT_IN_THIS_BUILD",
 		211: "TEXT_CODE_FRAME_SOURCE_UNNAMED",
 		212: "TEXT_CODE_STREAM_UNNAMED",
@@ -1629,6 +1634,7 @@ var (
 		"TEXT_CODE_UPDATE_INSTALL_FAILED":                     187,
 		"TEXT_CODE_UPDATE_DOWNLOAD_UNVERIFIABLE":              188,
 		"TEXT_CODE_TRAY_ICON_OFF":                             198,
+		"TEXT_CODE_AUTOSTART_OFF":                             341,
 		"TEXT_CODE_REQUEST_NOT_IN_THIS_BUILD":                 210,
 		"TEXT_CODE_FRAME_SOURCE_UNNAMED":                      211,
 		"TEXT_CODE_STREAM_UNNAMED":                            212,
@@ -2186,7 +2192,7 @@ const file_mirrorme_v1_text_proto_rawDesc = "" +
 	"\x16TEXT_ARG_NAME_PROPERTY\x10T\x12\x1c\n" +
 	"\x18TEXT_ARG_NAME_TIMEOUT_MS\x10U\x12\x1a\n" +
 	"\x16TEXT_ARG_NAME_TRANSFER\x10V\x12\x19\n" +
-	"\x15TEXT_ARG_NAME_DEVICES\x10W\"\x04\b3\x103*\x18TEXT_ARG_NAME_ENC_PRESET*\x16TEXT_ARG_NAME_RAW_MBPS*\x8eV\n" +
+	"\x15TEXT_ARG_NAME_DEVICES\x10W\"\x04\b3\x103*\x18TEXT_ARG_NAME_ENC_PRESET*\x16TEXT_ARG_NAME_RAW_MBPS*\xacV\n" +
 	"\bTextCode\x12\x19\n" +
 	"\x15TEXT_CODE_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aTEXT_CODE_CAPTURE_WRONG_OS\x10\x01\x12#\n" +
@@ -2349,7 +2355,8 @@ const file_mirrorme_v1_text_proto_rawDesc = "" +
 	"!TEXT_CODE_UPDATE_DOWNLOAD_CORRUPT\x10\xba\x01\x12$\n" +
 	"\x1fTEXT_CODE_UPDATE_INSTALL_FAILED\x10\xbb\x01\x12+\n" +
 	"&TEXT_CODE_UPDATE_DOWNLOAD_UNVERIFIABLE\x10\xbc\x01\x12\x1c\n" +
-	"\x17TEXT_CODE_TRAY_ICON_OFF\x10\xc6\x01\x12(\n" +
+	"\x17TEXT_CODE_TRAY_ICON_OFF\x10\xc6\x01\x12\x1c\n" +
+	"\x17TEXT_CODE_AUTOSTART_OFF\x10\xd5\x02\x12(\n" +
 	"#TEXT_CODE_REQUEST_NOT_IN_THIS_BUILD\x10\xd2\x01\x12#\n" +
 	"\x1eTEXT_CODE_FRAME_SOURCE_UNNAMED\x10\xd3\x01\x12\x1d\n" +
 	"\x18TEXT_CODE_STREAM_UNNAMED\x10\xd4\x01\x12 \n" +

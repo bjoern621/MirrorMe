@@ -166,6 +166,10 @@
                       Margin cancels the row's own trailing 18px (FieldRow.axaml), built for an unspaced list,
                       so every pair in this dialog reads as the same gap.
                     -->
+                    <ContentControl Content="{Binding Autostart}"
+                                    ContentTemplate="{StaticResource FieldRow}"
+                                    Margin="0,0,0,-18"
+                                    IsVisible="{Binding Autostart, Converter={x:Static ObjectConverters.IsNotNull}}" />
                     <ContentControl Content="{Binding TrayIcon}"
                                     ContentTemplate="{StaticResource FieldRow}"
                                     Margin="0,0,0,-18"

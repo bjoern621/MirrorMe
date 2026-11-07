@@ -430,6 +430,7 @@ internal sealed class SeededBackend : IBackend
             SendCrashReports = true,
             CheckUpdatesOnStart = true,
             TrayIcon = true,
+            Autostart = true,
         },
     };
 
@@ -1992,6 +1993,7 @@ internal sealed class SeededBackend : IBackend
                 new() { Key = "app.send_crash_reports", Control = ControlKind.Toggle },
                 new() { Key = "app.check_updates_on_start", Control = ControlKind.Toggle },
                 new() { Key = "app.tray_icon", Control = ControlKind.Toggle },
+                new() { Key = "app.autostart", Control = ControlKind.Toggle },
                 new() { Key = "app.discord_rich_presence", Control = ControlKind.Toggle },
                 new() { Key = "app.test_streams", Control = ControlKind.Toggle },
             ],

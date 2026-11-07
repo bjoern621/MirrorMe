@@ -899,6 +899,13 @@ enum TextCode {
   // No arguments.
   TEXT_CODE_TRAY_ICON_OFF = 198;
 
+  // --- Starting at sign-in -------------------------------------------------------
+
+  // MIRRORME_AUTOSTART leaves the shell's sign-in entry alone for this run,
+  // so the app setting asking for one reaches nothing (avalonia/README.md, "Starting at sign-in").
+  // No arguments.
+  TEXT_CODE_AUTOSTART_OFF = 341;
+
   // --- Refusals ------------------------------------------------------------------
   //
   // What a served status refuses (Refusal).

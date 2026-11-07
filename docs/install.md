@@ -176,6 +176,13 @@ With it off, no icon is registered, closing the window ends the app, and everyth
 
 `MIRRORME_TRAY=0` puts no icon in the tray for a whole run, whatever that switch holds.
 
+## Starting at sign-in
+
+MirrorMe starts when you sign in, and Settings carries a switch to turn that off.
+On Linux the switch writes `~/.config/autostart/mirrorme.desktop`, on Windows a `MirrorMe` value under the current user's `Run` key.
+
+`MIRRORME_AUTOSTART=0` leaves that entry as it is for a whole run, whatever the switch holds.
+
 ## Where settings are kept
 
 `~/.config/mirrorme/settings.json` on Linux, `%AppData%\mirrorme\settings.json` on Windows.

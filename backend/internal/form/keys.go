@@ -102,6 +102,7 @@ const (
 	KeySendCrashReports    = "app.send_crash_reports"
 	KeyCheckUpdatesOnStart = "app.check_updates_on_start"
 	KeyTrayIcon            = "app.tray_icon"
+	KeyAutostart           = "app.autostart"
 	KeyDiscordRichPresence = "app.discord_rich_presence"
 	KeyTestStreams         = "app.test_streams"
 )

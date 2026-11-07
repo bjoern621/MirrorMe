@@ -299,6 +299,14 @@ public sealed class ShellViewModel : Observable
     /// </summary>
     public bool HasCaption { get => _hasCaption; private set => Set(ref _hasCaption, value); }
 
+    private bool? _autostart;
+
+    /// <summary>
+    /// Whether the desktop starts the app at sign-in, null until the settings have been read.
+    /// The host converges the entry on it (<c>Features/Shell/Model/AutostartEntry.cs</c>).
+    /// </summary>
+    public bool? Autostart { get => _autostart; private set => Set(ref _autostart, value); }
+
     // --- Writes --------------------------------------------------------------------
 
     /// <summary>
@@ -438,6 +446,7 @@ public sealed class ShellViewModel : Observable
 
         // After the settings dialog, both reading the same app group off this pass's form.
         Consent.Apply();
+        Autostart = _form.Draft?.App?.Autostart;
 
         // After the bodies, so the band's figures are what the destinations derived on this pass
         // rather than what they held before it.

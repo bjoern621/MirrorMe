@@ -6,6 +6,11 @@ Releases before v0.11.0 carry no notes, and their commits sit in the [history](h
 
 ## Unreleased
 
+### Added
+
+- MirrorMe starts when you sign in, on Linux and Windows.
+  "Start when you sign in" in the settings dialog turns that off.
+
 ### Changed
 
 - The settings dialog leaves out the Development section and its test streams, which run in a development build alone.

@@ -393,6 +393,26 @@ Nothing stands in the tray until the settings have been read, and a platform ser
 The backend reads the same variable and greys the setting behind it, so the toggle a run follows nothing on says why.
 A hidden window nothing can reopen is gone, so closing the window with no icon up runs the quit.
 
+## Starting at sign-in
+
+The app setting `app.autostart` has the desktop start the shell when the user signs in, on by default.
+The shell writes the entry itself (`Features/Shell/Model/AutostartEntry.cs`), since the entry names the shell's executable.
+It converges on the setting as the tray icon does: on writes the entry, off removes it, and nothing changes until the settings have been read.
+
+| Platform | Entry |
+| --- | --- |
+| Linux | `$XDG_CONFIG_HOME/autostart/mirrorme.desktop`, with a `TryExec` that makes the session skip it once the program is gone |
+| Flatpak | the same file in the host's config directory, starting `flatpak run` |
+| Windows | the `MirrorMe` value under `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`, which the uninstaller removes |
+
+A Linux entry names the executable running now, except under `/nix/store`.
+A store path changes with every update and skips the wrapper that puts the backend on `PATH`, so a Nix install starts `mirrorme` off the profile.
+Every other platform carries no entry, and the setting reaches nothing there.
+
+`MIRRORME_AUTOSTART=0` leaves the entry alone for a whole run, neither written nor removed.
+`task avalonia` sets it, so a checkout run leaves the installed app's entry pointed at the installed app.
+The backend reads the same variable and greys the setting behind it.
+
 ## How the repository's principles land in C#
 
 `docs/development-principles.md` governs this module too.

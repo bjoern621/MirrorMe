@@ -87,6 +87,8 @@ tasks:
       # No icon in the tray: a checkout run ends on its close button,
       # and a second icon beside the installed app's says nothing about which window it opens.
       MIRRORME_TRAY: "0"
+      # The sign-in entry left alone: an installed app's entry stays pointed at that app.
+      MIRRORME_AUTOSTART: "0"
       # Out of the hand-over a launch reaches the window already open through,
       # the checkout and an installed app sharing that endpoint the way they share the backend's.
       # On, this run exits into the installed window rather than drawing the build being worked on.
@@ -121,6 +123,7 @@ tasks:
       # What `task avalonia` sets, so the greyed tray toggle names the run it belongs to:
       # the shell holds the icon out and this backend says why.
       MIRRORME_TRAY: "0"
+      MIRRORME_AUTOSTART: "0"
       # go-gst is a cgo binding, so every file in backend/internal/receive is gated on cgo.
       # Go turns CGO_ENABLED off by itself when it finds no C compiler,
       # so a build outside the toolchain's reach fails as "build constraints exclude all Go files"

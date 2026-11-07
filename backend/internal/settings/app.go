@@ -24,6 +24,11 @@ type App struct {
 	//
 	// Read by the shell rather than here: the icon is drawn by the shell process.
 	TrayIcon bool `json:"trayIcon"`
+	// Autostart has the desktop start the shell when the user signs in.
+	//
+	// Read by the shell rather than here: the entry the desktop reads names the shell's executable
+	// (avalonia/README.md, "Starting at sign-in").
+	Autostart bool `json:"autostart"`
 	// DiscordRichPresence has a share state itself on the Discord client running beside this app
 	// (internal/discordrpc).
 	// Read only while the group comes from Discord, which answers the channel and the audience,

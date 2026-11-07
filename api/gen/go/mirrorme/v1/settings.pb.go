@@ -152,6 +152,10 @@ type AppSettings struct {
 	// Everything the menu offers is the window's own
 	// (avalonia/README.md, "The tray").
 	TrayIcon bool `protobuf:"varint,4,opt,name=tray_icon,json=trayIcon,proto3" json:"tray_icon,omitempty"`
+	// The desktop starts the shell when the user signs in.
+	// The shell writes and removes the entry the desktop reads that from
+	// (avalonia/README.md, "Starting at sign-in").
+	Autostart bool `protobuf:"varint,7,opt,name=autostart,proto3" json:"autostart,omitempty"`
 	// A share states itself on the Discord client running beside this app:
 	// what is shared, which voice channel, how many are watching of how many in it
 	// (docs/discord-mode.md).
@@ -222,6 +226,13 @@ func (x *AppSettings) GetCheckUpdatesOnStart() bool {
 func (x *AppSettings) GetTrayIcon() bool {
 	if x != nil {
 		return x.TrayIcon
+	}
+	return false
+}
+
+func (x *AppSettings) GetAutostart() bool {
+	if x != nil {
+		return x.Autostart
 	}
 	return false
 }
@@ -1136,12 +1147,13 @@ const file_mirrorme_v1_settings_proto_rawDesc = "" +
 	"\x06viewer\x18\x03 \x01(\v2\x1b.mirrorme.v1.ViewerSettingsR\x06viewer\x12\x1f\n" +
 	"\vstream_name\x18\x04 \x01(\tR\n" +
 	"streamName\x12*\n" +
-	"\x03app\x18\x05 \x01(\v2\x18.mirrorme.v1.AppSettingsR\x03app\"\x94\x02\n" +
+	"\x03app\x18\x05 \x01(\v2\x18.mirrorme.v1.AppSettingsR\x03app\"\xb2\x02\n" +
 	"\vAppSettings\x12,\n" +
 	"\x12send_crash_reports\x18\x01 \x01(\bR\x10sendCrashReports\x12.\n" +
 	"\x13crash_reports_asked\x18\x06 \x01(\bR\x11crashReportsAsked\x123\n" +
 	"\x16check_updates_on_start\x18\x02 \x01(\bR\x13checkUpdatesOnStart\x12\x1b\n" +
-	"\ttray_icon\x18\x04 \x01(\bR\btrayIcon\x122\n" +
+	"\ttray_icon\x18\x04 \x01(\bR\btrayIcon\x12\x1c\n" +
+	"\tautostart\x18\a \x01(\bR\tautostart\x122\n" +
 	"\x15discord_rich_presence\x18\x05 \x01(\bR\x13discordRichPresence\x12!\n" +
 	"\ftest_streams\x18\x03 \x01(\bR\vtestStreams\"\xbe\x03\n" +
 	"\rRelaySettings\x12\x12\n" +

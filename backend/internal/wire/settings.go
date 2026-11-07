@@ -42,6 +42,7 @@ func AppSettings(a settings.App) *mirrormev1.AppSettings {
 		CrashReportsAsked:   a.CrashReportsAsked,
 		CheckUpdatesOnStart: a.CheckUpdatesOnStart,
 		TrayIcon:            a.TrayIcon,
+		Autostart:           a.Autostart,
 		DiscordRichPresence: a.DiscordRichPresence,
 		TestStreams:         a.TestStreams,
 	}
@@ -156,6 +157,7 @@ func ToApp(m *mirrormev1.AppSettings) settings.App {
 		CrashReportsAsked:   m.GetCrashReportsAsked(),
 		CheckUpdatesOnStart: m.GetCheckUpdatesOnStart(),
 		TrayIcon:            m.GetTrayIcon(),
+		Autostart:           m.GetAutostart(),
 		DiscordRichPresence: m.GetDiscordRichPresence(),
 		TestStreams:         m.GetTestStreams(),
 	}

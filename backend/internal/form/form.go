@@ -77,6 +77,10 @@ type Deps struct {
 	// (MIRRORME_TRAY=0, avalonia/README.md, "The tray").
 	// The zero value is a run that draws the icon the setting asks for.
 	TrayOff bool
+	// AutostartOff is whether this run leaves the sign-in entry alone whatever the setting holds
+	// (MIRRORME_AUTOSTART=0, avalonia/README.md, "Starting at sign-in").
+	// The zero value is a run that writes the entry the setting asks for.
+	AutostartOff bool
 	// TestStreamsOff is whether this build runs no synthetic set whatever the setting holds,
 	// as a released build does (internal/app, testStreamsBound).
 	// The zero value is a build that runs the set the toggle asks for.

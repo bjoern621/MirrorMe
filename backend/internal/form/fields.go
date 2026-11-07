@@ -568,6 +568,12 @@ var fieldTable = []field{
 		value:   func(s settings.Settings) *mirrormev1.FieldValue { return flag(s.App.TrayIcon) },
 	},
 	{
+		key:     KeyAutostart,
+		group:   GroupApp,
+		control: mirrormev1.ControlKind_CONTROL_KIND_TOGGLE,
+		value:   func(s settings.Settings) *mirrormev1.FieldValue { return flag(s.App.Autostart) },
+	},
+	{
 		// A share states itself on the Discord client beside this app (docs/discord-mode.md).
 		// What this machine says about itself, so it sits with the app rather than with the relay,
 		// and turning it on turns Discord mode on with it (internal/app, SaveSettings).

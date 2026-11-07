@@ -960,6 +960,24 @@ func TestAFileFromBeforeTheTrayToggleKeepsTheIcon(t *testing.T) {
 	}
 }
 
+// A file written before the autostart toggle does not name it.
+// Load decodes over the defaults, so an install from before the toggle starts at sign-in too.
+func TestAFileFromBeforeTheAutostartToggleStartsAtSignIn(t *testing.T) {
+	isolateConfig(t)
+
+	path := mustSettingsPath(t)
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		t.Fatalf("MkdirAll: %v", err)
+	}
+	if err := os.WriteFile(path, []byte(`{"app":{"trayIcon":false}}`), 0o600); err != nil {
+		t.Fatalf("WriteFile: %v", err)
+	}
+
+	if got := mustLoad(t); !got.App.Autostart {
+		t.Errorf("app settings = %+v, want the autostart a fresh installation holds", got.App)
+	}
+}
+
 // A file written before the constant-volume toggle does not name it.
 // Load decodes over the defaults, so every install plays its streams at one loudness.
 func TestAFileFromBeforeConstantVolumePlaysAtOneLoudness(t *testing.T) {

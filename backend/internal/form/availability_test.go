@@ -36,7 +36,7 @@ var availabilityAllKeys = []string{
 	KeyCongestion,
 	KeyUplinkMbps, KeyOutputResolution,
 	KeyTileWatchTransport, KeyRtspWatchLatencyMs, KeyRenderChain, KeyConstantVolume,
-	KeySendCrashReports, KeyCheckUpdatesOnStart, KeyTrayIcon, KeyTestStreams,
+	KeySendCrashReports, KeyCheckUpdatesOnStart, KeyTrayIcon, KeyAutostart, KeyTestStreams,
 }
 
 // The value spaces the option tests walk, stated here rather than read off an option builder:
@@ -1005,6 +1005,27 @@ func TestTheTrayToggleGreysWhereTheRunHoldsTheIconOut(t *testing.T) {
 			t.Errorf("%s: a run holding the icon out draws the toggle visible=%v enabled=%v", tc.name, st.visible, st.enabled)
 		}
 		if got := st.reason.GetCode(); got != mirrormev1.TextCode_TEXT_CODE_TRAY_ICON_OFF {
+			t.Errorf("%s: the toggle's reason is not the run's own code: %v", tc.name, got)
+		}
+	}
+}
+
+// The sign-in entry is the shell's, and a run leaving it alone leaves the toggle with nothing behind it.
+func TestTheAutostartToggleGreysWhereTheRunLeavesTheEntryAlone(t *testing.T) {
+	for _, tc := range availabilityCases() {
+		live := tc.deps
+		live.AutostartOff = false
+		if st := fieldState(live, tc.s, KeyAutostart, noEntry); !st.visible || !st.enabled {
+			t.Errorf("%s: a run writing the entry draws the toggle visible=%v enabled=%v", tc.name, st.visible, st.enabled)
+		}
+
+		off := tc.deps
+		off.AutostartOff = true
+		st := fieldState(off, tc.s, KeyAutostart, noEntry)
+		if !st.visible || st.enabled {
+			t.Errorf("%s: a run leaving the entry alone draws the toggle visible=%v enabled=%v", tc.name, st.visible, st.enabled)
+		}
+		if got := st.reason.GetCode(); got != mirrormev1.TextCode_TEXT_CODE_AUTOSTART_OFF {
 			t.Errorf("%s: the toggle's reason is not the run's own code: %v", tc.name, got)
 		}
 	}

@@ -281,6 +281,9 @@ public static class Fields
         ["app.tray_icon"] = new(
             "Show an icon in the tray",
             "Puts an icon in the system tray, whose menu starts and stops sharing. Closing the window hides it there. Off ends the app when you close the window."),
+        ["app.autostart"] = new(
+            "Start when you sign in",
+            "Opens MirrorMe when you sign in to this computer. Off leaves starting it to you."),
         ["app.discord_rich_presence"] = new(
             "Show sharing on Discord",
             "Puts what you are sharing on your Discord profile: the voice channel, and how many of the people in it are watching. "

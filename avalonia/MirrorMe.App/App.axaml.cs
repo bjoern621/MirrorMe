@@ -134,9 +134,19 @@ public sealed partial class App : Application
             shell.Tray.OpenRequested += Raise;
             desktop.Exit += (_, _) => tray.Dispose();
 
+            // The sign-in entry follows the setting while the app runs, as the tray icon does.
+            shell.PropertyChanged += (_, change) =>
+            {
+                if (change.PropertyName == nameof(ShellViewModel.Autostart))
+                {
+                    AutostartEntry.Converge(shell.Autostart);
+                }
+            };
+
             // One render pass before the window shows.
             // Apply is idempotent, so a second one changes nothing.
             shell.Apply();
+            AutostartEntry.Converge(shell.Autostart);
 
             // A link the desktop started this window with, which is how a stream of this app is opened from
             // outside it (<c>backend/internal/applink</c>).

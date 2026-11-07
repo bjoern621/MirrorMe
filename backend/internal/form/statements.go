@@ -113,7 +113,8 @@ const (
 	encryptionFollowsTheAddress = mirrormev1.TextCode_TEXT_CODE_ENCRYPTION_FOLLOWS_THE_ADDRESS
 	encryptedRtspInterleavesRtp = mirrormev1.TextCode_TEXT_CODE_ENCRYPTED_RTSP_INTERLEAVES_RTP
 
-	trayIconOff = mirrormev1.TextCode_TEXT_CODE_TRAY_ICON_OFF
+	trayIconOff  = mirrormev1.TextCode_TEXT_CODE_TRAY_ICON_OFF
+	autostartOff = mirrormev1.TextCode_TEXT_CODE_AUTOSTART_OFF
 
 	publishRefused         = mirrormev1.TextCode_TEXT_CODE_PUBLISH_REFUSED
 	noUplinkStated         = mirrormev1.TextCode_TEXT_CODE_NO_UPLINK_STATED

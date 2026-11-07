@@ -68,6 +68,10 @@ message AppSettings {
   // Everything the menu offers is the window's own
   // (avalonia/README.md, "The tray").
   bool tray_icon = 4;
+  // The desktop starts the shell when the user signs in.
+  // The shell writes and removes the entry the desktop reads that from
+  // (avalonia/README.md, "Starting at sign-in").
+  bool autostart = 7;
   // A share states itself on the Discord client running beside this app:
   // what is shared, which voice channel, how many are watching of how many in it
   // (docs/discord-mode.md).

@@ -24,11 +24,12 @@ public static class AppSettingsCopy
     public const string ResetHelp =
         "Puts every setting here back to the value a fresh installation starts with.";
 
-    public const string WindowHeading = "Window";
+    public const string WindowHeading = "Start and close";
 
-    public const string WindowQuestion = "What happens when you close the window?";
+    public const string WindowQuestion = "When does MirrorMe run?";
 
-    public const string WindowLead = "With the tray icon on, sharing goes on after the window closes.";
+    public const string WindowLead =
+        "It can start when you sign in. With the tray icon on, sharing goes on after the window closes.";
 
     public const string LogsHeading = "Logs and reports";
 

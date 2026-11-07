@@ -725,6 +725,12 @@ public static class Statements
                 "The tray icon is off in this environment (MIRRORME_TRAY=0). "
                 + "Clear the variable and restart MirrorMe to use this setting.",
 
+            // Starting at sign-in.
+
+            TextCode.AutostartOff =>
+                "This environment leaves starting at sign-in alone (MIRRORME_AUTOSTART=0). "
+                + "Clear the variable and restart MirrorMe to use this setting.",
+
             // A refusal, or a backend newer than this build.
             // An unknown code is printed so it can be searched for and reported.
             _ => Refusals.Of(text) ?? Failures.Of(text) ?? text.Code.ToString(),

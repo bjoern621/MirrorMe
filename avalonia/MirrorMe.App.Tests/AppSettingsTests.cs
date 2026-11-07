@@ -78,7 +78,7 @@ public sealed class AppSettingsTests
         panel.Settings.OpenCommand.Execute(null);
 
         Assert.Equal(
-            ["Window", "Updates", "Discord", "Logs and reports", "About", "Development"],
+            ["Start and close", "Updates", "Discord", "Logs and reports", "About", "Development"],
             panel.Settings.Tabs.Select(tab => tab.Label));
         Assert.Equal(SettingsSection.Window, panel.Settings.Section);
 

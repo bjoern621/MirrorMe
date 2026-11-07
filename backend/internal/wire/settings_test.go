@@ -84,6 +84,7 @@ func populatedSettings() settings.Settings {
 			CrashReportsAsked:   true,
 			CheckUpdatesOnStart: true,
 			TrayIcon:            true,
+			Autostart:           true,
 			DiscordRichPresence: true,
 			TestStreams:         true,
 		},

@@ -769,6 +769,8 @@ func Defaults() Settings {
 			SendCrashReports:    true,
 			CheckUpdatesOnStart: true,
 			TrayIcon:            true,
+			// On for a stored file written before the setting as well, Load decoding over these.
+			Autostart: true,
 			// A share states itself on the Discord client beside this app,
 			// read only in Discord mode,
 			// so an installation that never turns the mode on states nothing.

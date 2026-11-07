@@ -43,6 +43,9 @@ finish-args:
   # Per-application capture opens one program's output node, which is PipeWire's to answer,
   # and the portal hands its captured stream back over the same socket.
   - --filesystem=xdg-run/pipewire-0:ro
+  # The host's autostart directory, where the app setting writes the entry the session starts it from
+  # (avalonia/README.md, "Starting at sign-in").
+  - --filesystem=xdg-config/autostart:create
   # The plugins this manifest builds, which GStreamer reaches through no path of its own:
   # its built-in one is the runtime's prefix and flatpak clears every GST_ variable off the host.
   # Prepended rather than replacing, so the runtime's own plugins still register.
