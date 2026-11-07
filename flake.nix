@@ -3,12 +3,13 @@
 
   # Both inputs pin a revision.
   # A checkout then builds against the package set that this file names.
-  # A branch ref would move ffmpeg and GStreamer under the tree with no commit recording it.
+  # A branch ref would let `nix flake update` move ffmpeg and GStreamer in a lock bump naming neither.
   # Every codec verdict in backend/internal/capabilities gets measured against those two.
   #
-  # The revision tracks nixos-unstable, since a release channel trails GStreamer by a minor series.
+  # The revision comes from nixos-unstable, since a release channel trails GStreamer by a minor series.
   #
-  # docs/packaging.md ("Version pinning") states how to move the pins and what to re-measure.
+  # An update edits the revision here (`nix flake update` leaves it unchanged).
+  # docs/packaging.md ("Version pinning") states the procedure and what to re-measure.
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/e7fe03cce61eebcf570cd294f70cefe3ad76feed";
     flake-utils.url = "github:numtide/flake-utils/11707dc2f618dd54ca8739b309ec4fc024de578b";
