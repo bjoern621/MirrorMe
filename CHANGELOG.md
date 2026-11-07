@@ -6,6 +6,15 @@ Releases before v0.11.0 carry no notes, and their commits sit in the [history](h
 
 ## Unreleased
 
+### Fixed
+
+- Linking Discord on Windows completes, where it stopped on "a link start names the nonce its landing carries".
+- Lossless NVENC on the GStreamer engine starts on NVIDIA 615.
+  Picking lossless H.264 moves the chroma to 4:4:4, since the driver refuses lossless H.264 in 4:2:0.
+- The GStreamer engine offers its video formats on a launch that finds its plugin cache cold.
+  The Nix package keeps a plugin cache of its own, which other GStreamer programs leave as it was.
+- A GStreamer publish that fails to start names the element that refused and its reason.
+
 ## v0.13.0 (2026-11-07)
 
 ### Added
