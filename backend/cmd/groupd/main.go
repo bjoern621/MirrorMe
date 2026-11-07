@@ -114,7 +114,7 @@ func main() {
 
 	// Loopback by default and no TLS of its own:
 	// the reverse proxy in front encrypts every leg to this, to the relay and to the player page,
-	// and a second terminator behind it would be a second certificate to renew (docs/plan.md).
+	// and a second terminator behind it would be a second certificate to renew.
 	//
 	// Every phase is bounded, not the headers alone.
 	// The routes are small JSON over a local hop,

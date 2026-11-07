@@ -24,7 +24,7 @@ import (
 
 // indexAt serves one ready stream off the group service's index,
 // where a member's app reads what the relay carries:
-// the relay's own API is not a member's to read (docs/plan.md).
+// the relay's own API is not a member's to read (docs/membership.md, "What is reachable from where").
 //
 // It binds the port a relay on this network derives, groupd's own,
 // because a group service is addressed rather than configured (settings.GroupService).

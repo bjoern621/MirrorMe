@@ -14,7 +14,7 @@
 //
 // It lives in this repository rather than one of its own
 // because the path-prefix derivation has to be identical on both sides,
-// and two repositories are two copies of it (docs/plan.md, "Groups, auth and encryption").
+// and two repositories are two copies of it.
 //
 // None of it is end to end.
 // The relay terminates every protocol and re-muxes per listener, so it sees plaintext,

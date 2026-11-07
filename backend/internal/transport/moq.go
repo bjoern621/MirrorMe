@@ -23,8 +23,7 @@ import (
 //
 // Buys the format set, every bitstream this app encodes reaching a page where HLS drops VP8 and
 // WHEP drops HEVC and AV1.
-// A native leg would buy per-subscriber layer dropping beyond that,
-// stated under "Adaptive bitrate" in docs/plan.md.
+// A native leg would buy per-subscriber layer dropping beyond that.
 // Costs a listener no reverse proxy carries, exposed and certificated on its own (moqOrigin,
 // docs/network-architecture.md).
 type MoQ struct{}

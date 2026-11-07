@@ -39,7 +39,7 @@ import (
 // Covers the gap between reading a token and the relay checking it:
 // request, process start, handshake.
 // The relay checks at the handshake and not again,
-// so a token that survives that moment carries the whole connection (docs/plan.md).
+// so a token that survives that moment carries the whole connection (docs/auth-flow.md, "Leaving").
 const Refresh = 45 * time.Second
 
 // Timeout bounds every call but the report upload.

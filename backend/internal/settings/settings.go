@@ -279,7 +279,7 @@ func (r Relay) InGroup() bool {
 // A group is a path prefix, so joining one is every path gaining it:
 // the relay's own per-path permissions do the enforcing,
 // and "which streams may I see" is a string match rather than a query its API cannot answer
-// (docs/plan.md).
+// (docs/auth-flow.md).
 //
 // Two answers, and which one applies is the deployment's rather than a preference:
 //   - a group key, so the group's own prefix

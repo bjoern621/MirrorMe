@@ -89,7 +89,7 @@ func (a *App) forgetRelayToken() {
 
 // groupIndexStatus is what is live, as the group service's index answers it.
 // The relay's own API is not a member's to read:
-// a group token grants publish and read under one prefix and names no API action (docs/plan.md).
+// a group token grants publish and read under one prefix and names no API action (docs/membership.md, "What is reachable from where").
 //
 // The index answers the reader count and the ingest rate, and never the roster,
 // so the snapshot marks its source and a row draws its figures with an empty roster

@@ -22,7 +22,7 @@ The relay is also the only thing that knows which streams exist, which the app's
 The cost is that nothing is end to end.
 The relay decrypts, re-muxes and re-encrypts, so it sees plaintext by construction.
 The group service that signs its tokens can mint one for any group.
-`docs/plan.md` states that trade-off where the group model is described.
+What that costs a group: [auth-flow.md](auth-flow.md), "What a leak costs".
 
 ## The shape
 
@@ -176,7 +176,8 @@ A player page is the exception: it is handed to a browser, which sets no header 
 The token goes in the address as the Basic password under an arbitrary user, `https://jwt:<token>@relay:8892/<path>/`.
 The MoQ page then carries it onto the subscription, that session being QUIC and holding no header to put it in.
 The GStreamer RTSP reader is the other exception, taking it as the session's password instead, because it addresses each track at the SDP's control attribute and loses a query on the way.
-Each transport states its own credential form, and `plan.md` covers the group model in full.
+Each transport states its own credential form.
+The group model: [auth-flow.md](auth-flow.md).
 
 Every named relay carries a group service, and its address follows the relay's: the proxy's own name off a trusted network, `http://<host>:9443` where this network reaches the relay directly (`settings.Relay.GroupService`).
 A machine that has named no relay has nothing to ask, so it holds no token, derives no prefix and builds bare names.

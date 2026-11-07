@@ -71,7 +71,7 @@ A publisher reads the viewers of its own streams from watchd instead ([viewer-re
 ## Closing connections
 
 A token cannot be taken back.
-The relay reads one at the handshake and not again, so a connection outlives its token and a client that is closed opens another with the same one (`docs/plan.md` carries the measurements).
+The relay reads one at the handshake and not again, so a connection outlives its token and a client that is closed opens another with the same one.
 
 Enforcement therefore closes connections.
 A sweep lists every connection under the group's prefix and closes each one whose subject no live member id matches.

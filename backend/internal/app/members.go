@@ -18,7 +18,7 @@ import (
 )
 
 // Membership is a lease this machine holds: stated on every pass of the relay poll,
-// gone when it stops being stated (docs/plan.md).
+// gone when it stops being stated (docs/membership.md).
 //
 // The settings say which group this machine is in: the key names it and the display name is what it
 // is listed under, so the pass that finds both draws the secret and states presence over it.
@@ -83,7 +83,7 @@ func (m membership) failure() *screensharev1.Text {
 	case !m.Joined:
 		// A group key with no identity beside it buys a token as the group itself,
 		// which the relay closes the moment any member states presence.
-		// Joining draws one (docs/plan.md).
+		// Joining draws one (docs/membership.md).
 		return text.Of(screensharev1.TextCode_TEXT_CODE_GROUP_MEMBERSHIP_LAPSED)
 	case m.Refusal.GetCode() == screensharev1.TextCode_TEXT_CODE_GROUP_SERVICE_REFUSED:
 		return m.Refusal
@@ -369,7 +369,7 @@ func groupID(r settings.Relay) (string, bool) {
 // A token minted on it names this machine's member id,
 // the subject the relay's membership check closes a connection against.
 // A group this machine has not joined names no member and trades on the group key alone,
-// as a group being created does (docs/plan.md).
+// as a group being created does (docs/membership.md).
 func (a *App) memberSecret(r settings.Relay) string {
 	id, ok := groupID(r)
 	if !ok {

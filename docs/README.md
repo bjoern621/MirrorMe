@@ -51,7 +51,6 @@ Read the page before guessing, and put a new fact on the page that owns it.
 | [readme-audience.md](readme-audience.md) | who the root `README.md` is written for, and what a sentence in it may assume |
 | [glossary.md](glossary.md) | every abbreviation this repository uses |
 | [releasing.md](releasing.md) | how a release gets its number and notes, and which machines tested it |
-| [plan.md](plan.md) | work that is not built yet, and the decisions behind it |
 
 ## Elsewhere
 

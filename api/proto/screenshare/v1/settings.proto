@@ -186,7 +186,7 @@ message RelaySettings {
   // 3 was the port of the relay's own HTTP API.
   // What is live comes off the group service's index, which a member's token reaches
   // and the API does not, so nothing on this side dials the API and no setting names its port
-  // (docs/plan.md).
+  // (docs/membership.md, "What is reachable from where").
   reserved 3;
   reserved "api_port";
 }

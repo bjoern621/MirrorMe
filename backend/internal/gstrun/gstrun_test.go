@@ -29,7 +29,7 @@ func TestARunPlaysAPipelineToItsEnd(t *testing.T) {
 //
 // The format is pinned so the assertion is about the reporting rather than about what videotestsrc
 // happens to negotiate, and an HDR verdict reads the transfer characteristic off the same line
-// (docs/plan.md, "HDR").
+// (docs/video-stack.md, "Dynamic range").
 func TestARunReportsWhatTheCaptureNegotiated(t *testing.T) {
 	var out bytes.Buffer
 

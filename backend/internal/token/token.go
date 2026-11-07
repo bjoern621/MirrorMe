@@ -11,7 +11,7 @@
 //
 // A token is checked at the handshake and not again, so a live connection survives its own
 // expiring and revocation lands at the next connection.
-// Group rotation is what covers that (docs/plan.md, "Groups, auth and encryption").
+// Closing connections against the presence leases covers that (docs/auth-flow.md, "Leaving").
 //
 // Written against crypto/ecdsa and encoding/json rather than a JWT library:
 // ES256 is a base64 header, a base64 payload and a signature over the two,

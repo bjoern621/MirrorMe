@@ -468,7 +468,7 @@ var fieldTable = []field{
 		// Text and not a list, the key being a secret somebody was handed: the key service draws it,
 		// whatever distributes it hands it over, and no listing enumerates groups,
 		// possession of the key being the whole of membership
-		// (docs/plan.md, "Groups, auth and encryption").
+		// (docs/auth-flow.md).
 		key:     KeyGroupKey,
 		group:   GroupRelay,
 		control: screensharev1.ControlKind_CONTROL_KIND_TEXT,
