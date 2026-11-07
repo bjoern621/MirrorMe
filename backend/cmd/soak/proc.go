@@ -66,13 +66,6 @@ func (d treeDelta) cores() float64 {
 	return d.CPUSec / d.Wall.Seconds()
 }
 
-func (d treeDelta) engineBusy() float64 {
-	if d.Wall <= 0 {
-		return 0
-	}
-	return float64(d.engineTotal()) / float64(d.Wall.Nanoseconds())
-}
-
 func diff(before, after treeSample) treeDelta {
 	d := treeDelta{
 		Wall:       after.At.Sub(before.At),

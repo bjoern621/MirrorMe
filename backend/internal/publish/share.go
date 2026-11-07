@@ -3,8 +3,6 @@ package publish
 import (
 	"bjoernblessin.de/go-utils/util/assert"
 
-	screensharev1 "bjoernblessin.de/screenshare/api/gen/go/screenshare/v1"
-
 	"bjoernblessin.de/screenshare/internal/share"
 )
 
@@ -89,17 +87,4 @@ func ShareServed(capture, kind string) bool {
 // and empty for one that reads what somebody else pointed it at.
 func ShareKinds(capture string) []string {
 	return shareServes[capture]
-}
-
-// ShareRefusal is why a backend does not read what a kind names.
-//
-// Two facts rather than one sentence with the backend's name in it, the two sending a reader
-// to different places.
-// A backend that reads screens and not windows is answered by picking another kind,
-// and one that is pointed at its target by somebody else is answered by going and pointing it.
-func ShareRefusal(capture string) screensharev1.TextCode {
-	if len(shareServes[capture]) == 0 {
-		return screensharev1.TextCode_TEXT_CODE_CAPTURE_ASKS_WHAT_TO_SHARE
-	}
-	return screensharev1.TextCode_TEXT_CODE_CAPTURE_TAKES_NO_SHARE_KIND
 }

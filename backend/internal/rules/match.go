@@ -47,12 +47,6 @@ func AtMost(n int) Match {
 	return Match{high: n, hasHigh: true, numeric: true}
 }
 
-// Between matches the closed band low..high.
-func Between(low, high int) Match {
-	assert.Assert(low <= high, "a band runs from its low end to its high one", low, high)
-	return Match{low: low, high: high, hasLow: true, hasHigh: true, numeric: true}
-}
-
 // everything reports whether the match names nothing, standing for every value.
 func (m Match) everything() bool {
 	return len(m.any) == 0 && !m.hasLow && !m.hasHigh

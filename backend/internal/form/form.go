@@ -444,10 +444,6 @@ func number(v int) *screensharev1.FieldValue {
 	return &screensharev1.FieldValue{Kind: &screensharev1.FieldValue_Number{Number: int64(v)}}
 }
 
-func decimal(v float64) *screensharev1.FieldValue {
-	return &screensharev1.FieldValue{Kind: &screensharev1.FieldValue_Decimal{Decimal: v}}
-}
-
 func flag(v bool) *screensharev1.FieldValue {
 	return &screensharev1.FieldValue{Kind: &screensharev1.FieldValue_Flag{Flag: v}}
 }

@@ -245,10 +245,6 @@ func argWindow(v string) *screensharev1.TextArg {
 	return text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_WINDOW, v)
 }
 
-func argRegion(v string) *screensharev1.TextArg {
-	return text.ID(screensharev1.TextArgName_TEXT_ARG_NAME_REGION, v)
-}
-
 func argMonitor(v int) *screensharev1.TextArg {
 	return text.Num(screensharev1.TextArgName_TEXT_ARG_NAME_MONITOR, int64(v))
 }

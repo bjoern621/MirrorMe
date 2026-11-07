@@ -6,6 +6,7 @@ require (
 	bjoernblessin.de/go-utils v1.0.1
 	bjoernblessin.de/screenshare/api v0.0.0
 	github.com/Microsoft/go-winio v0.6.2
+	github.com/bwmarrin/discordgo v0.29.0
 	github.com/go-gst/go-glib v0.0.2
 	github.com/go-gst/go-gst v0.0.2
 	github.com/godbus/dbus/v5 v5.1.0
@@ -20,7 +21,6 @@ require (
 replace bjoernblessin.de/screenshare/api => ../api
 
 require (
-	github.com/bwmarrin/discordgo v0.29.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	golang.org/x/crypto v0.51.0 // indirect
 	golang.org/x/net v0.55.0 // indirect

@@ -8,7 +8,7 @@ import (
 //
 // A kind in states stands, so Read hands it over as it is now.
 // A kind in readAlone stands and is never announced: nothing tells this process when it moved.
-// A kind in ticked moves at a cadence of its own, so Watch sends it only where named.
+// AUDIO_LEVELS and POINTER move at a cadence of their own, so Watch sends them only where named (splitKinds).
 // Every other kind the broker knows happens rather than stands, and Watch alone carries it.
 
 // states builds every kind Read answers, each as the whole Event Watch carries it in.
@@ -63,9 +63,4 @@ var readAlone = map[screensharev1.EventKind]bool{
 	screensharev1.EventKind_EVENT_KIND_SETTINGS:      true,
 	screensharev1.EventKind_EVENT_KIND_PRESETS:       true,
 	screensharev1.EventKind_EVENT_KIND_SHARE_WINDOWS: true,
-}
-
-var ticked = map[screensharev1.EventKind]bool{
-	screensharev1.EventKind_EVENT_KIND_AUDIO_LEVELS: true,
-	screensharev1.EventKind_EVENT_KIND_POINTER:      true,
 }

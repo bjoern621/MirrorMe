@@ -133,13 +133,6 @@ func Register(rs ...Rule) {
 		"every registered rule reaches the registry", len(registered), before, len(rs))
 }
 
-// Registered is every rule in the registry,
-// for a caller reporting on the rule set rather than evaluating it.
-// The slice is this package's own, so a caller reads it without writing.
-func Registered() []Rule {
-	return registered
-}
-
 func contains[T comparable](xs []T, x T) bool {
 	for _, v := range xs {
 		if v == x {

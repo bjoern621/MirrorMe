@@ -375,18 +375,6 @@ func (a *App) launchLocked(s settings.Settings, attempts int) error {
 	return nil
 }
 
-// publishMonitorLocked is the output the running pipeline crops to,
-// and false where no pipeline runs or the enumeration named none at that index.
-// A publish waiting out its backoff has no pipeline, so it reports false:
-// the rectangle belongs to a child, not to the settings it will be relaunched on.
-// procMu is held by the caller.
-func (a *App) publishMonitorLocked() (display.Monitor, bool) {
-	if a.run == nil || !a.run.handle.Running() {
-		return display.Monitor{}, false
-	}
-	return a.run.monitor, a.run.monitorKnown
-}
-
 func (a *App) isCurrentRun(run *publishRun) bool {
 	a.procMu.Lock()
 	defer a.procMu.Unlock()

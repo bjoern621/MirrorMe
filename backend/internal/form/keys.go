@@ -163,20 +163,6 @@ func keyTemplate(key string) string {
 	return key[:open+1] + key[close:]
 }
 
-// keyIndex is which entry of a list a key names. false where it names no entry.
-func keyIndex(key string) (int, bool) {
-	open := strings.Index(key, keyIndexOpen)
-	close := strings.Index(key, keyIndexClose)
-	if open < 0 || close <= open+1 {
-		return 0, false
-	}
-	i, err := strconv.Atoi(key[open+1 : close])
-	if err != nil || i < 0 {
-		return 0, false
-	}
-	return i, true
-}
-
 // settingsField walks a qualified key into a settings message: the group named before the dot,
 // then the field named after it.
 //

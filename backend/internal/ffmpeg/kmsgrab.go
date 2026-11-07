@@ -63,18 +63,6 @@ func drmMapFor(name string) (DrmMap, error) {
 	return DrmMap{}, text.Fail(screensharev1.TextCode_TEXT_CODE_DRM_MAP_UNKNOWN, text.Value(name))
 }
 
-// drmMapNames lists the strategy names a refusal ends in,
-// so no message can name a set the table does not hold.
-func drmMapNames() []string {
-	out := make([]string, 0, len(DrmMaps))
-	for _, m := range DrmMaps {
-		out = append(out, m.Name)
-	}
-
-	assert.Assert(len(out) == len(DrmMaps), "a name per declared strategy", len(out), len(DrmMaps))
-	return out
-}
-
 // autoDrmMap picks a derive_device off the capture device's kernel driver.
 // Intel and AMD expose the scanout modifier through VAAPI; everything else, NVIDIA
 // and unknown drivers included, goes through Vulkan, the cross-vendor DRM interop path.
