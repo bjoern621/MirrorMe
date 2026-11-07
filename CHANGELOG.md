@@ -6,6 +6,8 @@ Releases before v0.11.0 carry no notes, and their commits sit in the [history](h
 
 ## Unreleased
 
+## v0.13.0 (2026-11-07)
+
 ### Added
 
 - In the publish settings, "When upload falls behind" lets you choose between skipping to the next keyframe (the default) and slowing the encoder.
