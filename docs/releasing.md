@@ -35,20 +35,21 @@ A run stopped by a red build or a lost connection runs again with the version na
 
 `gh` comes with the dev shell and must be logged in (`gh auth login` or `GH_TOKEN`).
 
-## Recording a test run
+## Updating a NixOS machine
 
-A NixOS machine whose system flake takes this repository as an input runs `task nixos:update` first.
+A NixOS machine whose system flake takes this repository as an input runs `task nixos:update` to install a release.
 It moves that input to the newest commit and switches the system to it.
-The checklist then meets the released code, as long as main holds no commit past the tag.
+The installed app then runs the released code, as long as main holds no commit past the tag.
 `NIXOS_FLAKE` names the flake's directory where it sits outside `/etc/nixos`, as in `NIXOS_FLAKE=~/git/nixos-config/hosts/fractal task nixos:update`.
 
-After a release is out, each machine runs `task qa:record`:
+## Recording a test run
+
+After a release is out, each machine runs `task qa:record`, which asks nothing:
 
 1. Exports the newest tag to a temporary directory, so the run tests the release whatever the checkout holds.
 2. Runs the backend suite with the `hardware` tag from that tree.
 3. Reads the machine: OS, CPU, GPUs and their drivers, the media stack and more.
-4. Asks the checklist: the checks that need a person at the running app.
-5. Writes `qa/runs/<version>/<machine>.json`, redraws `qa/README.md` and commits both.
+4. Writes `qa/runs/<version>/<machine>.json`, redraws `qa/README.md` and commits both.
 
 Pushing main publishes the record.
 The notes workflow then redraws the "Tested on" table of that release.
@@ -57,7 +58,6 @@ The notes workflow then redraws the "Tested on" table of that release.
 | --- | --- |
 | `-version v0.12.1` | tests an older release |
 | `-machine desk` | names the machine; else `QA_MACHINE`, else the host name |
-| `-checklist=false` | runs the suite alone, for a headless machine such as a Raspberry Pi |
 
 A second run on the same machine replaces its record.
 A skip in the record names a hardware path that the machine left uncovered, with the test's own reason.
@@ -68,6 +68,6 @@ A skip in the record names a hardware path that the machine left uncovered, with
 | --- | --- |
 | `qa/README.md` | every release, one row per machine |
 | a GitHub release | its entries, its "Tested on" table and the compare link to the release before |
-| a record | each failing test, each skip with its reason, each checklist answer |
+| a record | each failing test and each skip with its reason |
 
 The check workflow fails where `qa/README.md` differs from the records.

@@ -55,18 +55,17 @@ func sample() []Record {
 	}
 	return []Record{
 		{Version: "v0.12.1", Date: "2026-11-06", Machine: nv, Tests: Tests{Passed: 300, Skipped: 20}},
-		{Version: "v0.12.1", Date: "2026-11-06", Machine: amd, Tests: Tests{Passed: 310, Failed: 1, Skipped: 10},
-			Checklist: []Check{{ID: "publish", Result: Pass}, {ID: "audio", Result: Fail, Note: "silent"}, {ID: "update", Result: Skipped}}},
+		{Version: "v0.12.1", Date: "2026-11-06", Machine: amd, Tests: Tests{Passed: 310, Failed: 1, Skipped: 10}},
 		{Version: "v0.13.0", Date: "2026-11-08", Machine: amd, Tests: Tests{Passed: 320}},
 	}
 }
 
 func TestTableRowsOneRecordPerMachine(t *testing.T) {
 	got := Table(sample()[:2], "")
-	want := `| Machine | OS | CPU | GPU | Media stack | Tests | Checklist |
-| --- | --- | --- | --- | --- | --- | --- |
-| desk | NixOS 26.05, kernel 7.3.0, amd64 | AMD Ryzen 7 8845HS | AMD Radeon 780M (amdgpu) | GStreamer 1.28.7, FFmpeg 9.0.2, Mesa Gallium driver 26.1.6 | [310 passed, 1 failed, 10 skipped](runs/v0.12.1/desk.json) | 1 passed, 1 failed, 1 skipped |
-| tower | Windows 11 Pro 10.0.26100, amd64 | Intel Core i7-12700K | NVIDIA GeForce RTX 3070 (32.0.15.6094) | - | [300 passed, 0 failed, 20 skipped](runs/v0.12.1/tower.json) | not run |
+	want := `| Machine | OS | CPU | GPU | Media stack | Tests |
+| --- | --- | --- | --- | --- | --- |
+| desk | NixOS 26.05, kernel 7.3.0, amd64 | AMD Ryzen 7 8845HS | AMD Radeon 780M (amdgpu) | GStreamer 1.28.7, FFmpeg 9.0.2, Mesa Gallium driver 26.1.6 | [310 passed, 1 failed, 10 skipped](runs/v0.12.1/desk.json) |
+| tower | Windows 11 Pro 10.0.26100, amd64 | Intel Core i7-12700K | NVIDIA GeForce RTX 3070 (32.0.15.6094) | - | [300 passed, 0 failed, 20 skipped](runs/v0.12.1/tower.json) |
 `
 	if got != want {
 		t.Errorf("expected:\n%s\ngot:\n%s", want, got)

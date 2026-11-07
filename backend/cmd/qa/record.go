@@ -18,7 +18,7 @@ import (
 // record tests version on this machine and commits the record beside the redrawn page.
 // The suite runs from the tag's own tree, exported to a temporary directory,
 // so the record answers for the release whatever the checkout holds.
-func record(root, version, machine string, withChecklist bool) error {
+func record(root, version, machine string) error {
 	if version == "" {
 		out, err := git(root, "tag", "--list", "v*")
 		if err != nil {
@@ -57,12 +57,6 @@ func record(root, version, machine string, withChecklist bool) error {
 	}
 
 	r := qa.Record{Version: version, Date: time.Now().Format(time.DateOnly), Machine: detect(machine), Tests: tests}
-	if withChecklist {
-		if r.Checklist, err = ask(version, os.Stdin, os.Stderr); err != nil {
-			return err
-		}
-	}
-
 	if err := r.Write(filepath.Join(root, "qa")); err != nil {
 		return err
 	}

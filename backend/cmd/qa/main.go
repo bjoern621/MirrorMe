@@ -1,11 +1,11 @@
 // Command qa records a test run of a release on this machine and redraws qa/README.md from the records
 // (docs/releasing.md).
 //
-//	qa record [-version v] [-machine name] [-checklist=false]
+//	qa record [-version v] [-machine name]
 //	qa matrix [-check]
 //
-// record runs the release's own hardware suite from its tag, reads this machine's hardware,
-// asks the checklist and commits the record with the page.
+// record runs the release's own hardware suite from its tag, reads this machine's hardware
+// and commits the record with the page.
 // matrix redraws the page, or with -check fails where the page differs from the records.
 // Every failure here comes from the checkout or the machine (an Umgebungsfehler) and exits with status 1.
 package main
@@ -36,9 +36,8 @@ func main() {
 	case "record":
 		version := flags.String("version", "", "release tag to test (default: the newest tag)")
 		machine := flags.String("machine", os.Getenv("QA_MACHINE"), "name that this machine's records carry (default: QA_MACHINE, else the host name)")
-		checklist := flags.Bool("checklist", true, "ask the checklist after the suite; false on a headless machine")
 		_ = flags.Parse(os.Args[2:])
-		err = record(root, *version, *machine, *checklist)
+		err = record(root, *version, *machine)
 	case "matrix":
 		check := flags.Bool("check", false, "fail where qa/README.md differs from the records, writing nothing")
 		_ = flags.Parse(os.Args[2:])

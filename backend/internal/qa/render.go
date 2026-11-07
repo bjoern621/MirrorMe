@@ -55,8 +55,8 @@ func Table(records []Record, linkBase string) string {
 	slices.SortFunc(rows, func(a, b Record) int { return strings.Compare(a.Machine.Name, b.Machine.Name) })
 
 	var b strings.Builder
-	b.WriteString("| Machine | OS | CPU | GPU | Media stack | Tests | Checklist |\n")
-	b.WriteString("| --- | --- | --- | --- | --- | --- | --- |\n")
+	b.WriteString("| Machine | OS | CPU | GPU | Media stack | Tests |\n")
+	b.WriteString("| --- | --- | --- | --- | --- | --- |\n")
 	for _, r := range rows {
 		m := r.Machine
 		cells := []string{
@@ -66,7 +66,6 @@ func Table(records []Record, linkBase string) string {
 			gpus(m.GPUs),
 			orDash(join(", ", prefixed("GStreamer ", m.GStreamer), prefixed("FFmpeg ", m.FFmpeg), vaShort(m.VADriver))),
 			fmt.Sprintf("[%d passed, %d failed, %d skipped](%s%s)", r.Tests.Passed, r.Tests.Failed, r.Tests.Skipped, linkBase, r.Path()),
-			checklist(r.Checklist),
 		}
 		b.WriteString("| " + strings.Join(cells, " | ") + " |\n")
 	}
@@ -84,17 +83,6 @@ func gpus(list []GPU) string {
 		}
 	}
 	return orDash(strings.Join(out, "<br>"))
-}
-
-func checklist(checks []Check) string {
-	if checks == nil {
-		return "not run"
-	}
-	counts := map[Result]int{}
-	for _, c := range checks {
-		counts[c.Result]++
-	}
-	return fmt.Sprintf("%d passed, %d failed, %d skipped", counts[Pass], counts[Fail], counts[Skipped])
 }
 
 // vaShort cuts the adapter off a VA vendor string, the GPU column naming it already:

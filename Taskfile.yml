@@ -256,11 +256,10 @@ tasks:
       - tools/nixos-update.sh
 
   qa:record:
-    desc: Test the newest release on this machine and commit the record (-- -version, -machine, -checklist=false)
+    desc: Test the newest release on this machine and commit the record (-- -version, -machine)
     # The suite cgo-links GStreamer, so Windows names MSYS2's compiler, pkg-config and lld
     # for the reasons backend:build:windows states.
     dir: backend
-    interactive: true
     cmds:
       - cmd: go run ./cmd/qa record {{.CLI_ARGS}}
         platforms: [linux, darwin]

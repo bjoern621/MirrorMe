@@ -362,31 +362,5 @@
         "reason": "this GStreamer registers no vah264enc"
       }
     ]
-  },
-  "checklist": [
-    {
-      "id": "publish",
-      "result": "pass"
-    },
-    {
-      "id": "encoder",
-      "result": "skip"
-    },
-    {
-      "id": "watch",
-      "result": "skip"
-    },
-    {
-      "id": "audio",
-      "result": "skip"
-    },
-    {
-      "id": "restart",
-      "result": "skip"
-    },
-    {
-      "id": "update",
-      "result": "skip"
-    }
-  ]
+  }
 }

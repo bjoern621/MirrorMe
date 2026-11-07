@@ -16,13 +16,12 @@ import (
 	"bjoernblessin.de/go-utils/util/assert"
 )
 
-// Record holds one run of the hardware suite and the checklist on one machine against one release.
+// Record holds one run of the hardware suite on one machine against one release.
 type Record struct {
-	Version   string  `json:"version"` // The release tag that the run tested: "v0.12.1".
-	Date      string  `json:"date"`    // YYYY-MM-DD of the run.
-	Machine   Machine `json:"machine"`
-	Tests     Tests   `json:"tests"`
-	Checklist []Check `json:"checklist"` // nil where the run left the checklist out.
+	Version string  `json:"version"` // The release tag that the run tested: "v0.12.1".
+	Date    string  `json:"date"`    // YYYY-MM-DD of the run.
+	Machine Machine `json:"machine"`
+	Tests   Tests   `json:"tests"`
 }
 
 // Machine describes the hardware and the media stack that the run found.
@@ -59,22 +58,6 @@ type Tests struct {
 type Skip struct {
 	Test   string `json:"test"`
 	Reason string `json:"reason"`
-}
-
-// Result holds a pass, a fail or a skip.
-type Result string
-
-const (
-	Pass    Result = "pass"
-	Fail    Result = "fail"
-	Skipped Result = "skip"
-)
-
-// Check pairs a checklist item's ID with its Result and an optional note.
-type Check struct {
-	ID     string `json:"id"`
-	Result Result `json:"result"`
-	Note   string `json:"note,omitempty"`
 }
 
 var notSlug = regexp.MustCompile(`[^a-z0-9]+`)
