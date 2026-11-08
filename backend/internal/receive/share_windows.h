@@ -29,6 +29,9 @@
  * is dropped instead of blocking the decode thread for the rest of the run. */
 #define MIRRORME_ACQUIRE_TIMEOUT_MS 1000
 
+/* How long the producer sleeps between two tries at a slot the consumer still holds. */
+#define MIRRORME_ACQUIRE_POLL_MS 1
+
 /* The keyed-mutex protocol. Each side acquires with its own key and releases with the
  * other's, so a slot alternates between the two and neither can write while the other
  * reads. Zero is the key a freshly created keyed mutex is unlocked with, which is what

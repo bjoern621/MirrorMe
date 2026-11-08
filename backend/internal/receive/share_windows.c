@@ -168,6 +168,23 @@ int mirrorme_share_open(void *sample, int slots, mirrorme_share_pool *pool,
   return 1;
 }
 
+/* acquire_within takes a slot's keyed mutex, trying without a wait inside the driver.
+ *
+ * NVIDIA driver 610.88 has parked a timed AcquireSync for minutes past its timeout,
+ * which stops the decode thread and everything waiting on it. */
+static HRESULT acquire_within(IDXGIKeyedMutex *mutex, UINT64 key, DWORD within_ms) {
+  ULONGLONG deadline = GetTickCount64() + within_ms;
+  HRESULT hr;
+
+  for (;;) {
+    hr = IDXGIKeyedMutex_AcquireSync(mutex, key, 0);
+    if (hr != (HRESULT)WAIT_TIMEOUT || GetTickCount64() >= deadline) {
+      return hr;
+    }
+    Sleep(MIRRORME_ACQUIRE_POLL_MS);
+  }
+}
+
 int mirrorme_share_blit(mirrorme_share_pool *pool, int slot, void *sample,
                            char *err, int err_len) {
   GstD3D11Memory *memory;
@@ -200,8 +217,7 @@ int mirrorme_share_blit(mirrorme_share_pool *pool, int slot, void *sample,
   /* Acquired outside the device lock. The wait is bounded, and holding GStreamer's
    * device while waiting on a consumer would stall every element on that device
    * behind a window that is busy. */
-  hr = IDXGIKeyedMutex_AcquireSync(mutex, MIRRORME_PRODUCER_KEY,
-                                   MIRRORME_ACQUIRE_TIMEOUT_MS);
+  hr = acquire_within(mutex, MIRRORME_PRODUCER_KEY, MIRRORME_ACQUIRE_TIMEOUT_MS);
   if (hr != S_OK) {
     gst_buffer_unmap(buffer, &info);
     return fail(err, err_len, "slot %d was not handed back within %d ms: 0x%08lx", slot,
