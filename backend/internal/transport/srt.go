@@ -44,6 +44,9 @@ const srtPaceFloorBytesPerSec = 4_000_000
 // spend the same budget and a ceiling under the stream's own rate would starve it.
 const srtPaceHeadroomPercent = 125
 
+// srtRelativeOverheadPercent is how far above its measured input rate libsrt sends a publish without a ceiling.
+const srtRelativeOverheadPercent = 25
+
 // srtBytesPerSecPerMbps converts the Mbps of a rate setting to libsrt's bytes per second.
 const srtBytesPerSecPerMbps = 125_000
 
@@ -62,11 +65,17 @@ func srtMaxBandwidth(p settings.Publish) int64 {
 	return max(srtPaceFloorBytesPerSec, int64(peakM)*srtBytesPerSecPerMbps*srtPaceHeadroomPercent/100)
 }
 
-// srtPaceQuery writes the ceiling as one query parameter after sep, and nothing where none applies.
+// srtPaceQuery writes the pace as query parameters after sep.
+//
+// A publish without a ceiling takes libsrt's relative mode, where maxbw=0 paces at the input rate
+// that libsrt measures plus the overhead.
+// It caps no stream, and it still spreads a keyframe.
+// On loopback through MediaMTX 1.20.0 it carried 2 MB keyframes at a 120 ms window and lost part
+// of the 3 MB ones.
 func srtPaceQuery(p settings.Publish, sep string) string {
 	ceiling := srtMaxBandwidth(p)
 	if ceiling == 0 {
-		return ""
+		return fmt.Sprintf("%smaxbw=0&oheadbw=%d", sep, srtRelativeOverheadPercent)
 	}
 	return fmt.Sprintf("%smaxbw=%d", sep, ceiling)
 }

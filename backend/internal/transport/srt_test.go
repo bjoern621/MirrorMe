@@ -80,19 +80,14 @@ func TestSRTPublishIsPacedAboveItsPeak(t *testing.T) {
 	}{
 		{"a modest cbr stream takes the floor", settings.Publish{Mode: "cbr", BitrateM: 8}, "maxbw=4000000"},
 		{"a fast vbr stream clears its maxrate", settings.Publish{Mode: "vbr", BitrateM: 35, MaxrateM: 80}, "maxbw=12500000"},
-		{"crf states no rate", settings.Publish{Mode: "crf", BitrateM: 8}, ""},
+		{"crf follows its measured rate", settings.Publish{Mode: "crf", BitrateM: 8}, "maxbw=0&oheadbw=25"},
+		{"lossless follows its measured rate", settings.Publish{Mode: "lossless"}, "maxbw=0&oheadbw=25"},
 	} {
 		s := testStream()
 		s.Publish.Mode, s.Publish.BitrateM, s.Publish.MaxrateM = c.p.Mode, c.p.BitrateM, c.p.MaxrateM
 
 		publish := SRT{}.PublishArgs(s)[2]
 		sink := strings.Join(SRT{}.GstSink(s), " ")
-		if c.maxbw == "" {
-			if strings.Contains(publish+sink, "maxbw") {
-				t.Errorf("%s: paced anyway: %q, %q", c.what, publish, sink)
-			}
-			continue
-		}
 		if !strings.Contains(publish, "&"+c.maxbw) {
 			t.Errorf("%s: publish URL %q misses %q", c.what, publish, c.maxbw)
 		}
