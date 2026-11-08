@@ -83,6 +83,12 @@ func export(root, tag, dir string) error {
 		_ = cmd.Wait()
 		return fmt.Errorf("exporting %s: %w", tag, err)
 	}
+	// The tar reader stops at the end marker, and git blocks on a full pipe until its padding gets read.
+	if _, err := io.Copy(io.Discard, out); err != nil {
+		_ = cmd.Process.Kill()
+		_ = cmd.Wait()
+		return fmt.Errorf("exporting %s: %w", tag, err)
+	}
 	if err := cmd.Wait(); err != nil {
 		return fmt.Errorf("git archive %s: %w", tag, err)
 	}
