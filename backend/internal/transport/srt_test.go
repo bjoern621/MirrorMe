@@ -70,6 +70,38 @@ func TestSRTPublishArgs(t *testing.T) {
 	}
 }
 
+// A keyframe sent at link speed overflows the relay's reader, and a viewer never gets a picture.
+// The ceiling has to stay above the stream, which a rate setting states and crf does not.
+func TestSRTPublishIsPacedAboveItsPeak(t *testing.T) {
+	for _, c := range []struct {
+		what  string
+		p     settings.Publish
+		maxbw string
+	}{
+		{"a modest cbr stream takes the floor", settings.Publish{Mode: "cbr", BitrateM: 8}, "maxbw=4000000"},
+		{"a fast vbr stream clears its maxrate", settings.Publish{Mode: "vbr", BitrateM: 35, MaxrateM: 80}, "maxbw=12500000"},
+		{"crf states no rate", settings.Publish{Mode: "crf", BitrateM: 8}, ""},
+	} {
+		s := testStream()
+		s.Publish.Mode, s.Publish.BitrateM, s.Publish.MaxrateM = c.p.Mode, c.p.BitrateM, c.p.MaxrateM
+
+		publish := SRT{}.PublishArgs(s)[2]
+		sink := strings.Join(SRT{}.GstSink(s), " ")
+		if c.maxbw == "" {
+			if strings.Contains(publish+sink, "maxbw") {
+				t.Errorf("%s: paced anyway: %q, %q", c.what, publish, sink)
+			}
+			continue
+		}
+		if !strings.Contains(publish, "&"+c.maxbw) {
+			t.Errorf("%s: publish URL %q misses %q", c.what, publish, c.maxbw)
+		}
+		if !strings.Contains(sink, "?"+c.maxbw+" ") {
+			t.Errorf("%s: sink %q misses %q", c.what, sink, c.maxbw)
+		}
+	}
+}
+
 func TestSRTGstSource(t *testing.T) {
 	src := SRT{}.GstSource(testStream(), "bob")
 

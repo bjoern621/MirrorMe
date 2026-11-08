@@ -31,6 +31,46 @@ func init() {
 // srtBufBytes sizes the SRT window and the socket buffers, 150 MB.
 const srtBufBytes = 150_000_000
 
+// srtPaceFloorBytesPerSec is the lowest send ceiling a publish gets, in libsrt's maxbw unit.
+//
+// Unpaced, libsrt sends a keyframe as fast as the link takes it.
+// The relay's SRT reader queues 1024 packets and drops the rest without a word, so a fast uplink
+// loses every large keyframe and a viewer waits for one that never arrives.
+// On loopback through MediaMTX 1.20.0, 1.5 MB keyframes crossed at 2, 4 and 8 MB/s and all vanished
+// at 12.5 MB/s.
+const srtPaceFloorBytesPerSec = 4_000_000
+
+// srtPaceHeadroomPercent keeps the ceiling above the encoder's peak rate, since retransmissions
+// spend the same budget and a ceiling under the stream's own rate would starve it.
+const srtPaceHeadroomPercent = 125
+
+// srtBytesPerSecPerMbps converts the Mbps of a rate setting to libsrt's bytes per second.
+const srtBytesPerSecPerMbps = 125_000
+
+// srtMaxBandwidth is the send ceiling of a publish in bytes per second, and 0 where none applies.
+// crf and lossless state no rate, and a ceiling guessed for them could sit under the stream.
+func srtMaxBandwidth(p settings.Publish) int64 {
+	var peakM int
+	switch p.Mode {
+	case capabilities.ModeCbr, capabilities.ModeAbr:
+		peakM = p.BitrateM
+	case capabilities.ModeVbr:
+		peakM = max(p.BitrateM, p.MaxrateM)
+	default:
+		return 0
+	}
+	return max(srtPaceFloorBytesPerSec, int64(peakM)*srtBytesPerSecPerMbps*srtPaceHeadroomPercent/100)
+}
+
+// srtPaceQuery writes the ceiling as one query parameter after sep, and nothing where none applies.
+func srtPaceQuery(p settings.Publish, sep string) string {
+	ceiling := srtMaxBandwidth(p)
+	if ceiling == 0 {
+		return ""
+	}
+	return fmt.Sprintf("%smaxbw=%d", sep, ceiling)
+}
+
 // srtTSPackets counts the 188-byte MPEG-TS packets in one SRT datagram.
 // Six make 1208 bytes behind SRT, UDP and IPv6 headers, which crosses a 1280-byte link whole:
 // the IPv6 minimum, and the MTU of the relay's pod network.
@@ -78,7 +118,7 @@ func (SRT) PublishArgs(s settings.Settings) []string {
 	url := SRT{}.ListenerURL(s) + fmt.Sprintf(
 		"?streamid=%s&pkt_size=%d&latency=%d&sndbuf=%d&ffs=%d",
 		srtStreamID(s, "publish", s.PublishPath()), srtTSPackets*188,
-		s.Publish.SrtPublishLatencyMs*1000, srtBufBytes, srtBufBytes) + srtPassphraseQuery(s)
+		s.Publish.SrtPublishLatencyMs*1000, srtBufBytes, srtBufBytes) + srtPaceQuery(s.Publish, "&") + srtPassphraseQuery(s)
 
 	return []string{"-f", "mpegts", url}
 }
@@ -91,7 +131,7 @@ func (SRT) GstSink(s settings.Settings) []string {
 	return append([]string{
 		"mpegtsmux", "name=" + GstMuxName, fmt.Sprintf("alignment=%d", srtTSPackets),
 		"!", "srtsink",
-		"uri=" + SRT{}.ListenerURL(s),
+		"uri=" + SRT{}.ListenerURL(s) + srtPaceQuery(s.Publish, "?"),
 		"mode=caller",
 		"streamid=" + srtStreamID(s, "publish", s.PublishPath()),
 		fmt.Sprintf("latency=%d", s.Publish.SrtPublishLatencyMs),
