@@ -4,6 +4,12 @@ Each release's test runs, one row per machine.
 `task qa:record` writes a run's record under `runs/` and redraws this page ([releasing](../docs/releasing.md)).
 A test count links its record, which names every failure and every skip with its reason.
 
+## v0.15.0
+
+| Machine | OS | CPU | GPU | Media stack | Tests |
+| --- | --- | --- | --- | --- | --- |
+| fractal-windows | Microsoft Windows 11 Pro 10.0.26200, amd64 | AMD Ryzen 7 7800X3D 8-Core Processor | NVIDIA GeForce RTX 5080 (32.0.16.1088)<br>AMD Radeon(TM) Graphics (32.0.21042.62) | GStreamer 1.28.8, FFmpeg 9.0.2-full_build-www.gyan.dev | [1948 passed, 0 failed, 51 skipped](runs/v0.15.0/fractal-windows.json) |
+
 ## v0.13.1
 
 | Machine | OS | CPU | GPU | Media stack | Tests |
