@@ -14,7 +14,7 @@ Releases before v0.11.0 carry no notes, and their commits sit in the [history](h
 - The viewer tab outside a group or a voice channel leaves out "The relay could not be reached", which stood over the line naming the next step while the relay was fine.
 - The status band leaves "Checking for updates" once the check at start has ended, where it could stay on that line until MirrorMe was restarted.
 - An update of the Windows zip or the Linux tarball removes the previous version's folder from beside the install, where it could stay and take up disk until the next update.
-- A change that lands while MirrorMe connects to its backend shows at once, where the window could keep the older codecs, group or stream state until that state changed again.
+- A change that lands while MirrorMe connects to its backend shows at once, where the window could keep the older codecs, settings, group or stream state until that state changed again.
 - A stream whose process crashes on Windows ends within seconds and gets retried, where MirrorMe went on saying it was sharing until you pressed stop.
 
 ## v0.15.0 (2026-11-08)

@@ -62,6 +62,29 @@ public sealed class SettingsMovedTests
     }
 
     /// <summary>
+    /// A write between the opening read and the stream opening gets announced to nobody, so the opening counts as an announcement.
+    /// </summary>
+    [Fact]
+    public async Task AWriteBeforeTheStreamOpensLandsInADraftNobodyIsEditing()
+    {
+        var backend = new SeededBackend("linux");
+        backend.Announcements.Add(new Event { UpdateState = new UpdateState() });
+        var session = new Session(backend, Inline);
+        var form = new FormSession(backend, session, Inline);
+        await form.Settled;
+        backend.Stored = Moved(form.Draft!, "moved.example");
+
+        await AnnounceAsync(new Window(form, session, backend));
+
+        for (var waited = 0; waited < 500 && form.Draft!.Relay.Host != "moved.example"; waited++)
+        {
+            await Task.Delay(10);
+        }
+
+        Assert.Equal("moved.example", form.Draft!.Relay.Host);
+    }
+
+    /// <summary>
     /// A staged edit is uncommitted work, so no announcement takes it off the screen.
     /// The backend's own copy still moves under it, which is the difference the two of them exist to hold
     /// (<c>docs/settings-editing.md</c>, "Staged and applied").

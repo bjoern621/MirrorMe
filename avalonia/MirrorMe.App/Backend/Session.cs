@@ -467,9 +467,18 @@ public sealed class Session
     /// </summary>
     private async Task FollowAsync(CancellationToken cancellation)
     {
+        var listening = false;
         await foreach (var change in _backend.SubscribeAsync(cancellation).ConfigureAwait(false))
         {
             Write(() => Take(change));
+
+            // The first event proves that the stream listens.
+            // A settings write before it reached no announcement, and the settings carry no state of their own to open on.
+            if (!listening)
+            {
+                listening = true;
+                Write(() => SettingsMoved?.Invoke());
+            }
         }
     }
 
