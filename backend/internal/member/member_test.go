@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"strings"
 	"testing"
@@ -112,6 +113,9 @@ func TestADrawnSecretIsWholeAndOneGroupsOwn(t *testing.T) {
 // and so is the directory holding one file per group:
 // which groups this machine is in is nobody else's reading either.
 func TestAnIdentityIsTheOwnersAlone(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("Go reports no POSIX mode bits on Windows, where the ACL of %AppData% keeps other users out")
+	}
 	isolateConfig(t)
 
 	if _, err := Draw(aGroup); err != nil {
