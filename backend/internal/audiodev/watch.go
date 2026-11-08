@@ -2,6 +2,7 @@ package audiodev
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"os/exec"
 	"time"
@@ -23,9 +24,8 @@ const pwDumpExe = "pw-dump"
 // and drop the ANSI colouring written for a terminal, which no parser reads.
 var pwDumpArgs = []string{"--monitor", "--no-colors"}
 
-// retryWait is how long a watcher waits before running the tool again.
-// A daemon that restarted takes a moment to answer, and a machine that has none
-// would otherwise spawn a process in a loop.
+// retryWait spaces the runs of a tool that exited,
+// since a daemon that restarted takes a moment to answer.
 const retryWait = 5 * time.Second
 
 // The media class a node carries, which is what sorts it into a kind.
@@ -64,12 +64,17 @@ type node struct {
 //
 // Every failure is an Umgebungsfehler: a machine with no daemon and no tool enumerates nothing,
 // every kind keeps its own default, and the first read is released either way.
+// A missing tool ends the watch after one warning, since Windows carries no PipeWire to wait for.
 func watch() {
 	for {
-		if err := stream(); err != nil {
+		err := stream()
+		if err != nil {
 			logger.Warnf("audio device watch: %v", err)
 		}
 		markSeeded()
+		if errors.Is(err, exec.ErrNotFound) {
+			return
+		}
 		time.Sleep(retryWait)
 	}
 }
