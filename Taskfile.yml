@@ -263,7 +263,15 @@ tasks:
     env:
       CGO_ENABLED: "1"
     cmds:
-      - go test -tags hardware ./...
+      - cmd: go test -tags hardware ./...
+        platforms: [linux, darwin]
+      # The toolchain, the linker and the PATH edit that `task backend` states its reasons for.
+      - cmd: >-
+          PATH="{{regexReplaceAll "[^;]*[gG]it[\\\\/]+mingw64[\\\\/]+bin;?" (env "PATH") ""}};{{.MSYS2_MINGW}}/bin"
+          CC='{{.MSYS2_MINGW}}/bin/gcc.exe' PKG_CONFIG='{{.MSYS2_MINGW}}/bin/pkg-config.exe'
+          GOFLAGS='-ldflags=-extldflags=-fuse-ld=lld'
+          go test -tags hardware ./...
+        platforms: [windows]
 
   nixos:update:
     desc: Update the NixOS system flake's MirrorMe input and switch to it (NIXOS_FLAKE=<dir>, else /etc/nixos)
