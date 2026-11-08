@@ -58,6 +58,8 @@ internal sealed class DeferredBackend : IBackend
     private readonly List<TaskCompletionSource> _heldSaves = [];
     private TaskCompletionSource _saveAsked = new();
 
+    public SeededBackend Seed => _seed;
+
     /// <summary>
     /// Stands in for the encoder probe landing, what the real backend raises this for.
     /// Raised by hand, so a test can state that news of a moved answer makes the flow read again

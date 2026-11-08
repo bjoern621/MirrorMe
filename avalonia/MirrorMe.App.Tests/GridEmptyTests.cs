@@ -19,6 +19,14 @@ public sealed class GridEmptyTests
         DiscordState? discord = null, bool discordMode = false)
         => GridEmpty.For(members, discord, discordMode, shown, relayReady);
 
+    [Fact]
+    public void OutsideAGroupTheRelayNoticeStaysQuiet()
+    {
+        Assert.False(GridEmpty.RelayNoticeApplies(Group(joined: false)));
+        Assert.True(GridEmpty.RelayNoticeApplies(Group(joined: true)));
+        Assert.True(GridEmpty.RelayNoticeApplies(null));
+    }
+
     /// <summary>Outside a group the join card asks the way in, and the line leaves the asking to it.</summary>
     [Fact]
     public void OutsideTheGroupAsksToJoin()

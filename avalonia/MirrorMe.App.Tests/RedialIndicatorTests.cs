@@ -1,3 +1,4 @@
+using MirrorMe.Api.V1;
 using MirrorMe.App.Backend;
 using Xunit;
 
@@ -93,6 +94,7 @@ public sealed class RedialIndicatorTests
     public void ANoticeAboutTheRelayIsNotDialling()
     {
         var backend = new DeferredBackend();
+        backend.Seed.Members = new MembersState { Joined = true };
         var session = new Session(backend, action => action());
         var viewer = Flows.Viewer(backend, session);
 

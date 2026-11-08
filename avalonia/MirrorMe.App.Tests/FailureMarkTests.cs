@@ -44,6 +44,7 @@ public sealed class FailureMarkTests
     public void TheNoticeAboutTheRelayIsNot()
     {
         var backend = new DeferredBackend();
+        backend.Seed.Members = new MembersState { Joined = true };
         var session = new Session(backend, Inline);
         var viewer = Flows.Viewer(backend, session);
 

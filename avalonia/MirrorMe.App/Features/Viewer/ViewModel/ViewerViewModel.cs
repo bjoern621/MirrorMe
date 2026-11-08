@@ -562,7 +562,7 @@ public sealed class ViewerViewModel : Observable
         // so it answers before the relay's own states and is the one notice the dialling belongs under.
         var absent = relay is null && _session.Unavailable.Length > 0;
 
-        Notice = absent ? _session.Unavailable : NoticeFor(relay);
+        Notice = absent ? _session.Unavailable : NoticeFor(relay, _session.Members);
         HasNotice = Notice.Length > 0;
         NoticeCentred = HasNotice && Strip.Count == 0;
         NoticeBelow = HasNotice && Strip.Count > 0;
@@ -697,14 +697,14 @@ public sealed class ViewerViewModel : Observable
     /// An unreachable relay says why, with the relay's own words under it.
     /// Empty for a relay that answered: an idle group is the empty stage's line (<see cref="GridEmpty"/>).
     /// </summary>
-    private static string NoticeFor(RelayStatus? relay)
+    private static string NoticeFor(RelayStatus? relay, MembersState? members)
     {
         if (relay is null)
         {
             return "Reading what the relay is carrying.";
         }
 
-        if (!relay.Reachable)
+        if (!relay.Reachable && GridEmpty.RelayNoticeApplies(members))
         {
             var why = Failures.Of(relay.Failure, relay.Error);
             return why.Length > 0 ? why : "The relay could not be reached.";

@@ -19,6 +19,12 @@ public static class GridEmpty
     public static bool AsksToJoin(MembersState? members, DiscordState? discord, bool discordMode, int shown)
         => shown == 0 && members is { Joined: false } && !(discordMode && discord is { Linked: true });
 
+    /// <summary>
+    /// Whether a failed relay reading says anything about the relay.
+    /// A machine outside a group has no list to read, so its reading fails with the relay up.
+    /// </summary>
+    public static bool RelayNoticeApplies(MembersState? members) => members is not { Joined: false };
+
     /// <param name="shown">Items in the strip: tiles, stopped streams, members sharing nothing.</param>
     public static string For(
         MembersState? members, DiscordState? discord, bool discordMode, int shown, bool relayReady)
