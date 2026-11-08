@@ -140,9 +140,12 @@ func supervise(cfg superviseConfig) (Handle, error) {
 
 	// Both readers drain before the wait, so the tail and the log hold everything the child wrote
 	// by the time onExit carries them.
+	waited := make(chan struct{})
+	go proc.killOnStalledExit(waited, cfg.tag)
 	go func() {
 		readers.Wait()
 		waitErr := cmd.Wait()
+		close(waited)
 		proc.running.Store(false)
 		logFile.Close()
 		if cfg.onCleanup != nil {
