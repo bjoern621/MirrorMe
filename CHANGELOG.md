@@ -6,6 +6,8 @@ Releases before v0.11.0 carry no notes, and their commits sit in the [history](h
 
 ## Unreleased
 
+## v0.15.0 (2026-11-08)
+
 ### Changed
 
 - Screenshots and screen recordings on Windows show MirrorMe's windows, where they used to leave them out.
