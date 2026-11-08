@@ -521,6 +521,12 @@ func runGst(t *testing.T, args []string) (string, error) {
 	t.Helper()
 	ctx, cancel := context.WithTimeout(context.Background(), encodeTimeout)
 	defer cancel()
+	// Forward slashes, since the launch parser reads a backslash as an escape.
+	for i, arg := range args {
+		if strings.HasPrefix(arg, "location=") {
+			args[i] = filepath.ToSlash(arg)
+		}
+	}
 	out, err := exec.CommandContext(ctx, GstExe, args...).CombinedOutput()
 	if errors.Is(ctx.Err(), context.DeadlineExceeded) {
 		return string(out), errors.New("the pipeline stalled: no end of stream")

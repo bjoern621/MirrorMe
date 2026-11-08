@@ -1,4 +1,4 @@
-//go:build hardware
+//go:build hardware && linux
 
 // The GPU chain tests, which need a DRM card node under /dev/dri to answer at all.
 // `task backend:test` sets the tag, and CI leaves it off (.github/workflows/check.yml).

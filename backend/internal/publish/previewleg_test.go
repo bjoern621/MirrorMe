@@ -78,6 +78,8 @@ func previewSender(ctx context.Context, t *testing.T, format, trunk string, port
 func previewReceiver(ctx context.Context, t *testing.T, port int, out string) *exec.Cmd {
 	t.Helper()
 
+	// Forward slashes, since the launch parser reads a backslash as an escape.
+	out = filepath.ToSlash(out)
 	line := PreviewSource(port) + fmt.Sprintf(
 		" ! decodebin3 ! videoconvert ! video/x-raw,format=I420,width=%d,height=%d ! filesink location=%s",
 		previewTestWidth, previewTestHeight, out)
