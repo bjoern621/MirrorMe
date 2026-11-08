@@ -14,6 +14,7 @@ Releases before v0.11.0 carry no notes, and their commits sit in the [history](h
 ### Fixed
 
 - On Windows the tray icon's right-click menu is the system's own menu, light or dark as Windows is set, where it was drawn in MirrorMe's dark style.
+- Stopping a stream comes back within seconds when the graphics driver stops responding, where MirrorMe stayed frozen until it was restarted.
 
 ## v0.14.1 (2026-11-07)
 

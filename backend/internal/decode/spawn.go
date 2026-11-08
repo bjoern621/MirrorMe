@@ -34,8 +34,12 @@ const dialInterval = 20 * time.Millisecond
 // The goroutine that spawned it owns the Wait, so a shutdown watches for the exit through
 // the channel rather than reaping it a second time.
 type process struct {
-	cmd    *exec.Cmd
-	exited chan struct{}
+	cmd     *exec.Cmd
+	exited  chan struct{}
+	dir     string
+	logPath string
+	// dropped says hostGone took this host's state away. Client.mu guards it.
+	dropped bool
 }
 
 // socketRoot is where the control socket is created.
@@ -123,14 +127,14 @@ func (c *Client) spawn() error {
 	// A host outliving the backend holds the GPU and the frame sockets with nothing driving it.
 	ffmpeg.KillOnAppExit(cmd)
 
-	proc := &process{cmd: cmd, exited: make(chan struct{})}
+	proc := &process{cmd: cmd, exited: make(chan struct{}), dir: dir, logPath: logPath}
 	go func() {
 		defer close(proc.exited)
 		// The copy drains before the wait, so the log holds everything the host said.
 		io.Copy(logFile, stderr)
 		cmd.Wait()
 		logFile.Close()
-		c.hostExited(dir, logPath)
+		c.hostExited(proc)
 	}()
 
 	c.mu.Lock()

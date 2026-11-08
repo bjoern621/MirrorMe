@@ -79,6 +79,8 @@ type fakeDecoder struct {
 	toneMap bool
 	// onEnd is the host's own callback, which a test calls to stop the pipeline from inside.
 	onEnd func(string)
+	// stallStop holds Stop until it closes, as a pipeline wedged in a driver call does.
+	stallStop chan struct{}
 
 	mu      sync.Mutex
 	stats   receive.Stats
@@ -142,6 +144,9 @@ func (d *fakeDecoder) Subscribe() Subscription {
 }
 
 func (d *fakeDecoder) Stop() bool {
+	if d.stallStop != nil {
+		<-d.stallStop
+	}
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	d.stopped = true

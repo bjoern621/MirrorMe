@@ -2,6 +2,7 @@ package decode
 
 import (
 	"sync"
+	"time"
 
 	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 	"bjoernblessin.de/mirrorme/internal/text"
@@ -26,6 +27,13 @@ var errNoHost = text.Fail(mirrormev1.TextCode_TEXT_CODE_DECODE_HOST_DOWN)
 // errShutDown is every call after Close, which the process exiting is the ordinary cause of.
 var errShutDown = text.Fail(mirrormev1.TextCode_TEXT_CODE_DECODE_HOST_DOWN)
 
+// callTimeout bounds one control call.
+//
+// It sits above what the host spends on a stop (the receive package's stop attempts) and below the
+// shell's deadline on the gRPC call behind it.
+// A host that stopped answering then costs its decodes, and the shell still hears the answer.
+const callTimeout = 10 * time.Second
+
 // Client runs the decode host and addresses the decodes on it.
 //
 // The child is brought up on the first open and replaced on the next one after it exits, so a host
@@ -43,6 +51,9 @@ type Client struct {
 	// callMu serializes the control connection: the protocol pairs an answer with the request
 	// before it, so two calls in flight would each take the other's.
 	callMu sync.Mutex
+
+	// callWait holds callTimeout outside a test.
+	callWait time.Duration
 
 	mu sync.Mutex
 	// dir holds the control socket and is made per spawn, so a host that exited leaves nothing
@@ -69,7 +80,7 @@ type Client struct {
 // other spawn failure is, rather than ones the backend carries from its construction to the first
 // decode.
 func NewClient() *Client {
-	return &Client{events: map[ID]Events{}}
+	return &Client{events: map[ID]Events{}, callWait: callTimeout}
 }
 
 // Open opens one decode on the host, and answers a handle addressing it.
@@ -191,14 +202,14 @@ func (c *Client) call(req request) (response, error) {
 		return response{}, errNoHost
 	}
 
-	if err := ctrl.send(req); err != nil {
+	res, err := ctrl.roundTrip(req, c.callWait)
+	if err != nil {
+		if req.Op == opOpen {
+			// The caller hears this failure from the return value alone.
+			c.forget(req.ID)
+		}
 		c.hostGone(err)
-		return response{}, err
-	}
-	var res response
-	if err := ctrl.recv(&res); err != nil {
-		c.hostGone(err)
-		return response{}, err
+		return response{}, text.Because(err, mirrormev1.TextCode_TEXT_CODE_DECODE_HOST_UNANSWERED)
 	}
 	return res, nil
 }

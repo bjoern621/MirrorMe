@@ -9,17 +9,34 @@ import (
 
 // What the host reports back, and what the backend does when it stops answering.
 
-// hostGone drops a control connection that failed, so the next open spawns a host.
+// hostGone drops a host whose control connection failed, so the next open spawns another.
+//
+// The process gets killed even where its socket merely ran out of time.
+// A host wedged in a display driver holds the GPU and every decode on it, and nothing else can reach it.
+// The report runs on its own goroutine because the caller may hold a lock that the callbacks take.
 func (c *Client) hostGone(err error) {
 	c.mu.Lock()
-	ctrl := c.ctrl
-	c.ctrl = nil
+	ctrl, proc := c.ctrl, c.proc
+	if ctrl == nil {
+		c.mu.Unlock()
+		return
+	}
+	ended := c.events
+	c.ctrl, c.proc, c.socket, c.events = nil, nil, "", map[ID]Events{}
+	if proc != nil {
+		proc.dropped = true
+	}
 	c.mu.Unlock()
 
-	if ctrl != nil {
-		ctrl.Close()
-		logger.Warnf("the decode host stopped answering: %v", err)
+	ctrl.Close()
+	logger.Warnf("the decode host stopped answering: %v", err)
+
+	logPath := ""
+	if proc != nil {
+		proc.cmd.Process.Kill()
+		logPath = proc.logPath
 	}
+	go reportEnded(ended, logPath)
 }
 
 // hostExited reports every decode the host was running.
@@ -27,20 +44,32 @@ func (c *Client) hostGone(err error) {
 // A GPU reset aborts the host where it stands, so this is an ordinary way for a decode to end
 // rather than an exceptional one, and each is reported the way a pipeline that stopped by itself
 // is.
-// The log is named because it holds what the host said on its way down, which is the one place
-// the driver's own message lands.
-func (c *Client) hostExited(dir, logPath string) {
+func (c *Client) hostExited(proc *process) {
+	// A host that exited answers no dial, and the next spawn makes its own directory.
+	defer os.RemoveAll(proc.dir)
+
 	c.mu.Lock()
+	if proc.dropped {
+		// hostGone cleared this host's state, and its successor may be running by now.
+		c.mu.Unlock()
+		return
+	}
 	ended := c.events
 	c.events = map[ID]Events{}
 	closed := c.closed
 	c.ctrl, c.proc, c.socket = nil, nil, ""
 	c.mu.Unlock()
 
-	// A host that exited answers no dial, and the next spawn makes its own directory.
-	os.RemoveAll(dir)
+	if !closed {
+		reportEnded(ended, proc.logPath)
+	}
+}
 
-	if closed || len(ended) == 0 {
+// reportEnded tells each decode that its host went.
+// The log is named because it holds what the host said on its way down, which is the one place
+// the driver's own message lands.
+func reportEnded(ended map[ID]Events, logPath string) {
+	if len(ended) == 0 {
 		return
 	}
 	logger.Warnf("the decode host exited with %d decode(s) running, its log is at %s", len(ended), logPath)

@@ -178,3 +178,41 @@ func TestTheThreeKindsAreSeparateDecodes(t *testing.T) {
 		}
 	}
 }
+
+// A pipeline wedged in a driver call answers nothing, and everything behind the backend's process
+// lock would wait on it.
+// The stop has to come back, and the other decodes on that host have to hear that they ended.
+func TestAHostThatStopsAnsweringIsDropped(t *testing.T) {
+	h := newHarness(t)
+	h.client.callWait = 50 * time.Millisecond
+
+	wedged := StreamID("desk", "rtsp")
+	h.open(t, wedged, "desk", Events{})
+	stall := make(chan struct{})
+	t.Cleanup(func() { close(stall) })
+	h.decoder(t, "desk").stallStop = stall
+
+	bystander := StreamID("cam", "rtsp")
+	ended := make(chan string, 1)
+	h.open(t, bystander, "cam", Events{OnEnd: func(message string) { ended <- message }})
+
+	stopped := make(chan struct{})
+	go func() {
+		h.client.Stop(wedged)
+		close(stopped)
+	}()
+
+	select {
+	case <-stopped:
+	case <-time.After(wait):
+		t.Fatal("a stop waited on a host that stopped answering")
+	}
+	select {
+	case <-ended:
+	case <-time.After(wait):
+		t.Fatal("a decode on the dropped host was not told that it ended")
+	}
+	if states := h.client.Snapshot(); len(states) != 0 {
+		t.Errorf("a dropped host still reports %d decode(s)", len(states))
+	}
+}

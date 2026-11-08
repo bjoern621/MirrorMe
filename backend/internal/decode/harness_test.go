@@ -3,6 +3,7 @@ package decode
 import (
 	"errors"
 	"net"
+	"os"
 	"path/filepath"
 	"sync"
 	"testing"
@@ -26,10 +27,23 @@ type harness struct {
 // refusedStream is the name the factory refuses, so a test can exercise the refusal crossing.
 const refusedStream = "refused"
 
+// shortSocketPath names a socket under the short root.
+// A Unix socket path holds about a hundred bytes, and t.TempDir spells out the test's name.
+func shortSocketPath(t *testing.T) string {
+	t.Helper()
+
+	dir, err := os.MkdirTemp(socketRoot(), "mm-")
+	if err != nil {
+		t.Fatalf("cannot make the socket directory: %v", err)
+	}
+	t.Cleanup(func() { os.RemoveAll(dir) })
+	return filepath.Join(dir, "host.sock")
+}
+
 func newHarness(t *testing.T) *harness {
 	t.Helper()
 
-	socket := filepath.Join(t.TempDir(), "host.sock")
+	socket := shortSocketPath(t)
 	listener, err := net.Listen("unix", socket)
 	if err != nil {
 		t.Fatalf("cannot listen on %s: %v", socket, err)
@@ -42,9 +56,10 @@ func newHarness(t *testing.T) *harness {
 	// Socket dialed directly: the contract under test is what crosses it, and a real child would
 	// need a GPU to open anything on.
 	h.client = &Client{
-		dir:    t.TempDir(),
-		socket: socket,
-		events: map[ID]Events{},
+		dir:      t.TempDir(),
+		socket:   socket,
+		events:   map[ID]Events{},
+		callWait: callTimeout,
 	}
 	ctrl, err := h.client.dial(connControl)
 	if err != nil {

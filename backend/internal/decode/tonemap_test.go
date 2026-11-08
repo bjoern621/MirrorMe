@@ -2,7 +2,6 @@ package decode
 
 import (
 	"net"
-	"path/filepath"
 	"testing"
 
 	"bjoernblessin.de/mirrorme/internal/receive"
@@ -25,7 +24,7 @@ import (
 func realHarness(t *testing.T) *Client {
 	t.Helper()
 
-	socket := filepath.Join(t.TempDir(), "host.sock")
+	socket := shortSocketPath(t)
 	listener, err := net.Listen("unix", socket)
 	if err != nil {
 		t.Fatalf("cannot listen on %s: %v", socket, err)
@@ -34,7 +33,7 @@ func realHarness(t *testing.T) *Client {
 	host := NewReceiveHost()
 	go host.Serve(listener)
 
-	client := &Client{dir: t.TempDir(), socket: socket, events: map[ID]Events{}}
+	client := &Client{dir: t.TempDir(), socket: socket, events: map[ID]Events{}, callWait: callTimeout}
 	ctrl, err := client.dial(connControl)
 	if err != nil {
 		t.Fatalf("cannot open the control connection: %v", err)

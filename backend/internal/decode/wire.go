@@ -4,6 +4,7 @@ import (
 	"encoding/gob"
 	"net"
 	"sync"
+	"time"
 
 	"bjoernblessin.de/mirrorme/internal/receive"
 )
@@ -139,5 +140,19 @@ func (c *conn) send(v any) error {
 
 // recv fills v from the next message, and answers io.EOF where the peer closed.
 func (c *conn) recv(v any) error { return c.dec.Decode(v) }
+
+// roundTrip sends one control request and reads its answer, giving up after wait.
+// An expired connection has lost its place in the gob stream, so the caller must drop it.
+func (c *conn) roundTrip(req request, wait time.Duration) (response, error) {
+	if err := c.c.SetDeadline(time.Now().Add(wait)); err != nil {
+		return response{}, err
+	}
+	if err := c.send(req); err != nil {
+		return response{}, err
+	}
+	var res response
+	err := c.recv(&res)
+	return res, err
+}
 
 func (c *conn) Close() error { return c.c.Close() }
