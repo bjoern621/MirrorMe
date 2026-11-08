@@ -114,6 +114,53 @@ func TestAStagedReleaseBehindTheRunIsSweptOnStart(t *testing.T) {
 	}
 }
 
+// A later start reclaims the old tree whichever way the install asks about releases.
+func TestAnOldTreeBesideTheInstallGoesOnTheNextStart(t *testing.T) {
+	for _, check := range []string{"1", "0"} {
+		isolateConfig(t)
+		t.Setenv(EnvCheck, check)
+		t.Setenv(EnvFlatpak, "")
+		target := filepath.Join(t.TempDir(), "install")
+		layOutOldTree(t, target)
+
+		New("0.5.0", Portable, filepath.Join(target, "mirrorme-backend"), func(State) {})
+
+		if _, err := os.Stat(outgoingOf(target)); !os.IsNotExist(err) {
+			t.Errorf("with %s=%s the old tree stands after the start, stat answers %v", EnvCheck, check, err)
+		}
+	}
+}
+
+// A start that finds the old tree held carries on, and the start after the hold removes it.
+func TestAHeldOldTreeGoesOnALaterStart(t *testing.T) {
+	if runtime.GOOS != "windows" {
+		t.Skip("only Windows refuses to delete an open file")
+	}
+	isolateConfig(t)
+	t.Setenv(EnvCheck, "1")
+	t.Setenv(EnvFlatpak, "")
+	target := filepath.Join(t.TempDir(), "install")
+	held := layOutOldTree(t, target)
+	exe := filepath.Join(target, "mirrorme-backend")
+
+	file, err := os.Open(held)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = file.Close() }()
+
+	New("0.5.0", Portable, exe, func(State) {})
+	if _, err := os.Stat(held); err != nil {
+		t.Fatalf("the held file is gone during the hold, stat answers %v", err)
+	}
+
+	_ = file.Close()
+	New("0.5.0", Portable, exe, func(State) {})
+	if _, err := os.Stat(outgoingOf(target)); !os.IsNotExist(err) {
+		t.Errorf("the old tree stands after the hold ended, stat answers %v", err)
+	}
+}
+
 // A release staged ahead of the running build is still the one a restart installs.
 func TestAStagedReleaseAheadOfTheRunSurvivesStart(t *testing.T) {
 	isolateConfig(t)

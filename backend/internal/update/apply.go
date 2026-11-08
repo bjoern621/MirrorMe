@@ -118,6 +118,14 @@ func Main(args []string) int {
 	if err := ClearStage(stage); err != nil {
 		logger.Warnf("clearing %s: %v", stage, err)
 	}
+
+	// Last, to keep a tree that a scanner holds from delaying the new app or the clear.
+	if pending.Method == MethodSwap {
+		outgoing := outgoingOf(pending.Target)
+		if err := removeRetrying(outgoing, outgoingWait); err != nil {
+			logger.Warnf("removing the old tree at %s, a later start tries again: %v", outgoing, err)
+		}
+	}
 	return 0
 }
 

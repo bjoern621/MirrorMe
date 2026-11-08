@@ -84,6 +84,10 @@ What the applier did is in `update-apply-<stamp>.log`, beside the backend's own 
 Its binary stays in the staging directory, Windows keeping a running one.
 The next start sweeps it, along with any staged release no newer than the one running.
 
+The old install stays beside the new one as `<install>.outgoing` until the new tree stands, since a swap that fails part-way restores from it.
+The applier then removes it.
+A file that a virus scanner still holds never fails the update: the applier retries for a while after starting the app, and what still stays goes on a later start.
+
 ## Where the pieces are
 
 | Piece | File |

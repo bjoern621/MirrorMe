@@ -9,6 +9,7 @@ Releases before v0.11.0 carry no notes, and their commits sit in the [history](h
 ### Fixed
 
 - The status band leaves "Checking for updates" once the check at start has ended, where it could stay on that line until MirrorMe was restarted.
+- An update of the Windows zip or the Linux tarball removes the previous version's folder from beside the install, where it could stay and take up disk until the next update.
 
 ## v0.15.0 (2026-11-08)
 

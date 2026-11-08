@@ -180,7 +180,7 @@ func findApplier(t *testing.T, dir string) (pid, parent int) {
 func TestTheApplierWaitsForTheAppAndThenInstalls(t *testing.T) {
 	isolateConfig(t)
 	dir := t.TempDir()
-	_, binary := stageSwap(t, dir)
+	target, binary := stageSwap(t, dir)
 	applier, err := applierCopy(dir)
 	if err != nil {
 		t.Fatalf("copying the applier: %v", err)
@@ -205,5 +205,8 @@ func TestTheApplierWaitsForTheAppAndThenInstalls(t *testing.T) {
 	}
 	if got := names(t, dir); len(got) != 1 || got[0] != filepath.Base(applier) {
 		t.Fatalf("the staging directory holds %v after the install, want the applier alone", got)
+	}
+	if _, err := os.Stat(outgoingOf(target)); !os.IsNotExist(err) {
+		t.Fatalf("the old tree stands after the applier ended, stat answers %v", err)
 	}
 }

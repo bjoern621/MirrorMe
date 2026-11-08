@@ -30,19 +30,40 @@ import (
 // the rename of the directory around it, and those let go within seconds.
 const renameWait = 10 * time.Second
 
-// renameStep is how often a refused rename is tried again.
-const renameStep = 250 * time.Millisecond
+// outgoingWait bounds the applier's retries of an old tree that will not go.
+const outgoingWait = 30 * time.Second
 
-// renameRetrying renames from to to, trying again until renameWait runs out.
-func renameRetrying(from, to string) error {
-	deadline := time.Now().Add(renameWait)
+// retryStep is how often a refused rename or removal is tried again.
+const retryStep = 250 * time.Millisecond
+
+// outgoingSuffix names the old tree beside the install, from the swap until its removal.
+const outgoingSuffix = ".outgoing"
+
+func outgoingOf(target string) string {
+	return target + outgoingSuffix
+}
+
+// retrying runs attempt until it succeeds or wait runs out, and answers its last error.
+func retrying(wait time.Duration, attempt func() error) error {
+	deadline := time.Now().Add(wait)
 	for {
-		err := os.Rename(from, to)
+		err := attempt()
 		if err == nil || time.Now().After(deadline) {
 			return err
 		}
-		time.Sleep(renameStep)
+		time.Sleep(retryStep)
 	}
+}
+
+// renameRetrying renames from to to, trying again until renameWait runs out.
+func renameRetrying(from, to string) error {
+	return retrying(renameWait, func() error { return os.Rename(from, to) })
+}
+
+// removeRetrying removes the tree at path, trying again until wait runs out.
+// A path that does not exist counts as removed.
+func removeRetrying(path string, wait time.Duration) error {
+	return retrying(wait, func() error { return os.RemoveAll(path) })
 }
 
 // Swap replaces target with what the archive carries.
@@ -50,6 +71,9 @@ func renameRetrying(from, to string) error {
 // The staged tree is built beside target, so both renames are on one filesystem.
 // A target whose parent this process cannot write is an Umgebungsfehler and leaves as an error,
 // with the running install untouched.
+//
+// A file of the old tree that is still held leaves the tree beside target and the swap succeeds.
+// The applier and later starts remove what stayed.
 func Swap(archive, target string) error {
 	assert.Assert(archive != "", "a swap names the archive it installs")
 	assert.Assert(target != "", "a swap names the directory it replaces")
@@ -70,10 +94,14 @@ func Swap(archive, target string) error {
 		return err
 	}
 
+	// A leftover goes first, since a rename onto a directory that holds files is refused.
+	outgoing := outgoingOf(target)
+	if err := removeRetrying(outgoing, renameWait); err != nil {
+		return fmt.Errorf("cannot clear the old tree at %s: %w", outgoing, err)
+	}
+
 	// The old tree moves aside rather than being deleted:
 	// a rename that fails leaves the install standing, and a delete would not.
-	outgoing := target + ".outgoing"
-	_ = os.RemoveAll(outgoing)
 	if err := renameRetrying(target, outgoing); err != nil {
 		return fmt.Errorf("cannot move %s aside: %w", target, err)
 	}
@@ -84,6 +112,7 @@ func Swap(archive, target string) error {
 		return fmt.Errorf("cannot put %s in place: %w", target, err)
 	}
 
+	// One attempt, to keep a held file from delaying the relaunch.
 	_ = os.RemoveAll(outgoing)
 	return nil
 }

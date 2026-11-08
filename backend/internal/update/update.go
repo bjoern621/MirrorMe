@@ -127,6 +127,15 @@ func New(version string, stamped Channel, exe string, announce func(State)) *Man
 		m.stage = StageOff
 	}
 
+	if m.offer.Method == MethodSwap {
+		// This run started from target, so the swap that put it there finished
+		// and no rollback needs the old tree.
+		outgoing := outgoingOf(target)
+		if err := os.RemoveAll(outgoing); err != nil {
+			logger.Warnf("removing the old tree at %s, a later start tries again: %v", outgoing, err)
+		}
+	}
+
 	dir, err := StageDir()
 	if err != nil {
 		// Umgebungsfehler: nothing stages, and a check says so when one is asked for.

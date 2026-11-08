@@ -79,6 +79,40 @@ func TestASwapOutlastsABriefHoldOnTheInstall(t *testing.T) {
 	}
 }
 
+func layOutOldTree(t *testing.T, target string) (held string) {
+	t.Helper()
+	outgoing := outgoingOf(target)
+	if err := os.MkdirAll(outgoing, 0o755); err != nil {
+		t.Fatalf("laying out the old tree: %v", err)
+	}
+	held = filepath.Join(outgoing, "held.dll")
+	if err := os.WriteFile(held, []byte("old"), 0o644); err != nil {
+		t.Fatalf("writing into the old tree: %v", err)
+	}
+	return held
+}
+
+// A scanner reading the tree that just moved aside refuses its removal for a moment.
+func TestTheOldTreeGoesOnceABriefHoldLetsGo(t *testing.T) {
+	target := filepath.Join(t.TempDir(), "install")
+	held := layOutOldTree(t, target)
+
+	file, err := os.Open(held)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = file.Close() }()
+	released := time.AfterFunc(500*time.Millisecond, func() { _ = file.Close() })
+	defer released.Stop()
+
+	if err := removeRetrying(outgoingOf(target), outgoingWait); err != nil {
+		t.Fatalf("the removal gave up on a brief hold: %v", err)
+	}
+	if _, err := os.Stat(outgoingOf(target)); !os.IsNotExist(err) {
+		t.Errorf("the old tree stands after the removal, stat answers %v", err)
+	}
+}
+
 // An archive is somebody else's file, so an entry climbing out of the extract is refused
 // rather than written where it points.
 func TestAnArchiveCannotWriteOutsideItself(t *testing.T) {
