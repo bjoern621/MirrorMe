@@ -47,6 +47,15 @@ const srtPaceHeadroomPercent = 125
 // srtRelativeOverheadPercent is how far above its measured input rate libsrt sends a publish without a ceiling.
 const srtRelativeOverheadPercent = 25
 
+// srtSenderDropOff turns off libsrt's drop of packets that it still holds past the window (SRTO_SNDDROPDELAY).
+//
+// The relative mode paces near the stream's average.
+// On a still screen a keyframe makes up most of that average and leaves over most of a GOP.
+// With the drop on, libsrt discards the rest of it and a viewer gets no picture.
+// A 158 KB keyframe vanished that way on loopback through MediaMTX 1.20.0 at a 300 ms window.
+// A link too slow for the stream delays its frames until the send buffer fills.
+const srtSenderDropOff = -1
+
 // srtBytesPerSecPerMbps converts the Mbps of a rate setting to libsrt's bytes per second.
 const srtBytesPerSecPerMbps = 125_000
 
@@ -69,13 +78,13 @@ func srtMaxBandwidth(p settings.Publish) int64 {
 //
 // A publish without a ceiling takes libsrt's relative mode, where maxbw=0 paces at the input rate
 // that libsrt measures plus the overhead.
-// It caps no stream, and it still spreads a keyframe.
-// On loopback through MediaMTX 1.20.0 it carried 2 MB keyframes at a 120 ms window and lost part
-// of the 3 MB ones.
+// It caps no stream and still spreads a keyframe.
+// On loopback through MediaMTX 1.20.0 it carried 2.1 MB keyframes at a 300 ms window.
+// Keyframes near 2.9 MB arrived in one run and vanished in another.
 func srtPaceQuery(p settings.Publish, sep string) string {
 	ceiling := srtMaxBandwidth(p)
 	if ceiling == 0 {
-		return fmt.Sprintf("%smaxbw=0&oheadbw=%d", sep, srtRelativeOverheadPercent)
+		return fmt.Sprintf("%smaxbw=0&oheadbw=%d&snddropdelay=%d", sep, srtRelativeOverheadPercent, srtSenderDropOff)
 	}
 	return fmt.Sprintf("%smaxbw=%d", sep, ceiling)
 }

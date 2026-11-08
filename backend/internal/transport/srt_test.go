@@ -80,8 +80,8 @@ func TestSRTPublishIsPacedAboveItsPeak(t *testing.T) {
 	}{
 		{"a modest cbr stream takes the floor", settings.Publish{Mode: "cbr", BitrateM: 8}, "maxbw=4000000"},
 		{"a fast vbr stream clears its maxrate", settings.Publish{Mode: "vbr", BitrateM: 35, MaxrateM: 80}, "maxbw=12500000"},
-		{"crf follows its measured rate", settings.Publish{Mode: "crf", BitrateM: 8}, "maxbw=0&oheadbw=25"},
-		{"lossless follows its measured rate", settings.Publish{Mode: "lossless"}, "maxbw=0&oheadbw=25"},
+		{"crf follows its measured rate", settings.Publish{Mode: "crf", BitrateM: 8}, "maxbw=0&oheadbw=25&snddropdelay=-1"},
+		{"lossless follows its measured rate", settings.Publish{Mode: "lossless"}, "maxbw=0&oheadbw=25&snddropdelay=-1"},
 	} {
 		s := testStream()
 		s.Publish.Mode, s.Publish.BitrateM, s.Publish.MaxrateM = c.p.Mode, c.p.BitrateM, c.p.MaxrateM
@@ -94,6 +94,20 @@ func TestSRTPublishIsPacedAboveItsPeak(t *testing.T) {
 		if !strings.Contains(sink, "?"+c.maxbw+" ") {
 			t.Errorf("%s: sink %q misses %q", c.what, sink, c.maxbw)
 		}
+	}
+}
+
+func TestSRTPublishWithACeilingKeepsTheSenderDrop(t *testing.T) {
+	s := testStream()
+	s.Publish.Mode, s.Publish.BitrateM = "cbr", 8
+
+	publish := SRT{}.PublishArgs(s)[2]
+	sink := strings.Join(SRT{}.GstSink(s), " ")
+	if strings.Contains(publish, "snddropdelay") {
+		t.Errorf("publish URL %q turns off the sender drop under a ceiling", publish)
+	}
+	if strings.Contains(sink, "snddropdelay") {
+		t.Errorf("sink %q turns off the sender drop under a ceiling", sink)
 	}
 }
 
