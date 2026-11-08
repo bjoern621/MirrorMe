@@ -147,6 +147,7 @@ func RunWithOptions(ctx context.Context, description string, options Options, ou
 	if options.Shed != "" {
 		shed = watchShed(pipeline, options.Shed)
 	}
+	holdAudioUntilVideo(pipeline)
 	var gate *relayGate
 	if options.RelayGate != "" {
 		gate = watchRelayGate(pipeline, options.RelayGate)

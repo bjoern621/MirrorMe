@@ -9,6 +9,7 @@ Releases before v0.11.0 carry no notes, and their commits sit in the [history](h
 ### Fixed
 
 - A stream on the GStreamer engine on Windows starts, where its process crashed at once and MirrorMe went on saying it was sharing while viewers got nothing.
+- A GStreamer stream with desktop sound on Windows reaches the relay with picture and sound, where the relay took only the track that started first.
 - The status band leaves "Checking for updates" once the check at start has ended, where it could stay on that line until MirrorMe was restarted.
 - An update of the Windows zip or the Linux tarball removes the previous version's folder from beside the install, where it could stay and take up disk until the next update.
 

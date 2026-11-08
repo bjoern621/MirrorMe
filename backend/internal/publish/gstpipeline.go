@@ -13,6 +13,7 @@ import (
 
 	"bjoernblessin.de/mirrorme/internal/capabilities"
 	"bjoernblessin.de/mirrorme/internal/gpu"
+	"bjoernblessin.de/mirrorme/internal/gstrun"
 	"bjoernblessin.de/mirrorme/internal/platform"
 	"bjoernblessin.de/mirrorme/internal/settings"
 	"bjoernblessin.de/mirrorme/internal/transport"
@@ -299,6 +300,7 @@ func gstAudioBranch(s settings.Settings) ([]string, error) {
 		"!", fmt.Sprintf("audio/x-raw,rate=%d,channels=2", a.Rate),
 		"!", enc.Element, fmt.Sprintf("bitrate=%d", a.BitrateK*1000),
 		"!", enc.Parser,
+		"!", "valve", "name="+gstrun.AudioGateName, "drop=true",
 		"!", transport.GstMuxName+".",
 	), nil
 }

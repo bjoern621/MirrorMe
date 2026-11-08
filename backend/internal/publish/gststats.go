@@ -28,7 +28,7 @@ const (
 	gstShedName = "shed"
 	// gstRelayName names the queue ahead of the relay sink, where the keyframe policy gates the leg
 	// (gstrun/relaygate.go).
-	gstRelayName = "relay"
+	gstRelayName = gstrun.RelayQueueName
 )
 
 // gstCaptureProbe is the progressreport element a capture backend splices in to count what
