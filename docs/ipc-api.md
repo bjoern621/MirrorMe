@@ -300,6 +300,7 @@ Three rules keep the event stream from becoming a second definition of the state
 A shell receiving `PublishState` renders it.
 It does not apply it to something it held.
 A duplicate is harmless, and a dropped connection is recovered from by reading state again rather than replaying history.
+`Watch` opens on the current value of every standing state it carries, ahead of any change, so a state that moved between a shell's read and its watch still reaches that shell.
 
 **A shell that acted still waits for the event.**
 `Set` answers empty.

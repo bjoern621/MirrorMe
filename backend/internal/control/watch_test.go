@@ -2,6 +2,8 @@ package control
 
 import (
 	"context"
+	"maps"
+	"slices"
 	"testing"
 	"time"
 
@@ -136,15 +138,107 @@ func TestAWatchOpensOnAnUpdateStateThatSettledBeforeIt(t *testing.T) {
 			out := newFakeStream(ctx)
 			go func() { _ = server.Watch(request, out) }()
 
-			select {
-			case event := <-out.sent:
-				if got := event.GetUpdateState().GetStage(); got != mirrormev1.UpdateStage_UPDATE_STAGE_CURRENT {
-					t.Errorf("the watch opened on a %s event at stage %s, want the settled stage", events.KindOf(event), got)
-				}
-			case <-time.After(2 * time.Second):
-				t.Fatal("the watch delivered nothing, so a shell that read a running check draws it until it closes")
+			event := nextOfKind(t, out, mirrormev1.EventKind_EVENT_KIND_UPDATE_STATE)
+			if got := event.GetUpdateState().GetStage(); got != mirrormev1.UpdateStage_UPDATE_STAGE_CURRENT {
+				t.Errorf("the watch opened on stage %s, want the settled stage", got)
 			}
 		})
+	}
+}
+
+// A presence reading can land after a shell's read and before its watch.
+// The broker holds no subscriber for that reading, so a shell keeps the older group until a later reading lands.
+func TestAWatchOpensOnTheGroupThatMovedBeforeIt(t *testing.T) {
+	requests := map[string]*mirrormev1.WatchRequest{
+		"every kind": {},
+		"named":      {Kinds: []mirrormev1.EventKind{mirrormev1.EventKind_EVENT_KIND_MEMBERS_STATE}},
+	}
+
+	for name, request := range requests {
+		t.Run(name, func(t *testing.T) {
+			backend := &fakeBackend{}
+			broker := events.New()
+			server := New(backend, broker, "test")
+
+			backend.members = wire.MembersSnapshot{Joined: true}
+			broker.Publish(wire.MembersStateEvent(backend.members))
+
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			out := newFakeStream(ctx)
+			go func() { _ = server.Watch(request, out) }()
+
+			event := nextOfKind(t, out, mirrormev1.EventKind_EVENT_KIND_MEMBERS_STATE)
+			if !event.GetMembersState().GetJoined() {
+				t.Error("the watch opened on a group this machine is not in, want the group it joined before the watch")
+			}
+		})
+	}
+}
+
+// A shell reads each of these once before it watches, and any of them can move in between.
+func TestAWatchOpensOnEveryStandingState(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	out := newFakeStream(ctx)
+	server := New(&fakeBackend{}, events.New(), "test")
+	go func() { _ = server.Watch(&mirrormev1.WatchRequest{}, out) }()
+
+	unseen := map[mirrormev1.EventKind]bool{}
+	for kind := range states {
+		if !readAlone[kind] {
+			unseen[kind] = true
+		}
+	}
+
+	for count := len(unseen); count > 0; count-- {
+		select {
+		case event := <-out.sent:
+			kind := events.KindOf(event)
+			if !unseen[kind] {
+				t.Fatalf("the watch opened on %s, want one event for each standing state and nothing else", kind)
+			}
+			delete(unseen, kind)
+		case <-time.After(2 * time.Second):
+			t.Fatalf("the watch opened on no state for %v", slices.Collect(maps.Keys(unseen)))
+		}
+	}
+}
+
+// A level watch stands open beside the state watch.
+// A snapshot here would land on a reader that asserts every event is a level.
+func TestAWatchOfATickOpensOnNoStandingState(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	out := newFakeStream(ctx)
+	server := New(&fakeBackend{}, events.New(), "test")
+	request := &mirrormev1.WatchRequest{Kinds: []mirrormev1.EventKind{mirrormev1.EventKind_EVENT_KIND_AUDIO_LEVELS}}
+	go func() { _ = server.Watch(request, out) }()
+
+	select {
+	case event := <-out.sent:
+		if kind := events.KindOf(event); kind != mirrormev1.EventKind_EVENT_KIND_AUDIO_LEVELS {
+			t.Errorf("a level watch opened on %s, want levels alone", kind)
+		}
+	case <-time.After(2 * time.Second):
+		t.Fatal("a level watch delivered nothing")
+	}
+}
+
+// nextOfKind reads a watch up to its first event of kind, passing over the opening states of other kinds.
+func nextOfKind(t *testing.T, out *fakeStream, kind mirrormev1.EventKind) *mirrormev1.Event {
+	t.Helper()
+
+	timeout := time.After(2 * time.Second)
+	for {
+		select {
+		case event := <-out.sent:
+			if events.KindOf(event) == kind {
+				return event
+			}
+		case <-timeout:
+			t.Fatalf("the watch delivered no %s, so a shell holds what it read before the watch", kind)
+		}
 	}
 }
 

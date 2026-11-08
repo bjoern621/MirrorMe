@@ -1,12 +1,14 @@
 package control
 
 import (
-	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"slices"
+
+	mirrormev1"bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 )
 
 // How each EventKind crosses the contract, one table for Read and Watch both.
 //
-// A kind in states stands, so Read hands it over as it is now.
+// A kind in states stands, so Read hands it over as it is now and Watch opens on it.
 // A kind in readAlone stands and is never announced: nothing tells this process when it moved.
 // AUDIO_LEVELS and POINTER move at a cadence of their own, so Watch sends them only where named (splitKinds).
 // Every other kind the broker knows happens rather than stands, and Watch alone carries it.
@@ -63,4 +65,17 @@ var readAlone = map[mirrormev1.EventKind]bool{
 	mirrormev1.EventKind_EVENT_KIND_SETTINGS:      true,
 	mirrormev1.EventKind_EVENT_KIND_PRESETS:       true,
 	mirrormev1.EventKind_EVENT_KIND_SHARE_WINDOWS: true,
+}
+
+// standingKinds lists the kinds a watch opens on, in enum order:
+// each announced kind that stands, or every one that stands where announced is empty.
+func standingKinds(announced []mirrormev1.EventKind) []mirrormev1.EventKind {
+	var kinds []mirrormev1.EventKind
+	for kind := range states {
+		if !readAlone[kind] && (len(announced) == 0 || slices.Contains(announced, kind)) {
+			kinds = append(kinds, kind)
+		}
+	}
+	slices.Sort(kinds)
+	return kinds
 }

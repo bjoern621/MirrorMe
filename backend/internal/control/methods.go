@@ -3,7 +3,6 @@ package control
 import (
 	"context"
 	"errors"
-	"slices"
 	"time"
 
 	"google.golang.org/grpc"
@@ -59,7 +58,7 @@ func (s *Server) Read(ctx context.Context, req *mirrormev1.ReadRequest) (*mirror
 // A kind Read alone serves is refused the same way.
 //
 // The broker's events carry the sequence it stamps per subscription.
-// A tick and the opening update state carry none: each states the present, with nothing before it worth counting.
+// A tick and an opening state carry none: each states the present, with nothing before it worth counting.
 func (s *Server) Watch(req *mirrormev1.WatchRequest, out grpc.ServerStreamingServer[mirrormev1.Event]) error {
 	assert.IsNotNil(out, "a watch writes to the client's stream")
 
@@ -78,14 +77,15 @@ func (s *Server) Watch(req *mirrormev1.WatchRequest, out grpc.ServerStreamingSer
 		// so a call that returned without cancelling would leave a subscriber nothing reads.
 		defer cancel()
 		feed = subscribed
-	}
 
-	// A check can settle after a shell's read and before the subscribe above.
-	// Nothing announces that state again, so the watch opens on it.
-	// Read after the subscribe: a step this read misses waits in the feed behind it.
-	if len(req.GetKinds()) == 0 || slices.Contains(announced, mirrormev1.EventKind_EVENT_KIND_UPDATE_STATE) {
-		if err := out.Send(states[mirrormev1.EventKind_EVENT_KIND_UPDATE_STATE](s)); err != nil {
-			return err
+		// A state can move after a shell's read and before the subscribe above.
+		// Nothing announces it again, so the watch opens on it.
+		// Read after the subscribe: a change this read misses waits in the feed behind it,
+		// which leaves the shell on the newest state where a read and an event overlap.
+		for _, kind := range standingKinds(announced) {
+			if err := out.Send(states[kind](s)); err != nil {
+				return err
+			}
 		}
 	}
 
