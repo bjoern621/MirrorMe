@@ -6,6 +6,10 @@ Releases before v0.11.0 carry no notes, and their commits sit in the [history](h
 
 ## Unreleased
 
+### Fixed
+
+- The status band leaves "Checking for updates" once the check at start has ended, where it could stay on that line until MirrorMe was restarted.
+
 ## v0.15.0 (2026-11-08)
 
 ### Changed

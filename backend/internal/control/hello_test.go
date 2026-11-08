@@ -42,6 +42,7 @@ type fakeBackend struct {
 	// members is the group this machine shares, as the presence loop last read it.
 	members  wire.MembersSnapshot
 	timeline timeline.Snapshot
+	updates  update.State
 	// legs is what a relay check answers, which no err field can stand in for:
 	// every leg comes back with a verdict of its own,
 	// and a relay that answers nothing is still a response.
@@ -155,7 +156,7 @@ func (f *fakeBackend) OpenLogsFolder() error              { return f.err }
 func (f *fakeBackend) SendReport() (string, error)        { return f.reportID, f.err }
 func (f *fakeBackend) OpenInBrowser(wire.StreamRef) error { return f.err }
 
-func (f *fakeBackend) UpdateState() update.State         { return update.State{} }
+func (f *fakeBackend) UpdateState() update.State         { return f.updates }
 func (f *fakeBackend) StreamTimeline() timeline.Snapshot { return f.timeline }
 func (f *fakeBackend) CheckUpdate() error                { return f.err }
 func (f *fakeBackend) InstallUpdate() error              { return f.err }

@@ -57,6 +57,7 @@ sequenceDiagram
 ```
 
 Every step is a whole `UpdateState` on the event stream, so a second window shows a staged release without having asked for one.
+`Watch` opens on the current `UpdateState`, so a check that settled between a shell's first read and its watch still reaches that shell.
 
 A download lands under `<config>/mirrorme/update/`, one release at a time.
 It is written under a partial name and renamed once its length and its SHA-256 match what the release records.

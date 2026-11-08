@@ -11,6 +11,8 @@ import (
 	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
 
 	"bjoernblessin.de/mirrorme/internal/events"
+	"bjoernblessin.de/mirrorme/internal/update"
+	"bjoernblessin.de/mirrorme/internal/wire"
 )
 
 // fakeStream stands in for the client's half of a server-streaming call.
@@ -109,6 +111,40 @@ func TestANarrowedWatchReceivesOnlyItsKinds(t *testing.T) {
 		default:
 			return
 		}
+	}
+}
+
+// A check can settle after a shell's read and before its watch, while the broker holds no subscriber for it.
+// Nothing announces that state again, so the shell keeps the checking state it read.
+func TestAWatchOpensOnAnUpdateStateThatSettledBeforeIt(t *testing.T) {
+	requests := map[string]*mirrormev1.WatchRequest{
+		"every kind": {},
+		"named":      {Kinds: []mirrormev1.EventKind{mirrormev1.EventKind_EVENT_KIND_UPDATE_STATE}},
+	}
+
+	for name, request := range requests {
+		t.Run(name, func(t *testing.T) {
+			backend := &fakeBackend{}
+			broker := events.New()
+			server := New(backend, broker, "test")
+
+			backend.updates = update.State{Stage: update.StageCurrent, Running: "0.15.0", Latest: "v0.15.0"}
+			broker.Publish(wire.UpdateStateEvent(backend.updates))
+
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			out := newFakeStream(ctx)
+			go func() { _ = server.Watch(request, out) }()
+
+			select {
+			case event := <-out.sent:
+				if got := event.GetUpdateState().GetStage(); got != mirrormev1.UpdateStage_UPDATE_STAGE_CURRENT {
+					t.Errorf("the watch opened on a %s event at stage %s, want the settled stage", events.KindOf(event), got)
+				}
+			case <-time.After(2 * time.Second):
+				t.Fatal("the watch delivered nothing, so a shell that read a running check draws it until it closes")
+			}
+		})
 	}
 }
 
