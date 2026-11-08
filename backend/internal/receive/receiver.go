@@ -2,6 +2,7 @@ package receive
 
 import (
 	"context"
+	"runtime"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -469,7 +470,11 @@ func (r *Receiver) Stop() bool {
 	// a device that is gone.
 	r.endSubs("the stream was closed")
 
-	return r.teardown()
+	stopped := r.teardown()
+	// Each element wrapper holds a reference until Go collects it, and a Go heap this small
+	// goes minutes between collections with the decoder's device still open behind them.
+	runtime.GC()
+	return stopped
 }
 
 // teardown takes the pipeline to NULL and hands it back, once, whichever side asks first: a stop,
@@ -549,6 +554,11 @@ func (r *Receiver) release() {
 	}
 	r.volume, r.audioConvert, r.stats = nil, nil, nil
 	r.sink, r.fit = nil, nil
+	r.delay.Release()
+	for _, track := range []*decodeTrack{&r.video, &r.audio} {
+		track.arrive.Release()
+		track.dec = nil
+	}
 
 	gobject.UnsafeObjectUnref(r.pipeline)
 	r.pipeline = nil

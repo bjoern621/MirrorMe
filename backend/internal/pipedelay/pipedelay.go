@@ -89,6 +89,19 @@ func Watch(element gst.Element, padName string) *Probe {
 	return p
 }
 
+// Release drops the element so that a stopped pipeline can go.
+//
+// The pad's probes hold this Probe and the Probe holds the element, a cycle that runs through
+// GStreamer where the Go collector cannot see it.
+// The caller must have taken the pipeline to NULL first, since a probe firing afterwards would
+// read a nil element.
+// Safe on a nil probe.
+func (p *Probe) Release() {
+	if p != nil {
+		p.element = nil
+	}
+}
+
 // Read is what has passed, the zero Reading for a probe nothing has measured.
 // Safe on a nil probe, the pipeline carrying none.
 func (p *Probe) Read() Reading {
