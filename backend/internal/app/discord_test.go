@@ -187,7 +187,7 @@ func TestWithTheModeOffTheLinkIsTheWholeState(t *testing.T) {
 
 // The link lands where no pass is running, so the announcement is the whole of what moves a shell.
 func TestStoringALinkAnnouncesIt(t *testing.T) {
-	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
+	isolateConfig(t)
 	a := discordApp(&fakeDiscord{})
 	a.settings.Relay.GroupSource = group.SourceKey
 	a.settings.Relay.DiscordLink = ""
