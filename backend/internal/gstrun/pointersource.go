@@ -8,6 +8,7 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
+	"bjoernblessin.de/mirrorme/internal/gstelements"
 	"bjoernblessin.de/mirrorme/internal/padprobe"
 	"bjoernblessin.de/mirrorme/internal/pointer"
 )
@@ -42,11 +43,7 @@ var pointerSources = map[string]func(context.Context, gst.Element, *pointerHold)
 func watchPointer(ctx context.Context, pipeline gst.Pipeline) *pointerHold {
 	assert.IsNotNil(ctx, "a pointer source runs under a context")
 
-	for v := range pipeline.IterateSources().Values() {
-		el, ok := v.(gst.Element)
-		if !ok {
-			continue
-		}
+	for _, el := range gstelements.Of(pipeline.IterateSources()) {
 		f := el.GetFactory()
 		if f == nil {
 			continue

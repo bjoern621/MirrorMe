@@ -28,6 +28,7 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
+	"bjoernblessin.de/mirrorme/internal/gstelements"
 	"bjoernblessin.de/mirrorme/internal/pipedelay"
 )
 
@@ -214,11 +215,7 @@ func refusal(pipeline gst.Pipeline, out io.Writer) error {
 func reportCaps(pipeline gst.Pipeline, out io.Writer) bool {
 	assert.IsNotNil(out, "negotiated caps are reported to a writer")
 
-	for v := range pipeline.IterateSources().Values() {
-		el, ok := v.(gst.Element)
-		if !ok {
-			continue
-		}
+	for _, el := range gstelements.Of(pipeline.IterateSources()) {
 		pad := el.GetStaticPad("src")
 		if pad == nil {
 			continue

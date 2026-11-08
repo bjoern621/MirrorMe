@@ -7,6 +7,7 @@ import (
 	"time"
 
 	mirrormev1 "bjoernblessin.de/mirrorme/api/gen/go/mirrorme/v1"
+	"bjoernblessin.de/mirrorme/internal/gstelements"
 	"bjoernblessin.de/mirrorme/internal/text"
 
 	"github.com/go-gst/go-glib/pkg/gobject/v2"
@@ -329,11 +330,7 @@ func (r *Receiver) watchDecodePads(onAudio func()) {
 // naming it: a fragment states what it opens and where from, not what its element is called.
 func (r *Receiver) watchSourcePads(onAudio func()) {
 	sources := 0
-	for v := range r.pipeline.IterateSources().Values() {
-		src, ok := v.(gst.Element)
-		if !ok {
-			continue
-		}
+	for _, src := range gstelements.Of(r.pipeline.IterateSources()) {
 		sources++
 		src.Connect("pad-added", func(_ gst.Element, pad gst.Pad) {
 			r.onSourcePad(pad, onAudio)
@@ -355,10 +352,8 @@ func (r *Receiver) watchElements() {
 	r.pipeline.Connect("deep-element-added", func(_ gst.Bin, _ gst.Bin, child gst.Element) {
 		r.onElement(child)
 	})
-	for v := range r.pipeline.IterateRecurse().Values() {
-		if e, ok := v.(gst.Element); ok {
-			r.onElement(e)
-		}
+	for _, e := range gstelements.Of(r.pipeline.IterateRecurse()) {
+		r.onElement(e)
 	}
 }
 

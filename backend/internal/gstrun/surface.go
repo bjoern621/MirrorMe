@@ -5,6 +5,7 @@ import (
 
 	"bjoernblessin.de/go-utils/util/assert"
 
+	"bjoernblessin.de/mirrorme/internal/gstelements"
 	"bjoernblessin.de/mirrorme/internal/colour"
 	"bjoernblessin.de/mirrorme/internal/padprobe"
 )
@@ -41,11 +42,7 @@ const colorimetryField = "colorimetry"
 // from outside the pipeline, and a name would live both here and in whichever backend built
 // the description.
 func narrowToSurface(pipeline gst.Pipeline) {
-	for v := range pipeline.IterateSources().Values() {
-		el, ok := v.(gst.Element)
-		if !ok {
-			continue
-		}
+	for _, el := range gstelements.Of(pipeline.IterateSources()) {
 		pad := el.GetStaticPad("src")
 		if pad == nil {
 			continue
