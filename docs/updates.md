@@ -3,8 +3,8 @@
 Version in the status band is the control.
 Pressing it reads the project's published release, and downloads it where this copy owns its own files.
 
-Nothing is asked without a press.
-No timer, no start-up fetch, and the check reaches the forge and nothing else.
+A copy reads the release once at start, unless `checkUpdatesOnStart` in the settings is off.
+Every other read takes a press, and the check reaches the forge and nothing else.
 
 ## Channel decides what a copy may do
 

@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 )
 
 // The install directory ends up holding what the archive carries and nothing of what it held,
@@ -46,6 +47,35 @@ func TestTheInstallDirectoryIsReplaced(t *testing.T) {
 	}
 	if _, err := os.Stat(target + ".outgoing"); err == nil {
 		t.Error("the old tree was left beside the new one")
+	}
+}
+
+// A scanner holding a file open makes Windows refuse the rename for a moment.
+func TestASwapOutlastsABriefHoldOnTheInstall(t *testing.T) {
+	dir := t.TempDir()
+	target := filepath.Join(dir, "install")
+	if err := os.MkdirAll(target, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	held := filepath.Join(target, "held.dll")
+	if err := os.WriteFile(held, []byte("old"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	archive := filepath.Join(dir, "release.tar.gz")
+	writeTarball(t, archive, "mirrorme-v2", map[string]string{"app": "new"})
+
+	file, err := os.Open(held)
+	if err != nil {
+		t.Fatal(err)
+	}
+	released := time.AfterFunc(500*time.Millisecond, func() { file.Close() })
+	defer released.Stop()
+
+	if err := Swap(archive, target); err != nil {
+		t.Fatalf("a swap gave up on a brief hold: %v", err)
+	}
+	if got, err := os.ReadFile(filepath.Join(target, "app")); err != nil || string(got) != "new" {
+		t.Errorf("the install holds %q, %v after the swap", got, err)
 	}
 }
 

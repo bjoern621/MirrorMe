@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"bjoernblessin.de/go-utils/util/assert"
 )
@@ -23,6 +24,26 @@ import (
 // The swap goes through renames beside the target rather than writing into it:
 // a copy that stopped half way would leave an install that is neither release,
 // and a rename either happened or did not.
+
+// renameWait bounds the retries of a refused rename.
+// A virus scanner or the search indexer holding one file open is enough for Windows to refuse
+// the rename of the directory around it, and those let go within seconds.
+const renameWait = 10 * time.Second
+
+// renameStep is how often a refused rename is tried again.
+const renameStep = 250 * time.Millisecond
+
+// renameRetrying renames from to to, trying again until renameWait runs out.
+func renameRetrying(from, to string) error {
+	deadline := time.Now().Add(renameWait)
+	for {
+		err := os.Rename(from, to)
+		if err == nil || time.Now().After(deadline) {
+			return err
+		}
+		time.Sleep(renameStep)
+	}
+}
 
 // Swap replaces target with what the archive carries.
 //
@@ -53,11 +74,11 @@ func Swap(archive, target string) error {
 	// a rename that fails leaves the install standing, and a delete would not.
 	outgoing := target + ".outgoing"
 	_ = os.RemoveAll(outgoing)
-	if err := os.Rename(target, outgoing); err != nil {
+	if err := renameRetrying(target, outgoing); err != nil {
 		return fmt.Errorf("cannot move %s aside: %w", target, err)
 	}
 
-	if err := os.Rename(root, target); err != nil {
+	if err := renameRetrying(root, target); err != nil {
 		// Put back what was there, so a failure here is a run that changed nothing.
 		_ = os.Rename(outgoing, target)
 		return fmt.Errorf("cannot put %s in place: %w", target, err)

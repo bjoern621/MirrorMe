@@ -15,6 +15,8 @@ Releases before v0.11.0 carry no notes, and their commits sit in the [history](h
 
 - On Windows the tray icon's right-click menu is the system's own menu, light or dark as Windows is set, where it was drawn in MirrorMe's dark style.
 - Stopping a stream comes back within seconds when the graphics driver stops responding, where MirrorMe stayed frozen until it was restarted.
+- The Windows zip installs its updates, where it failed to replace its own folder and stayed closed.
+  An update also waits out a file held open by a virus scanner, and MirrorMe starts again after one that could not install.
 - Closing a stream gives its graphics driver threads and memory back, where each one opened kept them until MirrorMe exited.
 - A stream sent over SRT on a fast connection to the relay reaches viewers whole, where its keyframes got lost and a tile stayed on "Connecting" or showed moving fragments on black.
 

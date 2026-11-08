@@ -72,13 +72,20 @@ func Launch(args []string) int {
 
 // Main runs the applier and answers the process's exit status.
 //
-// Every failure leaves the running install exactly as it was:
+// Every failure leaves the install exactly as it was:
 // the staged files stay where they are, and the next start finds the release still staged.
+// A failed install starts the app again, since the reader closed it for this and nothing else will.
 func Main(args []string) int {
 	stage, pid, err := applierArgs(args)
 	if err != nil {
 		logger.Warnf("%v", err)
 		return 1
+	}
+
+	// This run inherits the app's working directory, usually the install itself,
+	// and Windows refuses to rename a directory that a process stands in.
+	if err := os.Chdir(os.TempDir()); err != nil {
+		logger.Warnf("leaving the install directory: %v", err)
 	}
 
 	pending, staged := ReadPending(stage)
@@ -94,6 +101,9 @@ func Main(args []string) int {
 
 	if err := install(pending); err != nil {
 		logger.Warnf("installing %s: %v", pending.Tag, err)
+		if err := relaunch(pending.Launch); err != nil {
+			logger.Warnf("starting %s: %v", pending.Launch, err)
+		}
 		return 1
 	}
 	logger.Infof("release %s is installed in %s", pending.Tag, pending.Target)
