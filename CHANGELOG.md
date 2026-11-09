@@ -6,6 +6,8 @@ Releases before v0.11.0 carry no notes, and their commits sit in the [history](h
 
 ## Unreleased
 
+## v0.15.1 (2026-11-09)
+
 ### Fixed
 
 - A stream on the GStreamer engine on Windows starts, where its process crashed at once and MirrorMe went on saying it was sharing while viewers got nothing.
